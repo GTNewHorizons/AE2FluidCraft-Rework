@@ -21,7 +21,6 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
     private IAEItemStack[] inputs = null, inputsCond = null, outputs = null, outputsCond = null;
     private int priority = 0;
     private int combine = 0;
-    private int beSubstitute = 0;
 
     public FluidPatternDetails(ItemStack stack) {
         this.patternStack = stack;
@@ -29,11 +28,7 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
     }
 
     public boolean canBeSubstitute() {
-        return beSubstitute != 0;
-    }
-
-    public void setCanBeSubstitute(int beSubstitute) {
-        this.beSubstitute = beSubstitute;
+        return false;
     }
 
     @Override
