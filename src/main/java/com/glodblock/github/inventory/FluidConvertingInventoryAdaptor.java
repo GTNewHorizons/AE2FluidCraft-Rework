@@ -1,5 +1,18 @@
 package com.glodblock.github.inventory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.InsertionMode;
 import appeng.api.parts.IPart;
@@ -14,6 +27,7 @@ import appeng.util.InventoryAdaptor;
 import appeng.util.inv.IInventoryDestination;
 import appeng.util.inv.ItemSlot;
 import cofh.api.transport.IItemDuct;
+
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.PartFluidExportBus;
@@ -23,21 +37,11 @@ import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
+
 import crazypants.enderio.conduit.item.IItemConduit;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaPipeEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
-
-import javax.annotation.Nullable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
 
 public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
 
