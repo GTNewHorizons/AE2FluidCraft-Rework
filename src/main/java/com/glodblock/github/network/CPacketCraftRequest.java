@@ -16,9 +16,9 @@ import appeng.api.networking.crafting.ICraftingGrid;
 import appeng.api.networking.crafting.ICraftingJob;
 import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
+import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.core.AELog;
 
-import com.glodblock.github.client.gui.container.ContainerFluidCraftConfirm;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
@@ -107,8 +107,8 @@ public class CPacketCraftRequest implements IMessage {
                                         GuiType.FLUID_CRAFTING_CONFIRM_ITEM);
                             }
 
-                            if (player.openContainer instanceof ContainerFluidCraftConfirm) {
-                                final ContainerFluidCraftConfirm ccc = (ContainerFluidCraftConfirm) player.openContainer;
+                            if (player.openContainer instanceof ContainerCraftConfirm) {
+                                final ContainerCraftConfirm ccc = (ContainerCraftConfirm) player.openContainer;
                                 ccc.setAutoStart(message.heldShift);
                                 ccc.setJob(futureJob);
                                 cca.detectAndSendChanges();

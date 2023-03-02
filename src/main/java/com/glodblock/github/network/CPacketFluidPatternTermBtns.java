@@ -2,7 +2,6 @@ package com.glodblock.github.network;
 
 import net.minecraft.inventory.Container;
 
-import com.glodblock.github.client.gui.container.ContainerFluidCraftConfirm;
 import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
 import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
 
@@ -121,12 +120,6 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                         break;
                 }
                 cpt.getPatternTerminal().saveSettings();
-            } else if (Name.equals("Terminal.Cpu") && c instanceof ContainerFluidCraftConfirm) {
-                final ContainerFluidCraftConfirm qk = (ContainerFluidCraftConfirm) c;
-                qk.cycleCpu(Value.equals("Next"));
-            } else if (Name.equals("Terminal.Start") && c instanceof ContainerFluidCraftConfirm) {
-                final ContainerFluidCraftConfirm qk = (ContainerFluidCraftConfirm) c;
-                qk.startJob();
             } else if (Name.startsWith("StorageBus.") && c instanceof ContainerFluidStorageBus) {
                 final ContainerFluidStorageBus ccw = (ContainerFluidStorageBus) c;
                 if (Name.equals("StorageBus.Action")) {
