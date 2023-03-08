@@ -1,14 +1,17 @@
 package com.glodblock.github.common.tile;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.*;
 
 import com.glodblock.github.loader.ChannelLoader;
+import com.glodblock.github.util.BlockPos;
 
 public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
@@ -26,6 +29,7 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
             return this;
         }
     };
+    private boolean hasUpdate;
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
@@ -191,6 +195,40 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         return (float) this.tank.getFluidAmount() / this.tank.getCapacity();
     }
 
+    private void onComparatorUpdate(World world, int x, int y, int z, Block block) {
+        world.func_147453_f(x, y, z, block);
+    }
+
+    @Override
+    public void updateEntity() {
+        super.updateEntity();
+        if (this.tank.getFluid() != null) {
+            TileCertusQuartzTank below = getTankBelow(this);
+            if (below != null) {
+                FluidStack filled = this.tank.getFluid().copy();
+                filled.amount = below.fill(this.tank.getFluid(), true, true);
+                if (filled.amount >= 0) {
+                    this.drain(filled, true, true);
+                    this.hasUpdate = true;
+                    below.hasUpdate = true;
+                }
+            }
+        }
+
+        if (this.hasUpdate) {
+            onComparatorUpdate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
+            this.hasUpdate = false;
+        }
+    }
+
+    private TileCertusQuartzTank getTankBelow(TileEntity tile) {
+        TileEntity tank = new BlockPos(tile).getOffSet(0, -1, 0).getTileEntity();
+        if (tank != null && tank instanceof TileCertusQuartzTank) {
+            return (TileCertusQuartzTank) tank;
+        }
+        return null;
+    }
+
     public FluidTankInfo[] getTankInfo(boolean goToMainTank) {
         if (!goToMainTank) return new FluidTankInfo[] { this.tank.getInfo() };
 
@@ -212,12 +250,12 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
             break;
         }
 
-        yOff = 0;
-        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
+        yOff -= 1;
+        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
         while (true) {
             if (offTE instanceof TileCertusQuartzTank) {
                 mainTank = (TileCertusQuartzTank) offTE;
-                if (mainTank.getFluid() == null || mainTank.getFluid() == getFluid()) {
+                if (mainTank.getFluid() == null || getFluid() == null || mainTank.getFluid() == getFluid()) {
                     FluidTankInfo info = mainTank.getTankInfo(false)[0];
                     if (info != null) {
                         capacity += info.capacity;
@@ -226,8 +264,7 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
                             if (info.fluid.getFluid() != null) fluid = info.fluid.getFluid();
                         }
                     }
-                    yOff++;
-                    offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
+                    offTE = new BlockPos(offTE).getOffSet(0, 1, 0).getTileEntity();
                     continue;
                 }
             }
@@ -273,5 +310,9 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     public void writeToNBTWithoutCoords(NBTTagCompound tag) {
         this.tank.writeToNBT(tag);
+    }
+
+    public FluidTankInfo[] getInternalFluid() {
+        return this.getTankInfo(true);
     }
 }

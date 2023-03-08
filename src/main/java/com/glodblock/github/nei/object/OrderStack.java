@@ -1,10 +1,14 @@
 package com.glodblock.github.nei.object;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -15,7 +19,8 @@ import com.glodblock.github.util.Util;
 public class OrderStack<T> {
 
     private T RealStack;
-    private final int index;
+    private int index;
+    private ItemStack[] items;
 
     public static final int ITEM = 1;
     public static final int FLUID = 2;
@@ -28,8 +33,27 @@ public class OrderStack<T> {
         this.index = order;
     }
 
+    public OrderStack(T stack, int order, ItemStack[] items) {
+        this(stack, order);
+        if (items.length > 1) {
+            this.items = items;
+        }
+    }
+
     public void putStack(T stack) {
         this.RealStack = stack;
+    }
+
+    public void putItems(ItemStack[] items) {
+        this.items = items;
+    }
+
+    public ItemStack[] getItems() {
+        return this.items;
+    }
+
+    public final void setIndex(int i) {
+        this.index = i;
     }
 
     public T getStack() {
@@ -71,6 +95,16 @@ public class OrderStack<T> {
             NBTTagCompound tmp = new NBTTagCompound();
             tmp.setByte("t", (byte) ITEM);
             ((ItemStack) RealStack).writeToNBT(tmp);
+            // replacement items
+            if (items != null) {
+                NBTTagList list = new NBTTagList();
+                for (ItemStack is : this.items) {
+                    NBTTagCompound t = new NBTTagCompound();
+                    is.writeToNBT(t);
+                    list.appendTag(t);
+                }
+                tmp.setTag(index + ":", list);
+            }
             buf.setTag(index + ":", tmp);
         } else if (RealStack instanceof FluidStack) {
             NBTTagCompound tmp = new NBTTagCompound();
@@ -91,7 +125,15 @@ public class OrderStack<T> {
         byte id = info.getByte("t");
         switch (id) {
             case ITEM:
-                return new OrderStack<>(ItemStack.loadItemStackFromNBT(info), index);
+                List<ItemStack> list = new ArrayList<>();
+                if (info.hasKey(index + ":")) {
+                    NBTTagList items = info.getTagList(index + ":", 10);
+                    for (int x = 0; x < items.tagCount(); x++) {
+                        final NBTTagCompound item = items.getCompoundTagAt(x);
+                        list.add(ItemStack.loadItemStackFromNBT(item));
+                    }
+                }
+                return new OrderStack<>(ItemStack.loadItemStackFromNBT(info), index, list.toArray(new ItemStack[0]));
             case FLUID:
                 return new OrderStack<>(FluidStack.loadFluidStackFromNBT(info), index);
             case CUSTOM:

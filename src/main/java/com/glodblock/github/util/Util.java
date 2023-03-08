@@ -3,6 +3,8 @@ package com.glodblock.github.util;
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityBoosterCard;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -414,6 +416,36 @@ public final class Util {
     }
 
     public static class FluidUtil {
+
+        public static void fluidTankInfoWriteToNBT(FluidTankInfo[] infos, NBTTagCompound data) {
+            int i = 0;
+            for (FluidTankInfo info : infos) {
+                if (info.fluid != null && info.fluid.amount > 0) {
+                    NBTTagCompound fs = new NBTTagCompound();
+                    info.fluid.writeToNBT(fs);
+                    fs.setInteger("capacity", info.capacity);
+                    data.setTag("#" + i, fs);
+                }
+                i++;
+            }
+            data.setInteger("fluidInvSize", i);
+        }
+
+        public static FluidTankInfo[] fluidTankInfoReadFromNBT(NBTTagCompound data) {
+            int i = 0;
+            List<FluidTankInfo> infos = new ArrayList<>();
+            while (data.hasKey("fluidInvSize") && i < data.getInteger("fluidInvSize")) {
+                if (data.hasKey("#" + i)) {
+                    NBTTagCompound tag = (NBTTagCompound) data.getTag("#" + i);
+                    FluidStack fs = FluidStack.loadFluidStackFromNBT(tag);
+                    infos.add(new FluidTankInfo(fs, tag.getInteger("capacity")));
+                } else {
+                    infos.add(new FluidTankInfo(null, 0));
+                }
+                i++;
+            }
+            return infos.toArray(new FluidTankInfo[0]);
+        }
 
         public static IAEFluidStack createAEFluidStack(Fluid fluid) {
             return createAEFluidStack(new FluidStack(fluid, FluidContainerRegistry.BUCKET_VOLUME));

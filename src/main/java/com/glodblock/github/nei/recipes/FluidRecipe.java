@@ -1,9 +1,7 @@
 package com.glodblock.github.nei.recipes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -30,7 +28,8 @@ public final class FluidRecipe {
 
     public static List<OrderStack<?>> getPackageInputs(IRecipeHandler recipe, int index, boolean priority) {
         TemplateRecipeHandler tRecipe = (TemplateRecipeHandler) recipe;
-        if (tRecipe == null || !IdentifierMap.containsKey(tRecipe.getOverlayIdentifier())) return new ArrayList<>();
+        if (tRecipe == null) return new ArrayList<>();
+        if (!IdentifierMap.containsKey(tRecipe.getOverlayIdentifier())) return getDefaultPackageInputs(tRecipe, index);
         if (tRecipe.getOverlayIdentifier() == null) return getPackageInputsLegacy(recipe, index);
         IRecipeExtractor extractor = IdentifierMap.get(tRecipe.getOverlayIdentifier());
         if (extractor == null) return new ArrayList<>();
@@ -54,9 +53,26 @@ public final class FluidRecipe {
         return out;
     }
 
+    private static List<OrderStack<?>> getDefaultPackageInputs(TemplateRecipeHandler tRecipe, int index) {
+        List<OrderStack<?>> tmp = new LinkedList<>();
+        AtomicInteger i = new AtomicInteger(0);
+        tRecipe.getIngredientStacks(index)
+                .forEach(ps -> tmp.add(new OrderStack<>(ps.item, i.getAndIncrement(), ps.items)));
+        return tmp;
+    }
+
+    private static List<OrderStack<?>> getDefaultPackageOutputs(TemplateRecipeHandler tRecipe, int index) {
+        List<OrderStack<?>> tmp = new LinkedList<>();
+        AtomicInteger i = new AtomicInteger(0);
+        tmp.add(new OrderStack<>(tRecipe.getResultStack(index).item, i.getAndIncrement()));
+        tRecipe.getOtherStacks(index).forEach(ps -> tmp.add(new OrderStack<>(ps.item, i.getAndIncrement())));
+        return tmp;
+    }
+
     public static List<OrderStack<?>> getPackageOutputs(IRecipeHandler recipe, int index, boolean useOther) {
         TemplateRecipeHandler tRecipe = (TemplateRecipeHandler) recipe;
-        if (tRecipe == null || !IdentifierMap.containsKey(tRecipe.getOverlayIdentifier())) return new ArrayList<>();
+        if (tRecipe == null) return new ArrayList<>();
+        if (!IdentifierMap.containsKey(tRecipe.getOverlayIdentifier())) return getDefaultPackageOutputs(tRecipe, index);
         if (tRecipe.getOverlayIdentifier() == null) return getPackageOutputsLegacy(recipe, index, useOther);
         IRecipeExtractor extractor = IdentifierMap.get(tRecipe.getOverlayIdentifier());
         if (extractor == null) return new ArrayList<>();

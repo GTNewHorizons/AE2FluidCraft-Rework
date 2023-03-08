@@ -26,7 +26,7 @@ public final class ExtractorUtil {
         return items.stream().map(item -> {
             index.getAndIncrement();
             Object o = transformer.apply(item);
-            return o != null ? new OrderStack<>(o, index.get()) : null;
+            return o != null ? new OrderStack<>(o, index.get(), item.items) : null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

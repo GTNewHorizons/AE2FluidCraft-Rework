@@ -2,6 +2,9 @@ package com.glodblock.github.crossmod.waila;
 
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.IWailaRegistrar;
+
+import net.minecraft.tileentity.TileEntity;
+
 import appeng.api.parts.IPartHost;
 import appeng.tile.AEBaseTile;
 import appeng.util.Platform;
@@ -23,5 +26,10 @@ public class WailaInit {
         final IWailaDataProvider tile = new TileWailaDataProvider();
         registrar.registerBodyProvider(tile, AEBaseTile.class);
         registrar.registerNBTProvider(tile, AEBaseTile.class);
+
+        final IWailaDataProvider vanillaTile = new VanillaTileWailaDataProvider();
+        registrar.registerBodyProvider(vanillaTile, TileEntity.class);
+        registrar.registerNBTProvider(vanillaTile, TileEntity.class);
+
     }
 }

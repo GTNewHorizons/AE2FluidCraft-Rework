@@ -4,7 +4,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.*;
 
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridNode;
@@ -30,7 +31,8 @@ import appeng.util.item.AEFluidStack;
 
 import com.glodblock.github.common.item.ItemFluidPacket;
 
-public class TileFluidPacketDecoder extends AENetworkTile implements IGridTickable, IAEAppEngInventory, IInventory {
+public class TileFluidPacketDecoder extends AENetworkTile
+        implements IGridTickable, IAEAppEngInventory, IInventory, IFluidHandler {
 
     private final AppEngInternalInventory inventory = new AppEngInternalInventory(this, 1);
     private final BaseActionSource ownActionSource = new MachineSource(this);
@@ -163,5 +165,69 @@ public class TileFluidPacketDecoder extends AENetworkTile implements IGridTickab
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
         return stack.getItem() instanceof ItemFluidPacket;
+    }
+
+    @Override
+    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+        return 0;
+    }
+
+    @Override
+    public FluidStack drain(ForgeDirection from, FluidStack requestFluid, boolean doDrain) {
+        return this.drain(requestFluid, doDrain);
+    }
+
+    private FluidStack drain(FluidStack requestFluid, boolean doDrain) {
+        if (requestFluid == null || requestFluid.amount <= 0) return null;
+        ItemStack fluidPacket = this.inventory.getStackInSlot(0);
+        if (fluidPacket != null) {
+            FluidStack fs = ItemFluidPacket.getFluidStack(fluidPacket);
+            if (fs == null) return null;
+            if (fs.isFluidEqual(requestFluid)) {
+                if (fs.amount > requestFluid.amount) {
+                    fs.amount -= requestFluid.amount;
+                    if (doDrain) this.inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(fs));
+                    return requestFluid;
+                } else {
+                    if (doDrain) this.inventory.setInventorySlotContents(0, null);
+                    return fs;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+        ItemStack fluidPacket = this.inventory.getStackInSlot(0);
+        if (fluidPacket != null) {
+            FluidStack requestFluid = ItemFluidPacket.getFluidStack(fluidPacket);
+            if (requestFluid == null) return null;
+            requestFluid.amount = maxDrain;
+            return this.drain(requestFluid, doDrain);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean canFill(ForgeDirection from, Fluid fluid) {
+        return false;
+    }
+
+    @Override
+    public boolean canDrain(ForgeDirection from, Fluid fluid) {
+        return true;
+    }
+
+    @Override
+    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+        ItemStack fluidPacket = this.inventory.getStackInSlot(0);
+        if (fluidPacket == null) {
+            return new FluidTankInfo[0];
+        } else {
+            FluidStack fs = ItemFluidPacket.getFluidStack(fluidPacket);
+            if (fs == null) return new FluidTankInfo[0];
+            return new FluidTankInfo[] { new FluidTankInfo(fs, fs.amount) };
+        }
     }
 }
