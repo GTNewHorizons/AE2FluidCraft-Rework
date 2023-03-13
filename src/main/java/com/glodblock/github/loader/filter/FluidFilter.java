@@ -18,6 +18,7 @@ public class FluidFilter {
     }
 
     private static boolean filter(IAEStack<?> stack, TypeFilter typeFilter) {
+        if (typeFilter == ALL) return true;
         if (stack instanceof IAEItemStack) {
             Item item = ((IAEItemStack) stack).getItem();
             if (item != null) {

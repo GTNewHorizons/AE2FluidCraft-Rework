@@ -126,9 +126,9 @@ ae2fc.tooltip.pattern_terminal_ex_w=Processing Pattern Terminal
 ae2fc.tooltip.wireless.installed=Installed Card:
 
 ae2fc.tooltip.not_prio=Allow fluids to be placed first
-ae2fc.tooltip.not_prio.hint=Enabled
+ae2fc.tooltip.not_prio.hint=Disabled
 ae2fc.tooltip.prio=Allow fluids to be placed first
-ae2fc.tooltip.prio.hint=Disabled
+ae2fc.tooltip.prio.hint=Enabled
 ae2fc.tooltip.submit=Submit
 ae2fc.tooltip.enable=Enabled
 ae2fc.tooltip.disable=Disabled
