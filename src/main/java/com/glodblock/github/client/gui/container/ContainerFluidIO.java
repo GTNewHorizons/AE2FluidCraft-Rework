@@ -2,6 +2,7 @@ package com.glodblock.github.client.gui.container;
 
 import net.minecraft.entity.player.InventoryPlayer;
 
+import appeng.api.config.SchedulingMode;
 import appeng.api.config.Settings;
 import appeng.api.config.YesNo;
 import appeng.api.util.IConfigManager;
@@ -35,6 +36,11 @@ public class ContainerFluidIO extends FCContainerFluidConfigurable {
         super.loadSettingsFromHost(cm);
         if (Ae2Reflect.getUpgradeableHost(this) instanceof PartFluidExportBus) {
             this.setCraftingMode((YesNo) cm.getSetting(Settings.CRAFT_ONLY));
+            this.setSchedulingMode((SchedulingMode) cm.getSetting(Settings.SCHEDULING_MODE));
         }
+    }
+
+    public void setSchedulingMode(final SchedulingMode schedulingMode) {
+        this.schedulingMode = schedulingMode;
     }
 }

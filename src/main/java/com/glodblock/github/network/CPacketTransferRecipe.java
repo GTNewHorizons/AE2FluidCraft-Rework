@@ -12,8 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
 import appeng.api.AEApi;
-import appeng.api.config.FuzzyMode;
-import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 
@@ -97,12 +96,10 @@ public class CPacketTransferRecipe implements IMessage {
         public IMessage onMessage(CPacketTransferRecipe message, MessageContext ctx) {
             Container c = ctx.getServerHandler().playerEntity.openContainer;
             if (c instanceof ContainerItemMonitor) {
-                ITerminalHost host = ((ContainerItemMonitor) c).getHost();
-                IItemList<IAEItemStack> storageList;
-                if (host != null) {
-                    storageList = host.getItemInventory().getStorageList();
-                } else {
-                    storageList = AEApi.instance().storage().createItemList();
+                IMEMonitor<IAEItemStack> monitor = ((ContainerItemMonitor) c).getMonitor();
+                IItemList<IAEItemStack> storageList = AEApi.instance().storage().createItemList();
+                if (monitor != null) {
+                    storageList = monitor.getStorageList();
                 }
                 if (c instanceof FCContainerEncodeTerminal) {
                     // pattern terminal only
@@ -130,16 +127,15 @@ public class CPacketTransferRecipe implements IMessage {
                     // using exists item to fill slot
                     if (message.shift && !storageList.isEmpty()) {
                         for (OrderStack stack : message.inputs) {
-                            if (stack.getStack() instanceof FluidStack) continue;
-                            ItemStack is = (ItemStack) stack.getStack();
-                            IAEItemStack iaeItemStack = AEApi.instance().storage().createItemStack(is);
+                            if (stack.getStack() instanceof FluidStack || stack.getItems() == null) continue;
+                            IAEItemStack iaeItemStack = AEApi.instance().storage()
+                                    .createItemStack((ItemStack) stack.getStack());
                             if (storageList.findPrecise(iaeItemStack) == null) {
-                                for (IAEItemStack tmp : storageList.findFuzzy(iaeItemStack, FuzzyMode.IGNORE_ALL)) {
-                                    if (iaeItemStack.sameOre(tmp)) {
-                                        ItemStack substitute = tmp.getItemStack().copy();
-                                        substitute.stackSize = is.stackSize;
-                                        stack.putStack(substitute);
-                                        break;
+                                // try to replace item
+                                for (ItemStack replaceItemStack : stack.getItems()) {
+                                    if (storageList.findPrecise(
+                                            AEApi.instance().storage().createItemStack(replaceItemStack)) != null) {
+                                        stack.putStack(replaceItemStack);
                                     }
                                 }
                             }

@@ -40,6 +40,10 @@ public class BlockPos {
         return new BlockPos(this.x + face.offsetX, this.y + face.offsetY, this.z + face.offsetZ, this.w);
     }
 
+    public BlockPos getOffSet(int x, int y, int z) {
+        return new BlockPos(this.x + x, this.y + y, this.z + z, this.w);
+    }
+
     public TileEntity getTileEntity() {
         if (w != null) {
             return w.getTileEntity(x, y, z);

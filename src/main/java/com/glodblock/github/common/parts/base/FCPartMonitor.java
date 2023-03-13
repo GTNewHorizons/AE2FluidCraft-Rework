@@ -35,6 +35,7 @@ import appeng.client.texture.CableBusTextures;
 import appeng.core.AELog;
 import appeng.core.localization.PlayerMessages;
 import appeng.helpers.Reflected;
+import appeng.hooks.TickHandler;
 import appeng.me.GridAccessException;
 import appeng.parts.reporting.AbstractPartDisplay;
 import appeng.parts.reporting.PartPanel;
@@ -199,7 +200,7 @@ public abstract class FCPartMonitor extends AbstractPartDisplay implements IPart
         super.finalize();
 
         if (this.dspList != null) {
-            GLAllocation.deleteDisplayLists(this.dspList);
+            TickHandler.INSTANCE.scheduleCallListDelete(this.dspList);
         }
     }
 

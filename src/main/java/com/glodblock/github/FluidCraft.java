@@ -13,6 +13,7 @@ import com.glodblock.github.loader.CalculatorV2PluginLoader;
 import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.loader.RecipeLoader;
+import com.glodblock.github.loader.filter.FluidFilter;
 import com.glodblock.github.proxy.CommonProxy;
 import com.glodblock.github.util.ModAndClassUtil;
 
@@ -76,6 +77,9 @@ public class FluidCraft {
 
         if (ModAndClassUtil.isV2) {
             CalculatorV2PluginLoader.installCalculatorV2Plugins();
+        }
+        if (ModAndClassUtil.isTypeFilter) {
+            FluidFilter.installFilter();
         }
 
         proxy.postInit(event);

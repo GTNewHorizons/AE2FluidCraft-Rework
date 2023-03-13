@@ -27,6 +27,7 @@ public final class ModAndClassUtil {
     public static boolean WAILA = false;
     public static boolean AVARITIA = false;
     public static boolean isV2;
+    public static boolean isTypeFilter;
     public static boolean isDoubleButton;
     public static boolean isSaveText;
     public static boolean isSearchStringTooltip;
@@ -110,6 +111,13 @@ public final class ModAndClassUtil {
             isV2 = true;
         } catch (ClassNotFoundException e) {
             isV2 = false;
+        }
+        try {
+            Field filters = Class.forName("appeng.client.me.ItemRepo").getDeclaredField("filters");
+            if (filters == null) isTypeFilter = false;
+            isTypeFilter = true;
+        } catch (ClassNotFoundException | NoSuchFieldException e) {
+            isTypeFilter = false;
         }
 
         try {

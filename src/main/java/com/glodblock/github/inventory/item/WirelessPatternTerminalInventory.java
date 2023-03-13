@@ -133,6 +133,7 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
         out.registerSetting(Settings.SORT_BY, SortOrder.NAME);
         out.registerSetting(Settings.VIEW_MODE, ViewItems.ALL);
         out.registerSetting(Settings.SORT_DIRECTION, SortDir.ASCENDING);
+        out.registerSetting(Settings.TYPE_FILTER, TypeFilter.ALL);
         out.readFromNBT((NBTTagCompound) Platform.openNbtData(this.target).copy());
         this.readFromNBT();
         return out;

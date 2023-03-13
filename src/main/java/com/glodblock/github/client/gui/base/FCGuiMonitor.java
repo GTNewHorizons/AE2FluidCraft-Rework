@@ -84,6 +84,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected GuiImgButton searchBoxSettings;
     protected GuiImgButton terminalStyleBox;
     protected GuiImgButton searchStringSave;
+    protected GuiImgButton typeFilter;
 
     @SuppressWarnings("unchecked")
     public FCGuiMonitor(final InventoryPlayer inventoryPlayer, final ITerminalHost te, final FCContainerMonitor<T> c) {
@@ -226,6 +227,15 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                             this.offsetY,
                             Settings.VIEW_MODE,
                             this.configSrc.getSetting(Settings.VIEW_MODE)));
+            this.offsetY += 20;
+        }
+        if (ModAndClassUtil.isTypeFilter && this instanceof GuiItemMonitor) {
+            this.buttonList.add(
+                    this.typeFilter = new GuiImgButton(
+                            this.guiLeft - 18,
+                            this.offsetY,
+                            Settings.TYPE_FILTER,
+                            this.configSrc.getSetting(Settings.TYPE_FILTER)));
             this.offsetY += 20;
         }
 
@@ -659,6 +669,11 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     }
 
     @Override
+    public Enum getTypeFilter() {
+        return this.configSrc.getSetting(Settings.TYPE_FILTER);
+    }
+
+    @Override
     public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {
         if (this.SortByBox != null) {
             this.SortByBox.set(this.configSrc.getSetting(Settings.SORT_BY));
@@ -670,6 +685,9 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
         if (this.ViewBox != null) {
             this.ViewBox.set(this.configSrc.getSetting(Settings.VIEW_MODE));
+        }
+        if (this.typeFilter != null) {
+            this.typeFilter.set(this.configSrc.getSetting(Settings.TYPE_FILTER));
         }
 
         this.repo.updateView();

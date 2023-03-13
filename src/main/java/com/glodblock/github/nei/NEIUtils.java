@@ -1,9 +1,7 @@
 package com.glodblock.github.nei;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import net.minecraft.item.ItemStack;
@@ -43,24 +41,11 @@ public class NEIUtils {
     }
 
     public static List<OrderStack<?>> clearNull(List<OrderStack<?>> list) {
-        List<OrderStack<?>> cleared = new LinkedList<>();
-        HashMap<Integer, Object> map = new HashMap<>();
-        int upper = 0;
-        for (OrderStack<?> orderStack : list) {
-            if (orderStack != null && orderStack.getStack() != null) {
-                if (orderStack.getStack() instanceof ItemStack && ((ItemStack) orderStack.getStack()).stackSize == 0)
-                    continue;
-                map.put(orderStack.getIndex(), orderStack.getStack());
-                upper = Math.max(upper, orderStack.getIndex());
-            }
-        }
-        int id = 0;
-        for (int i = 0; i <= upper; i++) {
-            if (map.containsKey(i)) {
-                cleared.add(new OrderStack<>(map.get(i), id));
-                id++;
-            }
-        }
-        return cleared;
+        AtomicInteger i = new AtomicInteger(0);
+        return list.stream().filter(Objects::nonNull)
+                .filter(
+                        orderStack -> !(orderStack.getStack() != null && orderStack.getStack() instanceof ItemStack
+                                && ((ItemStack) orderStack.getStack()).stackSize == 0))
+                .peek(orderStack -> orderStack.setIndex(i.getAndIncrement())).collect(Collectors.toList());
     }
 }

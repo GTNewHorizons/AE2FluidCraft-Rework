@@ -1,6 +1,7 @@
 package com.glodblock.github.common.parts;
 
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -26,6 +27,7 @@ import appeng.core.AELog;
 import appeng.helpers.MultiCraftingTracker;
 import appeng.me.GridAccessException;
 import appeng.util.InventoryAdaptor;
+import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 
@@ -43,6 +45,9 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
 
     private final BaseActionSource source;
     private final MultiCraftingTracker craftingTracker = new MultiCraftingTracker(this, 9);
+    private int nextSlot = 0;
+    private long fluidToSend = 1000;
+    private boolean didSomething;
 
     public PartFluidExportBus(ItemStack is) {
         super(is);
@@ -73,12 +78,33 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
         return this.getProxy().isActive();
     }
 
+    private int getStartingSlot(final SchedulingMode schedulingMode, final int x) {
+        if (schedulingMode == SchedulingMode.RANDOM) {
+            return Platform.getRandom().nextInt(this.availableSlots());
+        }
+
+        if (schedulingMode == SchedulingMode.ROUNDROBIN) {
+            return (this.nextSlot + x) % this.availableSlots();
+        }
+
+        return x;
+    }
+
+    private int availableSlots() {
+        return Math.min(1 + this.getInstalledUpgrades(Upgrades.CAPACITY) * 4, this.getInv().getSizeInventory());
+    }
+
+    private IInventory getInv() {
+        return this.getInventoryByName("config");
+    }
+
     @Override
     protected TickRateModulation doBusWork() {
         if (!this.canDoBusWork()) {
             return TickRateModulation.IDLE;
         }
-
+        this.didSomething = false;
+        this.fluidToSend = this.calculateAmountToSend();
         final TileEntity te = this.getConnectedTE();
 
         if (te instanceof IFluidHandler) {
@@ -87,10 +113,11 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
                 final ICraftingGrid cg = this.getProxy().getCrafting();
                 final IFluidHandler fh = (IFluidHandler) te;
                 final IMEMonitor<IAEFluidStack> inv = this.getProxy().getStorage().getFluidInventory();
-
-                for (int i = 0; i < this.getInventoryByName("config").getSizeInventory(); i++) {
+                int i;
+                for (i = 0; i < this.availableSlots() && this.fluidToSend > 0; i++) {
+                    final int slotToExport = this.getStartingSlot(this.getSchedulingMode(), i);
                     IAEFluidStack fluid = AEFluidStack
-                            .create(ItemFluidPacket.getFluidStack(this.getInventoryByName("config").getStackInSlot(i)));
+                            .create(ItemFluidPacket.getFluidStack(getInv().getStackInSlot(slotToExport)));
                     if (fluid != null) {
                         boolean isAllowed = true;
 
@@ -110,18 +137,18 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
                                     this.source);
                         }
 
+                        int space = fh.fill(this.getSide().getOpposite(), toExtract.getFluidStack(), false);
+                        toExtract.setStackSize(space);
                         final IAEFluidStack real = inv.extractItems(toExtract, Actionable.MODULATE, this.source);
-
                         if (real != null && isAllowed) {
                             int realInserted = fh.fill(this.getSide().getOpposite(), real.getFluidStack(), true);
                             if (realInserted < real.getStackSize()) {
                                 toExtract.setStackSize(real.getStackSize() - realInserted);
                                 inv.injectItems(toExtract, Actionable.MODULATE, this.source);
                             }
-                            return TickRateModulation.FASTER;
-                        }
-
-                        if (this.isCraftingEnabled()) {
+                            this.fluidToSend -= realInserted;
+                            didSomething = true;
+                        } else if (this.isCraftingEnabled()) {
                             this.craftingTracker.handleCrafting(
                                     i,
                                     toExtract.getStackSize(),
@@ -134,14 +161,20 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
                         }
                     }
                 }
-
-                return TickRateModulation.SLOWER;
+                this.updateSchedulingMode(this.getSchedulingMode(), i);
+                return didSomething ? TickRateModulation.FASTER : TickRateModulation.SLOWER;
             } catch (GridAccessException e) {
                 // Ignore
             }
         }
 
         return TickRateModulation.SLEEP;
+    }
+
+    private void updateSchedulingMode(final SchedulingMode schedulingMode, final int x) {
+        if (schedulingMode == SchedulingMode.ROUNDROBIN) {
+            this.nextSlot = (this.nextSlot + x) % this.availableSlots();
+        }
     }
 
     @Override
@@ -212,6 +245,10 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
     @Override
     public RedstoneMode getRSMode() {
         return (RedstoneMode) this.getConfigManager().getSetting(Settings.REDSTONE_CONTROLLED);
+    }
+
+    public SchedulingMode getSchedulingMode() {
+        return (SchedulingMode) this.getConfigManager().getSetting(Settings.SCHEDULING_MODE);
     }
 
     private boolean craftOnly() {
