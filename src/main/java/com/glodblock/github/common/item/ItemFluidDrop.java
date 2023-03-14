@@ -37,6 +37,10 @@ public class ItemFluidDrop extends FCBaseItem {
     @SideOnly(Side.CLIENT)
     public IIcon shape;
 
+    public ItemFluidDrop() {
+        setUnlocalizedName(NameConst.ITEM_FLUID_DROP);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
@@ -45,6 +49,12 @@ public class ItemFluidDrop extends FCBaseItem {
             list.add(newStack(new FluidStack(FluidRegistry.WATER, 1)));
             list.add(newStack(new FluidStack(FluidRegistry.LAVA, 1)));
         }
+    }
+
+    @Override
+    public String getUnlocalizedName(ItemStack stack) {
+        FluidStack fluid = getFluidStack(stack);
+        return fluid != null ? fluid.getUnlocalizedName() : getUnlocalizedName();
     }
 
     @Override

@@ -45,6 +45,12 @@ public class ItemFluidPacket extends FCBaseItem {
     }
 
     @Override
+    public String getUnlocalizedName(ItemStack stack) {
+        FluidStack fluid = getFluidStack(stack);
+        return fluid != null ? fluid.getUnlocalizedName() : getUnlocalizedName();
+    }
+
+    @Override
     public String getItemStackDisplayName(ItemStack stack) {
         FluidStack fluid = getFluidStack(stack);
         boolean display = isDisplay(stack);
