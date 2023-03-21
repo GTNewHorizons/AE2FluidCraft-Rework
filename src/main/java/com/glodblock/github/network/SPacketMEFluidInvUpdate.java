@@ -1,7 +1,6 @@
 package com.glodblock.github.network;
 
 import java.io.IOException;
-import java.nio.BufferOverflowException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import appeng.util.item.AEFluidStack;
 
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
 import com.glodblock.github.client.gui.GuiFluidMonitor;
-import com.glodblock.github.common.Config;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -40,8 +38,12 @@ public class SPacketMEFluidInvUpdate implements IMessage {
 
     /**
      * If resort, call "updateView()". Used when multiple packets are sent to open an inventory; only the last packet
-     * should resort.
+     * should resort. <<<<<<< HEAD
      *
+     * =======
+     *
+     * >>>>>>> 669eb96... Network throttle: Force ME update packets to be sent once every 50ms.
+     * 
      * @param resort whether this packet should resort the term or not
      */
     public SPacketMEFluidInvUpdate(boolean resort) {
@@ -82,12 +84,8 @@ public class SPacketMEFluidInvUpdate implements IMessage {
         this.resort = resort;
     }
 
-    public void appendFluid(final IAEFluidStack is) throws BufferOverflowException {
-        if (list.size() <= Config.packetSize) {
-            list.add(is);
-        } else {
-            throw new BufferOverflowException();
-        }
+    public void appendFluid(final IAEFluidStack is) {
+        list.add(is);
     }
 
     public boolean isEmpty() {

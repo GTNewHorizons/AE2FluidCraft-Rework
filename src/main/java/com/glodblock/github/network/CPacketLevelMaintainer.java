@@ -1,5 +1,8 @@
 package com.glodblock.github.network;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -9,7 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEItemStack;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 
@@ -88,7 +90,7 @@ public class CPacketLevelMaintainer implements IMessage {
     public static class Handler implements IMessageHandler<CPacketLevelMaintainer, IMessage> {
 
         private void refresh(ContainerLevelMaintainer cca, EntityPlayerMP player) {
-            SPacketMEItemInvUpdate packet = new SPacketMEItemInvUpdate();
+            List<IAEItemStack> toSend = new ArrayList<>(TileLevelMaintainer.REQ_COUNT);
             for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
                 IAEItemStack is = cca.getTile().requests.getRequestQtyStack(i);
                 IAEItemStack is1 = cca.getTile().requests.getRequestBatches().getStack(i);
@@ -96,7 +98,7 @@ public class CPacketLevelMaintainer implements IMessage {
                     if (is1 != null) {
                         NBTTagCompound data;
                         data = is1.getItemStack().getTagCompound();
-                        packet.appendItem(
+                        toSend.add(
                                 setTag(
                                         is,
                                         is1.getStackSize(),
@@ -104,11 +106,11 @@ public class CPacketLevelMaintainer implements IMessage {
                                         data.getBoolean("Enable"),
                                         cca.getTile().requests.getState(i).ordinal()));
                     } else {
-                        packet.appendItem(setTag(is, 0, i, true, 0));
+                        toSend.add(setTag(is, 0, i, true, 0));
                     }
                 }
             }
-            FluidCraft.proxy.netHandler.sendTo(packet, player);
+            SPacketMEUpdateBuffer.scheduleItemUpdate(player, toSend);
         }
 
         @Nullable

@@ -18,6 +18,7 @@ public class Config {
     public static boolean blacklistEssentiaGas;
     public static double portableCellBattery;
     public static int packetSize;
+    public static int packetRate;
 
     public static void run() {
         loadCategory();
@@ -55,6 +56,10 @@ public class Config {
         packetSize = Config.get("Fluid Craft for AE2", "packetSize", 256, "Number of items to be sent per packet")
                 .getInt();
         if (packetSize <= 0) packetSize = 256;
+        packetRate = Config
+                .get("Fluid Craft for AE2", "packetRate", 50, "Period at which packets are dispatched, in ms.")
+                .getInt();
+        if (packetRate <= 0) packetRate = 50;
         if (Config.hasChanged()) Config.save();
     }
 

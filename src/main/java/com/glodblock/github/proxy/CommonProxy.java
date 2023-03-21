@@ -11,8 +11,10 @@ import com.glodblock.github.common.Config;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.util.ModAndClassUtil;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -27,6 +29,7 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
+        FMLCommonHandler.instance().bus().register(SPacketMEUpdateBuffer.class);
     }
 
     public void postInit(FMLPostInitializationEvent event) {

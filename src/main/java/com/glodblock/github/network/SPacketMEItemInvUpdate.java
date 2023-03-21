@@ -1,7 +1,6 @@
 package com.glodblock.github.network;
 
 import java.io.IOException;
-import java.nio.BufferOverflowException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import appeng.util.item.AEItemStack;
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
 import com.glodblock.github.client.gui.GuiItemMonitor;
 import com.glodblock.github.client.gui.GuiLevelMaintainer;
-import com.glodblock.github.common.Config;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -83,12 +81,8 @@ public class SPacketMEItemInvUpdate implements IMessage {
         this.resort = resort;
     }
 
-    public void appendItem(final IAEItemStack is) throws BufferOverflowException {
-        if (list.size() <= Config.packetSize) {
-            list.add(is);
-        } else {
-            throw new BufferOverflowException();
-        }
+    public void appendItem(final IAEItemStack is) {
+        list.add(is);
     }
 
     public boolean isEmpty() {

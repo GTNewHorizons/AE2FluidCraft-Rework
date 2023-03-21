@@ -14,6 +14,7 @@ import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.loader.RecipeLoader;
 import com.glodblock.github.loader.filter.FluidFilter;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.proxy.CommonProxy;
 import com.glodblock.github.util.ModAndClassUtil;
 
@@ -80,6 +81,16 @@ public class FluidCraft {
         }
 
         proxy.postInit(event);
+    }
+
+    @Mod.EventHandler
+    public void onServerStart(FMLServerStartingEvent event) {
+        SPacketMEUpdateBuffer.init();
+    }
+
+    @Mod.EventHandler
+    public void onServerStop(FMLServerStoppedEvent event) {
+        SPacketMEUpdateBuffer.disable();
     }
 
     @Mod.EventHandler

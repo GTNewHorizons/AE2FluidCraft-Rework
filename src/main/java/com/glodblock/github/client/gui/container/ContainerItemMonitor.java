@@ -1,6 +1,7 @@
 package com.glodblock.github.client.gui.container;
 
-import java.nio.BufferOverflowException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,9 +26,8 @@ import appeng.container.slot.SlotRestrictedInput;
 import appeng.me.helpers.ChannelPowerSrc;
 import appeng.util.Platform;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
-import com.glodblock.github.network.SPacketMEItemInvUpdate;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
 
@@ -95,34 +95,19 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
     protected void processItemList() {
         if (!this.items.isEmpty()) {
             final IItemList<IAEItemStack> monitorCache = this.monitor.getStorageList();
-            SPacketMEItemInvUpdate packet = new SPacketMEItemInvUpdate();
+            List<IAEItemStack> toSend = new ArrayList<>();
             for (final IAEItemStack is : this.items) {
                 final IAEItemStack send = monitorCache.findPrecise(is);
-                try {
-                    if (send != null) {
-                        packet.appendItem(send);
-                    } else {
-                        is.setStackSize(0);
-                        packet.appendItem(is);
-                    }
-                } catch (BufferOverflowException e) {
-                    for (final Object c : this.crafters) {
-                        if (c instanceof EntityPlayerMP) {
-                            FluidCraft.proxy.netHandler.sendTo(packet, (EntityPlayerMP) c);
-                        }
-                    }
-                    packet = new SPacketMEItemInvUpdate();
-                    if (send != null) {
-                        packet.appendItem(send);
-                    } else {
-                        is.setStackSize(0);
-                        packet.appendItem(is);
-                    }
+                if (send != null) {
+                    toSend.add(send);
+                } else {
+                    is.setStackSize(0);
+                    toSend.add(is);
                 }
             }
             for (final Object c : this.crafters) {
-                if (c instanceof EntityPlayerMP) {
-                    FluidCraft.proxy.netHandler.sendTo(packet, (EntityPlayerMP) c);
+                if (c instanceof EntityPlayer) {
+                    SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
                 }
             }
             this.items.resetStatus();
@@ -133,17 +118,11 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
     protected void queueInventory(final ICrafting c) {
         if (Platform.isServer() && c instanceof EntityPlayer && this.monitor != null) {
             final IItemList<IAEItemStack> monitorCache = this.monitor.getStorageList();
-            SPacketMEItemInvUpdate packet = new SPacketMEItemInvUpdate();
+            List<IAEItemStack> toSend = new ArrayList<>();
             for (final IAEItemStack is : monitorCache) {
-                try {
-                    packet.appendItem(is);
-                } catch (BufferOverflowException e) {
-                    FluidCraft.proxy.netHandler.sendTo(packet, (EntityPlayerMP) c);
-                    packet = new SPacketMEItemInvUpdate();
-                    packet.appendItem(is);
-                }
+                toSend.add(is);
             }
-            FluidCraft.proxy.netHandler.sendTo(packet, (EntityPlayerMP) c);
+            SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
         }
     }
 
@@ -152,6 +131,9 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
         super.removeCraftingFromCrafters(c);
         if (this.crafters.isEmpty() && this.monitor != null) {
             this.monitor.removeListener(this);
+            if (c instanceof EntityPlayerMP) {
+                SPacketMEUpdateBuffer.clear((EntityPlayerMP) c);
+            }
         }
     }
 
