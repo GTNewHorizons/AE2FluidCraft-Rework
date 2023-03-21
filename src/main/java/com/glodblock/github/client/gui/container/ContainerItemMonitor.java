@@ -1,6 +1,7 @@
 package com.glodblock.github.client.gui.container;
 
-import java.nio.BufferOverflowException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,9 +26,8 @@ import appeng.container.slot.SlotRestrictedInput;
 import appeng.me.helpers.ChannelPowerSrc;
 import appeng.util.Platform;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
-import com.glodblock.github.network.SPacketMEInventoryUpdate;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
 
@@ -95,46 +95,34 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
     protected void processItemList() {
         if (!this.items.isEmpty()) {
             final IItemList<IAEItemStack> monitorCache = this.monitor.getStorageList();
-            final SPacketMEInventoryUpdate piu = new SPacketMEInventoryUpdate();
+            List<IAEItemStack> toSend = new ArrayList<>();
             for (final IAEItemStack is : this.items) {
                 final IAEItemStack send = monitorCache.findPrecise(is);
-                if (send == null) {
-                    is.setStackSize(0);
-                    piu.appendItem(is);
+                if (send != null) {
+                    toSend.add(send);
                 } else {
-                    piu.appendItem(send);
+                    is.setStackSize(0);
+                    toSend.add(is);
                 }
             }
-
-            if (!piu.isEmpty()) {
-                this.items.resetStatus();
-
-                for (final Object c : this.crafters) {
-                    if (c instanceof EntityPlayer) {
-                        FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) c);
-                    }
+            for (final Object c : this.crafters) {
+                if (c instanceof EntityPlayer) {
+                    SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
                 }
             }
+            this.items.resetStatus();
         }
     }
 
     @Override
     protected void queueInventory(final ICrafting c) {
         if (Platform.isServer() && c instanceof EntityPlayer && this.monitor != null) {
-            SPacketMEInventoryUpdate piu = new SPacketMEInventoryUpdate();
             final IItemList<IAEItemStack> monitorCache = this.monitor.getStorageList();
-
-            for (final IAEItemStack send : monitorCache) {
-                try {
-                    piu.appendItem(send);
-                } catch (final BufferOverflowException boe) {
-                    FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) c);
-
-                    piu = new SPacketMEInventoryUpdate();
-                    piu.appendItem(send);
-                }
+            List<IAEItemStack> toSend = new ArrayList<>();
+            for (final IAEItemStack is : monitorCache) {
+                toSend.add(is);
             }
-            FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) c);
+            SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
         }
     }
 
@@ -143,6 +131,9 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
         super.removeCraftingFromCrafters(c);
         if (this.crafters.isEmpty() && this.monitor != null) {
             this.monitor.removeListener(this);
+            if (c instanceof EntityPlayerMP) {
+                SPacketMEUpdateBuffer.clear((EntityPlayerMP) c);
+            }
         }
     }
 

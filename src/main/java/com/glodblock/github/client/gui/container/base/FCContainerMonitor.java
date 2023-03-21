@@ -30,6 +30,7 @@ import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
 
 import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseContainer
         implements IConfigManagerHost, IConfigurableObject, IMEMonitorHandlerReceiver<T> {
@@ -158,6 +159,10 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
         super.onContainerClosed(player);
         if (this.monitor != null) {
             this.monitor.removeListener(this);
+            if (player instanceof EntityPlayerMP && Platform.isServer()) {
+                SPacketMEUpdateBuffer.clear((EntityPlayerMP) player);
+            }
+
         }
     }
 

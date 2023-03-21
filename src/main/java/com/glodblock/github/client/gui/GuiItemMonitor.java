@@ -22,11 +22,14 @@ public class GuiItemMonitor extends FCGuiMonitor<IAEItemStack> {
         this.repo = new ItemRepo(getScrollBar(), this);
     }
 
-    public void postUpdate(final List<IAEItemStack> list) {
+    @Override
+    public void postUpdate(final List<IAEItemStack> list, boolean resort) {
         for (final IAEItemStack is : list) {
             this.repo.postUpdate(is);
         }
-        this.repo.updateView();
+        if (resort) {
+            this.repo.updateView();
+        }
         this.setScrollBar();
     }
 

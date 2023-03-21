@@ -107,7 +107,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         offsetY = y;
     }
 
-    public abstract void postUpdate(final List<T> list);
+    public abstract void postUpdate(final List<T> list, boolean resort);
 
     protected void setScrollBar() {
         this.getScrollBar().setTop(18).setLeft(175).setHeight(this.rows * 18 - 2);
