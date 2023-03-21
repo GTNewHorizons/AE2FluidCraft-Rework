@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -158,6 +159,10 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
         super.onContainerClosed(player);
         if (this.monitor != null) {
             this.monitor.removeListener(this);
+            if (player instanceof EntityPlayerMP && Platform.isServer()) {
+                SPacketMEUpdateBuffer.clear((EntityPlayerMP) player);
+            }
+
         }
     }
 

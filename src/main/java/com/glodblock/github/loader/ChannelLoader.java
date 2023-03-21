@@ -26,10 +26,15 @@ public class ChannelLoader implements Runnable {
         FluidCraft.proxy.netHandler
                 .registerMessage(new CPacketEncodePattern.Handler(), CPacketEncodePattern.class, id++, Side.SERVER);
         FluidCraft.proxy.netHandler.registerMessage(
-                new SPacketMEInventoryUpdate.Handler(),
-                SPacketMEInventoryUpdate.class,
+                new SPacketMEItemInvUpdate.Handler(),
+                SPacketMEItemInvUpdate.class,
                 id++,
                 Side.CLIENT);
+        FluidCraft.proxy.netHandler.registerMessage(
+            new SPacketMEFluidInvUpdate.Handler(),
+            SPacketMEFluidInvUpdate.class,
+            id++,
+            Side.CLIENT);
         FluidCraft.proxy.netHandler
                 .registerMessage(new CPacketCraftRequest.Handler(), CPacketCraftRequest.class, id++, Side.SERVER);
         FluidCraft.proxy.netHandler

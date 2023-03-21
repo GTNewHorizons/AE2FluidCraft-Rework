@@ -18,6 +18,9 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CPacketLevelMaintainer implements IMessage {
 
     private String action;
@@ -88,7 +91,7 @@ public class CPacketLevelMaintainer implements IMessage {
     public static class Handler implements IMessageHandler<CPacketLevelMaintainer, IMessage> {
 
         private void refresh(ContainerLevelMaintainer cca, EntityPlayerMP player) {
-            SPacketMEInventoryUpdate piu = new SPacketMEInventoryUpdate(false);
+            List<IAEItemStack> toSend = new ArrayList<>(TileLevelMaintainer.REQ_COUNT);
             for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
                 IAEItemStack is = cca.getTile().requests.getRequestQtyStack(i);
                 IAEItemStack is1 = cca.getTile().requests.getRequestBatches().getStack(i);
@@ -96,7 +99,7 @@ public class CPacketLevelMaintainer implements IMessage {
                     if (is1 != null) {
                         NBTTagCompound data;
                         data = is1.getItemStack().getTagCompound();
-                        piu.appendItem(
+                        toSend.add(
                                 setTag(
                                         is,
                                         is1.getStackSize(),
@@ -104,11 +107,11 @@ public class CPacketLevelMaintainer implements IMessage {
                                         data.getBoolean("Enable"),
                                         cca.getTile().requests.getState(i).ordinal()));
                     } else {
-                        piu.appendItem(setTag(is, 0, i, true, 0));
+                        toSend.add(setTag(is, 0, i, true, 0));
                     }
                 }
             }
-            FluidCraft.proxy.netHandler.sendTo(piu, player);
+            SPacketMEUpdateBuffer.scheduleItemUpdate(player, toSend);
         }
 
         @Nullable

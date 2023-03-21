@@ -1,5 +1,7 @@
 package com.glodblock.github;
 
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
+import cpw.mods.fml.common.event.*;
 import net.minecraft.util.ResourceLocation;
 
 import appeng.api.AEApi;
@@ -19,10 +21,6 @@ import com.glodblock.github.util.ModAndClassUtil;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(
@@ -83,6 +81,16 @@ public class FluidCraft {
         }
 
         proxy.postInit(event);
+    }
+
+    @Mod.EventHandler
+    public void onServerStart(FMLServerStartingEvent event) {
+        SPacketMEUpdateBuffer.init();
+    }
+
+    @Mod.EventHandler
+    public void onServerStop(FMLServerStoppedEvent event) {
+        SPacketMEUpdateBuffer.disable();
     }
 
     @Mod.EventHandler
