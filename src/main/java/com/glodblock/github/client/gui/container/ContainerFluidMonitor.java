@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -45,6 +44,7 @@ import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.network.SPacketFluidUpdate;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.util.Util;
 
 public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {

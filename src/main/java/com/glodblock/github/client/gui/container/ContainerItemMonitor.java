@@ -3,7 +3,6 @@ package com.glodblock.github.client.gui.container;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -28,6 +27,7 @@ import appeng.me.helpers.ChannelPowerSrc;
 import appeng.util.Platform;
 
 import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
 

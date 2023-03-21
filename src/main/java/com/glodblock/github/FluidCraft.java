@@ -1,7 +1,5 @@
 package com.glodblock.github;
 
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
-import cpw.mods.fml.common.event.*;
 import net.minecraft.util.ResourceLocation;
 
 import appeng.api.AEApi;
@@ -16,11 +14,13 @@ import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.loader.RecipeLoader;
 import com.glodblock.github.loader.filter.FluidFilter;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.proxy.CommonProxy;
 import com.glodblock.github.util.ModAndClassUtil;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(

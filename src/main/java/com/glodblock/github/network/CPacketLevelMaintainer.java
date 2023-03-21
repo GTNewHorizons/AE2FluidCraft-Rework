@@ -1,5 +1,8 @@
 package com.glodblock.github.network;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -9,7 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEItemStack;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 
@@ -17,9 +19,6 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CPacketLevelMaintainer implements IMessage {
 

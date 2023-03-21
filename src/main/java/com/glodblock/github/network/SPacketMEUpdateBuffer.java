@@ -1,15 +1,17 @@
 package com.glodblock.github.network;
 
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.api.storage.data.IAEItemStack;
-import com.glodblock.github.FluidCraft;
-import net.minecraft.entity.player.EntityPlayerMP;
-
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import net.minecraft.entity.player.EntityPlayerMP;
+
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEItemStack;
+
+import com.glodblock.github.FluidCraft;
 
 /**
  * Only should exist on the server side!
@@ -40,7 +42,7 @@ public class SPacketMEUpdateBuffer {
     }
 
     public static void scheduleItemUpdate(EntityPlayerMP player, List<IAEItemStack> stacks) {
-            synchronized (itemBuffer) {
+        synchronized (itemBuffer) {
             if (!itemBuffer.containsKey(player)) {
                 itemBuffer.put(player, new LinkedHashMap<>(1024));
             }

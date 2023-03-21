@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -31,6 +30,7 @@ import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
 
 import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseContainer
         implements IConfigManagerHost, IConfigurableObject, IMEMonitorHandlerReceiver<T> {

@@ -32,10 +32,7 @@ public class SPacketMEItemInvUpdate implements IMessage {
     public SPacketMEItemInvUpdate() {}
 
     /**
-     * Used for the GUI to confirm crafting.
-     * 0 = available
-     * 1 = pending
-     * 2 = missing
+     * Used for the GUI to confirm crafting. 0 = available 1 = pending 2 = missing
      */
     public SPacketMEItemInvUpdate(byte b) {
         ref = b;
@@ -43,8 +40,9 @@ public class SPacketMEItemInvUpdate implements IMessage {
     }
 
     /**
-     * If resort, call "updateView()". Used when multiple packets
-     * are sent to open an inventory; only the last packet should resort.
+     * If resort, call "updateView()". Used when multiple packets are sent to open an inventory; only the last packet
+     * should resort.
+     * 
      * @param resort whether this packet should resort the term or not
      */
     public SPacketMEItemInvUpdate(boolean resort) {

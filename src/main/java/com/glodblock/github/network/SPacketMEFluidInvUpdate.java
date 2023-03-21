@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEFluidStack;
 
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
@@ -28,21 +27,20 @@ public class SPacketMEFluidInvUpdate implements IMessage {
     private List<IAEFluidStack> list = new ArrayList<>();
     private byte ref = (byte) 0;
     private boolean resort = true;
+
     public SPacketMEFluidInvUpdate() {}
 
     /**
-     * Used for the GUI to confirm crafting.
-     * 0 = available
-     * 1 = pending
-     * 2 = missing
+     * Used for the GUI to confirm crafting. 0 = available 1 = pending 2 = missing
      */
     public SPacketMEFluidInvUpdate(byte b) {
         ref = b;
     }
 
     /**
-     * If resort, call "updateView()". Used when multiple packets
-     * are sent to open an inventory; only the last packet should resort.
+     * If resort, call "updateView()". Used when multiple packets are sent to open an inventory; only the last packet
+     * should resort.
+     * 
      * @param resort whether this packet should resort the term or not
      */
     public SPacketMEFluidInvUpdate(boolean resort) {
