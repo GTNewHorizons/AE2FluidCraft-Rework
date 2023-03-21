@@ -88,7 +88,7 @@ public class CPacketLevelMaintainer implements IMessage {
     public static class Handler implements IMessageHandler<CPacketLevelMaintainer, IMessage> {
 
         private void refresh(ContainerLevelMaintainer cca, EntityPlayerMP player) {
-            SPacketMEInventoryUpdate piu = new SPacketMEInventoryUpdate(false);
+            SPacketMEItemInvUpdate packet = new SPacketMEItemInvUpdate();
             for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
                 IAEItemStack is = cca.getTile().requests.getRequestQtyStack(i);
                 IAEItemStack is1 = cca.getTile().requests.getRequestBatches().getStack(i);
@@ -96,7 +96,7 @@ public class CPacketLevelMaintainer implements IMessage {
                     if (is1 != null) {
                         NBTTagCompound data;
                         data = is1.getItemStack().getTagCompound();
-                        piu.appendItem(
+                        packet.appendItem(
                                 setTag(
                                         is,
                                         is1.getStackSize(),
@@ -104,11 +104,11 @@ public class CPacketLevelMaintainer implements IMessage {
                                         data.getBoolean("Enable"),
                                         cca.getTile().requests.getState(i).ordinal()));
                     } else {
-                        piu.appendItem(setTag(is, 0, i, true, 0));
+                        packet.appendItem(setTag(is, 0, i, true, 0));
                     }
                 }
             }
-            FluidCraft.proxy.netHandler.sendTo(piu, player);
+            FluidCraft.proxy.netHandler.sendTo(packet, player);
         }
 
         @Nullable
