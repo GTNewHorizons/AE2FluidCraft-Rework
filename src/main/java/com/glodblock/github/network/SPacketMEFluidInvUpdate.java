@@ -40,7 +40,6 @@ public class SPacketMEFluidInvUpdate implements IMessage {
     /**
      * If resort, call "updateView()". Used when multiple packets are sent to open an inventory; only the last packet
      * should resort.
-     * 
      * @param resort whether this packet should resort the term or not
      */
     public SPacketMEFluidInvUpdate(boolean resort) {
@@ -51,13 +50,14 @@ public class SPacketMEFluidInvUpdate implements IMessage {
     public void fromBytes(ByteBuf buf) {
         ref = buf.readByte();
         resort = buf.readBoolean();
-        long amount = buf.readLong();
-        list = new ArrayList<>();
+        int amount = buf.readInt();
+        list = new ArrayList<>(amount);
         try {
             for (int i = 0; i < amount; i++) {
                 list.add(AEFluidStack.loadFluidStackFromPacket(buf));
             }
         } catch (IOException io) {
+            System.err.println("Error handling payload w/ " + amount + " items.");
             io.printStackTrace();
         }
     }
@@ -66,7 +66,7 @@ public class SPacketMEFluidInvUpdate implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeByte(ref);
         buf.writeBoolean(resort);
-        buf.writeLong(list.size());
+        buf.writeInt(list.size());
         try {
             for (IAEFluidStack is : list) {
                 is.writeToPacket(buf);

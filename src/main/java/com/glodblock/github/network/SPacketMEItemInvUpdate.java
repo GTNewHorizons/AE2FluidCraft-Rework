@@ -36,13 +36,12 @@ public class SPacketMEItemInvUpdate implements IMessage {
      */
     public SPacketMEItemInvUpdate(byte b) {
         ref = b;
-        list = new ArrayList<>();
     }
 
     /**
      * If resort, call "updateView()". Used when multiple packets are sent to open an inventory; only the last packet
      * should resort.
-     * 
+     *
      * @param resort whether this packet should resort the term or not
      */
     public SPacketMEItemInvUpdate(boolean resort) {
@@ -53,13 +52,14 @@ public class SPacketMEItemInvUpdate implements IMessage {
     public void fromBytes(ByteBuf buf) {
         ref = buf.readByte();
         resort = buf.readBoolean();
-        long amount = buf.readLong();
-        list = new ArrayList<>();
+        int amount = buf.readInt();
+        list = new ArrayList<>(amount);
         try {
             for (int i = 0; i < amount; i++) {
                 list.add(AEItemStack.loadItemStackFromPacket(buf));
             }
         } catch (IOException io) {
+            System.err.println("Error handling payload w/ " + amount + " items.");
             io.printStackTrace();
         }
     }
@@ -68,7 +68,7 @@ public class SPacketMEItemInvUpdate implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeByte(ref);
         buf.writeBoolean(resort);
-        buf.writeLong(list.size());
+        buf.writeInt(list.size());
         try {
             for (IAEItemStack is : list) {
                 is.writeToPacket(buf);
