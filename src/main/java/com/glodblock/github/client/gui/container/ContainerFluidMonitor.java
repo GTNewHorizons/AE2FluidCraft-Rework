@@ -1,5 +1,7 @@
 package com.glodblock.github.client.gui.container;
 
+import static com.glodblock.github.common.Config.autoUpdateTerms;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +127,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
 
     @Override
     protected void processItemList() {
-        if (!this.fluids.isEmpty()) {
+        if (!this.fluids.isEmpty() && autoUpdateTerms) {
             final IItemList<IAEFluidStack> monitorCache = this.monitor.getStorageList();
             List<IAEFluidStack> toSend = new ArrayList<>();
             for (final IAEFluidStack is : this.fluids) {

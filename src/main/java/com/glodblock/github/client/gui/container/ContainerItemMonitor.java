@@ -1,5 +1,7 @@
 package com.glodblock.github.client.gui.container;
 
+import static com.glodblock.github.common.Config.autoUpdateTerms;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +95,7 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
 
     @Override
     protected void processItemList() {
-        if (!this.items.isEmpty()) {
+        if (!this.items.isEmpty() && autoUpdateTerms) {
             final IItemList<IAEItemStack> monitorCache = this.monitor.getStorageList();
             List<IAEItemStack> toSend = new ArrayList<>();
             for (final IAEItemStack is : this.items) {

@@ -17,6 +17,8 @@ public class Config {
     public static boolean removeRecipe;
     public static boolean blacklistEssentiaGas;
     public static double portableCellBattery;
+    public static int packetSize;
+    public static boolean autoUpdateTerms;
 
     public static void run() {
         loadCategory();
@@ -51,7 +53,12 @@ public class Config {
                 "Blacklist Essentia Gas from Thaumic Energistics, so they won't be stored in Fluid Storage Cells.");
         portableCellBattery = Config.get("Fluid Craft for AE2", "Portable Fluid Cell Battery Capacity", 20000D)
                 .getDouble();
-
+        packetSize = Config
+                .get("Fluid Craft for AE2", "(SERVERSIDE ONLY) Max number of items per packet sent from server", 256)
+                .getInt();
+        if (packetSize < 0) packetSize = 256;
+        autoUpdateTerms = Config.get("Fluid Craft for AE2", "(SERVERSIDE ONLY) Auto update terminals", true)
+                .getBoolean();
         if (Config.hasChanged()) Config.save();
     }
 

@@ -1,5 +1,7 @@
 package com.glodblock.github.network;
 
+import static com.glodblock.github.common.Config.packetSize;
+
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -69,7 +71,7 @@ public class SPacketMEUpdateBuffer {
                 SPacketMEItemInvUpdate packet = new SPacketMEItemInvUpdate();
                 Iterator<IAEItemStack> it = updates.keySet().iterator();
                 while (it.hasNext()) {
-                    if (i < 256) {
+                    if (i < packetSize) {
                         packet.appendItem(it.next());
                         it.remove();
                     } else {
@@ -86,7 +88,7 @@ public class SPacketMEUpdateBuffer {
                 SPacketMEFluidInvUpdate packet = new SPacketMEFluidInvUpdate();
                 Iterator<IAEFluidStack> it = updates.keySet().iterator();
                 while (it.hasNext()) {
-                    if (i < 256) {
+                    if (i < packetSize) {
                         packet.appendFluid(it.next());
                         it.remove();
                     } else {
