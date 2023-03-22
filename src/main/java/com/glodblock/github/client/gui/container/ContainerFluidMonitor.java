@@ -127,21 +127,23 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
 
     @Override
     protected void processItemList() {
-        if (!this.fluids.isEmpty() && autoUpdateTerms) {
-            final IItemList<IAEFluidStack> monitorCache = this.monitor.getStorageList();
-            List<IAEFluidStack> toSend = new ArrayList<>();
-            for (final IAEFluidStack is : this.fluids) {
-                final IAEFluidStack send = monitorCache.findPrecise(is);
-                if (send != null) {
-                    toSend.add(send);
-                } else {
-                    is.setStackSize(0);
-                    toSend.add(is);
+        if (!this.fluids.isEmpty()) {
+            if (autoUpdateTerms) {
+                final IItemList<IAEFluidStack> monitorCache = this.monitor.getStorageList();
+                List<IAEFluidStack> toSend = new ArrayList<>();
+                for (final IAEFluidStack is : this.fluids) {
+                    final IAEFluidStack send = monitorCache.findPrecise(is);
+                    if (send != null) {
+                        toSend.add(send);
+                    } else {
+                        is.setStackSize(0);
+                        toSend.add(is);
+                    }
                 }
-            }
-            for (final Object c : this.crafters) {
-                if (c instanceof EntityPlayerMP) {
-                    SPacketMEUpdateBuffer.scheduleFluidUpdate((EntityPlayerMP) c, toSend);
+                for (final Object c : this.crafters) {
+                    if (c instanceof EntityPlayerMP) {
+                        SPacketMEUpdateBuffer.scheduleFluidUpdate((EntityPlayerMP) c, toSend);
+                    }
                 }
             }
             this.fluids.resetStatus();

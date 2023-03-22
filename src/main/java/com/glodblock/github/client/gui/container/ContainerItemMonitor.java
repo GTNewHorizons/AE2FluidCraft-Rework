@@ -95,21 +95,23 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
 
     @Override
     protected void processItemList() {
-        if (!this.items.isEmpty() && autoUpdateTerms) {
-            final IItemList<IAEItemStack> monitorCache = this.monitor.getStorageList();
-            List<IAEItemStack> toSend = new ArrayList<>();
-            for (final IAEItemStack is : this.items) {
-                final IAEItemStack send = monitorCache.findPrecise(is);
-                if (send != null) {
-                    toSend.add(send);
-                } else {
-                    is.setStackSize(0);
-                    toSend.add(is);
+        if (!this.items.isEmpty()) {
+            if (autoUpdateTerms) {
+                final IItemList<IAEItemStack> monitorCache = this.monitor.getStorageList();
+                List<IAEItemStack> toSend = new ArrayList<>();
+                for (final IAEItemStack is : this.items) {
+                    final IAEItemStack send = monitorCache.findPrecise(is);
+                    if (send != null) {
+                        toSend.add(send);
+                    } else {
+                        is.setStackSize(0);
+                        toSend.add(is);
+                    }
                 }
-            }
-            for (final Object c : this.crafters) {
-                if (c instanceof EntityPlayer) {
-                    SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
+                for (final Object c : this.crafters) {
+                    if (c instanceof EntityPlayer) {
+                        SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
+                    }
                 }
             }
             this.items.resetStatus();
