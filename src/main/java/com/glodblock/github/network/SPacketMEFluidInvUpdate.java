@@ -40,6 +40,7 @@ public class SPacketMEFluidInvUpdate implements IMessage {
     /**
      * If resort, call "updateView()". Used when multiple packets are sent to open an inventory; only the last packet
      * should resort.
+     * 
      * @param resort whether this packet should resort the term or not
      */
     public SPacketMEFluidInvUpdate(boolean resort) {
