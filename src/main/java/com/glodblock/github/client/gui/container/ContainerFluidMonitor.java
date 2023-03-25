@@ -14,8 +14,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
-import org.apache.commons.lang3.tuple.MutablePair;
-
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.IViewCellStorage;
@@ -205,120 +203,273 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
         this.dropItem(is);
     }
 
+    /**
+     * Two operations, insert and extract.
+     * 
+     * @param slotIndex The slot. If index == -1, the cursor held itemstack. Else, slotIndex indicates which slot was
+     *                  shift clicked on.
+     */
     public void postChange(Iterable<IAEFluidStack> change, ItemStack fluidContainer, EntityPlayer player,
             int slotIndex) {
+        int cursorItems;
+        if (slotIndex == -1) {
+            cursorItems = player.inventory.getItemStack().stackSize;
+        } else {
+            cursorItems = player.inventory.getStackInSlot(slotIndex).stackSize;
+        }
         for (IAEFluidStack fluid : change) {
-            IAEFluidStack nfluid = this.monitor.getStorageList().findPrecise(fluid);
-            ItemStack out = fluidContainer.copy();
-            out.stackSize = 1;
+            // The primary output itemstack
             if (Util.FluidUtil.isEmpty(fluidContainer) && fluid != null) {
-                // add fluid to tanks
-                if (nfluid.getStackSize() <= 0) continue;
-                final IAEFluidStack toExtract = nfluid.copy();
-                MutablePair<Integer, ItemStack> fillStack = Util.FluidUtil.fillStack(out, toExtract.getFluidStack());
-                if (fillStack.right == null || fillStack.left <= 0) continue;
-                toExtract.setStackSize((long) fillStack.left * fluidContainer.stackSize);
-                // The real result may don't match simulation result.
-                if (fillStack.right.getItem() instanceof IFluidContainerItem) {
-                    IAEFluidStack real = this.host.getFluidInventory()
-                            .extractItems(toExtract, Actionable.MODULATE, this.getActionSource());
-                    if (real == null) continue;
-                    // Refill the container
-                    out = fluidContainer.copy();
-                    out.stackSize = 1;
-                    fillStack = Util.FluidUtil.fillStack(out, real.getFluidStack());
-                    fillStack.right.stackSize = (int) (real.getStackSize() / fillStack.left);
-                    out.stackSize = fillStack.right.stackSize;
-                    if ((int) (real.getStackSize() % fillStack.left) > 0) {
-                        this.dropItem(
-                                Util.FluidUtil.setFluidContainerAmount(
-                                        fillStack.right,
-                                        (int) (real.getStackSize() % fillStack.left)),
-                                1);
-                        out.stackSize++;
-                    }
-                } else if (FluidContainerRegistry.isContainer(fillStack.right)) {
-                    IAEFluidStack real = this.host.getFluidInventory()
-                            .extractItems(toExtract, Actionable.MODULATE, this.getActionSource());
-                    if (real == null) continue;
-                    // Refill the container
-                    out = fluidContainer.copy();
-                    out.stackSize = 1;
-                    fillStack = Util.FluidUtil.fillStack(out, real.getFluidStack());
-                    fillStack.right.stackSize = (int) (real.getStackSize() / fillStack.left);
-                    out.stackSize = fillStack.right.stackSize;
-                    toExtract.setStackSize((long) fillStack.right.stackSize * fillStack.left);
-                }
-                this.dropItem(fillStack.right);
+                // Situation 1.a: Empty fluid container, and nonnull slot
+                extractFluid(fluid, fluidContainer, player, cursorItems);
             } else if (!Util.FluidUtil.isEmpty(fluidContainer)) {
-                // add fluid to ae network
-                AEFluidStack fluidStack = Util.getAEFluidFromItem(fluidContainer);
-                final IAEFluidStack aeFluidStack = fluidStack.copy();
-                // simulate result is incorrect. so I'm using other solution and ec2 both mod have same issues
-                final IAEFluidStack notInserted = this.host.getFluidInventory()
-                        .injectItems(aeFluidStack, Actionable.MODULATE, this.getActionSource());
-                MutablePair<Integer, ItemStack> drainStack = Util.FluidUtil
-                        .drainStack(out.copy(), aeFluidStack.getFluidStack());
-                if (notInserted != null && notInserted.getStackSize() > 0) {
-                    if (fluidStack.getStackSize() == notInserted.getStackSize()) continue;
-                    aeFluidStack.decStackSize(notInserted.getStackSize());
-
-                    if (drainStack.left > aeFluidStack.getStackSize()
-                            && FluidContainerRegistry.isContainer(drainStack.right)) {
-                        aeFluidStack.setStackSize(drainStack.left - aeFluidStack.getStackSize());
-                        this.host.getFluidInventory()
-                                .extractItems(aeFluidStack, Actionable.MODULATE, this.getActionSource());
-                        continue;
-                    }
-
-                    this.dropItem(drainStack.right, (int) (aeFluidStack.getStackSize() / drainStack.left)); // drop
-                                                                                                            // empty
-                                                                                                            // item
-                    out.stackSize = (int) (notInserted.getStackSize() / drainStack.left);
-                    if (drainStack.right.getItem() instanceof IFluidContainerItem) {
-                        if (notInserted.getStackSize() % drainStack.left > 0) {
-                            fluidStack.setStackSize((notInserted.getStackSize() % drainStack.left));
-                            ((IFluidContainerItem) drainStack.right.getItem())
-                                    .fill(drainStack.right, fluidStack.getFluidStack(), true);
-                            this.dropItem(drainStack.right, 1);
-                        }
-                    } else if (FluidContainerRegistry.isContainer(drainStack.right)) {
-                        if (notInserted.getStackSize() % drainStack.left > 0) {
-                            aeFluidStack.setStackSize(aeFluidStack.getStackSize() % drainStack.left);
-                            this.host.getFluidInventory()
-                                    .extractItems(aeFluidStack, Actionable.MODULATE, this.getActionSource());
-                            out.stackSize++;
-                        }
-                    }
-                    if (slotIndex == -1) out.stackSize = fluidContainer.stackSize - out.stackSize;
-                } else {
-                    if (slotIndex == -1) {
-                        out.stackSize = fluidContainer.stackSize;
-                    } else {
-                        out.stackSize = (int) (fluidContainer.stackSize
-                                - (aeFluidStack.getStackSize() / drainStack.left));
-                    }
-                    this.dropItem(drainStack.right, fluidContainer.stackSize); // drop empty item
-                }
-            } else {
-                continue;
+                // Situation 2.a: We are holding a non-empty container.
+                insertFluid(fluidContainer, player, slotIndex, cursorItems);
+                // End of situation 2.a
             }
-            if (slotIndex == -1) {
-                player.inventory.getItemStack().stackSize = player.inventory.getItemStack().stackSize - out.stackSize;
-                if (player.inventory.getItemStack().stackSize > 0) {
-                    FluidCraft.proxy.netHandler.sendTo(
-                            new SPacketFluidUpdate(new HashMap<>(), player.inventory.getItemStack()),
-                            (EntityPlayerMP) player);
-                } else {
-                    player.inventory.setItemStack(null);
-                    FluidCraft.proxy.netHandler
-                            .sendTo(new SPacketFluidUpdate(new HashMap<>()), (EntityPlayerMP) player);
-                }
-            } else {
-                player.inventory.setInventorySlotContents(slotIndex, out.stackSize > 0 ? out : null);
-            }
+            // No op (Any other situation)
         }
         this.detectAndSendChanges();
+    }
+
+    /**
+     * The insert operation. For input, we have an filled container stack. For outputs, we have the following: 1.
+     * Leftover filled container stack - primary output. 2. Empty containers 3. Partially filled container x1 In order
+     * above, the itemstack at `slotIndex` is transformed into the output.
+     */
+    private void insertFluid(ItemStack fluidContainer, EntityPlayer player, int slotIndex, int heldContainers) {
+        IAEFluidStack fluid;
+        int fluidInTank;
+        if (fluidContainer.getItem() instanceof IFluidContainerItem) {
+            fluid = AEFluidStack.create(((IFluidContainerItem) fluidContainer.getItem()).getFluid(fluidContainer));
+            fluidInTank = (int) fluid.getStackSize();
+        } else if (FluidContainerRegistry.isContainer(fluidContainer)) {
+            fluid = AEFluidStack.create(FluidContainerRegistry.getFluidForFilledItem(fluidContainer));
+            fluidInTank = (int) fluid.getStackSize();
+        } else {
+            return;
+        }
+        // Simulate to know how much will not be inserted
+        long toInsert = (long) fluidInTank * fluidContainer.stackSize;
+        IAEFluidStack canSend = fluid.copy();
+        canSend.setStackSize(toInsert);
+        final IAEFluidStack notInserted = this.host.getFluidInventory()
+                .injectItems(canSend, Actionable.SIMULATE, this.getActionSource());
+        int emptyTanks = fluidContainer.stackSize;
+        ItemStack partialStack = fluidContainer.copy();
+        if (notInserted != null && notInserted.getStackSize() > 0) {
+            // Here, we cannot insert everything into the system.
+            if (canSend.getStackSize() == notInserted.getStackSize()) return; // System was full, no op
+            // Now "refill" the buckets that couldn't enter the system
+            int refilled = (int) (notInserted.getStackSize() / fluidInTank); // # of full tanks left
+            emptyTanks -= refilled;
+            toInsert -= (long) fluidInTank * refilled;
+            final int remainder = (int) (notInserted.getStackSize() % fluidInTank); // partial tank
+            // Now handle remaining if applicable
+            if (remainder > 0) {
+                notInserted.setStackSize(remainder);
+                partialStack.stackSize = 1;
+                if (partialStack.getItem() instanceof IFluidContainerItem) {
+                    int filled = ((IFluidContainerItem) partialStack.getItem())
+                            .fill(partialStack, notInserted.getFluidStack(), true);
+                    toInsert -= filled;
+                    assert filled == remainder;
+                    emptyTanks--;
+                } else if (FluidContainerRegistry.isContainer(fluidContainer)) {
+                    // For "whole containers" (need to round down, no remainders)
+                    ItemStack container = FluidContainerRegistry
+                            .fillFluidContainer(notInserted.getFluidStack(), fluidContainer);
+                    if (container == null) {
+                        // whatever, lets just not have the ME system get filled with any of its fluid
+                        emptyTanks++;
+                        toInsert -= remainder;
+                        partialStack.stackSize = 0;
+                    } else {
+                        toInsert -= FluidContainerRegistry.getContainerCapacity(partialStack);
+                        partialStack = container;
+                    }
+                }
+            } else {
+                partialStack.stackSize = 0;
+            }
+        } else {
+            partialStack.stackSize = 0;
+        }
+        // Now that the 3 outputs are handled, we can now actually put the fluids in
+        canSend.setStackSize(toInsert);
+        IAEFluidStack extra = this.host.getFluidInventory()
+                .injectItems(canSend, Actionable.MODULATE, this.getActionSource());
+        assert extra == null || extra.getStackSize() <= 0;
+        ItemStack emptyStack = fluidContainer.copy();
+        emptyStack.stackSize = 1;
+        if (emptyStack.getItem() instanceof IFluidContainerItem) {
+            ((IFluidContainerItem) emptyStack.getItem()).drain(emptyStack, fluidInTank, true);
+        } else {
+            emptyStack = FluidContainerRegistry.drainFluidContainer(emptyStack);
+        }
+        emptyStack.stackSize = emptyTanks;
+        int extraTanks = heldContainers - emptyTanks;
+        // Done. Put the output in the inventory or ground, and update stack size.
+        boolean shouldSendStack = true;
+        if (slotIndex == -1) {
+            if (extraTanks > 0) {
+                player.inventory.getItemStack().stackSize = extraTanks;
+                dropItem(emptyStack);
+                dropItem(partialStack);
+            } else if (emptyTanks != 0) {
+                player.inventory.setItemStack(emptyStack);
+                dropItem(partialStack);
+            } else if (partialStack.stackSize != 0) {
+                player.inventory.setItemStack(partialStack);
+            } else {
+                player.inventory.setItemStack(null);
+                shouldSendStack = false;
+            }
+        } else {
+            ItemStack extraTanksStack = player.inventory.getStackInSlot(slotIndex);
+            if (extraTanks > 0) {
+                if (extraTanks > extraTanksStack.getMaxStackSize()) {
+                    dropItem(extraTanksStack, extraTanksStack.stackSize - extraTanksStack.getMaxStackSize());
+                    extraTanksStack.stackSize = extraTanksStack.getMaxStackSize();
+                }
+                dropItem(emptyStack);
+                dropItem(partialStack);
+            } else if (emptyTanks != 0) {
+                if (emptyTanks > emptyStack.getMaxStackSize()) {
+                    dropItem(emptyStack, emptyTanks - emptyStack.getMaxStackSize());
+                    emptyStack.stackSize = emptyStack.getMaxStackSize();
+                }
+                player.inventory.setInventorySlotContents(slotIndex, emptyStack);
+                dropItem(partialStack);
+            } else if (partialStack.stackSize != 0) {
+                player.inventory.setInventorySlotContents(slotIndex, partialStack);
+            } else {
+                player.inventory.setItemStack(null);
+                shouldSendStack = false;
+            }
+        }
+        if (shouldSendStack) {
+            FluidCraft.proxy.netHandler.sendTo(
+                    new SPacketFluidUpdate(new HashMap<>(), player.inventory.getItemStack()),
+                    (EntityPlayerMP) player);
+        } else {
+            FluidCraft.proxy.netHandler.sendTo(new SPacketFluidUpdate(new HashMap<>()), (EntityPlayerMP) player);
+
+        }
+    }
+
+    /**
+     * The extract operation. For input, we have an empty container stack. For outputs, we have the following: 1.
+     * Leftover empty container stack - primary output. 2. Filled containers (full) 3. Partially filled container x1 In
+     * order above, the itemstack at `slotIndex` is transformed into the output.
+     */
+    private void extractFluid(IAEFluidStack fluid, ItemStack fluidContainer, EntityPlayer player, int heldContainers) {
+        IAEFluidStack storedFluid = this.monitor.getStorageList().findPrecise(fluid);
+        if (storedFluid == null || storedFluid.getStackSize() <= 0) return;
+        int capacity;
+        if (fluidContainer.getItem() instanceof IFluidContainerItem) {
+            capacity = ((IFluidContainerItem) fluidContainer.getItem()).getCapacity(fluidContainer);
+        } else if (FluidContainerRegistry.isContainer(fluidContainer)) {
+            // Fill with fluid container registry, or abort if it failed
+            ItemStack dummy = FluidContainerRegistry.fillFluidContainer(storedFluid.getFluidStack(), fluidContainer);
+            capacity = FluidContainerRegistry.getContainerCapacity(dummy);
+        } else {
+            return;
+        }
+        if (capacity == 0) return;
+        // The fluidstack that we will try to extract from the system.
+        final IAEFluidStack canExtract = storedFluid.copy();
+        // Maximum amount of fluid we can extract with the given container(s). Guarantees that we won't
+        // run into issues w/ remainder fluid later.
+        canExtract.setStackSize((long) capacity * fluidContainer.stackSize);
+        IAEFluidStack actualExtract = this.host.getFluidInventory()
+                .extractItems(canExtract, Actionable.SIMULATE, this.getActionSource());
+        if (actualExtract == null) return;
+        // Calculate the number of full fluid containers we extracted
+        long toExtract = actualExtract.getStackSize();
+        int filledTanks = (int) (toExtract / capacity);
+        int remainder = (int) (toExtract % capacity);
+        int emptyTanks = heldContainers - filledTanks;
+        // Fill the filled tanks
+        ItemStack filledStack = fluidContainer.copy();
+        filledStack.stackSize = 1;
+        if (filledTanks > 0) {
+            if (filledStack.getItem() instanceof IFluidContainerItem) {
+                int amt = ((IFluidContainerItem) filledStack.getItem())
+                        .fill(filledStack, actualExtract.getFluidStack(), true);
+                assert amt == capacity;
+            } else {
+                // Should not be NPE since we affirmed that we have enough capacity.
+                filledStack = FluidContainerRegistry.fillFluidContainer(actualExtract.getFluidStack(), filledStack);
+                assert capacity == FluidContainerRegistry.getContainerCapacity(filledStack);
+            }
+            filledStack.stackSize = filledTanks;
+        } else {
+            filledStack.stackSize = 0;
+        }
+        // Calculate the remaining fluid to extract, if any
+        ItemStack partialStack = fluidContainer.copy();
+        if (remainder > 0) {
+            actualExtract.setStackSize(remainder);
+            partialStack.stackSize = 1;
+            if (partialStack.getItem() instanceof IFluidContainerItem) {
+                int amt = ((IFluidContainerItem) partialStack.getItem())
+                        .fill(partialStack, actualExtract.getFluidStack(), true);
+                assert amt == remainder;
+                emptyTanks--;
+            } else {
+                ItemStack dummy = FluidContainerRegistry
+                        .fillFluidContainer(actualExtract.getFluidStack(), partialStack);
+                if (dummy == null) {
+                    // Failed to fill partial...
+                    partialStack.stackSize = 0;
+                    toExtract -= remainder;
+                } else {
+                    partialStack = dummy;
+                    toExtract -= FluidContainerRegistry.getContainerCapacity(partialStack);
+                    emptyTanks--;
+                }
+            }
+        } else {
+            partialStack.stackSize = 0;
+        }
+        // Now perform the real extraction.
+        actualExtract.setStackSize(toExtract);
+        this.host.getFluidInventory().extractItems(canExtract, Actionable.MODULATE, this.getActionSource());
+
+        // Done. Put the output in the inventory or ground, and update stack size.
+        // We can assume slotIndex == -1, since we don't actually allow extraction via shift click.
+        boolean shouldSendStack = true;
+        if (emptyTanks > 0) {
+            ItemStack emptyStack = player.inventory.getItemStack();
+            if (emptyTanks > emptyStack.stackSize) {
+                dropItem(emptyStack, emptyStack.stackSize - emptyStack.getMaxStackSize());
+                emptyStack.stackSize = emptyStack.getMaxStackSize();
+            }
+            dropItem(filledStack);
+            dropItem(partialStack);
+        } else if (filledStack.stackSize != 0) {
+            if (filledStack.stackSize > filledStack.getMaxStackSize()) {
+                dropItem(filledStack, filledStack.stackSize - filledStack.getMaxStackSize());
+                filledStack.stackSize = filledStack.getMaxStackSize();
+            }
+            player.inventory.setItemStack(filledStack);
+            dropItem(partialStack);
+        } else if (partialStack.stackSize != 0) {
+            player.inventory.setItemStack(partialStack);
+        } else {
+            player.inventory.setItemStack(null);
+            shouldSendStack = false;
+        }
+        if (shouldSendStack) {
+            FluidCraft.proxy.netHandler.sendTo(
+                    new SPacketFluidUpdate(new HashMap<>(), player.inventory.getItemStack()),
+                    (EntityPlayerMP) player);
+        } else {
+            FluidCraft.proxy.netHandler.sendTo(new SPacketFluidUpdate(new HashMap<>()), (EntityPlayerMP) player);
+
+        }
+
     }
 
     protected boolean isEssentiaMode() {
