@@ -81,7 +81,7 @@ public class ItemAndBlockHolder {
             NameConst.ITEM_QUANTUM_FLUID_STORAGE,
             Integer.MAX_VALUE / 16,
             8,
-            5,
+            1,
             4.5).register();
     public static ItemFluidExtremeStorageCell SINGULARITY_CELL = new ItemFluidExtremeStorageCell(
             NameConst.ITEM_SINGULARITY_FLUID_STORAGE,
