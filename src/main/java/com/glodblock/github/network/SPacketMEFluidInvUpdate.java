@@ -38,11 +38,7 @@ public class SPacketMEFluidInvUpdate implements IMessage {
 
     /**
      * If resort, call "updateView()". Used when multiple packets are sent to open an inventory; only the last packet
-     * should resort. <<<<<<< HEAD
-     *
-     * =======
-     *
-     * >>>>>>> 669eb96... Network throttle: Force ME update packets to be sent once every 50ms.
+     * should resort
      * 
      * @param resort whether this packet should resort the term or not
      */
