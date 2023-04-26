@@ -109,7 +109,7 @@ public class GuiFluidPatternEncoder extends AEBaseGui {
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected void renderToolTip(ItemStack stack, int x, int y) {
+    public void renderToolTip(ItemStack stack, int x, int y) {
         List list;
         if (stack.getItem() instanceof ItemFluidPacket) {
             FluidStack fluid = ItemFluidPacket.getFluidStack(stack);
