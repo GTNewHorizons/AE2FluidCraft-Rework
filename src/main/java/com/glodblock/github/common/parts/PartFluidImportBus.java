@@ -68,11 +68,15 @@ public class PartFluidImportBus extends FCSharedFluidBus {
         if (te instanceof IFluidHandler) {
             try {
                 final IFluidHandler fh = (IFluidHandler) te;
-                final IMEMonitor<IAEFluidStack> inv = this.getProxy().getStorage().getFluidInventory();
+                FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
+                if (tanksInfo == null) {
+                    return TickRateModulation.SLOWER;
+                }
 
+                final IMEMonitor<IAEFluidStack> inv = this.getProxy().getStorage().getFluidInventory();
                 int maxDrain = this.calculateAmountToSend();
                 boolean drained = false;
-                FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
+
                 for (FluidTankInfo tankInfo : tanksInfo) {
                     if (tankInfo.fluid == null) {
                         continue;
