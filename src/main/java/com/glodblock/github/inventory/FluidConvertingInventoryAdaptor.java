@@ -286,9 +286,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         if (info == null) {
             info = new FluidTankInfo[0];
         }
-        return new SlotIterator(
-            info,
-            invItems != null ? invItems.iterator() : Collections.emptyIterator());
+        return new SlotIterator(info, invItems != null ? invItems.iterator() : Collections.emptyIterator());
     }
 
     private IFluidHandler getSideFluid(ForgeDirection direction) {
