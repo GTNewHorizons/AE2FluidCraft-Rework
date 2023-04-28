@@ -278,9 +278,17 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
 
     @Override
     public Iterator<ItemSlot> iterator() {
+        FluidTankInfo[] info = null;
+        if (invFluids != null) {
+            info = invFluids.getTankInfo(side);
+        }
+        // Null check is needed because some tank infos return null (EIO conduits...)
+        if (info == null) {
+            info = new FluidTankInfo[0];
+        }
         return new SlotIterator(
-                invFluids != null ? invFluids.getTankInfo(side) : new FluidTankInfo[0],
-                invItems != null ? invItems.iterator() : Collections.emptyIterator());
+            info,
+            invItems != null ? invItems.iterator() : Collections.emptyIterator());
     }
 
     private IFluidHandler getSideFluid(ForgeDirection direction) {
@@ -466,7 +474,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
 
         @Override
         public boolean hasNext() {
-            return nextSlotIndex < tanks.length || itemSlots.hasNext();
+            return itemSlots.hasNext() || nextSlotIndex < tanks.length;
         }
 
         @Override
