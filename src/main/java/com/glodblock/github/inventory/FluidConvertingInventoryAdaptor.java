@@ -13,8 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-import appeng.api.config.FuzzyMode;
-import appeng.api.config.InsertionMode;
+import appeng.api.config.*;
 import appeng.api.parts.IPart;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
@@ -47,20 +46,23 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
 
     // facing is the target TE direction
     // |T|-facing->|I|
-    public FluidConvertingInventoryAdaptor(@Nullable InventoryAdaptor invItems, @Nullable IFluidHandler invFluids,
-            ForgeDirection facing, BlockPos pos, boolean isOnmi) {
+    public FluidConvertingInventoryAdaptor(TileEntity te, @Nullable InventoryAdaptor invItems,
+            @Nullable IFluidHandler invFluids, ForgeDirection facing, BlockPos pos, boolean isOnmi) {
         this.invItems = invItems;
         this.invFluids = invFluids;
         this.side = facing;
         this.posInterface = pos;
         this.onmi = isOnmi;
         this.selfInterface = getInterfaceTE(pos.getTileEntity(), facing.getOpposite());
+        this.targetInterface = getInterfaceTE(te, facing);
     }
 
     private final InventoryAdaptor invItems;
     private final IFluidHandler invFluids;
     private final ForgeDirection side;
     private final BlockPos posInterface;
+    @Nullable
+    private final IInterfaceHost targetInterface;
     @Nullable
     private final IInterfaceHost selfInterface;
     private final boolean onmi;
@@ -96,7 +98,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         if (inter instanceof TileInterface) {
             onmi = ((TileInterface) inter).getTargets().size() > 1;
         }
-        return new FluidConvertingInventoryAdaptor(item, fluid, face, new BlockPos(inter), onmi);
+        return new FluidConvertingInventoryAdaptor(capProvider, item, fluid, face, new BlockPos(inter), onmi);
     }
 
     public ItemStack addItems(ItemStack toBeAdded, InsertionMode insertionMode) {
@@ -361,6 +363,11 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     private int checkItemFluids(IFluidHandler tank, InventoryAdaptor inv, ForgeDirection direction) {
         if (tank == null && inv == null) {
             return 2;
+        }
+        if (targetInterface != null && targetInterface.getInstalledUpgrades(Upgrades.ADVANCED_BLOCKING) > 0
+                && targetInterface instanceof IDualHost
+                && !((IDualHost) targetInterface).getDualityFluid().getFluidInventory().getStorageList().isEmpty()) {
+            return 1;
         }
         if (tank != null && tank.getTankInfo(direction) != null) {
             List<FluidTankInfo[]> tankInfos = new LinkedList<>();

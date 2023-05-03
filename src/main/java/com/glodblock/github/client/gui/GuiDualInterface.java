@@ -6,10 +6,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Mouse;
 
-import appeng.api.config.InsertionMode;
-import appeng.api.config.Settings;
-import appeng.api.config.SidelessMode;
-import appeng.api.config.YesNo;
+import appeng.api.config.*;
 import appeng.client.gui.implementations.GuiUpgradeable;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiTabButton;
@@ -38,6 +35,7 @@ public class GuiDualInterface extends GuiUpgradeable {
     private GuiToggleButton interfaceMode;
     private GuiImgButton insertionMode;
     private GuiImgButton sidelessMode;
+    private GuiImgButton advancedBlockingMode;
     private final IInterfaceHost host;
 
     public GuiDualInterface(InventoryPlayer inventoryPlayer, IInterfaceHost te) {
@@ -85,10 +83,17 @@ public class GuiDualInterface extends GuiUpgradeable {
                 InsertionMode.DEFAULT);
         this.buttonList.add(this.insertionMode);
 
+        this.advancedBlockingMode = new GuiImgButton(
+                this.guiLeft - 18,
+                this.guiTop + 62,
+                Settings.ADVANCED_BLOCKING_MODE,
+                AdvancedBlockingMode.DEFAULT);
+        this.buttonList.add(this.advancedBlockingMode);
+
         if (isTile()) {
             this.sidelessMode = new GuiImgButton(
                     this.guiLeft - 18,
-                    this.guiTop + 62,
+                    this.guiTop + 80,
                     Settings.SIDELESS_MODE,
                     SidelessMode.SIDELESS);
             this.buttonList.add(this.sidelessMode);
@@ -110,7 +115,9 @@ public class GuiDualInterface extends GuiUpgradeable {
         if (this.sidelessMode != null) {
             this.sidelessMode.set(((ContainerDualInterface) this.cvb).getSidelessMode());
         }
-
+        if (this.advancedBlockingMode != null) {
+            this.advancedBlockingMode.set(((ContainerDualInterface) this.cvb).getAdvancedBlockingMode());
+        }
         this.fontRendererObj.drawString(
                 getGuiDisplayName(StatCollector.translateToLocal(NameConst.GUI_FLUID_INTERFACE)),
                 8,
@@ -159,6 +166,10 @@ public class GuiDualInterface extends GuiUpgradeable {
         }
         if (btn == this.sidelessMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.sidelessMode.getSetting(), backwards));
+        }
+        if (btn == this.advancedBlockingMode) {
+            NetworkHandler.instance
+                    .sendToServer(new PacketConfigButton(this.advancedBlockingMode.getSetting(), backwards));
         }
     }
 
