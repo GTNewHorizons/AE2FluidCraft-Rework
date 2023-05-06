@@ -9,6 +9,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.util.BlockPos;
+
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -18,12 +23,6 @@ import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.core.AELog;
-
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.util.BlockPos;
-
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

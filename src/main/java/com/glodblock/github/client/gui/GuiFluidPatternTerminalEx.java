@@ -5,10 +5,6 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Mouse;
 
-import appeng.api.config.*;
-import appeng.api.storage.ITerminalHost;
-import appeng.client.gui.widgets.GuiImgButton;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.base.FCGuiEncodeTerminal;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternExWireless;
@@ -17,6 +13,10 @@ import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
+
+import appeng.api.config.*;
+import appeng.api.storage.ITerminalHost;
+import appeng.client.gui.widgets.GuiImgButton;
 
 public class GuiFluidPatternTerminalEx extends FCGuiEncodeTerminal {
 

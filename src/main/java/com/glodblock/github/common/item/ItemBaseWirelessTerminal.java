@@ -13,6 +13,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.inventory.item.IItemInventory;
+import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.NameConst;
+
 import appeng.api.AEApi;
 import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
@@ -20,13 +26,6 @@ import appeng.api.features.IWirelessTermRegistry;
 import appeng.core.localization.PlayerMessages;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.util.Platform;
-
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.inventory.item.IItemInventory;
-import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.NameConst;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

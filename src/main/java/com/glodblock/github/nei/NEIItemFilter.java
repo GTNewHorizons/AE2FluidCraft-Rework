@@ -4,16 +4,16 @@ import java.util.regex.Pattern;
 
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.common.storage.IFluidCellInventory;
+import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
+import com.glodblock.github.common.storage.IStorageFluidCell;
+
 import appeng.api.AEApi;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import codechicken.nei.SearchField;
 import codechicken.nei.api.ItemFilter;
-
-import com.glodblock.github.common.storage.IFluidCellInventory;
-import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
-import com.glodblock.github.common.storage.IStorageFluidCell;
 
 public class NEIItemFilter implements SearchField.ISearchProvider {
 

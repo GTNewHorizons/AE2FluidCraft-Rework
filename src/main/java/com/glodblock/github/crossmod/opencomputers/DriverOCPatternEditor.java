@@ -1,5 +1,22 @@
 package com.glodblock.github.crossmod.opencomputers;
 
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.common.item.ItemFluidEncodedPattern;
+import com.glodblock.github.common.tile.TileOCPatternEditor;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.NameConst;
+import com.glodblock.github.util.Util;
+
+import appeng.items.misc.ItemEncodedPattern;
+import appeng.util.item.AEItemStack;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.NamedBlock;
 import li.cil.oc.api.internal.Database;
@@ -11,24 +28,6 @@ import li.cil.oc.api.network.ManagedEnvironment;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.prefab.DriverSidedTileEntity;
 import li.cil.oc.integration.ManagedTileEntityEnvironment;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-
-import appeng.items.misc.ItemEncodedPattern;
-import appeng.util.item.AEItemStack;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.item.ItemFluidEncodedPattern;
-import com.glodblock.github.common.tile.TileOCPatternEditor;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.NameConst;
-import com.glodblock.github.util.Util;
 
 public class DriverOCPatternEditor extends DriverSidedTileEntity {
 

@@ -11,6 +11,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.util.BlockPos;
+
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.ticking.IGridTickable;
@@ -22,11 +27,6 @@ import appeng.me.GridAccessException;
 import appeng.parts.automation.PartUpgradeable;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
-
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
 
 public abstract class FCSharedFluidBus extends PartUpgradeable implements IGridTickable {
 

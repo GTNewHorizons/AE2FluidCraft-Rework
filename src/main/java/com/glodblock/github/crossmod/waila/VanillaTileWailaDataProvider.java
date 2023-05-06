@@ -2,10 +2,6 @@ package com.glodblock.github.crossmod.waila;
 
 import java.util.List;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataProvider;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,6 +10,10 @@ import net.minecraft.world.World;
 
 import com.glodblock.github.crossmod.waila.vanilla.FluidInvWailaDataProvider;
 import com.google.common.collect.Lists;
+
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 
 public class VanillaTileWailaDataProvider implements IWailaDataProvider {
 

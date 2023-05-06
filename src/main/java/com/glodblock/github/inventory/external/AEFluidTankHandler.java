@@ -4,12 +4,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.inventory.MEMonitorIFluidHandler;
+
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.IExternalStorageHandler;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.StorageChannel;
-
-import com.glodblock.github.inventory.MEMonitorIFluidHandler;
 
 // This handler is too generic, so it will overlap other mods' fluid handler.
 // It will be injected into external handler by ASM to make sure it is executed at last.

@@ -12,6 +12,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.parts.PartFluidInterface;
+import com.glodblock.github.common.tile.TileFluidInterface;
+import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
+import com.glodblock.github.inventory.FluidConvertingInventoryCrafting;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.Ae2Reflect;
+import com.glodblock.github.util.SetBackedMachineSet;
+import com.google.common.collect.Sets;
+
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
@@ -27,18 +39,6 @@ import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.parts.misc.PartInterface;
 import appeng.tile.misc.TileInterface;
 import appeng.util.InventoryAdaptor;
-
-import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.parts.PartFluidInterface;
-import com.glodblock.github.common.tile.TileFluidInterface;
-import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
-import com.glodblock.github.inventory.FluidConvertingInventoryCrafting;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.Ae2Reflect;
-import com.glodblock.github.util.SetBackedMachineSet;
-import com.google.common.collect.Sets;
 
 public class CoreModHooks {
 

@@ -4,13 +4,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.container.slot.IOptionalSlotHost;
-import appeng.container.slot.OptionalSlotFakeTypeOnly;
-import appeng.util.item.AEFluidStack;
-
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.util.Util;
+
+import appeng.container.slot.IOptionalSlotHost;
+import appeng.container.slot.OptionalSlotFakeTypeOnly;
+import appeng.util.item.AEFluidStack;
 
 public class OptionalFluidSlotFakeTypeOnly extends OptionalSlotFakeTypeOnly {
 

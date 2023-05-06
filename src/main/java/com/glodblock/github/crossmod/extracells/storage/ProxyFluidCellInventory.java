@@ -5,13 +5,13 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.common.storage.FluidCellInventory;
+
 import appeng.api.AEApi;
 import appeng.api.exceptions.AppEngException;
 import appeng.api.storage.ISaveProvider;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.common.storage.FluidCellInventory;
 
 public class ProxyFluidCellInventory extends FluidCellInventory {
 

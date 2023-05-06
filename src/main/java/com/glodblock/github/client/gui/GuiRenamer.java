@@ -3,16 +3,16 @@ package com.glodblock.github.client.gui;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.ContainerRenamer;
+import com.glodblock.github.network.CPacketRenamer;
+
 import appeng.api.storage.ITerminalHost;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.IDropToFillTextField;
 import appeng.client.gui.widgets.MEGuiTextField;
 import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.container.ContainerRenamer;
-import com.glodblock.github.network.CPacketRenamer;
 
 public class GuiRenamer extends AEBaseGui implements IDropToFillTextField {
 

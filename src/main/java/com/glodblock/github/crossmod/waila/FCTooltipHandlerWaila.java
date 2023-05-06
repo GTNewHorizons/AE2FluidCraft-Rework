@@ -2,8 +2,6 @@ package com.glodblock.github.crossmod.waila;
 
 import java.util.List;
 
-import mcp.mobius.waila.handlers.nei.TooltipHandlerWaila;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
@@ -12,6 +10,8 @@ import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.util.Util;
+
+import mcp.mobius.waila.handlers.nei.TooltipHandlerWaila;
 
 public class FCTooltipHandlerWaila extends TooltipHandlerWaila {
 

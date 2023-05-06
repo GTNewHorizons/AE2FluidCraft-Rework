@@ -20,6 +20,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.util.Util;
+
 import appeng.api.implementations.parts.IPartStorageMonitor;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.networking.storage.IStackWatcher;
@@ -43,11 +47,6 @@ import appeng.util.IWideReadableNumberConverter;
 import appeng.util.Platform;
 import appeng.util.ReadableNumberConverter;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.util.Util;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;

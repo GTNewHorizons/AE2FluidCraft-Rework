@@ -5,13 +5,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.client.render.BaseBlockRender;
-import appeng.client.render.BlockRenderInfo;
-import appeng.tile.misc.TileInterface;
-
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.block.BlockFluidInterface;
 import com.glodblock.github.common.tile.TileFluidInterface;
+
+import appeng.client.render.BaseBlockRender;
+import appeng.client.render.BlockRenderInfo;
+import appeng.tile.misc.TileInterface;
 
 public class RenderBlockFluidInterface extends BaseBlockRender<BlockFluidInterface, TileFluidInterface> {
 

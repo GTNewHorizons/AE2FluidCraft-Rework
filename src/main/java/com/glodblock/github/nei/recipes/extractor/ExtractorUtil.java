@@ -6,9 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import codechicken.nei.PositionedStack;
-
 import com.glodblock.github.nei.object.OrderStack;
+
+import codechicken.nei.PositionedStack;
 
 public final class ExtractorUtil {
 

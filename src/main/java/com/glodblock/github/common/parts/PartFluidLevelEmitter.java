@@ -17,6 +17,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.Util;
+
 import appeng.api.config.*;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.*;
@@ -50,13 +56,6 @@ import appeng.parts.automation.PartUpgradeable;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
-
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.Util;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

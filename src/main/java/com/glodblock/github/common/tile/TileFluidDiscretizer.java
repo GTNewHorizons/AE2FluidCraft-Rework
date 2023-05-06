@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.GridFlags;
@@ -24,8 +26,6 @@ import appeng.me.GridAccessException;
 import appeng.me.cache.CraftingGridCache;
 import appeng.me.storage.MEInventoryHandler;
 import appeng.tile.grid.AENetworkTile;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
 
 public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost, ICellContainer {
 

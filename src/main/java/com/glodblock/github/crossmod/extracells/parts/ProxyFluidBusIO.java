@@ -5,10 +5,10 @@ import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import appeng.api.config.RedstoneMode;
-
 import com.glodblock.github.crossmod.extracells.ProxyPart;
 import com.glodblock.github.crossmod.extracells.ProxyPartItem;
+
+import appeng.api.config.RedstoneMode;
 
 public class ProxyFluidBusIO extends ProxyPart {
 

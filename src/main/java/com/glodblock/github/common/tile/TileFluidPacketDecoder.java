@@ -7,6 +7,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.*;
 
+import com.glodblock.github.common.item.ItemFluidPacket;
+
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IEnergyGrid;
@@ -28,8 +30,6 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.common.item.ItemFluidPacket;
 
 public class TileFluidPacketDecoder extends AENetworkTile
         implements IGridTickable, IAEAppEngInventory, IInventory, IFluidHandler {

@@ -13,11 +13,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.client.gui.AEBaseGui;
-import appeng.client.render.AppEngRenderItem;
-import appeng.core.localization.GuiText;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternEncoder;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -28,6 +23,11 @@ import com.glodblock.github.inventory.slot.SlotSingleItem;
 import com.glodblock.github.network.CPacketEncodePattern;
 import com.glodblock.github.util.Ae2ReflectClient;
 import com.glodblock.github.util.NameConst;
+
+import appeng.api.storage.data.IAEItemStack;
+import appeng.client.gui.AEBaseGui;
+import appeng.client.render.AppEngRenderItem;
+import appeng.core.localization.GuiText;
 
 public class GuiFluidPatternEncoder extends AEBaseGui {
 

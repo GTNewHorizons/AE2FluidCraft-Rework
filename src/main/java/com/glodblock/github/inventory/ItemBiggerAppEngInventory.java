@@ -2,10 +2,10 @@ package com.glodblock.github.inventory;
 
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.inventory.gui.GuiType;
+
 import appeng.tile.inventory.BiggerAppEngInventory;
 import appeng.util.Platform;
-
-import com.glodblock.github.inventory.gui.GuiType;
 
 public class ItemBiggerAppEngInventory extends BiggerAppEngInventory {
 

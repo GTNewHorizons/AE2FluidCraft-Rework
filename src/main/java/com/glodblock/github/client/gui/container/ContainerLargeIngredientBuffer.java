@@ -3,9 +3,9 @@ package com.glodblock.github.client.gui.container;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 
-import appeng.container.slot.SlotNormal;
-
 import com.glodblock.github.common.tile.TileLargeIngredientBuffer;
+
+import appeng.container.slot.SlotNormal;
 
 public class ContainerLargeIngredientBuffer extends ContainerIngredientBuffer {
 

@@ -11,6 +11,14 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.AEFluidInventory;
+import com.glodblock.github.inventory.IAEFluidTank;
+import com.glodblock.github.inventory.IDualHost;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.DualityFluidInterface;
+import com.glodblock.github.util.Util;
+
 import appeng.api.config.Settings;
 import appeng.api.config.SidelessMode;
 import appeng.api.config.Upgrades;
@@ -26,15 +34,6 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.misc.TileInterface;
-
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.AEFluidInventory;
-import com.glodblock.github.inventory.IAEFluidTank;
-import com.glodblock.github.inventory.IDualHost;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.DualityFluidInterface;
-import com.glodblock.github.util.Util;
-
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 

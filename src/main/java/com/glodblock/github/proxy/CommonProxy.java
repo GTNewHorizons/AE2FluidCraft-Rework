@@ -2,10 +2,6 @@ package com.glodblock.github.proxy;
 
 import net.minecraft.item.ItemStack;
 
-import appeng.api.AEApi;
-import appeng.api.IAppEngApi;
-import appeng.api.config.Upgrades;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.tile.TileWalrus;
@@ -15,6 +11,9 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.util.ModAndClassUtil;
 
+import appeng.api.AEApi;
+import appeng.api.IAppEngApi;
+import appeng.api.config.Upgrades;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;

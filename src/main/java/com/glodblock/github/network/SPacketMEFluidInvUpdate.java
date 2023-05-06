@@ -7,12 +7,11 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.util.item.AEFluidStack;
-
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
 import com.glodblock.github.client.gui.GuiFluidMonitor;
 
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.util.item.AEFluidStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

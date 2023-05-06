@@ -8,11 +8,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.container.AEBaseContainer;
-import appeng.container.ContainerOpenContext;
-
 import com.glodblock.github.inventory.item.IItemInventory;
 import com.glodblock.github.util.Util;
+
+import appeng.container.AEBaseContainer;
+import appeng.container.ContainerOpenContext;
 
 public abstract class ItemGuiFactory<T> implements IGuiFactory {
 

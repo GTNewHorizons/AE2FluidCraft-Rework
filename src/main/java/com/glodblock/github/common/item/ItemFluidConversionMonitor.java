@@ -5,14 +5,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import appeng.api.AEApi;
-import appeng.api.parts.IPartItem;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.parts.PartFluidConversionMonitor;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.AEApi;
+import appeng.api.parts.IPartItem;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

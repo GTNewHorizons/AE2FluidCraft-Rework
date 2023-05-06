@@ -11,9 +11,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.util.Platform;
-
 import com.glodblock.github.client.render.RenderBlockFluidBuffer;
 import com.glodblock.github.common.item.FCBaseItemBlock;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
@@ -22,6 +19,8 @@ import com.glodblock.github.crossmod.waila.Tooltip;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

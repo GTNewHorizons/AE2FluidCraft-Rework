@@ -8,16 +8,16 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.container.AEBaseContainer;
-import appeng.container.slot.IOptionalSlotHost;
-import appeng.util.item.AEFluidStack;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
 import com.glodblock.github.network.SPacketFluidUpdate;
+
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.container.AEBaseContainer;
+import appeng.container.slot.IOptionalSlotHost;
+import appeng.util.item.AEFluidStack;
 
 public class ContainerFluidInterface extends AEBaseContainer implements IOptionalSlotHost {
 

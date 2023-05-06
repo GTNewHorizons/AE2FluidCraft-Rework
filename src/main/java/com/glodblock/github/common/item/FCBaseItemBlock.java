@@ -6,10 +6,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import appeng.block.AEBaseItemBlock;
-
 import com.glodblock.github.common.block.FCBaseBlock;
 
+import appeng.block.AEBaseItemBlock;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

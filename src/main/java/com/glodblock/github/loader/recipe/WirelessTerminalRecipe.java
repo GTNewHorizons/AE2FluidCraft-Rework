@@ -12,9 +12,9 @@ import net.minecraft.world.World;
 import net.p455w0rd.wirelesscraftingterminal.items.ItemEnum;
 import net.p455w0rd.wirelesscraftingterminal.items.ItemInfinityBooster;
 
-import appeng.util.Platform;
-
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
+
+import appeng.util.Platform;
 
 public class WirelessTerminalRecipe extends ShapelessRecipes {
 

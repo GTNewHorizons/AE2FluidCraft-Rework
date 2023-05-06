@@ -7,11 +7,10 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import codechicken.nei.PositionedStack;
-
 import com.glodblock.github.nei.object.IRecipeExtractor;
 import com.glodblock.github.nei.object.OrderStack;
 
+import codechicken.nei.PositionedStack;
 import gregtech.api.enums.ItemList;
 import gregtech.common.items.GT_FluidDisplayItem;
 

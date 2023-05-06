@@ -17,14 +17,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import appeng.api.AEApi;
-import appeng.api.networking.IGridNode;
-import appeng.core.features.AEFeature;
-import appeng.core.localization.PlayerMessages;
-import appeng.util.Platform;
-import baubles.api.BaubleType;
-import baubles.api.IBauble;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -37,6 +29,13 @@ import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
+import appeng.api.AEApi;
+import appeng.api.networking.IGridNode;
+import appeng.core.features.AEFeature;
+import appeng.core.localization.PlayerMessages;
+import appeng.util.Platform;
+import baubles.api.BaubleType;
+import baubles.api.IBauble;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

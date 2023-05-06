@@ -4,14 +4,14 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.util.Util;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.exceptions.AppEngException;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.ISaveProvider;
 import appeng.api.storage.data.IAEFluidStack;
-
-import com.glodblock.github.util.Util;
 
 public class CreativeFluidCellInventory extends FluidCellInventory {
 

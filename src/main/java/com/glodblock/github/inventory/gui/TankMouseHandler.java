@@ -9,10 +9,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.api.storage.data.IAEFluidStack;
-
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.util.NameConst;
+
+import appeng.api.storage.data.IAEFluidStack;
 
 public class TankMouseHandler implements MouseRegionManager.Handler {
 

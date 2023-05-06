@@ -17,6 +17,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.Util;
+
 import appeng.api.config.*;
 import appeng.api.implementations.IPowerChannelState;
 import appeng.api.implementations.tiles.IViewCellStorage;
@@ -41,13 +47,6 @@ import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
-
-import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.Util;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;

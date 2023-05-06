@@ -9,6 +9,16 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.common.Config;
+import com.glodblock.github.common.storage.IFluidCellInventory;
+import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
+import com.glodblock.github.common.storage.IStorageFluidCell;
+import com.glodblock.github.common.tabs.FluidCraftingTabs;
+import com.glodblock.github.loader.IRegister;
+import com.glodblock.github.util.ModAndClassUtil;
+import com.glodblock.github.util.NameConst;
+
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.storage.IMEInventoryHandler;
@@ -19,16 +29,6 @@ import appeng.items.AEBaseItem;
 import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
 import appeng.util.Platform;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.Config;
-import com.glodblock.github.common.storage.IFluidCellInventory;
-import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
-import com.glodblock.github.common.storage.IStorageFluidCell;
-import com.glodblock.github.common.tabs.FluidCraftingTabs;
-import com.glodblock.github.loader.IRegister;
-import com.glodblock.github.util.ModAndClassUtil;
-import com.glodblock.github.util.NameConst;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemCreativeFluidStorageCell extends AEBaseItem

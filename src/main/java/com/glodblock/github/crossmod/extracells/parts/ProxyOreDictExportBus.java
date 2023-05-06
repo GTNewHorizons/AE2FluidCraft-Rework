@@ -2,10 +2,10 @@ package com.glodblock.github.crossmod.extracells.parts;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import appeng.api.AEApi;
-
 import com.glodblock.github.crossmod.extracells.ProxyPart;
 import com.glodblock.github.crossmod.extracells.ProxyPartItem;
+
+import appeng.api.AEApi;
 
 public class ProxyOreDictExportBus extends ProxyPart {
 

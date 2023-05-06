@@ -5,6 +5,11 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 
+import com.glodblock.github.client.gui.container.ContainerCraftingWireless;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+
 import appeng.api.config.ActionItems;
 import appeng.api.config.Settings;
 import appeng.client.gui.widgets.GuiImgButton;
@@ -14,11 +19,6 @@ import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketInventoryAction;
 import appeng.helpers.InventoryAction;
-
-import com.glodblock.github.client.gui.container.ContainerCraftingWireless;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
 
 public class GuiFluidCraftingWireless extends GuiItemMonitor {
 

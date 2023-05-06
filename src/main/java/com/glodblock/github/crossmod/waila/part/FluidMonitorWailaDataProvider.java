@@ -2,21 +2,20 @@ package com.glodblock.github.crossmod.waila.part;
 
 import java.util.List;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import appeng.api.parts.IPart;
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.integration.modules.waila.part.BasePartWailaDataProvider;
-
 import com.glodblock.github.common.parts.base.FCPartMonitor;
 import com.glodblock.github.crossmod.waila.Tooltip;
 import com.glodblock.github.util.Util;
+
+import appeng.api.parts.IPart;
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.integration.modules.waila.part.BasePartWailaDataProvider;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public class FluidMonitorWailaDataProvider extends BasePartWailaDataProvider {
 

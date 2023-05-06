@@ -17,6 +17,9 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.util.Util;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -50,9 +53,6 @@ import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.util.Util;
 
 public class TileFluidAutoFiller extends AENetworkInvTile
         implements ICraftingProvider, IMEMonitorHandlerReceiver<IAEFluidStack>, IGridTickable {

@@ -4,14 +4,14 @@ import java.util.Comparator;
 
 import net.minecraftforge.fluids.Fluid;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
+
 import appeng.api.config.SortDir;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
 import appeng.integration.abstraction.IInvTweaks;
 import appeng.util.Platform;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
 
 public class FluidSorters {
 

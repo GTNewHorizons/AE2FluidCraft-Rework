@@ -7,13 +7,13 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.container.slot.SlotFake;
-import appeng.util.item.AEItemStack;
-
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.AeStackInventory;
+
+import appeng.api.storage.data.IAEItemStack;
+import appeng.container.slot.SlotFake;
+import appeng.util.item.AEItemStack;
 
 public class SlotFluidConvertingFake extends SlotFake implements ISlotFluid {
 

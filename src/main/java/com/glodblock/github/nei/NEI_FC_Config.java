@@ -1,12 +1,12 @@
 package com.glodblock.github.nei;
 
-import codechicken.nei.api.API;
-import codechicken.nei.api.IConfigureNEI;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.*;
 import com.glodblock.github.nei.recipes.FluidRecipe;
 import com.glodblock.github.util.ModAndClassUtil;
+
+import codechicken.nei.api.API;
+import codechicken.nei.api.IConfigureNEI;
 
 public class NEI_FC_Config implements IConfigureNEI {
 

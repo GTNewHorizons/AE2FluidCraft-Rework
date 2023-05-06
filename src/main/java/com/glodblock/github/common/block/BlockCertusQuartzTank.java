@@ -17,8 +17,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.api.implementations.items.IAEWrench;
-
 import com.glodblock.github.common.item.ItemCertusQuartzTank;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileCertusQuartzTank;
@@ -27,6 +25,7 @@ import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.implementations.items.IAEWrench;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

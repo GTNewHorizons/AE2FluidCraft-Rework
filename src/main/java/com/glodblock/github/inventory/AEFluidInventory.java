@@ -9,12 +9,12 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
 
+import com.glodblock.github.util.Util;
+
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.core.AELog;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.util.Util;
 import io.netty.buffer.ByteBuf;
 
 public class AEFluidInventory implements IAEFluidTank {

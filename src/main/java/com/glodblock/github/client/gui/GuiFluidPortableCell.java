@@ -2,11 +2,11 @@ package com.glodblock.github.client.gui;
 
 import net.minecraft.entity.player.InventoryPlayer;
 
-import appeng.container.slot.AppEngSlot;
-
 import com.glodblock.github.client.gui.container.ContainerFluidPortableCell;
 import com.glodblock.github.inventory.item.IFluidPortableCell;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
+
+import appeng.container.slot.AppEngSlot;
 
 public class GuiFluidPortableCell extends GuiFluidTerminal {
 

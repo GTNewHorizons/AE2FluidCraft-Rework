@@ -7,6 +7,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.parts.base.FCSharedFluidBus;
+import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
+import com.google.common.collect.ImmutableSet;
+
 import appeng.api.config.*;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.ICraftingGrid;
@@ -30,14 +37,6 @@ import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
-
-import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.parts.base.FCSharedFluidBus;
-import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
-import com.google.common.collect.ImmutableSet;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

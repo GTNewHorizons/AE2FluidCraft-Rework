@@ -1,5 +1,19 @@
 package com.glodblock.github.crossmod.opencomputers;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+
+import com.glodblock.github.common.parts.PartFluidInterface;
+import com.glodblock.github.common.tile.TileFluidInterface;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.DualityFluidInterface;
+import com.glodblock.github.util.NameConst;
+import com.glodblock.github.util.Util;
+
+import appeng.api.parts.IPartHost;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.NamedBlock;
 import li.cil.oc.api.driver.SidedBlock;
@@ -11,21 +25,6 @@ import li.cil.oc.api.network.ManagedEnvironment;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.integration.ManagedTileEntityEnvironment;
 import li.cil.oc.server.network.Component;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-
-import appeng.api.parts.IPartHost;
-
-import com.glodblock.github.common.parts.PartFluidInterface;
-import com.glodblock.github.common.tile.TileFluidInterface;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.DualityFluidInterface;
-import com.glodblock.github.util.NameConst;
-import com.glodblock.github.util.Util;
 
 public class DriverDualFluidInterface implements SidedBlock {
 

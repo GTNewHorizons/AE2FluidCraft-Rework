@@ -2,10 +2,10 @@ package com.glodblock.github.client.gui;
 
 import net.minecraft.entity.player.InventoryPlayer;
 
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+
 import appeng.container.slot.AppEngSlot;
 import appeng.container.slot.SlotDisabled;
-
-import com.glodblock.github.inventory.item.IWirelessTerminal;
 
 public class GuiFluidPatternWireless extends GuiFluidPatternTerminal {
 

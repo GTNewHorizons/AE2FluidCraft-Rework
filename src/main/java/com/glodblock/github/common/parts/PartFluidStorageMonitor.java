@@ -2,10 +2,10 @@ package com.glodblock.github.common.parts;
 
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.common.parts.base.FCPartMonitor;
+
 import appeng.client.texture.CableBusTextures;
 import appeng.helpers.Reflected;
-
-import com.glodblock.github.common.parts.base.FCPartMonitor;
 
 public class PartFluidStorageMonitor extends FCPartMonitor {
 

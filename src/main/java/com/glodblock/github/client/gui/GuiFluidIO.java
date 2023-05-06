@@ -3,16 +3,16 @@ package com.glodblock.github.client.gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 
-import appeng.api.config.Upgrades;
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.client.gui.implementations.GuiUpgradeable;
-import appeng.core.localization.GuiText;
-
 import com.glodblock.github.client.gui.container.ContainerFluidIO;
 import com.glodblock.github.common.parts.PartFluidExportBus;
 import com.glodblock.github.common.parts.PartFluidImportBus;
 import com.glodblock.github.common.parts.base.FCSharedFluidBus;
 import com.glodblock.github.util.NameConst;
+
+import appeng.api.config.Upgrades;
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.client.gui.implementations.GuiUpgradeable;
+import appeng.core.localization.GuiText;
 
 public class GuiFluidIO extends GuiUpgradeable {
 

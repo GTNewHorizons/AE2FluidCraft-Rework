@@ -8,10 +8,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.client.gui.AEBaseGui;
-import appeng.core.localization.GuiText;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLargeIngredientBuffer;
 import com.glodblock.github.common.tile.TileLargeIngredientBuffer;
@@ -21,6 +17,10 @@ import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.gui.TankMouseHandler;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
+
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.client.gui.AEBaseGui;
+import appeng.core.localization.GuiText;
 
 public class GuiLargeIngredientBuffer extends AEBaseGui {
 

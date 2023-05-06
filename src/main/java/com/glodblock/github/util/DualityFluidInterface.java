@@ -11,6 +11,12 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.AEFluidInventory;
+import com.glodblock.github.inventory.IAEFluidInventory;
+import com.glodblock.github.inventory.IAEFluidTank;
+import com.glodblock.github.inventory.MEMonitorIFluidHandler;
+
 import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
 import appeng.api.implementations.IUpgradeableHost;
@@ -41,12 +47,6 @@ import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.AEFluidInventory;
-import com.glodblock.github.inventory.IAEFluidInventory;
-import com.glodblock.github.inventory.IAEFluidTank;
-import com.glodblock.github.inventory.MEMonitorIFluidHandler;
 
 public class DualityFluidInterface implements IGridTickable, IStorageMonitorable, IAEFluidInventory, IUpgradeableHost,
         IConfigManagerHost, IFluidHandler {

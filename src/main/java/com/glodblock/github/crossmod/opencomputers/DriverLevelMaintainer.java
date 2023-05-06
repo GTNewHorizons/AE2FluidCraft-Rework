@@ -3,6 +3,19 @@ package com.glodblock.github.crossmod.opencomputers;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.common.tile.TileLevelMaintainer;
+import com.glodblock.github.inventory.AeItemStackHandler;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.NameConst;
+
+import appeng.util.item.AEItemStack;
+import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.NamedBlock;
 import li.cil.oc.api.internal.Database;
@@ -14,20 +27,6 @@ import li.cil.oc.api.network.ManagedEnvironment;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.prefab.DriverSidedTileEntity;
 import li.cil.oc.integration.ManagedTileEntityEnvironment;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-
-import appeng.util.item.AEItemStack;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.inventory.AeItemStackHandler;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.NameConst;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class DriverLevelMaintainer extends DriverSidedTileEntity {
 

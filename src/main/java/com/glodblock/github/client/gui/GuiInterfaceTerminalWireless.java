@@ -14,6 +14,17 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.base.FCBaseMEGui;
+import com.glodblock.github.client.gui.container.ContainerInterfaceWireless;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.network.CPacketRenamer;
+import com.glodblock.github.util.ModAndClassUtil;
+import com.glodblock.github.util.Util;
+import com.google.common.collect.HashMultimap;
+
 import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.util.WorldCoord;
@@ -32,17 +43,6 @@ import appeng.helpers.PatternHelper;
 import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
 import appeng.util.Platform;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.base.FCBaseMEGui;
-import com.glodblock.github.client.gui.container.ContainerInterfaceWireless;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.network.CPacketRenamer;
-import com.glodblock.github.util.ModAndClassUtil;
-import com.glodblock.github.util.Util;
-import com.google.common.collect.HashMultimap;
 
 public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropToFillTextField {
 

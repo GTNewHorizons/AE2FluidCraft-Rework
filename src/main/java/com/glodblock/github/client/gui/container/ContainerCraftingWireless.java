@@ -6,6 +6,9 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 
+import com.glodblock.github.inventory.item.IWirelessCraftTerminal;
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+
 import appeng.container.ContainerNull;
 import appeng.container.slot.SlotCraftingMatrix;
 import appeng.container.slot.SlotCraftingTerm;
@@ -13,9 +16,6 @@ import appeng.helpers.IContainerCraftingPacket;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
-
-import com.glodblock.github.inventory.item.IWirelessCraftTerminal;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
 
 public class ContainerCraftingWireless extends ContainerItemMonitor
         implements IAEAppEngInventory, IContainerCraftingPacket {

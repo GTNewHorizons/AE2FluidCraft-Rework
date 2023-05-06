@@ -10,10 +10,10 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
-import appeng.client.gui.widgets.ITooltip;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.util.NameConst;
+
+import appeng.client.gui.widgets.ITooltip;
 
 public class GuiFCImgButton extends GuiButton implements ITooltip {
 

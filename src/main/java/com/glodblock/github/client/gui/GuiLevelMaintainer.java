@@ -16,6 +16,16 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Keyboard;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
+import com.glodblock.github.common.tile.TileLevelMaintainer;
+import com.glodblock.github.inventory.gui.MouseRegionManager;
+import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
+import com.glodblock.github.inventory.slot.SlotSingleItem;
+import com.glodblock.github.network.CPacketLevelMaintainer;
+import com.glodblock.github.util.Ae2ReflectClient;
+import com.glodblock.github.util.NameConst;
+
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.render.AppEngRenderItem;
@@ -26,16 +36,6 @@ import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
 import cofh.core.render.CoFHFontRenderer;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
-import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.inventory.gui.MouseRegionManager;
-import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
-import com.glodblock.github.inventory.slot.SlotSingleItem;
-import com.glodblock.github.network.CPacketLevelMaintainer;
-import com.glodblock.github.util.Ae2ReflectClient;
-import com.glodblock.github.util.NameConst;
 import cpw.mods.fml.common.Optional;
 
 @Optional.Interface(modid = "NotEnoughItems", iface = "codechicken.nei.api.INEIGuiHandler")

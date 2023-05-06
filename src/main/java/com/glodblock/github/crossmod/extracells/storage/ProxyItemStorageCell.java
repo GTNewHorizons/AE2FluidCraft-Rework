@@ -5,14 +5,14 @@ import javax.annotation.Nullable;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.crossmod.extracells.ProxyItem;
+
 import appeng.api.config.FuzzyMode;
 import appeng.api.implementations.items.IStorageCell;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
 import appeng.util.Platform;
-
-import com.glodblock.github.crossmod.extracells.ProxyItem;
 
 /**
  * Proxy Item Storage. 256K, 1024K, etc. -> AE2's version. For now its just mirroring AE2's version, will need to

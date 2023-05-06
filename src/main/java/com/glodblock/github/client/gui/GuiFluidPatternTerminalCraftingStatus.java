@@ -4,10 +4,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
-import appeng.api.storage.ITerminalHost;
-import appeng.client.gui.implementations.GuiCraftingStatus;
-import appeng.client.gui.widgets.GuiTabButton;
-
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.common.parts.PartFluidPatternTerminal;
 import com.glodblock.github.common.parts.PartFluidPatternTerminalEx;
@@ -20,6 +16,10 @@ import com.glodblock.github.inventory.item.WirelessInterfaceTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.Ae2ReflectClient;
+
+import appeng.api.storage.ITerminalHost;
+import appeng.client.gui.implementations.GuiCraftingStatus;
+import appeng.client.gui.widgets.GuiTabButton;
 
 public class GuiFluidPatternTerminalCraftingStatus extends GuiCraftingStatus {
 

@@ -10,11 +10,11 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import org.lwjgl.opengl.GL11;
 
-import appeng.client.render.BaseBlockRender;
-import appeng.client.render.BlockRenderInfo;
-
 import com.glodblock.github.common.block.BlockFluidBuffer;
 import com.glodblock.github.common.tile.TileFluidBuffer;
+
+import appeng.client.render.BaseBlockRender;
+import appeng.client.render.BlockRenderInfo;
 
 public class RenderBlockFluidBuffer extends BaseBlockRender<BlockFluidBuffer, TileFluidBuffer> {
 

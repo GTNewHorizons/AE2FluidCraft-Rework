@@ -12,11 +12,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.client.gui.AEBaseGui;
-import appeng.client.gui.widgets.GuiTabButton;
-import appeng.core.localization.GuiText;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerFluidInterface;
 import com.glodblock.github.common.parts.PartFluidInterface;
@@ -29,6 +24,11 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
+
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.client.gui.AEBaseGui;
+import appeng.client.gui.widgets.GuiTabButton;
+import appeng.core.localization.GuiText;
 
 public class GuiFluidInterface extends AEBaseGui {
 

@@ -10,6 +10,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.client.gui.container.base.FCBaseContainer;
+import com.glodblock.github.common.parts.PartFluidInterface;
+import com.glodblock.github.common.tile.TileFluidInterface;
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import appeng.api.config.*;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
@@ -31,13 +38,6 @@ import appeng.util.inv.AdaptorIInventory;
 import appeng.util.inv.AdaptorPlayerHand;
 import appeng.util.inv.ItemSlot;
 import appeng.util.inv.WrapperInvSlot;
-
-import com.glodblock.github.client.gui.container.base.FCBaseContainer;
-import com.glodblock.github.common.parts.PartFluidInterface;
-import com.glodblock.github.common.tile.TileFluidInterface;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 public class ContainerInterfaceWireless extends FCBaseContainer {
 

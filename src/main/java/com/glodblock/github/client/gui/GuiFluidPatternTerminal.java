@@ -6,6 +6,13 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
+import com.glodblock.github.client.gui.base.FCGuiEncodeTerminal;
+import com.glodblock.github.client.gui.container.ContainerFluidPatternTerminal;
+import com.glodblock.github.client.gui.container.ContainerFluidPatternWireless;
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.util.ModAndClassUtil;
+import com.glodblock.github.util.NameConst;
+
 import appeng.api.config.ActionItems;
 import appeng.api.config.ItemSubstitution;
 import appeng.api.config.PatternBeSubstitution;
@@ -17,13 +24,6 @@ import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternTerm;
 import appeng.core.localization.GuiText;
-
-import com.glodblock.github.client.gui.base.FCGuiEncodeTerminal;
-import com.glodblock.github.client.gui.container.ContainerFluidPatternTerminal;
-import com.glodblock.github.client.gui.container.ContainerFluidPatternWireless;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.util.ModAndClassUtil;
-import com.glodblock.github.util.NameConst;
 
 public class GuiFluidPatternTerminal extends FCGuiEncodeTerminal {
 

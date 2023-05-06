@@ -8,9 +8,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
 
-import appeng.container.AEBaseContainer;
-import appeng.container.ContainerOpenContext;
-
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -18,6 +15,8 @@ import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
+import appeng.container.AEBaseContainer;
+import appeng.container.ContainerOpenContext;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

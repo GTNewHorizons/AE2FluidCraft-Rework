@@ -7,11 +7,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.tile.inventory.AppEngInternalInventory;
-
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
+
+import appeng.api.storage.data.IAEItemStack;
+import appeng.tile.inventory.AppEngInternalInventory;
 
 public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatternTerminal {
 

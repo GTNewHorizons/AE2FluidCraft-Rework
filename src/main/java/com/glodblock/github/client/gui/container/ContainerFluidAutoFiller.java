@@ -6,11 +6,11 @@ import net.minecraft.item.ItemStack;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import appeng.container.AEBaseContainer;
-import appeng.container.slot.SlotFake;
-
 import com.glodblock.github.common.tile.TileFluidAutoFiller;
 import com.glodblock.github.util.Util;
+
+import appeng.container.AEBaseContainer;
+import appeng.container.slot.SlotFake;
 
 public class ContainerFluidAutoFiller extends AEBaseContainer {
 

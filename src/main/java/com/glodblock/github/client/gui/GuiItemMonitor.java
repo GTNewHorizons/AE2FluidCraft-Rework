@@ -5,15 +5,15 @@ import java.util.List;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.client.gui.base.FCGuiMonitor;
+import com.glodblock.github.client.gui.container.ContainerItemMonitor;
+import com.glodblock.github.util.ModAndClassUtil;
+
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.me.ItemRepo;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
-
-import com.glodblock.github.client.gui.base.FCGuiMonitor;
-import com.glodblock.github.client.gui.container.ContainerItemMonitor;
-import com.glodblock.github.util.ModAndClassUtil;
 
 public class GuiItemMonitor extends FCGuiMonitor<IAEItemStack> {
 

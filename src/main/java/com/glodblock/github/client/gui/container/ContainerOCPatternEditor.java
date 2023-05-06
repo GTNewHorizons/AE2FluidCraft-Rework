@@ -2,10 +2,10 @@ package com.glodblock.github.client.gui.container;
 
 import net.minecraft.entity.player.InventoryPlayer;
 
+import com.glodblock.github.common.tile.TileOCPatternEditor;
+
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.SlotRestrictedInput;
-
-import com.glodblock.github.common.tile.TileOCPatternEditor;
 
 public class ContainerOCPatternEditor extends AEBaseContainer {
 

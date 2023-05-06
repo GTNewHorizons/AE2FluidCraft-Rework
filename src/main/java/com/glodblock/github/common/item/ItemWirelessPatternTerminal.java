@@ -6,11 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import appeng.api.AEApi;
-import appeng.api.networking.IGridNode;
-import appeng.core.features.AEFeature;
-import appeng.core.localization.PlayerMessages;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -18,6 +13,11 @@ import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
+
+import appeng.api.AEApi;
+import appeng.api.networking.IGridNode;
+import appeng.core.features.AEFeature;
+import appeng.core.localization.PlayerMessages;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemWirelessPatternTerminal extends ItemBaseWirelessTerminal

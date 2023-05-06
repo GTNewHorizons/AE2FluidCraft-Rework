@@ -13,6 +13,17 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.AEFluidInventory;
+import com.glodblock.github.inventory.IAEFluidTank;
+import com.glodblock.github.inventory.IDualHost;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.DualityFluidInterface;
+import com.glodblock.github.util.Util;
+
 import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.IGridNode;
@@ -34,18 +45,6 @@ import appeng.parts.misc.PartInterface;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.AEFluidInventory;
-import com.glodblock.github.inventory.IAEFluidTank;
-import com.glodblock.github.inventory.IDualHost;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.DualityFluidInterface;
-import com.glodblock.github.util.Util;
-
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
