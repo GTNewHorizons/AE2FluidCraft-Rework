@@ -99,6 +99,7 @@ public class ItemReplacements {
         deprecateItemPart(9, ItemAndBlockHolder.FLUID_INTERFACE, ProxyFluidInterface::new);
         deprecateItemPart(10, ItemAndBlockHolder.FLUID_STORAGE_MONITOR, ProxyStorageMonitor::new);
         deprecateItemPart(11, ItemAndBlockHolder.FLUID_CONVERSION_MONITOR, ProxyStorageMonitor::new);
+        deprecateItemPart(12, AEApi.instance().definitions().parts().exportBus(), ProxyOreDictExportBus::new);
     }
 
     private static ProxyItem getOrBuildItem(String srcName) {
@@ -147,7 +148,7 @@ public class ItemReplacements {
 
     /**
      * Deprecate a simple item.
-     * 
+     *
      * @param srcName     name of the to-be-replaced item without the mod id prefix
      * @param srcMeta     meta of the to-be-replaced item
      * @param replacement item that will replace src
@@ -187,6 +188,20 @@ public class ItemReplacements {
         proxyItem.addItemPart(srcMeta, replacement, partBuilder);
     }
 
+    private static void deprecateItemPart(int srcMeta, IItemDefinition definition,
+                                          Function<ProxyPartItem, ProxyPart> partBuilder) {
+        if (definition.isEnabled()) {
+            final String fullName = "extracells:part.base";
+            ProxyPartItem proxyItem = (ProxyPartItem) registry.get(fullName);
+            if (proxyItem == null) {
+                proxyItem = new ProxyPartItem("part.base");
+                registry.put(fullName, proxyItem);
+                proxyItem.register();
+            }
+            proxyItem.addItemPart(srcMeta, definition, partBuilder);
+        }
+    }
+
     /**
      * Deprecate a fluid storage item. Note that we can't access the properties directly, so we need to do this
      */
@@ -195,6 +210,7 @@ public class ItemReplacements {
         ProxyFluidStorageCell proxyItem = getOrBuildFluidStorage(srcName);
         ProxyItem.ProxyStorageEntry entry = new ProxyItem.ProxyStorageEntry(
                 replacement,
+                0,
                 kilobytes,
                 bytesPerType,
                 idleDrain);
@@ -212,6 +228,7 @@ public class ItemReplacements {
             int meta = replacement.maybeStack(1).get().getItemDamage();
             ProxyItem.ProxyItemEntry storage = new ProxyItem.ProxyStorageEntry(
                     replacement.maybeItem().get(),
+                    meta,
                     kilobytes,
                     bytesPerType,
                     idleDrain);
@@ -245,6 +262,7 @@ public class ItemReplacements {
             int meta = replacement.maybeStack(1).get().getItemDamage();
             ProxyItem.ProxyItemEntry storage = new ProxyItem.ProxyStorageEntry(
                     replacement.maybeItem().get(),
+                    meta,
                     bytes / 1024,
                     bytesPerType,
                     idleDrain);

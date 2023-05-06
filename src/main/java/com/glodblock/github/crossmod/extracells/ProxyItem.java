@@ -101,7 +101,7 @@ public class ProxyItem extends FCBaseItem {
 
         /**
          * Creates a Proxy Replacement.
-         * 
+         *
          * @param replacement     Item that will replace the other.
          * @param replacementMeta Metadata/damage value of the replacement
          */
@@ -123,8 +123,8 @@ public class ProxyItem extends FCBaseItem {
         public final double idleDrain;
         public final int types;
 
-        protected ProxyStorageEntry(Item replacement, long kilobytes, int bytesPerType, double idleDrain) {
-            super(replacement, 0);
+        protected ProxyStorageEntry(Item replacement, int meta, long kilobytes, int bytesPerType, double idleDrain) {
+            super(replacement, meta);
             this.maxBytes = kilobytes * 1024;
             this.bytesPerType = bytesPerType;
             this.idleDrain = idleDrain;
