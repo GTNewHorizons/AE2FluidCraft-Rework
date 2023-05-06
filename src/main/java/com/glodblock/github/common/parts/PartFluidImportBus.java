@@ -8,6 +8,10 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.parts.base.FCSharedFluidBus;
+
 import appeng.api.config.*;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.BaseActionSource;
@@ -21,11 +25,6 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.client.texture.CableBusTextures;
 import appeng.me.GridAccessException;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.parts.base.FCSharedFluidBus;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

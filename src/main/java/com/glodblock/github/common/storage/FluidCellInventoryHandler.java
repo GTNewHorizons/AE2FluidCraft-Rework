@@ -3,6 +3,9 @@ package com.glodblock.github.common.storage;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.util.Ae2Reflect;
+import com.glodblock.github.util.Util;
+
 import appeng.api.AEApi;
 import appeng.api.config.IncludeExclude;
 import appeng.api.storage.IMEInventory;
@@ -13,9 +16,6 @@ import appeng.me.storage.MEInventoryHandler;
 import appeng.me.storage.MEPassThrough;
 import appeng.util.item.AEFluidStack;
 import appeng.util.prioitylist.PrecisePriorityList;
-
-import com.glodblock.github.util.Ae2Reflect;
-import com.glodblock.github.util.Util;
 
 public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack> implements IFluidCellInventoryHandler {
 

@@ -6,6 +6,14 @@ import net.minecraft.entity.player.InventoryPlayer;
 
 import org.lwjgl.input.Mouse;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
+import com.glodblock.github.common.parts.PartFluidStorageBus;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.network.CPacketSwitchGuis;
+import com.glodblock.github.util.NameConst;
+
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.ActionItems;
 import appeng.api.config.Settings;
@@ -17,14 +25,6 @@ import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketConfigButton;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
-import com.glodblock.github.common.parts.PartFluidStorageBus;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.network.CPacketFluidPatternTermBtns;
-import com.glodblock.github.network.CPacketSwitchGuis;
-import com.glodblock.github.util.NameConst;
 
 public class GuiFluidStorageBus extends GuiUpgradeable {
 

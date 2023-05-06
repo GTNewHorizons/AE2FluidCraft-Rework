@@ -11,19 +11,19 @@ import net.minecraft.item.ItemStack;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import appeng.api.config.Actionable;
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.container.slot.SlotPlayerHotBar;
-import appeng.container.slot.SlotPlayerInv;
-import appeng.util.Platform;
-import appeng.util.item.AEFluidStack;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.network.SPacketFluidUpdate;
 import com.glodblock.github.util.Util;
+
+import appeng.api.config.Actionable;
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.container.slot.SlotPlayerHotBar;
+import appeng.container.slot.SlotPlayerInv;
+import appeng.util.Platform;
+import appeng.util.item.AEFluidStack;
 
 public class ContainerEssentiaMonitor extends ContainerFluidPortableCell {
 

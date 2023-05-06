@@ -17,6 +17,16 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
+import com.glodblock.github.client.gui.container.ContainerItemMonitor;
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.common.item.ItemFluidEncodedPattern;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.IPatternConsumer;
+import com.glodblock.github.inventory.item.IItemPatternTerminal;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.FluidPatternDetails;
+import com.glodblock.github.util.Util;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.definitions.IDefinitions;
@@ -32,16 +42,6 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
-
-import com.glodblock.github.client.gui.container.ContainerItemMonitor;
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.item.ItemFluidEncodedPattern;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.IPatternConsumer;
-import com.glodblock.github.inventory.item.IItemPatternTerminal;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.FluidPatternDetails;
-import com.glodblock.github.util.Util;
 
 public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket, IPatternConsumer {

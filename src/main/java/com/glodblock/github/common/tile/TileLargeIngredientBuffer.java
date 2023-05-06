@@ -2,9 +2,9 @@ package com.glodblock.github.common.tile;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.tile.inventory.AppEngInternalInventory;
-
 import com.glodblock.github.inventory.AEFluidInventory;
+
+import appeng.tile.inventory.AppEngInternalInventory;
 
 public class TileLargeIngredientBuffer extends TileIngredientBuffer {
 

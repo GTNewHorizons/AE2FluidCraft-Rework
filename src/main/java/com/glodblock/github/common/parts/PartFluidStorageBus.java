@@ -13,6 +13,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.tile.TileFluidInterface;
+import com.glodblock.github.inventory.*;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.ModAndClassUtil;
+
 import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.networking.IGridNode;
@@ -49,15 +57,6 @@ import appeng.tile.networking.TileCableBus;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.prioitylist.PrecisePriorityList;
-
-import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.tile.TileFluidInterface;
-import com.glodblock.github.inventory.*;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.ModAndClassUtil;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import extracells.tileentity.TileEntityFluidInterface;

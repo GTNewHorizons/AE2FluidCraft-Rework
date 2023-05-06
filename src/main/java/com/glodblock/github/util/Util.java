@@ -19,6 +19,13 @@ import net.minecraftforge.fluids.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
+import com.glodblock.github.inventory.IAEFluidTank;
+import com.glodblock.github.inventory.item.IFluidPortableCell;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -43,14 +50,6 @@ import appeng.tile.networking.TileWireless;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import baubles.api.BaublesApi;
-
-import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
-import com.glodblock.github.inventory.IAEFluidTank;
-import com.glodblock.github.inventory.item.IFluidPortableCell;
-
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import io.netty.buffer.ByteBuf;

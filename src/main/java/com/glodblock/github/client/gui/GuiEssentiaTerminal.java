@@ -11,11 +11,6 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.api.storage.data.IAEItemStack;
-import appeng.client.me.SlotME;
-import appeng.client.render.AppEngRenderItem;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerEssentiaMonitor;
 import com.glodblock.github.client.me.EssentiaRepo;
@@ -27,6 +22,11 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.util.Ae2ReflectClient;
+
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.client.me.SlotME;
+import appeng.client.render.AppEngRenderItem;
 
 public class GuiEssentiaTerminal extends GuiFluidMonitor {
 

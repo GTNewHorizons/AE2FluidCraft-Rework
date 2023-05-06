@@ -4,6 +4,12 @@ import java.io.IOException;
 
 import net.minecraft.entity.player.InventoryPlayer;
 
+import com.glodblock.github.client.gui.base.FCGuiAmount;
+import com.glodblock.github.common.parts.PartFluidStorageBus;
+import com.glodblock.github.inventory.IDualHost;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+
 import appeng.container.implementations.ContainerPriority;
 import appeng.core.AELog;
 import appeng.core.localization.GuiText;
@@ -12,12 +18,6 @@ import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.IPriorityHost;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
-
-import com.glodblock.github.client.gui.base.FCGuiAmount;
-import com.glodblock.github.common.parts.PartFluidStorageBus;
-import com.glodblock.github.inventory.IDualHost;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.loader.ItemAndBlockHolder;
 
 public class GuiFCPriority extends FCGuiAmount {
 

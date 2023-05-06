@@ -6,10 +6,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.api.networking.security.IActionHost;
-import appeng.api.storage.ITerminalHost;
-import appeng.container.implementations.ContainerCraftConfirm;
-
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
 import com.glodblock.github.common.parts.PartFluidPatternTerminal;
 import com.glodblock.github.common.parts.PartFluidPatternTerminalEx;
@@ -17,6 +13,10 @@ import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.BlockPos;
+
+import appeng.api.networking.security.IActionHost;
+import appeng.api.storage.ITerminalHost;
+import appeng.container.implementations.ContainerCraftConfirm;
 
 public class ContainerFluidCraftConfirm extends ContainerCraftConfirm {
 

@@ -5,6 +5,12 @@ import java.util.Iterator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 
+import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurable;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.parts.PartFluidStorageBus;
+import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
+import com.glodblock.github.util.Ae2Reflect;
+
 import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.storage.IMEInventory;
@@ -15,12 +21,6 @@ import appeng.container.slot.SlotRestrictedInput;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
 import appeng.util.iterators.NullIterator;
-
-import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurable;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.parts.PartFluidStorageBus;
-import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
-import com.glodblock.github.util.Ae2Reflect;
 
 public class ContainerFluidStorageBus extends FCContainerFluidConfigurable {
 

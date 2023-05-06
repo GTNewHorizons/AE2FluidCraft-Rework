@@ -6,16 +6,6 @@ import net.minecraft.inventory.Slot;
 
 import org.lwjgl.input.Keyboard;
 
-import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.data.IAEItemStack;
-import appeng.client.gui.widgets.GuiImgButton;
-import appeng.client.gui.widgets.GuiScrollbar;
-import appeng.client.gui.widgets.GuiTabButton;
-import appeng.client.render.AppEngRenderItem;
-import appeng.container.slot.AppEngSlot;
-import appeng.container.slot.SlotFake;
-import appeng.util.item.AEItemStack;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.GuiFCImgButton;
 import com.glodblock.github.client.gui.GuiItemMonitor;
@@ -27,6 +17,16 @@ import com.glodblock.github.inventory.slot.SlotSingleItem;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.util.Ae2ReflectClient;
 import com.glodblock.github.util.ModAndClassUtil;
+
+import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.client.gui.widgets.GuiImgButton;
+import appeng.client.gui.widgets.GuiScrollbar;
+import appeng.client.gui.widgets.GuiTabButton;
+import appeng.client.render.AppEngRenderItem;
+import appeng.container.slot.AppEngSlot;
+import appeng.container.slot.SlotFake;
+import appeng.util.item.AEItemStack;
 
 public abstract class FCGuiEncodeTerminal extends GuiItemMonitor {
 

@@ -4,9 +4,6 @@ import java.util.*;
 
 import net.minecraft.entity.player.InventoryPlayer;
 
-import appeng.api.storage.ITerminalHost;
-import appeng.client.gui.implementations.GuiCraftConfirm;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.common.parts.PartFluidPatternTerminal;
@@ -15,6 +12,9 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.network.CPacketSwitchGuis;
+
+import appeng.api.storage.ITerminalHost;
+import appeng.client.gui.implementations.GuiCraftConfirm;
 
 public class GuiFluidCraftConfirm extends GuiCraftConfirm {
 

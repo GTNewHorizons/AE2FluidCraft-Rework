@@ -10,13 +10,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.container.AEBaseContainer;
-import appeng.container.ContainerOpenContext;
-import appeng.container.implementations.ContainerCraftAmount;
-import appeng.helpers.InventoryAction;
-import appeng.util.item.AEItemStack;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -26,6 +19,12 @@ import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
+import appeng.api.storage.data.IAEItemStack;
+import appeng.container.AEBaseContainer;
+import appeng.container.ContainerOpenContext;
+import appeng.container.implementations.ContainerCraftAmount;
+import appeng.helpers.InventoryAction;
+import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

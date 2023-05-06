@@ -6,6 +6,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.inventory.AeItemStackHandler;
+import com.glodblock.github.inventory.AeStackInventory;
+import com.glodblock.github.inventory.AeStackInventoryImpl;
+import com.google.common.collect.ImmutableSet;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -40,12 +46,6 @@ import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.item.AEItemStack;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.inventory.AeItemStackHandler;
-import com.glodblock.github.inventory.AeStackInventory;
-import com.glodblock.github.inventory.AeStackInventoryImpl;
-import com.google.common.collect.ImmutableSet;
 import io.netty.buffer.ByteBuf;
 
 public class TileLevelMaintainer extends AENetworkTile

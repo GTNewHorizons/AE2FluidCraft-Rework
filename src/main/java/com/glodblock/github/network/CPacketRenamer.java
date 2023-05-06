@@ -7,10 +7,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.container.AEBaseContainer;
-import appeng.helpers.ICustomNameObject;
-import appeng.tile.networking.TileCableBus;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -18,6 +14,9 @@ import com.glodblock.github.inventory.item.IWirelessInterfaceTerminal;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
+import appeng.container.AEBaseContainer;
+import appeng.helpers.ICustomNameObject;
+import appeng.tile.networking.TileCableBus;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

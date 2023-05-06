@@ -20,6 +20,10 @@ import javax.annotation.Nonnull;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.util.FluidSorters;
+import com.glodblock.github.util.Util;
+
 import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.storage.data.IAEItemStack;
@@ -30,10 +34,6 @@ import appeng.client.me.ItemRepo;
 import appeng.core.AEConfig;
 import appeng.items.storage.ItemViewCell;
 import appeng.util.prioitylist.IPartitionList;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.util.FluidSorters;
-import com.glodblock.github.util.Util;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class FluidRepo extends ItemRepo {

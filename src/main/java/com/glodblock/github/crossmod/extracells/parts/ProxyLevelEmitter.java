@@ -2,10 +2,10 @@ package com.glodblock.github.crossmod.extracells.parts;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import appeng.api.config.RedstoneMode;
-
 import com.glodblock.github.crossmod.extracells.ProxyPart;
 import com.glodblock.github.crossmod.extracells.ProxyPartItem;
+
+import appeng.api.config.RedstoneMode;
 
 public class ProxyLevelEmitter extends ProxyPart {
 

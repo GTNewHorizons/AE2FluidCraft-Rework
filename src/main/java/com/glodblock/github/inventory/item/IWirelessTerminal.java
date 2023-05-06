@@ -2,13 +2,13 @@ package com.glodblock.github.inventory.item;
 
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
+
 import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.api.implementations.tiles.IViewCellStorage;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.security.IActionHost;
 import appeng.tile.inventory.IAEAppEngInventory;
-
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 
 public interface IWirelessTerminal
         extends IFluidPortableCell, IViewCellStorage, IAEAppEngInventory, IGridHost, IActionHost {

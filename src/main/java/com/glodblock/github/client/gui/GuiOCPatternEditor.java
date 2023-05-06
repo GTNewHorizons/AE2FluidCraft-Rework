@@ -4,13 +4,13 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 
-import appeng.client.gui.AEBaseGui;
-import appeng.core.localization.GuiText;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
 import com.glodblock.github.common.tile.TileOCPatternEditor;
 import com.glodblock.github.util.NameConst;
+
+import appeng.client.gui.AEBaseGui;
+import appeng.core.localization.GuiText;
 
 public class GuiOCPatternEditor extends AEBaseGui {
 

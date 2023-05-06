@@ -2,10 +2,10 @@ package com.glodblock.github.inventory;
 
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.util.DualityFluidInterface;
+
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.tile.inventory.AppEngInternalAEInventory;
-
-import com.glodblock.github.util.DualityFluidInterface;
 
 public interface IDualHost extends IFluidHandler, IAEFluidInventory {
 

@@ -7,6 +7,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import com.glodblock.github.inventory.AeStackInventory;
+import com.glodblock.github.inventory.AeStackInventoryImpl;
+
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.tile.AEBaseTile;
@@ -15,9 +18,6 @@ import appeng.tile.events.TileEventType;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
-
-import com.glodblock.github.inventory.AeStackInventory;
-import com.glodblock.github.inventory.AeStackInventoryImpl;
 
 public class TileFluidPatternEncoder extends AEBaseTile implements IAEAppEngInventory {
 

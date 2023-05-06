@@ -4,12 +4,12 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
-import appeng.client.render.BaseBlockRender;
-import appeng.client.render.BlockRenderInfo;
-
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.block.BlockLevelMaintainer;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
+
+import appeng.client.render.BaseBlockRender;
+import appeng.client.render.BlockRenderInfo;
 
 public class RenderBlockLevelMaintainer extends BaseBlockRender<BlockLevelMaintainer, TileLevelMaintainer> {
 

@@ -10,6 +10,10 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.common.item.ItemCreativeFluidStorageCell;
+import com.glodblock.github.crossmod.extracells.storage.ProxyFluidCellInventory;
+import com.glodblock.github.crossmod.extracells.storage.ProxyFluidStorageCell;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.exceptions.AppEngException;
@@ -21,10 +25,6 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.common.item.ItemCreativeFluidStorageCell;
-import com.glodblock.github.crossmod.extracells.storage.ProxyFluidCellInventory;
-import com.glodblock.github.crossmod.extracells.storage.ProxyFluidStorageCell;
 
 public class FluidCellInventory implements IFluidCellInventory {
 

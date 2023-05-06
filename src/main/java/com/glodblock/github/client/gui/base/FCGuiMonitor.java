@@ -15,6 +15,15 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.*;
+import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.network.CPacketInventoryAction;
+import com.glodblock.github.util.Ae2ReflectClient;
+import com.glodblock.github.util.ModAndClassUtil;
+
 import appeng.api.config.*;
 import appeng.api.implementations.tiles.IViewCellStorage;
 import appeng.api.storage.ITerminalHost;
@@ -44,15 +53,6 @@ import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.util.TextHistory;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.*;
-import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.network.CPacketInventoryAction;
-import com.glodblock.github.util.Ae2ReflectClient;
-import com.glodblock.github.util.ModAndClassUtil;
 
 public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         implements ISortSource, IConfigManagerHost, IDropToFillTextField {

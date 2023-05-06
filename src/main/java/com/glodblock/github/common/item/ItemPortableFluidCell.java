@@ -12,18 +12,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.api.AEApi;
-import appeng.api.config.FuzzyMode;
-import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.StorageChannel;
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.core.features.AEFeature;
-import appeng.core.localization.GuiText;
-import appeng.items.contents.CellConfig;
-import appeng.items.contents.CellUpgrades;
-import appeng.items.tools.powered.powersink.AEBasePoweredItem;
-import appeng.util.Platform;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.storage.IFluidCellInventory;
@@ -41,6 +29,17 @@ import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 import com.google.common.base.Optional;
 
+import appeng.api.AEApi;
+import appeng.api.config.FuzzyMode;
+import appeng.api.storage.IMEInventoryHandler;
+import appeng.api.storage.StorageChannel;
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.core.features.AEFeature;
+import appeng.core.localization.GuiText;
+import appeng.items.contents.CellConfig;
+import appeng.items.contents.CellUpgrades;
+import appeng.items.tools.powered.powersink.AEBasePoweredItem;
+import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

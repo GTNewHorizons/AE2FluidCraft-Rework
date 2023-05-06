@@ -10,13 +10,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
 
+import com.glodblock.github.util.ObjectArrayIterator;
+import com.glodblock.github.util.Util;
+
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEStack;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.util.item.AEItemStack;
-
-import com.glodblock.github.util.ObjectArrayIterator;
-import com.glodblock.github.util.Util;
 
 public class AeStackInventoryImpl<T extends IAEStack<T>> implements AeStackInventory<T> {
 

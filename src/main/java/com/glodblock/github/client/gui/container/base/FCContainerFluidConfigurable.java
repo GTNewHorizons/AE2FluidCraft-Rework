@@ -10,6 +10,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
+import com.glodblock.github.network.SPacketFluidUpdate;
+import com.glodblock.github.util.Ae2Reflect;
+import com.glodblock.github.util.Util;
+
 import appeng.api.config.Upgrades;
 import appeng.api.implementations.IUpgradeableHost;
 import appeng.api.storage.data.IAEFluidStack;
@@ -18,13 +25,6 @@ import appeng.container.slot.AppEngSlot;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
-import com.glodblock.github.network.SPacketFluidUpdate;
-import com.glodblock.github.util.Ae2Reflect;
-import com.glodblock.github.util.Util;
 
 public abstract class FCContainerFluidConfigurable extends ContainerUpgradeable {
 

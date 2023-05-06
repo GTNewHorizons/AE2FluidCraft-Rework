@@ -3,6 +3,13 @@ package com.glodblock.github.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
+import com.glodblock.github.common.parts.PartFluidLevelEmitter;
+import com.glodblock.github.network.CPacketValueConfig;
+import com.glodblock.github.util.Ae2ReflectClient;
+import com.glodblock.github.util.NameConst;
+
 import appeng.api.config.*;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.client.gui.implementations.GuiUpgradeable;
@@ -13,13 +20,6 @@ import appeng.core.AEConfig;
 import appeng.core.AELog;
 import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
-import com.glodblock.github.common.parts.PartFluidLevelEmitter;
-import com.glodblock.github.network.CPacketValueConfig;
-import com.glodblock.github.util.Ae2ReflectClient;
-import com.glodblock.github.util.NameConst;
 
 public class GuiFluidLevelEmitter extends GuiUpgradeable {
 

@@ -5,13 +5,13 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 
+import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
+
 import appeng.api.storage.ITerminalHost;
 import appeng.container.slot.IOptionalSlotHost;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.helpers.InventoryAction;
 import appeng.util.Platform;
-
-import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
 
 public class ContainerFluidPatternTerminalEx extends FCContainerEncodeTerminal {
 

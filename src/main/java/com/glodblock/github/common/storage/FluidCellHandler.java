@@ -5,13 +5,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 
-import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.storage.*;
-import appeng.client.texture.ExtraBlockTextures;
-
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
+
+import appeng.api.implementations.tiles.IChestOrDrive;
+import appeng.api.storage.*;
+import appeng.client.texture.ExtraBlockTextures;
 
 public class FluidCellHandler implements ICellHandler {
 

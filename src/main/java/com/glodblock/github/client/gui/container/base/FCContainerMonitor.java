@@ -10,6 +10,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
+
 import appeng.api.config.*;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IEnergyGrid;
@@ -28,9 +31,6 @@ import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.util.ConfigManager;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
-
-import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseContainer
         implements IConfigManagerHost, IConfigurableObject, IMEMonitorHandlerReceiver<T> {

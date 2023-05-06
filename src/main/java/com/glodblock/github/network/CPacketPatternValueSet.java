@@ -8,10 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.api.networking.IGridHost;
-import appeng.container.ContainerOpenContext;
-import appeng.container.slot.SlotFake;
-
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -22,6 +18,9 @@ import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
+import appeng.api.networking.IGridHost;
+import appeng.container.ContainerOpenContext;
+import appeng.container.slot.SlotFake;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

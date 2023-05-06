@@ -6,10 +6,10 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import com.glodblock.github.util.RenderUtil;
+
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.client.lib.UtilsFX;
-
-import com.glodblock.github.util.RenderUtil;
 
 public class AspectRender {
 

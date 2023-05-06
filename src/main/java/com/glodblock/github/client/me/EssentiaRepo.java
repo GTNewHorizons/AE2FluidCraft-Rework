@@ -5,13 +5,13 @@ import java.util.Iterator;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
+
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.widgets.IScrollSource;
 import appeng.client.gui.widgets.ISortSource;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 
 public class EssentiaRepo extends FluidRepo {
 

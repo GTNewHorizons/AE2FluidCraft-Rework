@@ -7,6 +7,10 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.inventory.AEFluidInventory;
+import com.glodblock.github.inventory.IAEFluidInventory;
+import com.glodblock.github.inventory.IAEFluidTank;
+
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.IPowerChannelState;
@@ -22,10 +26,6 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
 import appeng.util.item.AEFluidStack;
-
-import com.glodblock.github.inventory.AEFluidInventory;
-import com.glodblock.github.inventory.IAEFluidInventory;
-import com.glodblock.github.inventory.IAEFluidTank;
 import io.netty.buffer.ByteBuf;
 
 public class TileFluidBuffer extends AENetworkTile implements IAEFluidInventory, IFluidHandler, IPowerChannelState {

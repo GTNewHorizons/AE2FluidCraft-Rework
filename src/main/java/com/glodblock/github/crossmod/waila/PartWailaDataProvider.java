@@ -2,10 +2,6 @@ package com.glodblock.github.crossmod.waila;
 
 import java.util.List;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataProvider;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,16 +9,19 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-import appeng.api.parts.IPart;
-import appeng.integration.modules.waila.part.IPartWailaDataProvider;
-import appeng.integration.modules.waila.part.PartAccessor;
-import appeng.integration.modules.waila.part.Tracer;
-
 import com.glodblock.github.crossmod.waila.part.FluidInvWailaDataProvider;
 import com.glodblock.github.crossmod.waila.part.FluidMonitorWailaDataProvider;
 import com.glodblock.github.crossmod.waila.part.SpeedWailaDataProvider;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
+import appeng.api.parts.IPart;
+import appeng.integration.modules.waila.part.IPartWailaDataProvider;
+import appeng.integration.modules.waila.part.PartAccessor;
+import appeng.integration.modules.waila.part.Tracer;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 
 public class PartWailaDataProvider implements IWailaDataProvider {
 

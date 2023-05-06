@@ -6,13 +6,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import appeng.api.storage.ITerminalHost;
-import appeng.container.implementations.ContainerCraftAmount;
-import appeng.container.implementations.ContainerCraftingStatus;
-import appeng.container.implementations.ContainerPriority;
-import appeng.helpers.IInterfaceHost;
-import appeng.helpers.IPriorityHost;
-
 import com.glodblock.github.client.gui.*;
 import com.glodblock.github.client.gui.container.*;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
@@ -24,6 +17,13 @@ import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.inventory.item.IFluidPortableCell;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.google.common.collect.ImmutableList;
+
+import appeng.api.storage.ITerminalHost;
+import appeng.container.implementations.ContainerCraftAmount;
+import appeng.container.implementations.ContainerCraftingStatus;
+import appeng.container.implementations.ContainerPriority;
+import appeng.helpers.IInterfaceHost;
+import appeng.helpers.IPriorityHost;
 
 public enum GuiType {
 

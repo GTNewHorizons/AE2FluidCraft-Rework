@@ -15,6 +15,14 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
+import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.network.CPacketFluidUpdate;
+import com.glodblock.github.network.SPacketFluidUpdate;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
+import com.glodblock.github.util.Util;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.implementations.tiles.IViewCellStorage;
@@ -36,14 +44,6 @@ import appeng.me.helpers.ChannelPowerSrc;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.network.CPacketFluidUpdate;
-import com.glodblock.github.network.SPacketFluidUpdate;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
-import com.glodblock.github.util.Util;
 
 public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
 

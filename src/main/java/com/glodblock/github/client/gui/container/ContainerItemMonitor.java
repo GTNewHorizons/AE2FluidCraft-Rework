@@ -9,6 +9,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
+import com.glodblock.github.network.SPacketMEUpdateBuffer;
+
 import appeng.api.AEApi;
 import appeng.api.implementations.tiles.IViewCellStorage;
 import appeng.api.networking.IGrid;
@@ -25,9 +28,6 @@ import appeng.api.storage.data.IItemList;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.me.helpers.ChannelPowerSrc;
 import appeng.util.Platform;
-
-import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
 

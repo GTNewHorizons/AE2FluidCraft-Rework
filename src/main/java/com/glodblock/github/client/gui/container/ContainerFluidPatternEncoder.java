@@ -9,12 +9,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import appeng.api.AEApi;
-import appeng.api.storage.data.IAEItemStack;
-import appeng.container.AEBaseContainer;
-import appeng.container.slot.SlotRestrictedInput;
-import appeng.helpers.InventoryAction;
-
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -26,6 +20,12 @@ import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.Util;
+
+import appeng.api.AEApi;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.container.AEBaseContainer;
+import appeng.container.slot.SlotRestrictedInput;
+import appeng.helpers.InventoryAction;
 
 public class ContainerFluidPatternEncoder extends AEBaseContainer implements IPatternConsumer {
 

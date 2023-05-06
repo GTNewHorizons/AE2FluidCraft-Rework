@@ -5,13 +5,12 @@ import java.util.List;
 
 import net.minecraftforge.fluids.FluidStack;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.recipe.IRecipeHandler;
-import codechicken.nei.recipe.TemplateRecipeHandler;
-
 import com.glodblock.github.nei.object.IRecipeExtractorLegacy;
 import com.glodblock.github.nei.object.OrderStack;
 
+import codechicken.nei.PositionedStack;
+import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.TemplateRecipeHandler;
 import forestry.core.recipes.nei.PositionedFluidTank;
 import forestry.core.recipes.nei.RecipeHandlerBase;
 import forestry.factory.recipes.nei.NEIHandlerFabricator;

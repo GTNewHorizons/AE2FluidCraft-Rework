@@ -7,14 +7,14 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 
-import appeng.client.gui.AEBaseMEGui;
-
 import com.glodblock.github.client.gui.*;
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.ModAndClassUtil;
+
+import appeng.client.gui.AEBaseMEGui;
 
 public abstract class FCBaseMEGui extends AEBaseMEGui {
 

@@ -2,11 +2,11 @@ package com.glodblock.github.inventory;
 
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.inventory.item.IWirelessPatternTerminal;
+
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
-
-import com.glodblock.github.inventory.item.IWirelessPatternTerminal;
 
 public class WirelessFluidPatternTerminalPatterns extends AppEngInternalInventory {
 

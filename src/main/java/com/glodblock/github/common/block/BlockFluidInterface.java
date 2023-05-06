@@ -7,12 +7,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import appeng.api.util.IOrientable;
-import appeng.block.AEBaseItemBlock;
-import appeng.core.features.AEFeature;
-import appeng.tile.misc.TileInterface;
-import appeng.util.Platform;
-
 import com.glodblock.github.client.render.RenderBlockFluidInterface;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileFluidInterface;
@@ -21,6 +15,11 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.util.IOrientable;
+import appeng.block.AEBaseItemBlock;
+import appeng.core.features.AEFeature;
+import appeng.tile.misc.TileInterface;
+import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

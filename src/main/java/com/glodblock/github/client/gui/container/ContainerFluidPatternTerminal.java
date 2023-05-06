@@ -7,14 +7,14 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 
+import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
+
 import appeng.api.storage.ITerminalHost;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.container.slot.SlotPatternTerm;
 import appeng.util.Platform;
-
-import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
 
 public class ContainerFluidPatternTerminal extends FCContainerEncodeTerminal {
 

@@ -15,13 +15,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
-import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.api.storage.data.IAEItemStack;
-import appeng.client.me.SlotME;
-import appeng.client.render.AppEngRenderItem;
-import appeng.container.slot.AppEngSlot;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerFluidMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
@@ -30,6 +23,13 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.util.Ae2ReflectClient;
 import com.glodblock.github.util.Util;
+
+import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.client.me.SlotME;
+import appeng.client.render.AppEngRenderItem;
+import appeng.container.slot.AppEngSlot;
 
 public class GuiFluidTerminal extends GuiFluidMonitor {
 

@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+
 import cpw.mods.fml.client.registry.ClientRegistry;
 
 public class ItemWalrusRender implements IItemRenderer {

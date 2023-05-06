@@ -10,13 +10,12 @@ import java.util.stream.Collectors;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.recipe.IRecipeHandler;
-
 import com.glodblock.github.nei.object.IRecipeExtractor;
 import com.glodblock.github.nei.object.OrderStack;
 import com.glodblock.github.util.Ae2Reflect;
 
+import codechicken.nei.PositionedStack;
+import codechicken.nei.recipe.IRecipeHandler;
 import ic2.neiIntegration.core.recipehandler.FluidCannerRecipeHandler;
 import ic2.neiIntegration.core.recipehandler.OreWashingRecipeHandler;
 

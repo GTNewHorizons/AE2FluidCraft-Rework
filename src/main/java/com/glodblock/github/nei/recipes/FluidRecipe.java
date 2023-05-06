@@ -6,13 +6,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import codechicken.nei.PositionedStack;
-import codechicken.nei.recipe.IRecipeHandler;
-import codechicken.nei.recipe.TemplateRecipeHandler;
-
 import com.glodblock.github.nei.object.IRecipeExtractor;
 import com.glodblock.github.nei.object.IRecipeExtractorLegacy;
 import com.glodblock.github.nei.object.OrderStack;
+
+import codechicken.nei.PositionedStack;
+import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.TemplateRecipeHandler;
 
 public final class FluidRecipe {
 

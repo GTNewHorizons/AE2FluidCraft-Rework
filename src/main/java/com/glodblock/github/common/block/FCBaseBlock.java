@@ -8,15 +8,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.loader.IRegister;
+
 import appeng.block.AEBaseTileBlock;
 import appeng.core.features.AEFeature;
 import appeng.core.features.ActivityState;
 import appeng.core.features.BlockStackSrc;
 import appeng.tile.AEBaseTile;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.loader.IRegister;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

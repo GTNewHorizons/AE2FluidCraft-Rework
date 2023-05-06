@@ -2,20 +2,19 @@ package com.glodblock.github.crossmod.waila.tile;
 
 import java.util.List;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.integration.modules.waila.BaseWailaDataProvider;
-
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.crossmod.waila.Tooltip;
+
+import appeng.api.storage.data.IAEItemStack;
+import appeng.integration.modules.waila.BaseWailaDataProvider;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public class LevelMaintainerWailaDataProvide extends BaseWailaDataProvider {
 

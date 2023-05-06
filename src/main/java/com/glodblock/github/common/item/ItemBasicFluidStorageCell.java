@@ -12,10 +12,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 
-import appeng.api.exceptions.MissingDefinition;
-import appeng.core.AEConfig;
-import appeng.core.features.AEFeature;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.storage.CellType;
@@ -26,6 +22,9 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
 import com.google.common.base.Optional;
 
+import appeng.api.exceptions.MissingDefinition;
+import appeng.core.AEConfig;
+import appeng.core.features.AEFeature;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

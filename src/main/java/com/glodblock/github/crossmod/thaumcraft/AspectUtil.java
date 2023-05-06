@@ -9,6 +9,8 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.util.item.AEFluidStack;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.common.Thaumcraft;
@@ -16,8 +18,6 @@ import thaumicenergistics.api.storage.IAspectStack;
 import thaumicenergistics.common.fluids.GaseousEssentia;
 import thaumicenergistics.common.integration.tc.EssentiaItemContainerHelper;
 import thaumicenergistics.common.storage.AspectStack;
-import appeng.api.storage.data.IAEFluidStack;
-import appeng.util.item.AEFluidStack;
 
 public class AspectUtil {
 

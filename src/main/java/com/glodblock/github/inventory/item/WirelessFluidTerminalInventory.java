@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.util.Util;
+
 import appeng.api.config.*;
 import appeng.api.implementations.items.IAEItemPowerStorage;
 import appeng.api.networking.IGridNode;
@@ -25,8 +27,6 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.Platform;
-
-import com.glodblock.github.util.Util;
 
 public class WirelessFluidTerminalInventory extends MEMonitorHandler<IAEFluidStack> implements IWirelessTerminal {
 

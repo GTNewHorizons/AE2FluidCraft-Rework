@@ -2,8 +2,6 @@ package com.glodblock.github;
 
 import net.minecraft.util.ResourceLocation;
 
-import appeng.api.AEApi;
-
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.storage.FluidCellHandler;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
@@ -19,6 +17,7 @@ import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.proxy.CommonProxy;
 import com.glodblock.github.util.ModAndClassUtil;
 
+import appeng.api.AEApi;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;

@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
+
 import appeng.container.slot.SlotCraftingMatrix;
 import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.core.sync.network.NetworkHandler;
@@ -18,8 +20,6 @@ import appeng.util.Platform;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.recipe.IRecipeHandler;
-
-import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
 
 public class FluidCraftingTransferHandler implements IOverlayHandler {
 

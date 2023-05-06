@@ -5,15 +5,15 @@ import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-import codechicken.nei.api.IOverlayHandler;
-import codechicken.nei.recipe.IRecipeHandler;
-import codechicken.nei.recipe.TemplateRecipeHandler;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.base.FCGuiEncodeTerminal;
 import com.glodblock.github.nei.object.OrderStack;
 import com.glodblock.github.nei.recipes.FluidRecipe;
 import com.glodblock.github.network.CPacketTransferRecipe;
+
+import codechicken.nei.api.IOverlayHandler;
+import codechicken.nei.recipe.IRecipeHandler;
+import codechicken.nei.recipe.TemplateRecipeHandler;
 
 public class FluidPatternTerminalRecipeTransferHandler implements IOverlayHandler {
 

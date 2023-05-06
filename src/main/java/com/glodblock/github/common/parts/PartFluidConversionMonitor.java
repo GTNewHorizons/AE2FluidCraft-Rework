@@ -14,6 +14,9 @@ import net.minecraftforge.fluids.IFluidContainerItem;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.util.Util;
+
 import appeng.api.config.Actionable;
 import appeng.api.networking.energy.IEnergySource;
 import appeng.api.networking.security.PlayerSource;
@@ -22,9 +25,6 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.me.GridAccessException;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
-
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.util.Util;
 
 public class PartFluidConversionMonitor extends PartFluidStorageMonitor {
 

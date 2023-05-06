@@ -2,9 +2,6 @@ package com.glodblock.github.crossmod.waila.tile;
 
 import java.util.List;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -13,8 +10,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
-import appeng.integration.modules.waila.BaseWailaDataProvider;
-
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.tile.TileFluidBuffer;
 import com.glodblock.github.common.tile.TileFluidInterface;
@@ -22,6 +17,10 @@ import com.glodblock.github.common.tile.TileFluidPacketDecoder;
 import com.glodblock.github.crossmod.waila.Tooltip;
 import com.glodblock.github.inventory.IAEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
+
+import appeng.integration.modules.waila.BaseWailaDataProvider;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public class FluidInvWailaDataProvider extends BaseWailaDataProvider {
 

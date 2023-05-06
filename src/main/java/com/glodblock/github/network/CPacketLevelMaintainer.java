@@ -9,12 +9,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.util.item.AEItemStack;
-
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 
+import appeng.api.storage.data.IAEItemStack;
+import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

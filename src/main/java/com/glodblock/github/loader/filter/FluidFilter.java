@@ -4,12 +4,12 @@ import static appeng.api.config.TypeFilter.*;
 
 import net.minecraft.item.Item;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
+
 import appeng.api.config.TypeFilter;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.client.me.ItemRepo;
-
-import com.glodblock.github.common.item.ItemFluidDrop;
 
 public class FluidFilter {
 

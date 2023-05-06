@@ -5,6 +5,10 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.network.CPacketSwitchGuis;
+
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.container.AEBaseContainer;
@@ -12,10 +16,6 @@ import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.network.CPacketSwitchGuis;
 
 public abstract class FCGuiAmount extends AEBaseGui {
 

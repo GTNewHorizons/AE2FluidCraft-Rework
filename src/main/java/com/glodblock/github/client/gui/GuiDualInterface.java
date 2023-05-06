@@ -6,6 +6,16 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Mouse;
 
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.ContainerDualInterface;
+import com.glodblock.github.common.parts.PartFluidInterface;
+import com.glodblock.github.common.tile.TileFluidInterface;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.network.CPacketSwitchGuis;
+import com.glodblock.github.util.ModAndClassUtil;
+import com.glodblock.github.util.NameConst;
+
 import appeng.api.config.*;
 import appeng.client.gui.implementations.GuiUpgradeable;
 import appeng.client.gui.widgets.GuiImgButton;
@@ -16,16 +26,6 @@ import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketConfigButton;
 import appeng.helpers.IInterfaceHost;
-
-import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.container.ContainerDualInterface;
-import com.glodblock.github.common.parts.PartFluidInterface;
-import com.glodblock.github.common.tile.TileFluidInterface;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.network.CPacketSwitchGuis;
-import com.glodblock.github.util.ModAndClassUtil;
-import com.glodblock.github.util.NameConst;
 
 public class GuiDualInterface extends GuiUpgradeable {
 

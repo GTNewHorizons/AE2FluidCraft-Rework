@@ -4,14 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import li.cil.oc.api.Items;
-import li.cil.oc.api.detail.ItemInfo;
-
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-
-import appeng.api.AEApi;
-import appeng.api.definitions.IItemDefinition;
 
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
 import com.glodblock.github.common.item.ItemMultiFluidStorageCell;
@@ -19,9 +13,13 @@ import com.glodblock.github.crossmod.extracells.parts.*;
 import com.glodblock.github.crossmod.extracells.storage.*;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 
+import appeng.api.AEApi;
+import appeng.api.definitions.IItemDefinition;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
+import li.cil.oc.api.Items;
+import li.cil.oc.api.detail.ItemInfo;
 
 /**
  * Shell class to organize proxy replacements and hide the ugliness
