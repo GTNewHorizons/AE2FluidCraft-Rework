@@ -14,7 +14,8 @@ public class EC2Replacer {
      * entire EC2 mod. After running this once, you should set replaceEC2 back to false.
      */
     public static void initReplacer() {
-        ItemReplacements.init();
+        System.out.println("Extra Cells not detected, and configuration set. Replacing extra cells.");
+        ItemReplacements.postinit();
     }
 
     public static void replaceExtraCells(FMLMissingMappingsEvent event) {

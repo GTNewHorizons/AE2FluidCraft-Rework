@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
+import li.cil.oc.OpenComputers;
+import li.cil.oc.api.Items;
+import li.cil.oc.api.detail.ItemInfo;
 import net.minecraft.item.Item;
 
 import appeng.api.AEApi;
@@ -22,11 +27,14 @@ public class ItemReplacements {
 
     protected static Map<String, Item> registry;
 
-    static void init() {
+    static void postinit() {
         registry = new HashMap<>(23);
         ProxyFluidBusIO.init();
         ItemReplacements.proxyItems();
         ItemReplacements.proxyPartItems();
+        if (Loader.isModLoaded("OpenComputers")) {
+            deprecateOC();
+        }
     }
 
     /**
@@ -85,6 +93,23 @@ public class ItemReplacements {
         deprecateItem("storage.component", 9, ItemAndBlockHolder.CELL_PART, 5);
         deprecateItem("storage.component", 10, ItemAndBlockHolder.CELL_PART, 6);
         deprecateItem("terminal.universal.wireless", ItemAndBlockHolder.WIRELESS_ULTRA_TERM);
+
+    }
+
+    /**
+     * Deprecate OC upgrades. Wrapper so we don't need a hard dependency
+     */
+    @Optional.Method(modid="OpenComputers")
+    static void deprecateOC() {
+        ItemInfo info = Items.get("me_upgrade1");
+        if (info != null) {
+            // Note EC tier 1, 2, 3 corresponds to the correct meta equivalent in OC, so we can be lazy
+            deprecateItem("oc.upgrade", 0, info.item(), 0);
+            deprecateItem("oc.upgrade", 1, info.item(), 1);
+            deprecateItem("oc.upgrade", 2, info.item(), 2);
+        } else {
+            System.out.println("OpenComputers detected, but could not replace items: me_upgrade1");
+        }
     }
 
     /**

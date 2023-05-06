@@ -31,12 +31,12 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
         FMLCommonHandler.instance().bus().register(SPacketMEUpdateBuffer.class);
-        if (!ModAndClassUtil.EC2 && Config.replaceEC2) {
-            EC2Replacer.initReplacer();
-        }
     }
 
     public void postInit(FMLPostInitializationEvent event) {
+        if (!ModAndClassUtil.EC2 && Config.replaceEC2) {
+            EC2Replacer.initReplacer();
+        }
         if (ModAndClassUtil.isBigInterface) {
             Upgrades.PATTERN_CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 3);
             Upgrades.PATTERN_CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 3);
