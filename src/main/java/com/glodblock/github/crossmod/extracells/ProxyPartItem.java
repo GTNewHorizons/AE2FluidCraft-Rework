@@ -2,12 +2,12 @@ package com.glodblock.github.crossmod.extracells;
 
 import java.util.function.Function;
 
-import appeng.api.definitions.IItemDefinition;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
 
+import appeng.api.definitions.IItemDefinition;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartItem;
 
@@ -37,6 +37,7 @@ public class ProxyPartItem extends ProxyItem implements IPartItem {
         ItemStack stack = replacement.maybeStack(1).get();
         this.replacements.put(srcMeta, new PartReplacement(stack.getItem(), stack.getItemDamage(), part));
     }
+
     @Nullable
     @Override
     public IPart createPartFromItemStack(ItemStack is) {

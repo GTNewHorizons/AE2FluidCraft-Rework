@@ -4,24 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Optional;
-import li.cil.oc.OpenComputers;
 import li.cil.oc.api.Items;
 import li.cil.oc.api.detail.ItemInfo;
+
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 
 import appeng.api.AEApi;
 import appeng.api.definitions.IItemDefinition;
 
+import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
 import com.glodblock.github.common.item.ItemMultiFluidStorageCell;
 import com.glodblock.github.crossmod.extracells.parts.*;
 import com.glodblock.github.crossmod.extracells.storage.*;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
 
 /**
  * Shell class to organize proxy replacements and hide the ugliness
@@ -102,7 +102,7 @@ public class ItemReplacements {
     /**
      * Deprecate OC upgrades. Wrapper so we don't need a hard dependency
      */
-    @Optional.Method(modid="OpenComputers")
+    @Optional.Method(modid = "OpenComputers")
     static void deprecateOC() {
         ItemInfo info = Items.get("me_upgrade1");
         if (info != null) {
@@ -201,20 +201,19 @@ public class ItemReplacements {
     }
 
     private static void deprecateWireless(String srcName, ItemBaseWirelessTerminal replacement) {
-        getOrBuildItem(srcName).addMetaReplacement(0,
-            new ProxyItem.ProxyItemEntry(replacement, 0) {
-                @Override
-                NBTTagCompound replaceNBT(NBTTagCompound compound) {
-                    double power = compound.getDouble("power");
-                    compound.removeTag("power");
-                    compound.setDouble("internalCurrentPower", power);
-                    String key = compound.getString("key");
-                    compound.removeTag("key");
-                    compound.setString("encryptionKey", key);
-                    return compound;
-                }
+        getOrBuildItem(srcName).addMetaReplacement(0, new ProxyItem.ProxyItemEntry(replacement, 0) {
+
+            @Override
+            NBTTagCompound replaceNBT(NBTTagCompound compound) {
+                double power = compound.getDouble("power");
+                compound.removeTag("power");
+                compound.setDouble("internalCurrentPower", power);
+                String key = compound.getString("key");
+                compound.removeTag("key");
+                compound.setString("encryptionKey", key);
+                return compound;
             }
-        );
+        });
     }
 
     private static void deprecateItemPart(int srcMeta, Item replacement,
@@ -230,7 +229,7 @@ public class ItemReplacements {
     }
 
     private static void deprecateItemPart(int srcMeta, IItemDefinition definition,
-                                          Function<ProxyPartItem, ProxyPart> partBuilder) {
+            Function<ProxyPartItem, ProxyPart> partBuilder) {
         if (definition.isEnabled()) {
             final String fullName = "extracells:part.base";
             ProxyPartItem proxyItem = (ProxyPartItem) registry.get(fullName);
