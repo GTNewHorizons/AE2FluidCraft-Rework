@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import li.cil.oc.OpenComputers;
@@ -19,6 +20,8 @@ import com.glodblock.github.crossmod.extracells.parts.*;
 import com.glodblock.github.crossmod.extracells.storage.*;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
 
 /**
  * Shell class to organize proxy replacements and hide the ugliness
@@ -76,7 +79,7 @@ public class ItemReplacements {
         GameRegistry.registerItem(voidCell, "ec2placeholder.storage.physical.void");
         registry.put("extracells:storage.physical.void", voidCell);
         deprecateItem("pattern.fluid", ItemAndBlockHolder.PATTERN);
-        deprecateItem("terminal.fluid.wireless", ItemAndBlockHolder.WIRELESS_FLUID_TERM);
+        deprecateWireless("terminal.fluid.wireless", ItemAndBlockHolder.WIRELESS_FLUID_TERM);
         /* Storage casings */
         deprecateItem("storage.casing", 0, AEApi.instance().definitions().materials().emptyAdvancedStorageCell());
         deprecateItem("storage.casing", 1, ItemAndBlockHolder.CELL_HOUSING, 2);
@@ -92,7 +95,7 @@ public class ItemReplacements {
         deprecateItem("storage.component", 8, ItemAndBlockHolder.CELL_PART, 4);
         deprecateItem("storage.component", 9, ItemAndBlockHolder.CELL_PART, 5);
         deprecateItem("storage.component", 10, ItemAndBlockHolder.CELL_PART, 6);
-        deprecateItem("terminal.universal.wireless", ItemAndBlockHolder.WIRELESS_ULTRA_TERM);
+        deprecateWireless("terminal.universal.wireless", ItemAndBlockHolder.WIRELESS_ULTRA_TERM);
 
     }
 
@@ -183,10 +186,6 @@ public class ItemReplacements {
         getOrBuildItem(srcName).addMetaReplacement(srcMeta, replacement, targetMeta);
     }
 
-    static void deprecateItemBlock(String srcName, int srcMeta, Item replacement, int targetMeta) {
-        getOrBuildItem("itemBlock." + srcName).addMetaReplacement(srcMeta, replacement, targetMeta);
-    }
-
     private static void deprecateItem(String srcName, Item replacement) {
         deprecateItem(srcName, 0, replacement, 0);
     }
@@ -199,6 +198,23 @@ public class ItemReplacements {
                     replacement.maybeItem().get(),
                     replacement.maybeStack(1).get().getItemDamage());
         }
+    }
+
+    private static void deprecateWireless(String srcName, ItemBaseWirelessTerminal replacement) {
+        getOrBuildItem(srcName).addMetaReplacement(0,
+            new ProxyItem.ProxyItemEntry(replacement, 0) {
+                @Override
+                NBTTagCompound replaceNBT(NBTTagCompound compound) {
+                    double power = compound.getDouble("power");
+                    compound.removeTag("power");
+                    compound.setDouble("internalCurrentPower", power);
+                    String key = compound.getString("key");
+                    compound.removeTag("key");
+                    compound.setString("encryptionKey", key);
+                    return compound;
+                }
+            }
+        );
     }
 
     private static void deprecateItemPart(int srcMeta, Item replacement,
