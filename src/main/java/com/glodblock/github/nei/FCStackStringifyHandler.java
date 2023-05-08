@@ -25,7 +25,7 @@ public class FCStackStringifyHandler implements IStackStringifyHandler {
     public FluidStack getFluid(ItemStack item) {
         if (item.getItem() instanceof ItemFluidDrop) {
             FluidStack fluid = ItemFluidDrop.getFluidStack(item);
-            fluid.amount /= item.stackSize;
+            fluid.amount /= Math.max(item.stackSize, 1);
             return fluid;
         } else if (item.getItem() instanceof ItemFluidPacket) {
             return ItemFluidPacket.getFluidStack(item);
