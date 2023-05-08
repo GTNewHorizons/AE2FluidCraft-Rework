@@ -8,12 +8,14 @@ import com.glodblock.github.util.ModAndClassUtil;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 
+@SuppressWarnings("unused")
 public class NEI_FC_Config implements IConfigureNEI {
 
     @Override
     public void loadConfig() {
         API.registerNEIGuiHandler(new NEIGuiHandler());
         API.addSearchProvider(new NEIItemFilter());
+        API.registerStackStringifyHandler(new FCStackStringifyHandler());
 
         if (ModAndClassUtil.AVARITIA) {
             API.registerGuiOverlay(GuiFluidPatternWireless.class, "extreme", null);
