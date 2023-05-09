@@ -430,7 +430,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         if (te instanceof IGregTechTileEntity) {
             IMetaTileEntity mte = ((IGregTechTileEntity) te).getMetaTileEntity();
             if (mte instanceof MetaPipeEntity) {
-                return ((MetaPipeEntity) mte).isConnectedAtSide(direction.ordinal());
+                return ((MetaPipeEntity) mte).isConnectedAtSide(direction);
             }
         }
         return true;
