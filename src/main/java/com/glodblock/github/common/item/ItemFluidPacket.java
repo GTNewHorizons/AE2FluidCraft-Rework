@@ -34,6 +34,7 @@ public class ItemFluidPacket extends FCBaseItem {
         setMaxStackSize(1);
     }
 
+    @Nullable
     public static FluidStack getFluidStack(ItemStack stack) {
         if (stack == null || !stack.hasTagCompound()) {
             return null;
@@ -82,10 +83,12 @@ public class ItemFluidPacket extends FCBaseItem {
         }
     }
 
+    @Nullable
     public static FluidStack getFluidStack(@Nullable IAEItemStack stack) {
         return stack != null ? getFluidStack(stack.getItemStack()) : null;
     }
 
+    @Nullable
     public static ItemStack newStack(@Nullable FluidStack fluid) {
         if (fluid == null || fluid.amount == 0) {
             return null;
@@ -99,6 +102,7 @@ public class ItemFluidPacket extends FCBaseItem {
         return stack;
     }
 
+    @Nullable
     public static ItemStack newStack(@Nullable IAEFluidStack fluid) {
         if (fluid == null || fluid.getStackSize() == 0) {
             return null;
@@ -106,6 +110,7 @@ public class ItemFluidPacket extends FCBaseItem {
         return newStack(fluid.getFluidStack());
     }
 
+    @Nullable
     public static ItemStack newDisplayStack(@Nullable FluidStack fluid) {
         if (fluid == null) {
             return null;

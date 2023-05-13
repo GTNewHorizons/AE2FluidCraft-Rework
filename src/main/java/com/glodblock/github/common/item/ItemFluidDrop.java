@@ -86,6 +86,7 @@ public class ItemFluidDrop extends FCBaseItem {
         shape = aIconRegister.registerIcon(NameConst.RES_KEY + NameConst.ITEM_FLUID_DROP);
     }
 
+    @Nullable
     public static ItemStack newStack(@Nullable FluidStack fluid) {
         if (fluid == null || fluid.amount <= 0) {
             return null;
@@ -97,6 +98,7 @@ public class ItemFluidDrop extends FCBaseItem {
         return stack;
     }
 
+    @Nullable
     public static ItemStack newDisplayStack(FluidStack fluid) {
         if (fluid == null) {
             return null;
@@ -120,6 +122,7 @@ public class ItemFluidDrop extends FCBaseItem {
         return getFluidStack(stack.getItemStack()) != null;
     }
 
+    @Nullable
     public static FluidStack getFluidStack(ItemStack stack) {
         if (stack == null || stack.getItem() != ItemAndBlockHolder.DROP || !stack.hasTagCompound()) {
             return null;
@@ -139,6 +142,7 @@ public class ItemFluidDrop extends FCBaseItem {
         return fluidStack;
     }
 
+    @Nullable
     public static IAEFluidStack getAeFluidStack(@Nullable IAEItemStack stack) {
         if (stack == null) {
             return null;
@@ -151,6 +155,7 @@ public class ItemFluidDrop extends FCBaseItem {
         return fluidStack;
     }
 
+    @Nullable
     public static IAEItemStack newAeStack(@Nullable FluidStack fluid) {
         if (fluid == null || fluid.amount <= 0) {
             return null;
@@ -163,6 +168,7 @@ public class ItemFluidDrop extends FCBaseItem {
         return stack;
     }
 
+    @Nullable
     public static IAEItemStack newAeStack(@Nullable IAEFluidStack fluid) {
         if (fluid == null || fluid.getStackSize() <= 0) {
             return null;
