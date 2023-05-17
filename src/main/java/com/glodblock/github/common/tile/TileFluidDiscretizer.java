@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.item.ItemFluidDrop;
 
 import appeng.api.AEApi;
@@ -190,7 +191,7 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
                 if (fluidGrid != null) {
                     for (IAEFluidStack fluid : fluidGrid.getStorageList()) {
                         IAEItemStack stack = ItemFluidDrop.newAeStack(fluid);
-                        if (stack != null) {
+                        if (stack != null && !FluidCraftAPI.instance().isBlacklistedInDisplay(fluid.getFluid().getClass())) {
                             itemCache.add(stack);
                         }
                     }
@@ -221,7 +222,7 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
                 List<IAEItemStack> mappedChanges = new ArrayList<>();
                 for (IAEFluidStack fluidStack : change) {
                     IAEItemStack itemStack = ItemFluidDrop.newAeStack(fluidStack);
-                    if (itemStack != null) {
+                    if (itemStack != null && !FluidCraftAPI.instance().isBlacklistedInDisplay(fluidStack.getFluid().getClass())) {
                         mappedChanges.add(itemStack);
                     }
                 }

@@ -1,5 +1,6 @@
 package com.glodblock.github.proxy;
 
+import com.glodblock.github.api.FluidCraftAPI;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
@@ -20,6 +21,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import thaumicenergistics.common.fluids.GaseousEssentia;
 
 public class CommonProxy {
 
@@ -58,6 +60,8 @@ public class CommonProxy {
             Upgrades.CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_EXPORT_BUS), 1);
         }
         AEApi.instance().registries().externalStorage().addExternalStorageInterface(new AEFluidInterfaceHandler());
+        FluidCraftAPI.instance().blacklistFluidInStorage(GaseousEssentia.class);
+        FluidCraftAPI.instance().blacklistFluidInDisplay(GaseousEssentia.class);
     }
 
     public void registerRenderers() {}
