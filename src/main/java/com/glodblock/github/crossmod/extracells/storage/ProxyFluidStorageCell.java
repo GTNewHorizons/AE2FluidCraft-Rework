@@ -3,10 +3,9 @@ package com.glodblock.github.crossmod.extracells.storage;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-import com.glodblock.github.common.Config;
+import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.crossmod.extracells.ProxyItem;
-import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.storage.data.IAEFluidStack;
@@ -46,10 +45,9 @@ public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCel
 
     @Override
     public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
-        if (Config.blacklistEssentiaGas && ModAndClassUtil.ThE && requestedAddition != null) {
-            return ModAndClassUtil.essentiaGas.isInstance(requestedAddition.getFluid());
-        }
-        return false;
+        // What even is a null fluid
+        return requestedAddition == null || requestedAddition.getFluid() == null
+                || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }
 
     @Override

@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.storage.IFluidCellInventory;
 import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
@@ -24,7 +25,6 @@ import com.glodblock.github.inventory.item.IItemInventory;
 import com.glodblock.github.inventory.item.PortableFluidCellInventory;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 import com.google.common.base.Optional;
@@ -132,10 +132,9 @@ public class ItemPortableFluidCell extends AEBasePoweredItem
 
     @Override
     public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
-        if (Config.blacklistEssentiaGas && ModAndClassUtil.ThE && requestedAddition != null) {
-            return ModAndClassUtil.essentiaGas.isInstance(requestedAddition.getFluid());
-        }
-        return false;
+        // What even is a null fluid
+        return requestedAddition == null || requestedAddition.getFluid() == null
+                || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }
 
     @Override

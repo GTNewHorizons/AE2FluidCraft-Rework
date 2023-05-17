@@ -10,13 +10,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.Config;
+import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.storage.IFluidCellInventory;
 import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.loader.IRegister;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.AEApi;
@@ -54,10 +53,9 @@ public class ItemCreativeFluidStorageCell extends AEBaseItem
 
     @Override
     public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
-        if (Config.blacklistEssentiaGas && ModAndClassUtil.ThE && requestedAddition != null) {
-            return ModAndClassUtil.essentiaGas.isInstance(requestedAddition.getFluid());
-        }
-        return false;
+        // What even is a null fluid
+        return requestedAddition == null || requestedAddition.getFluid() == null
+                || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }
 
     @Override

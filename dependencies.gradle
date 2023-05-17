@@ -16,7 +16,7 @@ dependencies {
     compileOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
     compileOnly('com.gregoriust.gregtech:gregtech_1.7.10:6.14.23:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:OpenComputers:1.9.5-GTNH:dev') { transitive = false }
-    compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.4.1-GTNH:dev') { transitive = false }
+    compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.4.2-GTNH:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:GTplusplus:1.9.4:dev') { transitive = false }
     compileOnly("com.github.GTNewHorizons:Hodgepodge:2.2.10:dev") { transitive = false }
 }

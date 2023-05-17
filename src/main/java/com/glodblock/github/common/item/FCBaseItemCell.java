@@ -14,13 +14,12 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.glodblock.github.common.Config;
+import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.storage.CellType;
 import com.glodblock.github.common.storage.IFluidCellInventory;
 import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 import com.google.common.base.Optional;
 
@@ -87,10 +86,13 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
     @Override
     public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
-        if (Config.blacklistEssentiaGas && ModAndClassUtil.ThE && requestedAddition != null) {
-            return ModAndClassUtil.essentiaGas.isInstance(requestedAddition.getFluid());
-        }
-        return false;
+        // if (Config.blacklistEssentiaGas && ModAndClassUtil.ThE && requestedAddition != null) {
+        // return ModAndClassUtil.essentiaGas.isInstance(requestedAddition.getFluid());
+        // }
+        //
+        // What even is a null fluid
+        return requestedAddition == null || requestedAddition.getFluid() == null
+                || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }
 
     @Override

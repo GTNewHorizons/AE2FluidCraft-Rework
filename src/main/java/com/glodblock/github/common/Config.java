@@ -15,7 +15,6 @@ public class Config {
     public static boolean noFluidPacket;
     public static boolean fluidIOBus;
     public static boolean removeRecipe;
-    public static boolean blacklistEssentiaGas;
     public static double portableCellBattery;
     public static int packetSize;
     public static int packetRate;
@@ -47,11 +46,6 @@ public class Config {
                 "Fluid Craft for AE2",
                 false,
                 "Disable all recipes, for quick tweaker.");
-        blacklistEssentiaGas = Config.getBoolean(
-                "Blacklist Essentia Gas",
-                "Fluid Craft for AE2",
-                true,
-                "Blacklist Essentia Gas from Thaumic Energistics, so they won't be stored in Fluid Storage Cells.");
         portableCellBattery = Config.get("Fluid Craft for AE2", "Portable Fluid Cell Battery Capacity", 20000D)
                 .getDouble();
         packetSize = Config.get("Fluid Craft for AE2", "packetSize", 256, "Number of items to be sent per packet")
@@ -62,8 +56,8 @@ public class Config {
                 .getInt();
         if (packetRate <= 0) packetRate = 50;
         replaceEC2 = Config.getBoolean(
-                "Fluid Craft for AE2",
                 "replaceEC2",
+                "Fluid Craft for AE2",
                 true,
                 "Set true to handle missing item mappings from EC2. Note to work properly, you must have all relevant parts.");
         if (Config.hasChanged()) Config.save();

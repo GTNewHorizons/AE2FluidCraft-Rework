@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 
+import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.util.FluidSorters;
 import com.glodblock.github.util.Util;
@@ -145,7 +146,13 @@ public class FluidRepo extends ItemRepo {
             if (viewMode == ViewItems.STORED && is.getStackSize() == 0) {
                 continue;
             }
+
             Fluid fluid = ItemFluidDrop.getAeFluidStack(is).getFluid();
+
+            if (FluidCraftAPI.instance().isBlacklistedInDisplay(fluid.getClass())) {
+                continue;
+            }
+
             if (searchMod) {
                 if (m.matcher(Util.getFluidModID(fluid).toLowerCase()).find()
                         || m.matcher(Util.getFluidModName(fluid).toLowerCase()).find()) {

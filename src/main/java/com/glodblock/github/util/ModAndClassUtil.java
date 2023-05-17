@@ -40,8 +40,6 @@ public final class ModAndClassUtil {
 
     public static boolean isBeSubstitutionsButton;
 
-    public static Class<?> essentiaGas;
-
     @SuppressWarnings("all")
     public static void init() {
 
@@ -120,12 +118,6 @@ public final class ModAndClassUtil {
             isTypeFilter = true;
         } catch (ClassNotFoundException | NoSuchFieldException e) {
             isTypeFilter = false;
-        }
-
-        try {
-            essentiaGas = Class.forName("thaumicenergistics.common.fluids.GaseousEssentia");
-        } catch (ClassNotFoundException e) {
-            essentiaGas = null;
         }
 
         if (Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi")) GT5 = true;
