@@ -113,10 +113,9 @@ public final class ModAndClassUtil {
             isV2 = false;
         }
         try {
-            Field filters = Class.forName("appeng.client.me.ItemRepo").getDeclaredField("filters");
-            if (filters == null) isTypeFilter = false;
+            Class<?> filter = Class.forName("appeng.core.features.registries.ItemDisplayRegistry");
             isTypeFilter = true;
-        } catch (ClassNotFoundException | NoSuchFieldException e) {
+        } catch (ClassNotFoundException e) {
             isTypeFilter = false;
         }
 

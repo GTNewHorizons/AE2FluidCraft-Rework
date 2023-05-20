@@ -1,12 +1,13 @@
 package com.glodblock.github.proxy;
 
-import com.glodblock.github.api.FluidCraftAPI;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
+import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketMEUpdateBuffer;
@@ -32,6 +33,9 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
         FMLCommonHandler.instance().bus().register(SPacketMEUpdateBuffer.class);
+        if (ModAndClassUtil.ThE) {
+            AspectUtil.init();
+        }
     }
 
     public void postInit(FMLPostInitializationEvent event) {
@@ -60,8 +64,6 @@ public class CommonProxy {
             Upgrades.CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_EXPORT_BUS), 1);
         }
         AEApi.instance().registries().externalStorage().addExternalStorageInterface(new AEFluidInterfaceHandler());
-        FluidCraftAPI.instance().blacklistFluidInStorage(GaseousEssentia.class);
-        FluidCraftAPI.instance().blacklistFluidInDisplay(GaseousEssentia.class);
     }
 
     public void registerRenderers() {}

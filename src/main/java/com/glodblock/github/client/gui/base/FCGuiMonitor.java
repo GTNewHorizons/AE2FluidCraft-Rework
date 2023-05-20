@@ -29,11 +29,11 @@ import appeng.api.implementations.tiles.IViewCellStorage;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IDisplayRepo;
 import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
 import appeng.client.gui.widgets.*;
 import appeng.client.me.InternalSlotME;
-import appeng.client.me.ItemRepo;
 import appeng.client.me.SlotDisconnected;
 import appeng.client.me.SlotME;
 import appeng.container.AEBaseContainer;
@@ -67,7 +67,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected final ItemStack[] myCurrentViewCells = new ItemStack[5];
     public FCContainerMonitor<T> monitorableContainer;
     public GuiTabButton craftingStatusBtn;
-    protected ItemRepo repo;
+    protected IDisplayRepo repo;
     protected GuiImgButton craftingStatusImgBtn;
     protected FCGuiTextField searchField;
     protected int perRow = 9;
@@ -649,7 +649,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     public void updateScreen() {
-        this.repo.setPower(this.monitorableContainer.isPowered());
+        this.repo.setPowered(this.monitorableContainer.isPowered());
         super.updateScreen();
     }
 

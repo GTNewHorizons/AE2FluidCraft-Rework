@@ -191,7 +191,8 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
                 if (fluidGrid != null) {
                     for (IAEFluidStack fluid : fluidGrid.getStorageList()) {
                         IAEItemStack stack = ItemFluidDrop.newAeStack(fluid);
-                        if (stack != null && !FluidCraftAPI.instance().isBlacklistedInDisplay(fluid.getFluid().getClass())) {
+                        if (stack != null
+                                && !FluidCraftAPI.instance().isBlacklistedInDisplay(fluid.getFluid().getClass())) {
                             itemCache.add(stack);
                         }
                     }
@@ -222,7 +223,8 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
                 List<IAEItemStack> mappedChanges = new ArrayList<>();
                 for (IAEFluidStack fluidStack : change) {
                     IAEItemStack itemStack = ItemFluidDrop.newAeStack(fluidStack);
-                    if (itemStack != null && !FluidCraftAPI.instance().isBlacklistedInDisplay(fluidStack.getFluid().getClass())) {
+                    if (itemStack != null
+                            && !FluidCraftAPI.instance().isBlacklistedInDisplay(fluidStack.getFluid().getClass())) {
                         mappedChanges.add(itemStack);
                     }
                 }

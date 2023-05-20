@@ -9,15 +9,10 @@ import com.glodblock.github.common.item.ItemFluidDrop;
 import appeng.api.config.TypeFilter;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
-import appeng.client.me.ItemRepo;
 
 public class FluidFilter {
 
-    public static void installFilter() {
-        ItemRepo.registerTypeHandler(FluidFilter::filter, FLUIDS);
-    }
-
-    private static boolean filter(IAEStack<?> stack, TypeFilter typeFilter) {
+    public static boolean filter(TypeFilter typeFilter, IAEStack<?> stack) {
         if (typeFilter == ALL) return true;
         if (stack instanceof IAEItemStack) {
             Item item = ((IAEItemStack) stack).getItem();
