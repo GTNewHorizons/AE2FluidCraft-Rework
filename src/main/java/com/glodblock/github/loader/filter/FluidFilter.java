@@ -9,7 +9,6 @@ import com.glodblock.github.common.item.ItemFluidDrop;
 import appeng.api.config.TypeFilter;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
-import appeng.client.me.ItemRepo;
 
 public class FluidFilter {
 

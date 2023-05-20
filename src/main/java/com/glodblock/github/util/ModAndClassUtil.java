@@ -115,7 +115,7 @@ public final class ModAndClassUtil {
         try {
             Class<?> filter = Class.forName("appeng.core.features.registries.ItemDisplayRegistry");
             isTypeFilter = true;
-       } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             isTypeFilter = false;
         }
 

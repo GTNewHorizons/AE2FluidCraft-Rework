@@ -3,25 +3,23 @@ package com.glodblock.github.client.me;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
-import appeng.api.config.SearchBoxMode;
-import appeng.api.config.Settings;
-import appeng.api.config.SortOrder;
-import appeng.api.config.ViewItems;
-import appeng.core.AEConfig;
-import com.glodblock.github.api.FluidCraftAPI;
-import com.glodblock.github.util.FluidSorters;
-import com.glodblock.github.util.Util;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
+import com.glodblock.github.util.FluidSorters;
 
+import appeng.api.config.SearchBoxMode;
+import appeng.api.config.Settings;
+import appeng.api.config.SortOrder;
+import appeng.api.config.ViewItems;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.widgets.IScrollSource;
 import appeng.client.gui.widgets.ISortSource;
+import appeng.core.AEConfig;
 
 public class EssentiaRepo extends FluidRepo {
 

@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 
-import appeng.api.storage.data.IDisplayRepo;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 
@@ -29,6 +28,7 @@ import com.glodblock.github.util.Util;
 import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IDisplayRepo;
 import appeng.api.storage.data.IItemList;
 import appeng.client.gui.widgets.IScrollSource;
 import appeng.client.gui.widgets.ISortSource;
