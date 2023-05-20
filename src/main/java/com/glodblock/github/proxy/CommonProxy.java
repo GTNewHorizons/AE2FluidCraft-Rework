@@ -3,7 +3,6 @@ package com.glodblock.github.proxy;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
@@ -22,7 +21,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import thaumicenergistics.common.fluids.GaseousEssentia;
 
 public class CommonProxy {
 
