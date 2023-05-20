@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import appeng.api.storage.data.IDisplayRepo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -67,7 +68,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected final ItemStack[] myCurrentViewCells = new ItemStack[5];
     public FCContainerMonitor<T> monitorableContainer;
     public GuiTabButton craftingStatusBtn;
-    protected ItemRepo repo;
+    protected IDisplayRepo repo;
     protected GuiImgButton craftingStatusImgBtn;
     protected FCGuiTextField searchField;
     protected int perRow = 9;
@@ -649,7 +650,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     public void updateScreen() {
-        this.repo.setPower(this.monitorableContainer.isPowered());
+        this.repo.setPowered(this.monitorableContainer.isPowered());
         super.updateScreen();
     }
 

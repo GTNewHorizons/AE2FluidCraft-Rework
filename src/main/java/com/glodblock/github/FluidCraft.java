@@ -77,7 +77,7 @@ public class FluidCraft {
             CalculatorV2PluginLoader.installCalculatorV2Plugins();
         }
         if (ModAndClassUtil.isTypeFilter) {
-            FluidFilter.installFilter();
+            AEApi.instance().registries().itemDisplay().addItemFilter(FluidFilter::filter);
         }
 
         proxy.postInit(event);

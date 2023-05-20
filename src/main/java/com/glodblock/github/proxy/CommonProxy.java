@@ -1,6 +1,7 @@
 package com.glodblock.github.proxy;
 
 import com.glodblock.github.api.FluidCraftAPI;
+import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
@@ -32,6 +33,7 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
         FMLCommonHandler.instance().bus().register(SPacketMEUpdateBuffer.class);
+        AspectUtil.init();
     }
 
     public void postInit(FMLPostInitializationEvent event) {

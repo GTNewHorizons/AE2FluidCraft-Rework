@@ -13,11 +13,7 @@ import appeng.client.me.ItemRepo;
 
 public class FluidFilter {
 
-    public static void installFilter() {
-        ItemRepo.registerTypeHandler(FluidFilter::filter, FLUIDS);
-    }
-
-    private static boolean filter(IAEStack<?> stack, TypeFilter typeFilter) {
+    public static boolean filter(TypeFilter typeFilter, IAEStack<?> stack) {
         if (typeFilter == ALL) return true;
         if (stack instanceof IAEItemStack) {
             Item item = ((IAEItemStack) stack).getItem();

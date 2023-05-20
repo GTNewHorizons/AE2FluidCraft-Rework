@@ -119,12 +119,6 @@ public class ContainerEssentiaMonitor extends ContainerFluidPortableCell {
                     if (slotIndex == -1) {
                         out.stackSize = fluidContainer.stackSize;
                     } else {
-                        if (drainStack != null) {
-                            System.out.print("---------\n");
-                            System.out.print(drainStack.right + "\n");
-                            System.out.print(drainStack.left + "\n");
-                            System.out.print(aeFluidStack.getStackSize() + "\n");
-                        }
                         out.stackSize = (int) (fluidContainer.stackSize
                                 - (aeFluidStack.getStackSize() / drainStack.left));
                     }
