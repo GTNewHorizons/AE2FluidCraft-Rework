@@ -301,7 +301,7 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
             toStore.setStackSize(-toStore.getStackSize());
             FluidStack canExtract = this.tanks.drain(slot, toStore.getFluidStack(), false);
             if (canExtract != null && (long) canExtract.amount == toStore.getStackSize()) {
-                IAEFluidStack notStored = dest.injectItems(toStore, Actionable.MODULATE, this.mySource);;
+                IAEFluidStack notStored = dest.injectItems(toStore, Actionable.MODULATE, this.mySource);
                 toStore.setStackSize(toStore.getStackSize() - (notStored == null ? 0L : notStored.getStackSize()));
                 if (toStore.getStackSize() > 0L) {
                     changed = true;
