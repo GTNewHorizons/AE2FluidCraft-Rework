@@ -122,9 +122,8 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         if (btn == this.craftingStatusBtn || btn == this.craftingStatusImgBtn) {
             InventoryHandler.switchGui(GuiType.CRAFTING_STATUS);
         }
-        if (btn instanceof GuiImgButton) {
+        if (btn instanceof final GuiImgButton iBtn) {
             final boolean backwards = Mouse.isButtonDown(1);
-            final GuiImgButton iBtn = (GuiImgButton) btn;
             if (iBtn.getSetting() != Settings.ACTIONS) {
                 final Enum<?> cv = iBtn.getCurrentValue();
                 final Enum<?> next = Platform.rotateEnum(cv, backwards, iBtn.getSetting().getPossibleValues());

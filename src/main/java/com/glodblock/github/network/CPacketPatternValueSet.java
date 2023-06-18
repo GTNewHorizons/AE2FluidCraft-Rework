@@ -61,8 +61,7 @@ public class CPacketPatternValueSet implements IMessage {
         @Override
         public IMessage onMessage(CPacketPatternValueSet message, MessageContext ctx) {
             EntityPlayer player = ctx.getServerHandler().playerEntity;
-            if (player.openContainer instanceof ContainerPatternValueAmount) {
-                ContainerPatternValueAmount cpv = (ContainerPatternValueAmount) player.openContainer;
+            if (player.openContainer instanceof ContainerPatternValueAmount cpv) {
                 final Object target = cpv.getTarget();
                 if (target instanceof IGridHost) {
                     final ContainerOpenContext context = cpv.getOpenContext();

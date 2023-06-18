@@ -116,10 +116,8 @@ public class CPacketLevelMaintainer implements IMessage {
         @Override
         public IMessage onMessage(CPacketLevelMaintainer message, MessageContext ctx) {
             if (message.action.startsWith("TileLevelMaintainer.")
-                    && ctx.getServerHandler().playerEntity.openContainer instanceof ContainerLevelMaintainer) {
+                    && ctx.getServerHandler().playerEntity.openContainer instanceof final ContainerLevelMaintainer cca) {
                 EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-                final ContainerLevelMaintainer cca = (ContainerLevelMaintainer) ctx
-                        .getServerHandler().playerEntity.openContainer;
                 switch (message.action) {
                     case "TileLevelMaintainer.Quantity" -> cca.getTile()
                             .updateQuantity(message.slotIndex, message.size);

@@ -69,8 +69,7 @@ public class BlockPos {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof BlockPos) {
-            BlockPos pos = (BlockPos) obj;
+        if (obj instanceof BlockPos pos) {
             return pos.x == x && pos.y == y && pos.z == z && Objects.equals(pos.w, w);
         }
         return false;

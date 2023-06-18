@@ -64,8 +64,7 @@ public class CPacketFluidPatternTermBtns implements IMessage {
             String Name = message.Name;
             String Value = message.Value;
             final Container c = ctx.getServerHandler().playerEntity.openContainer;
-            if (Name.startsWith("PatternTerminal.") && (c instanceof FCContainerEncodeTerminal)) {
-                final FCContainerEncodeTerminal cpt = (FCContainerEncodeTerminal) c;
+            if (Name.startsWith("PatternTerminal.") && (c instanceof final FCContainerEncodeTerminal cpt)) {
                 switch (Name) {
                     case "PatternTerminal.CraftMode" -> cpt.getPatternTerminal().setCraftingRecipe(Value.equals("1"));
                     case "PatternTerminal.Encode" -> {

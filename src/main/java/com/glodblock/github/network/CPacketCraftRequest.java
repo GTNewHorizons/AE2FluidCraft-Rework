@@ -57,13 +57,10 @@ public class CPacketCraftRequest implements IMessage {
         @Nullable
         @Override
         public IMessage onMessage(CPacketCraftRequest message, MessageContext ctx) {
-            if (ctx.getServerHandler().playerEntity.openContainer instanceof ContainerCraftAmount) {
+            if (ctx.getServerHandler().playerEntity.openContainer instanceof final ContainerCraftAmount cca) {
                 EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-                final ContainerCraftAmount cca = (ContainerCraftAmount) ctx
-                        .getServerHandler().playerEntity.openContainer;
                 final Object target = cca.getTarget();
-                if (target instanceof IGridHost) {
-                    final IGridHost gh = (IGridHost) target;
+                if (target instanceof final IGridHost gh) {
                     final IGridNode gn = gh.getGridNode(ForgeDirection.UNKNOWN);
 
                     if (gn == null) {
@@ -106,8 +103,7 @@ public class CPacketCraftRequest implements IMessage {
                                         GuiType.FLUID_CRAFTING_CONFIRM_ITEM);
                             }
 
-                            if (player.openContainer instanceof ContainerCraftConfirm) {
-                                final ContainerCraftConfirm ccc = (ContainerCraftConfirm) player.openContainer;
+                            if (player.openContainer instanceof final ContainerCraftConfirm ccc) {
                                 ccc.setAutoStart(message.heldShift);
                                 ccc.setJob(futureJob);
                                 cca.detectAndSendChanges();

@@ -49,8 +49,7 @@ public class FluidCellHandler implements ICellHandler {
     public void openChestGui(final EntityPlayer player, final IChestOrDrive chest, final ICellHandler cellHandler,
             final IMEInventoryHandler inv, final ItemStack is, final StorageChannel chan) {
         if (chan == StorageChannel.FLUIDS) {
-            if (chest instanceof TileEntity) {
-                TileEntity te = (TileEntity) chest;
+            if (chest instanceof TileEntity te) {
                 InventoryHandler
                         .openGui(player, te.getWorldObj(), new BlockPos(te), chest.getUp(), GuiType.FLUID_TERMINAL);
             }
@@ -59,8 +58,7 @@ public class FluidCellHandler implements ICellHandler {
 
     @Override
     public int getStatusForCell(final ItemStack is, final IMEInventory handler) {
-        if (handler instanceof FluidCellInventoryHandler) {
-            final FluidCellInventoryHandler ci = (FluidCellInventoryHandler) handler;
+        if (handler instanceof final FluidCellInventoryHandler ci) {
             return ci.getStatusForCell();
         }
         return 0;

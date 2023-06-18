@@ -502,8 +502,7 @@ public final class Util {
         public static int getCapacity(ItemStack itemStack, Fluid fluid) {
             if (itemStack == null) return 0;
             Item item = itemStack.getItem();
-            if (item instanceof IFluidContainerItem) {
-                IFluidContainerItem fluidContainerItem = (IFluidContainerItem) item;
+            if (item instanceof IFluidContainerItem fluidContainerItem) {
                 int capacity = fluidContainerItem.getCapacity(itemStack);
                 FluidStack existing = fluidContainerItem.getFluid(itemStack);
                 if (existing != null) {

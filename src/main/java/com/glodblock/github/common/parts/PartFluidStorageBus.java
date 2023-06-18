@@ -348,8 +348,7 @@ public class PartFluidStorageBus extends PartUpgradeable
             if (esh != null) {
                 final IMEInventory<?> inv = esh
                         .getInventory(target, this.getSide().getOpposite(), StorageChannel.FLUIDS, this.source);
-                if (inv instanceof MEMonitorIFluidHandler) {
-                    final MEMonitorIFluidHandler h = (MEMonitorIFluidHandler) inv;
+                if (inv instanceof final MEMonitorIFluidHandler h) {
                     h.setMode((StorageFilter) this.getConfigManager().getSetting(Settings.STORAGE_FILTER));
                     h.setActionSource(new MachineSource(this));
                     this.monitor = (MEMonitorIFluidHandler) inv;

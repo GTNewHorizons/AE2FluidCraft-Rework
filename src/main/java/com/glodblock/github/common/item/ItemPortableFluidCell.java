@@ -78,8 +78,7 @@ public class ItemPortableFluidCell extends AEBasePoweredItem
         super.addCheckedInformation(stack, player, lines, displayMoreInfo);
         final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
                 .getCellInventory(stack, null, StorageChannel.FLUIDS);
-        if (inventory instanceof IFluidCellInventoryHandler) {
-            final IFluidCellInventoryHandler handler = (IFluidCellInventoryHandler) inventory;
+        if (inventory instanceof final IFluidCellInventoryHandler handler) {
             final IFluidCellInventory cellInventory = handler.getCellInv();
             if (cellInventory != null) {
                 lines.add(

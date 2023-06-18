@@ -73,8 +73,7 @@ public class DriverDualFluidInterface implements SidedBlock {
             }
             Node node = node().network().node(address);
             if (!(node instanceof Component)) throw new IllegalArgumentException("no such component");
-            if (!(node.host() instanceof Database)) throw new IllegalArgumentException("not a database");
-            Database database = (Database) node.host();
+            if (!(node.host() instanceof Database database)) throw new IllegalArgumentException("not a database");
             if (index >= 0 && index < DualityFluidInterface.NUMBER_OF_TANKS) {
                 ItemStack data = database.getStackInSlot(entry - 1);
                 if (data == null) {

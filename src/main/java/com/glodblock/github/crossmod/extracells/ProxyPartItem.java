@@ -42,8 +42,7 @@ public class ProxyPartItem extends ProxyItem implements IPartItem {
     @Override
     public IPart createPartFromItemStack(ItemStack is) {
         final int meta = is.getItemDamage();
-        if (this.replacements.get(meta) instanceof PartReplacement) {
-            PartReplacement part = (PartReplacement) this.replacements.get(meta);
+        if (this.replacements.get(meta) instanceof PartReplacement part) {
             return part.proxyPart.apply(this);
         }
         return null;

@@ -35,8 +35,7 @@ public class EnderIORecipeExtractor implements IRecipeExtractor {
     public List<OrderStack<?>> getInputIngredients(List<PositionedStack> rawInputs, IRecipeHandler recipe, int index) {
         TemplateRecipeHandler tRecipe = (TemplateRecipeHandler) recipe;
         List<OrderStack<?>> tmp;
-        if (tRecipe.arecipes.get(index) instanceof VatRecipeHandler.InnerVatRecipe) {
-            VatRecipeHandler.InnerVatRecipe vatRecipe = (VatRecipeHandler.InnerVatRecipe) tRecipe.arecipes.get(index);
+        if (tRecipe.arecipes.get(index) instanceof VatRecipeHandler.InnerVatRecipe vatRecipe) {
             ArrayList<PositionedStack> inputs = ReflectEIO.getInputs(vatRecipe);
             tmp = ExtractorUtil.packItemStack(inputs);
             FluidStack in = ReflectEIO.getInputFluid(vatRecipe);
@@ -63,8 +62,7 @@ public class EnderIORecipeExtractor implements IRecipeExtractor {
             int index) {
         TemplateRecipeHandler tRecipe = (TemplateRecipeHandler) recipe;
         List<OrderStack<?>> tmp = new LinkedList<>();
-        if (tRecipe.arecipes.get(index) instanceof VatRecipeHandler.InnerVatRecipe) {
-            VatRecipeHandler.InnerVatRecipe vatRecipe = (VatRecipeHandler.InnerVatRecipe) tRecipe.arecipes.get(index);
+        if (tRecipe.arecipes.get(index) instanceof VatRecipeHandler.InnerVatRecipe vatRecipe) {
             FluidStack result = ReflectEIO.getResult(vatRecipe);
             if (result != null) {
                 tmp.add(new OrderStack<>(result, 0));

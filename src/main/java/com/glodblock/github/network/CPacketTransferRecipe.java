@@ -100,9 +100,8 @@ public class CPacketTransferRecipe implements IMessage {
                 if (monitor != null) {
                     storageList = monitor.getStorageList();
                 }
-                if (c instanceof FCContainerEncodeTerminal) {
+                if (c instanceof FCContainerEncodeTerminal cf) {
                     // pattern terminal only
-                    FCContainerEncodeTerminal cf = (FCContainerEncodeTerminal) c;
 
                     boolean combine = cf.combine;
                     cf.getPatternTerminal().setCraftingRecipe(message.isCraft);

@@ -30,9 +30,8 @@ public class AEFluidInterfaceHandler implements IExternalStorageHandler {
             if (te instanceof ITileStorageMonitorable
                     && ((ITileStorageMonitorable) te).getMonitorable(d, src) != null) {
                 return ((ITileStorageMonitorable) te).getMonitorable(d, src).getFluidInventory();
-            } else if (Util.getPart(te, d.getOpposite()) instanceof ITileStorageMonitorable
+            } else if (Util.getPart(te, d.getOpposite()) instanceof ITileStorageMonitorable part
                     && ((ITileStorageMonitorable) Util.getPart(te, d.getOpposite())).getMonitorable(d, src) != null) {
-                        ITileStorageMonitorable part = (ITileStorageMonitorable) Util.getPart(te, d.getOpposite());
                         return part.getMonitorable(d, src).getFluidInventory();
                     }
         }

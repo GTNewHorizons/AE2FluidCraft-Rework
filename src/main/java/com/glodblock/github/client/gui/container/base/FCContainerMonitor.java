@@ -210,8 +210,7 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
     @Override
     public void onListUpdate() {
         for (final Object c : this.crafters) {
-            if (c instanceof ICrafting) {
-                final ICrafting cr = (ICrafting) c;
+            if (c instanceof final ICrafting cr) {
                 this.queueInventory(cr);
             }
         }

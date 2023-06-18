@@ -41,8 +41,7 @@ public class NEIItemFilter implements SearchField.ISearchProvider {
             if (itemStack.getItem() instanceof IStorageFluidCell) {
                 final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
                         .getCellInventory(itemStack, null, StorageChannel.FLUIDS);
-                if (inventory instanceof IFluidCellInventoryHandler) {
-                    final IFluidCellInventoryHandler handler = (IFluidCellInventoryHandler) inventory;
+                if (inventory instanceof final IFluidCellInventoryHandler handler) {
                     final IFluidCellInventory cellInventory = handler.getCellInv();
                     if (cellInventory != null) {
                         for (IAEFluidStack fluid : cellInventory.getContents()) {

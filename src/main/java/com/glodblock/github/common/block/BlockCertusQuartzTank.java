@@ -99,8 +99,7 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileCertusQuartzTank) {
-            TileCertusQuartzTank tank = (TileCertusQuartzTank) tile;
+        if (tile instanceof TileCertusQuartzTank tank) {
             return tank.getFluidLightLevel();
         }
         return super.getLightValue(world, x, y, z);

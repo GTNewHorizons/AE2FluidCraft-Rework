@@ -92,8 +92,7 @@ public class CPacketInventoryAction implements IMessage {
         @Override
         public IMessage onMessage(CPacketInventoryAction message, MessageContext ctx) {
             final EntityPlayerMP sender = ctx.getServerHandler().playerEntity;
-            if (sender.openContainer instanceof AEBaseContainer) {
-                final AEBaseContainer baseContainer = (AEBaseContainer) sender.openContainer;
+            if (sender.openContainer instanceof final AEBaseContainer baseContainer) {
                 Object target = baseContainer.getTarget();
                 if (message.action == InventoryAction.AUTO_CRAFT) {
                     final ContainerOpenContext context = baseContainer.getOpenContext();
@@ -117,8 +116,7 @@ public class CPacketInventoryAction implements IMessage {
                                     ForgeDirection.UNKNOWN,
                                     GuiType.FLUID_CRAFTING_AMOUNT);
                         }
-                        if (sender.openContainer instanceof ContainerCraftAmount) {
-                            final ContainerCraftAmount cca = (ContainerCraftAmount) sender.openContainer;
+                        if (sender.openContainer instanceof final ContainerCraftAmount cca) {
                             if (baseContainer.getTargetStack() != null) {
                                 cca.getCraftingItem().putStack(baseContainer.getTargetStack().getItemStack());
                                 cca.setItemToCraft(baseContainer.getTargetStack());
@@ -154,8 +152,7 @@ public class CPacketInventoryAction implements IMessage {
                             amt = fluid == null ? 1 : fluid.amount;
                         }
                         FluidCraft.proxy.netHandler.sendTo(new SPacketSetItemAmount(amt), sender);
-                        if (sender.openContainer instanceof ContainerPatternValueAmount) {
-                            final ContainerPatternValueAmount cpv = (ContainerPatternValueAmount) sender.openContainer;
+                        if (sender.openContainer instanceof final ContainerPatternValueAmount cpv) {
                             if (baseContainer.getTargetStack() != null) {
                                 cpv.setValueIndex(message.slot);
                                 cpv.getPatternValue().putStack(baseContainer.getTargetStack().getItemStack());

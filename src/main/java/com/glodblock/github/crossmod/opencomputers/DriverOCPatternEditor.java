@@ -77,9 +77,8 @@ public class DriverOCPatternEditor extends DriverSidedTileEntity {
             if (pattern == null) {
                 throw new IllegalArgumentException("No pattern here!");
             }
-            if (pattern.getItem() instanceof ItemEncodedPattern
+            if (pattern.getItem() instanceof ItemEncodedPattern iep
                     && !(pattern.getItem() instanceof ItemFluidEncodedPattern)) {
-                ItemEncodedPattern iep = (ItemEncodedPattern) pattern.getItem();
                 return iep.getOutput(pattern) == null;
             }
             return true;

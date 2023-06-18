@@ -69,8 +69,7 @@ public class ProxyItem extends FCBaseItem {
 
     @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int p_77663_4_, boolean p_77663_5_) {
-        if (!worldIn.isRemote && entityIn instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityIn;
+        if (!worldIn.isRemote && entityIn instanceof EntityPlayer player) {
             for (int i = 0; i < player.inventory.getSizeInventory(); ++i) {
                 ItemStack s = player.inventory.getStackInSlot(i);
                 if (s == stack) {

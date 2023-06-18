@@ -177,9 +177,8 @@ public class WirelessPatternTerminalExInventory extends MEMonitorHandler<IAEItem
         if (inv == this.pattern && slot == 1) {
             final ItemStack is = inv.getStackInSlot(1);
 
-            if (is != null && is.getItem() instanceof ICraftingPatternItem) {
-                final ICraftingPatternItem pattern = (ICraftingPatternItem) is.getItem();
-                final ICraftingPatternDetails details = pattern
+            if (is != null && is.getItem() instanceof final ICraftingPatternItem craftingPatternItem) {
+                final ICraftingPatternDetails details = craftingPatternItem
                         .getPatternForItem(is, this.getActionableNode().getWorld());
 
                 if (details != null) {

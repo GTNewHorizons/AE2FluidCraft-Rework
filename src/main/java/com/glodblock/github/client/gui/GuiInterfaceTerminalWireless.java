@@ -209,8 +209,7 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
 
     protected void repositionSlots() {
         for (final Object obj : this.inventorySlots.inventorySlots) {
-            if (obj instanceof AppEngSlot) {
-                final AppEngSlot slot = (AppEngSlot) obj;
+            if (obj instanceof final AppEngSlot slot) {
                 slot.yDisplayPosition = this.ySize + slot.getY() - 78 - 7;
             }
         }
@@ -244,8 +243,7 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
         final int ex = getScrollBar().getCurrentScroll();
         for (int x = 0; x < this.rows && ex + x < this.lines.size(); x++) {
             final Object lineObj = this.lines.get(ex + x);
-            if (lineObj instanceof ClientDCInternalInv) {
-                final ClientDCInternalInv inv = (ClientDCInternalInv) lineObj;
+            if (lineObj instanceof final ClientDCInternalInv inv) {
                 for (int z = 0; z < inv.getInventory().getSizeInventory(); z++) {
                     if (this.matchedStacks.contains(inv.getInventory().getStackInSlot(z))) drawRect(
                             z * 18 + 22,
@@ -254,8 +252,7 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
                             1 + offset + 16,
                             GuiColors.InterfaceTerminalMatch.getColor());
                 }
-            } else if (lineObj instanceof String) {
-                String name = (String) lineObj;
+            } else if (lineObj instanceof String name) {
                 final int rows = this.byName.get(name).size();
                 String postfix = "";
 
@@ -310,8 +307,7 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
         final int ex = this.getScrollBar().getCurrentScroll();
         for (int x = 0; x < this.rows && ex + x < this.lines.size(); x++) {
             final Object lineObj = this.lines.get(ex + x);
-            if (lineObj instanceof ClientDCInternalInv) {
-                final ClientDCInternalInv inv = (ClientDCInternalInv) lineObj;
+            if (lineObj instanceof final ClientDCInternalInv inv) {
                 for (int z = 0; z < inv.getInventory().getSizeInventory(); z++) {
                     inventorySlots.inventorySlots.add(new SlotDisconnected(inv, z, z * 18 + 22, 1 + offset));
                 }
@@ -406,8 +402,7 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
 
         } else if (btn == craftingStatusBtn) {
             InventoryHandler.switchGui(GuiType.CRAFTING_STATUS);
-        } else if (btn instanceof GuiImgButton) {
-            final GuiImgButton iBtn = (GuiImgButton) btn;
+        } else if (btn instanceof final GuiImgButton iBtn) {
             if (iBtn.getSetting() != Settings.ACTIONS) {
                 final Enum cv = iBtn.getCurrentValue();
                 final boolean backwards = Mouse.isButtonDown(1);
@@ -445,8 +440,7 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
         for (int x = 0; x < this.rows && ex + x < this.lines.size(); x++) {
 
             final Object lineObj = this.lines.get(ex + x);
-            if (lineObj instanceof ClientDCInternalInv) {
-                final ClientDCInternalInv inv = (ClientDCInternalInv) lineObj;
+            if (lineObj instanceof final ClientDCInternalInv inv) {
 
                 GL11.glColor4f(1, 1, 1, 1);
                 final int width = inv.getInventory().getSizeInventory() * 18;
