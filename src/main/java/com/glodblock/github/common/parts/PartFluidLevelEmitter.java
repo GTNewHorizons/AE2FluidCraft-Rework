@@ -354,56 +354,26 @@ public class PartFluidLevelEmitter extends PartUpgradeable
         final double var44 = 0.0625D;
         final double Zero = 0;
         final double par10 = 0;
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) - var44,
-                baseY + TorchLen - toff,
-                baseZ + par10 * (1.0D - TorchLen) - var44,
-                var20,
-                var22);
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) - var44,
-                baseY + TorchLen - toff,
-                baseZ + par10 * (1.0D - TorchLen) + var44,
-                var20,
-                var26);
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) + var44,
-                baseY + TorchLen - toff,
-                baseZ + par10 * (1.0D - TorchLen) + var44,
-                var24,
-                var26);
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) + var44,
-                baseY + TorchLen - toff,
-                baseZ + par10 * (1.0D - TorchLen) - var44,
-                var24,
-                var22);
 
+        final double x = baseX + Zero * (1.0D - TorchLen) - var44;
+        final double x1 = baseX + Zero * (1.0D - TorchLen) + var44;
+
+        final double y = baseY + TorchLen - toff;
         final double var422 = 0.1915D + 1.0 / 16.0;
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) + var44,
-                baseY + var422,
-                baseZ + par10 * (1.0D - TorchLen) - var44,
-                var24b,
-                var22b);
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) + var44,
-                baseY + var422,
-                baseZ + par10 * (1.0D - TorchLen) + var44,
-                var24b,
-                var26b);
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) - var44,
-                baseY + var422,
-                baseZ + par10 * (1.0D - TorchLen) + var44,
-                var20b,
-                var26b);
-        this.addVertexWithUV(
-                baseX + Zero * (1.0D - TorchLen) - var44,
-                baseY + var422,
-                baseZ + par10 * (1.0D - TorchLen) - var44,
-                var20b,
-                var22b);
+        final double y1 = baseY + var422;
+
+        final double z = baseZ + par10 * (1.0D - TorchLen) - var44;
+        final double z1 = baseZ + par10 * (1.0D - TorchLen) + var44;
+
+        this.addVertexWithUV(x, y, z, var20, var22);
+        this.addVertexWithUV(x, y, z1, var20, var26);
+        this.addVertexWithUV(x1, y, z1, var24, var26);
+        this.addVertexWithUV(x1, y, z, var24, var22);
+
+        this.addVertexWithUV(x1, y1, z, var24b, var22b);
+        this.addVertexWithUV(x1, y1, z1, var24b, var26b);
+        this.addVertexWithUV(x, y1, z1, var20b, var26b);
+        this.addVertexWithUV(x, y1, z, var20b, var22b);
 
         this.addVertexWithUV(baseX + var44 + Zero, baseY, baseZ - var44 + par10, var32, var30);
         this.addVertexWithUV(baseX + var44 + Zero, baseY, baseZ + var44 + par10, var32, var34);
