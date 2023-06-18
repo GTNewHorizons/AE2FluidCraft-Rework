@@ -44,15 +44,11 @@ public class FluidSorters {
         }
         return Platform.getItemDisplayName(o2).compareToIgnoreCase(Platform.getItemDisplayName(o1));
     };
-    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_SIZE = new Comparator<>() {
-
-        @Override
-        public int compare(final IAEItemStack o1, final IAEItemStack o2) {
-            if (getDirection() == SortDir.ASCENDING) {
-                return compareLong(o2.getStackSize(), o1.getStackSize());
-            }
-            return compareLong(o1.getStackSize(), o2.getStackSize());
+    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_SIZE = (o1, o2) -> {
+        if (getDirection() == SortDir.ASCENDING) {
+            return compareLong(o2.getStackSize(), o1.getStackSize());
         }
+        return compareLong(o1.getStackSize(), o2.getStackSize());
     };
     private static IInvTweaks api;
     public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_INV_TWEAKS = new Comparator<>() {
