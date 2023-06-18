@@ -272,6 +272,8 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                         AEConfig.instance.settings.getSetting(Settings.TERMINAL_STYLE)));
         this.offsetY += 20;
 
+        // Right now 80 > offsetX, but that can be changed later.
+        // noinspection DataFlowIssue
         this.searchField = new FCGuiTextField(
                 this.fontRendererObj,
                 this.guiLeft + Math.max(80, this.offsetX),
