@@ -244,9 +244,7 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
                         Math.round(uv_y * 16F * 16F / 3F),
                         Math.round(16F * 16F / 3F),
                         Math.round(16F * 16F / 3F));
-                this.mouseDragged(par1Minecraft, par2, par3);
 
-                GL11.glPopMatrix();
             } else {
                 GL11.glPushMatrix();
                 GL11.glTranslatef(this.xPosition, this.yPosition, 0.0F);
@@ -280,9 +278,9 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
                         Math.round(uv_y * 16F * 16F / 3F),
                         Math.round(16F * 16F / 3F),
                         Math.round(16F * 16F / 3F));
-                this.mouseDragged(par1Minecraft, par2, par3);
-                GL11.glPopMatrix();
             }
+            this.mouseDragged(par1Minecraft, par2, par3);
+            GL11.glPopMatrix();
         }
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
