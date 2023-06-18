@@ -45,7 +45,7 @@ public class ObjectArrayIterator<E> implements /* Resettable */ Iterator<E> {
      * @throws NullPointerException      if <code>array</code> is <code>null</code>
      * @throws IndexOutOfBoundsException if the start index is out of bounds
      */
-    public ObjectArrayIterator(final E array[], final int start) {
+    public ObjectArrayIterator(final E[] array, final int start) {
         this(array, start, array.length);
     }
 
@@ -59,7 +59,7 @@ public class ObjectArrayIterator<E> implements /* Resettable */ Iterator<E> {
      * @throws IllegalArgumentException  if end index is before the start
      * @throws NullPointerException      if <code>array</code> is <code>null</code>
      */
-    public ObjectArrayIterator(final E array[], final int start, final int end) {
+    public ObjectArrayIterator(final E[] array, final int start, final int end) {
         super();
         if (start < 0) {
             throw new ArrayIndexOutOfBoundsException("Start index must not be less than zero");
