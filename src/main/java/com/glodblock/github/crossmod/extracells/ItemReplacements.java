@@ -22,7 +22,7 @@ import li.cil.oc.api.Items;
 import li.cil.oc.api.detail.ItemInfo;
 
 /**
- * Shell class to organize proxy replacements and hide the ugliness
+ * A shell class to organize proxy replacements and hide the ugliness
  */
 public class ItemReplacements {
 

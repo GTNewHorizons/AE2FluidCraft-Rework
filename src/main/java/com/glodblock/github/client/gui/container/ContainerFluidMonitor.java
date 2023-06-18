@@ -222,7 +222,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
     }
 
     /**
-     * The insert operation. For input, we have an filled container stack. For outputs, we have the following: 1.
+     * The insert operation. For input, we have a filled container stack. For outputs, we have the following: 1.
      * Leftover filled container stack - primary output. 2. Empty containers 3. Partially filled container x1 In order
      * above, the itemstack at `slotIndex` is transformed into the output.
      */

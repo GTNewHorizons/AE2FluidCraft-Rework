@@ -48,7 +48,7 @@ public class CPacketTransferRecipe implements IMessage {
         this.shift = shift;
     }
 
-    // I should use GZIP to compress the message, but i'm too lazy.
+    // TODO: this should use GZIP to compress the message
     // NBT to ByteBuf has a compress stream
     @Override
     public void toBytes(ByteBuf buf) {

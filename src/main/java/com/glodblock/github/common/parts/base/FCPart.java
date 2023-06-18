@@ -76,7 +76,7 @@ public abstract class FCPart extends AEBasePart
             this.getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
             this.getProxy().setIdlePowerUsage(1.0 / 2.0);
         } else {
-            this.getProxy().setIdlePowerUsage(1.0 / 16.0); // lights drain a little bit.
+            this.getProxy().setIdlePowerUsage(1.0 / 16.0); // lights drain a little
         }
         this.cm.registerSetting(Settings.SORT_BY, SortOrder.NAME);
         this.cm.registerSetting(Settings.VIEW_MODE, ViewItems.ALL);
@@ -420,27 +420,27 @@ public abstract class FCPart extends AEBasePart
     /**
      * The texture used for the bright front layer.
      * <p>
-     * The final texture can overlap any of the the texture in no particular order.
+     * The final texture can overlap any of the texture in no particular order.
      */
     public abstract FCPartsTexture getFrontBright();
 
     /**
      * The texture used for the colored (medium) front layer.
      * <p>
-     * The final texture can overlap any of the the texture in no particular order.
+     * The final texture can overlap any of the texture in no particular order.
      */
     public abstract FCPartsTexture getFrontColored();
 
     /**
      * The texture used for the dark front layer.
      * <p>
-     * The final texture can overlap any of the the texture in no particular order.
+     * The final texture can overlap any of the texture in no particular order.
      */
     public abstract FCPartsTexture getFrontDark();
 
     /**
-     * Should the part emit light. This actually only affects the light level, light source use a level of 15 and non
-     * light source 9.
+     * Should the part emit light. This actually only affects the light level, light source use a level of 15 and
+     * non-light source 9.
      */
     public abstract boolean isLightSource();
 }

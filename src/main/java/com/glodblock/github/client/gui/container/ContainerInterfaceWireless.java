@@ -42,7 +42,7 @@ import appeng.util.inv.WrapperInvSlot;
 public class ContainerInterfaceWireless extends FCBaseContainer {
 
     /**
-     * this stuff is all server side..
+     * this stuff is all server side
      */
     private static long autoBase = Long.MIN_VALUE;
 

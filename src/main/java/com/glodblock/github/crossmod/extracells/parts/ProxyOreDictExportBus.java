@@ -18,7 +18,7 @@ public class ProxyOreDictExportBus extends ProxyPart {
     @Nonnull
     @Override
     public NBTTagCompound transformNBT(NBTTagCompound extra) {
-        // Node tag... should've used OOP here but im too lazy to fix it now
+        // TODO: Node tag... should use OOP here.
         extra.setTag("part", extra.getCompoundTag("node").getCompoundTag("node0"));
         extra.removeTag("node");
         // Ore dict card

@@ -98,7 +98,7 @@ public abstract class FCContainerFluidConfigurable extends ContainerUpgradeable 
     @Override
     protected void standardDetectAndSendChanges() {
         if (Platform.isServer()) {
-            // clear out config items that are no longer valid (eg capacity upgrade removed)
+            // clear out config items that are no longer valid (for instance, capacity upgrade removed)
             final AppEngInternalAEInventory inv = this.getFakeFluidInv();
             final Map<Integer, IAEFluidStack> tmp = new HashMap<>();
             for (int i = 0; i < inv.getSizeInventory(); ++i) {

@@ -141,7 +141,7 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
     @Override
     public boolean equals(Object obj) {
         // ae2 null-checks the pattern stack here for some reason, but doesn't null-check in hashCode()
-        // this is inconsistent, so i've just decided to assert non-null in the constructor, which is to say that
+        // this is inconsistent, so I've just decided to assert non-null in the constructor, which is to say that
         // the pattern stack can never be null here
         return obj instanceof FluidPatternDetails && patternStackAe.equals(((FluidPatternDetails) obj).patternStackAe);
     }
