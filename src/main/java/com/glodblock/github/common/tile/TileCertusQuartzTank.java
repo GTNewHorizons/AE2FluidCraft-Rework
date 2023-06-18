@@ -224,7 +224,7 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     private TileCertusQuartzTank getTankBelow(TileEntity tile) {
         TileEntity tank = new BlockPos(tile).getOffSet(0, -1, 0).getTileEntity();
-        if (tank != null && tank instanceof TileCertusQuartzTank) {
+        if (tank instanceof TileCertusQuartzTank) {
             return (TileCertusQuartzTank) tank;
         }
         return null;

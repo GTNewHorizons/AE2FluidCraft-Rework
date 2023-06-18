@@ -40,7 +40,7 @@ public class AspectUtil {
     }
 
     public static boolean isEssentiaGas(Fluid fluid) {
-        return fluid != null && fluid instanceof GaseousEssentia;
+        return fluid instanceof GaseousEssentia;
     }
 
     public static boolean isEssentiaGas(FluidStack fluid) {
