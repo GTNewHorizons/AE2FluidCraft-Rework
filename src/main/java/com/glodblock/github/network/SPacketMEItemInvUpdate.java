@@ -91,7 +91,6 @@ public class SPacketMEItemInvUpdate implements IMessage {
     public static class Handler implements IMessageHandler<SPacketMEItemInvUpdate, IMessage> {
 
         @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         public IMessage onMessage(SPacketMEItemInvUpdate message, MessageContext ctx) {
             final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
             if (gs instanceof GuiItemMonitor) {
