@@ -16,7 +16,7 @@ import appeng.core.localization.GuiText;
 
 public class GuiRenamer extends AEBaseGui implements IDropToFillTextField {
 
-    private MEGuiTextField textField;
+    private final MEGuiTextField textField;
 
     public GuiRenamer(InventoryPlayer ip, ITerminalHost monitorable) {
         super(new ContainerRenamer(ip, monitorable));
