@@ -181,10 +181,8 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     }
 
     public IItemList<IAEFluidStack> getAvailableItems(IItemList out) {
-        Iterator<?> var2 = this.cache.iterator();
 
-        while (var2.hasNext()) {
-            IAEFluidStack fs = (IAEFluidStack) var2.next();
+        for (IAEFluidStack fs : this.cache) {
             out.addStorage(fs);
         }
 
