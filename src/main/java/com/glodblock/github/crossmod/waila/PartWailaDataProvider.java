@@ -49,7 +49,7 @@ public class PartWailaDataProvider implements IWailaDataProvider {
             ItemStack wailaStack = null;
 
             for (final IPartWailaDataProvider provider : this.providers) {
-                wailaStack = provider.getWailaStack(part, config, wailaStack);
+                wailaStack = provider.getWailaStack(part, config, null);
                 if (wailaStack != null) break;
             }
             return wailaStack;

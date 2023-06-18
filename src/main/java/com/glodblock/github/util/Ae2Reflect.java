@@ -83,6 +83,8 @@ public class Ae2Reflect {
         for (String name : names) {
             try {
                 f = owner.getDeclaredField(name);
+                // IntelliJ misses that the exception is ignored and thus "f" can indeed be null.
+                // noinspection ConstantValue
                 if (f != null) break;
             } catch (NoSuchFieldException ignore) {}
         }
