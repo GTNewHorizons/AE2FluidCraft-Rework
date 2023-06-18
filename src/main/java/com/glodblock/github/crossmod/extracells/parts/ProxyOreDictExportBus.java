@@ -1,5 +1,7 @@
 package com.glodblock.github.crossmod.extracells.parts;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.crossmod.extracells.ProxyPart;
@@ -13,6 +15,7 @@ public class ProxyOreDictExportBus extends ProxyPart {
         super(item);
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound transformNBT(NBTTagCompound extra) {
         // Node tag... should've used OOP here but im too lazy to fix it now

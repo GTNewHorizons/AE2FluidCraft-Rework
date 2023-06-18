@@ -1,5 +1,7 @@
 package com.glodblock.github.crossmod.extracells.parts;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -13,6 +15,7 @@ public class ProxyStorageMonitor extends ProxyPart {
         super(item);
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound transformNBT(NBTTagCompound extra) {
         // Fluid

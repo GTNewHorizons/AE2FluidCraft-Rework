@@ -1,5 +1,7 @@
 package com.glodblock.github.crossmod.extracells.parts;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
@@ -13,6 +15,7 @@ public class ProxyFluidInterface extends ProxyPart {
         super(item);
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound transformNBT(NBTTagCompound extra) {
         // Internal fluids - ConfigInv and FluidInv

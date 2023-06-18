@@ -4,6 +4,8 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -186,6 +188,7 @@ public class ProxyPart implements IPart, IPartDeprecated {
         return def;
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound transformNBT(NBTTagCompound extra) {
         return extra;

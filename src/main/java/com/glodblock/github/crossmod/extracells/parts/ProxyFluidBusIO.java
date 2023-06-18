@@ -2,6 +2,8 @@ package com.glodblock.github.crossmod.extracells.parts;
 
 import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
@@ -25,6 +27,7 @@ public class ProxyFluidBusIO extends ProxyPart {
         super(partItem);
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound transformNBT(NBTTagCompound extra) {
         // Transform NBT in place
