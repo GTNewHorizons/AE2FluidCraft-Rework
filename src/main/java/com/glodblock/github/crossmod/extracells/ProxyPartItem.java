@@ -23,12 +23,6 @@ public class ProxyPartItem extends ProxyItem implements IPartItem {
         super(ec2itemName);
     }
 
-    /**
-     *
-     * @param srcMeta
-     * @param replacement
-     * @param part
-     */
     protected void addItemPart(int srcMeta, Item replacement, Function<ProxyPartItem, ProxyPart> part) {
         this.replacements.put(srcMeta, new PartReplacement(replacement, part));
     }
