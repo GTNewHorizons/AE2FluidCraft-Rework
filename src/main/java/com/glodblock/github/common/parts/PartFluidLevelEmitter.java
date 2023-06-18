@@ -130,9 +130,16 @@ public class PartFluidLevelEmitter extends PartUpgradeable
             return false;
         }
 
-        final boolean flipState = this.getConfigManager().getSetting(Settings.REDSTONE_EMITTER)
-                == RedstoneMode.LOW_SIGNAL;
-        return flipState == (this.reportingValue >= this.lastReportedValue + 1);
+        final Enum<?> redstoneEmitterSetting = this.getConfigManager().getSetting(Settings.REDSTONE_EMITTER);
+        final boolean result;
+
+        if (redstoneEmitterSetting == RedstoneMode.LOW_SIGNAL) {
+            result = this.reportingValue >= this.lastReportedValue + 1;
+        } else {
+            result = this.reportingValue < this.lastReportedValue + 1;
+        }
+
+        return result;
     }
 
     @MENetworkEventSubscribe
