@@ -2,7 +2,6 @@ package com.glodblock.github.loader;
 
 import static com.glodblock.github.common.storage.CellType.Cell16384kPart;
 import static com.glodblock.github.loader.ItemAndBlockHolder.*;
-import static com.glodblock.github.loader.ItemAndBlockHolder.CELL4KM;
 import static net.minecraft.init.Blocks.redstone_torch;
 import static net.minecraft.init.Items.fish;
 

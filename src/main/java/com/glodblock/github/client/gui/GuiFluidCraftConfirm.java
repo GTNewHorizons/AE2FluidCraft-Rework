@@ -1,7 +1,5 @@
 package com.glodblock.github.client.gui;
 
-import java.util.*;
-
 import net.minecraft.entity.player.InventoryPlayer;
 
 import com.glodblock.github.FluidCraft;
