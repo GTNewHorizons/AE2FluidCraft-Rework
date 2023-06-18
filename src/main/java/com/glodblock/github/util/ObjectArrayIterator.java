@@ -99,7 +99,7 @@ public class ObjectArrayIterator<E> implements /* Resettable */ Iterator<E> {
      */
     @Override
     public E next() {
-        if (hasNext() == false) {
+        if (!hasNext()) {
             throw new NoSuchElementException();
         }
         return this.array[this.index++];
