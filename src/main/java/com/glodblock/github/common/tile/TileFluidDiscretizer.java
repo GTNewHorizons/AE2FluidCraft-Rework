@@ -44,7 +44,6 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
     @Override
     public boolean canBeRotated() {
         return false;
-        // based
     }
 
     @Override
@@ -212,7 +211,7 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
         @Override
         public boolean isValid(Object verificationToken) {
             IMEMonitor<IAEFluidStack> fluidGrid = getFluidGrid();
-            return fluidGrid != null && fluidGrid == verificationToken /* && !conflict */;
+            return fluidGrid != null && fluidGrid == verificationToken;
         }
 
         @Override

@@ -62,9 +62,7 @@ public abstract class FCSharedFluidBus extends PartUpgradeable implements IGridT
             } else {
                 this.getProxy().getTick().sleepDevice(this.getProxy().getNode());
             }
-        } catch (final GridAccessException e) {
-            // :P
-        }
+        } catch (final GridAccessException ignored) {}
     }
 
     @Override

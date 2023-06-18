@@ -106,7 +106,10 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements IPa
     }
 
     private static IAEItemStack[] collectAeInventory(AeStackInventory<IAEItemStack> inv) {
-        // see note at top of DensePatternDetails
+        /*
+         * AE2 API documentation says the input/output arrays can contain nulls, but their use of the API directly
+         * contradicts that, so we just go by behaviour and filter out nulls.
+         */
         List<IAEItemStack> acc = new ArrayList<>();
         for (IAEItemStack stack : inv) {
             if (stack != null) {

@@ -82,7 +82,6 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     }
 
     public static InventoryAdaptor wrap(TileEntity capProvider, ForgeDirection face) {
-        // sometimes i wish 1.7.10 has cap system.
         TileEntity inter = capProvider.getWorldObj().getTileEntity(
                 capProvider.xCoord + face.offsetX,
                 capProvider.yCoord + face.offsetY,

@@ -76,7 +76,6 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
     protected static boolean onlyBrokenRecipes = false;
     protected GuiTabButton craftingStatusBtn;
 
-    // private final IConfigManager configSrc;
     private int rows = 3;
 
     private static final String MOLECULAR_ASSEMBLER = "tile.appliedenergistics2.BlockMolecularAssembler";
@@ -220,7 +219,9 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
     protected int calculateRowsCount() {
         final int maxRows = this.getMaxRows();
         final boolean hasNEI = IntegrationRegistry.INSTANCE.isEnabled(IntegrationType.NEI);
-        final int NEIPadding = hasNEI ? 22 /* input */ + 18 /* top panel */ : 0;
+        final int input = 22;
+        final int topPanel = 18;
+        final int NEIPadding = hasNEI ? input + topPanel : 0;
         final int extraSpace = this.height - MAGIC_HEIGHT_NUMBER - NEIPadding;
 
         return Math.max(3, Math.min(maxRows, extraSpace / 18));
@@ -539,7 +540,7 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
 
         if (this.refreshList) {
             this.refreshList = false;
-            // invalid caches on refresh
+            // invalidate caches on refresh
             this.cachedSearches.clear();
             this.refreshList();
         }

@@ -86,11 +86,6 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
     @Override
     public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
-        // if (Config.blacklistEssentiaGas && ModAndClassUtil.ThE && requestedAddition != null) {
-        // return ModAndClassUtil.essentiaGas.isInstance(requestedAddition.getFluid());
-        // }
-        //
-        // What even is a null fluid
         return requestedAddition == null || requestedAddition.getFluid() == null
                 || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }

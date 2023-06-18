@@ -25,7 +25,6 @@ public class ObjectArrayIterator<E> implements /* Resettable */ Iterator<E> {
     /** The current iterator index */
     int index = 0;
 
-    // -------------------------------------------------------------------------
     /**
      * Constructs an ObjectArrayIterator that will iterate over the values in the specified array.
      *
@@ -80,8 +79,7 @@ public class ObjectArrayIterator<E> implements /* Resettable */ Iterator<E> {
         this.index = start;
     }
 
-    // Iterator interface
-    // -------------------------------------------------------------------------
+    // region Iterator interface
 
     /**
      * Returns true if there are more elements to return from the array.
@@ -116,9 +114,9 @@ public class ObjectArrayIterator<E> implements /* Resettable */ Iterator<E> {
     public void remove() {
         throw new UnsupportedOperationException("remove() method is not supported for an ObjectArrayIterator");
     }
+    // endregion
 
-    // Properties
-    // -------------------------------------------------------------------------
+    // region Properties
 
     /**
      * Gets the array that this iterator is iterating over.
@@ -146,6 +144,8 @@ public class ObjectArrayIterator<E> implements /* Resettable */ Iterator<E> {
     public int getEndIndex() {
         return this.endIndex;
     }
+
+    // endregion
 
     /**
      * Resets the iterator back to the start index.

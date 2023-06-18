@@ -181,9 +181,7 @@ public class PartFluidLevelEmitter extends PartUpgradeable
                 this.myWatcher.add(myStack);
             }
             this.updateReportingValue(this.getProxy().getStorage().getFluidInventory());
-        } catch (final GridAccessException e1) {
-            // :/
-        }
+        } catch (final GridAccessException ignored) {}
     }
 
     private void updateReportingValue(final IMEMonitor<IAEFluidStack> monitor) {
@@ -282,9 +280,7 @@ public class PartFluidLevelEmitter extends PartUpgradeable
     public void onListUpdate() {
         try {
             this.updateReportingValue(this.getProxy().getStorage().getFluidInventory());
-        } catch (final GridAccessException e) {
-            // ;P
-        }
+        } catch (final GridAccessException ignored) {}
     }
 
     @Override
@@ -304,40 +300,23 @@ public class PartFluidLevelEmitter extends PartUpgradeable
         Tessellator.instance.startDrawingQuads();
         this.renderTorchAtAngle(0, -0.5, 0);
         Tessellator.instance.draw();
-        // rh.setBounds( 7, 7, 10, 9, 9, 15 );
-        // rh.renderInventoryBox( renderer );
     }
 
     private void renderTorchAtAngle(double baseX, double baseY, double baseZ) {
         final boolean isOn = this.isLevelEmitterOn();
         final IIcon offTexture = this.getItemStack().getIconIndex();
         final IIcon IIcon = (isOn ? CableBusTextures.LevelEmitterTorchOn.getIcon() : offTexture);
-        //
         this.centerX = baseX + 0.5;
         this.centerY = baseY + 0.5;
         this.centerZ = baseZ + 0.5;
 
         baseY += 7.0 / 16.0;
 
-        // double par11 = 0;
-
-        /*
-         * double d5 = (double)IIcon.func_94209_e(); double d6 = (double)IIcon.func_94206_g(); double d7 =
-         * (double)IIcon.func_94212_f(); double d8 = (double)IIcon.func_94210_h(); double d9 =
-         * (double)IIcon.func_94214_a(7.0D); double d10 = (double)IIcon.func_94207_b(6.0D); double d11 =
-         * (double)IIcon.func_94214_a(9.0D); double d12 = (double)IIcon.func_94207_b(8.0D); double d13 =
-         * (double)IIcon.func_94214_a(7.0D); double d14 = (double)IIcon.func_94207_b(13.0D); double d15 =
-         * (double)IIcon.func_94214_a(9.0D); double d16 = (double)IIcon.func_94207_b(15.0D);
-         */
-
         final float var16 = IIcon.getMinU();
         final float var17 = IIcon.getMaxU();
         final float var18 = IIcon.getMinV();
         final float var19 = IIcon.getMaxV();
-        /*
-         * float var16 = (float)var14 / 256.0F; float var17 = ((float)var14 + 15.99F) / 256.0F; float var18 =
-         * (float)var15 / 256.0F; float var19 = ((float)var15 + 15.99F) / 256.0F;
-         */
+
         final double var20b = offTexture.getInterpolatedU(7.0D);
         final double var24b = offTexture.getInterpolatedU(9.0D);
 
@@ -503,13 +482,6 @@ public class PartFluidLevelEmitter extends PartUpgradeable
     public void renderStatic(final int x, final int y, final int z, final IPartRenderHelper rh,
             final RenderBlocks renderer) {
         rh.setTexture(this.getItemStack().getIconIndex());
-        // rh.setTexture( CableBusTextures.ItemPartLevelEmitterOn.getIcon() );
-
-        // rh.setBounds( 2, 2, 14, 14, 14, 16 );
-        // rh.renderBlock( x, y, z, renderer );
-
-        // rh.setBounds( 7, 7, 10, 9, 9, 15 );
-        // rh.renderBlock( x, y, z, renderer );
 
         renderer.renderAllFaces = true;
 
@@ -523,8 +495,6 @@ public class PartFluidLevelEmitter extends PartUpgradeable
 
         rh.setBounds(7, 7, 11, 9, 9, 12);
         this.renderLights(x, y, z, rh, renderer);
-
-        // super.renderWorldBlock( world, x, y, z, block, modelId, renderer );
     }
 
     @Override

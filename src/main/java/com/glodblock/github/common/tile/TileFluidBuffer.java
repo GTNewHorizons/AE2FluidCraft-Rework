@@ -50,9 +50,7 @@ public class TileFluidBuffer extends AENetworkTile implements IAEFluidInventory,
                     .findPrecise(AEFluidStack.create(fs));
             this.invFluids.setFluidInSlot(0, ias);
             if (ias != null) return true;
-        } catch (final GridAccessException e) {
-            // :P
-        }
+        } catch (final GridAccessException ignored) {}
         return false;
     }
 
@@ -67,9 +65,7 @@ public class TileFluidBuffer extends AENetworkTile implements IAEFluidInventory,
                         this.source);
                 if (notInserted != null) return fluidStack.amount -= notInserted.getStackSize();
                 return fluidStack.amount;
-            } catch (final GridAccessException e) {
-                // :P
-            }
+            } catch (final GridAccessException ignored) {}
         }
         return 0;
     }
@@ -92,9 +88,7 @@ public class TileFluidBuffer extends AENetworkTile implements IAEFluidInventory,
                     .extractItems(ias, actionable, this.source);
             if (extracted == null) return null;
             return extracted.getFluidStack();
-        } catch (final GridAccessException e) {
-            // :P
-        }
+        } catch (final GridAccessException ignored) {}
         return null;
     }
 
@@ -113,9 +107,7 @@ public class TileFluidBuffer extends AENetworkTile implements IAEFluidInventory,
         try {
             return this.getProxy().getStorage().getFluidInventory().getStorageList()
                     .findPrecise(this.getAEFluidStack());
-        } catch (final GridAccessException e) {
-            // :P
-        }
+        } catch (final GridAccessException ignored) {}
         return null;
     }
 

@@ -164,7 +164,6 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
 
             FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(result, 0));
         } catch (final NumberFormatException e) {
-            // nope..
             this.level.setText("0");
         }
     }

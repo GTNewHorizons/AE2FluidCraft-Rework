@@ -163,9 +163,7 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
                 }
                 this.updateSchedulingMode(this.getSchedulingMode(), i);
                 return didSomething ? TickRateModulation.FASTER : TickRateModulation.SLOWER;
-            } catch (GridAccessException e) {
-                // Ignore
-            }
+            } catch (GridAccessException ignored) {}
         }
 
         return TickRateModulation.SLEEP;

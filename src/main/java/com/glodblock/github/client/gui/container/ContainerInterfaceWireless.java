@@ -48,7 +48,6 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
 
     private final Multimap<IInterfaceHost, ContainerInterfaceWireless.InvTracker> diList = HashMultimap.create();
     private final Map<Long, ContainerInterfaceWireless.InvTracker> byId = new HashMap<Long, ContainerInterfaceWireless.InvTracker>();
-    // private final Map<Long, InvTracker> byId = new HashMap<>();
     private IGrid grid;
     private NBTTagCompound data = new NBTTagCompound();
 
@@ -114,9 +113,7 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
             try {
                 NetworkHandler.instance
                         .sendTo(new PacketCompressedNBT(this.data), (EntityPlayerMP) this.getPlayerInv().player);
-            } catch (final IOException e) {
-                // :P
-            }
+            } catch (final IOException ignored) {}
 
             this.data = new NBTTagCompound();
         }

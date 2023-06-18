@@ -430,7 +430,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             this.textField = textField;
             this.textField.setEnableBackgroundDrawing(false);
             this.textField.setText("0");
-            this.textField.setMaxStringLength(10); // it's enough to useful
+            this.textField.setMaxStringLength(10); // this length is enough to useful
             this.idx = idx;
             this.action = action;
             this.tooltip = tooltip;

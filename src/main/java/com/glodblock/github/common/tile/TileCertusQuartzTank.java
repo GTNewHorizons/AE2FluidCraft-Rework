@@ -167,7 +167,9 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         return filled;
     }
 
-    /* IFluidHandler */
+    /**
+     * An override for {@link IFluidHandler}
+     */
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
         if (resource == null || this.tank.getFluid() != null && resource.getFluid() != this.tank.getFluid().getFluid())

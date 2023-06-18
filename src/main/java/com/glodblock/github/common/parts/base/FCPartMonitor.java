@@ -175,9 +175,7 @@ public abstract class FCPartMonitor extends AbstractPartDisplay implements IPart
 
                 this.updateReportingValue(this.getProxy().getStorage().getFluidInventory());
             }
-        } catch (final GridAccessException e) {
-            // >.>
-        }
+        } catch (final GridAccessException ignored) {}
     }
 
     protected void extractItem(final EntityPlayer player) {}
@@ -248,8 +246,6 @@ public abstract class FCPartMonitor extends AbstractPartDisplay implements IPart
     }
 
     private void tesrRenderScreen(final Tessellator tess, final IAEFluidStack ais) {
-        // GL11.glPushAttrib( GL11.GL_ALL_ATTRIB_BITS );
-
         final ForgeDirection d = this.getSide();
 
         GL11.glTranslated(d.offsetX * 0.77, d.offsetY * 0.77, d.offsetZ * 0.77);
@@ -296,7 +292,6 @@ public abstract class FCPartMonitor extends AbstractPartDisplay implements IPart
 
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            // RenderHelper.enableGUIStandardItemLighting();
             tess.setColorOpaque_F(1.0f, 1.0f, 1.0f);
 
             ClientHelper.proxy.doRenderItem(sis, this.getTile().getWorldObj());
@@ -318,7 +313,6 @@ public abstract class FCPartMonitor extends AbstractPartDisplay implements IPart
             GL11.glTranslatef(-0.5f * width, 0.0f, -1.0f);
             fr.drawString(renderedStackSize, 0, 0, 0);
         }
-        // GL11.glPopAttrib();
     }
 
     @Override

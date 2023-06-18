@@ -78,9 +78,11 @@ public class ItemReplacements {
         registry.put("extracells:storage.physical.void", voidCell);
         deprecateItem("pattern.fluid", ItemAndBlockHolder.PATTERN);
         deprecateWireless("terminal.fluid.wireless", ItemAndBlockHolder.WIRELESS_FLUID_TERM);
+
         /* Storage casings */
         deprecateItem("storage.casing", 0, AEApi.instance().definitions().materials().emptyAdvancedStorageCell());
         deprecateItem("storage.casing", 1, ItemAndBlockHolder.CELL_HOUSING, 2);
+
         /* Storage components (1k component, etc.) */
         deprecateItem("storage.component", 0, AEApi.instance().definitions().materials().cell256kPart());
         deprecateItem("storage.component", 1, AEApi.instance().definitions().materials().cell1024kPart());

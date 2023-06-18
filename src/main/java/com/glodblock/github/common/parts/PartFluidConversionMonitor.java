@@ -102,9 +102,7 @@ public class PartFluidConversionMonitor extends PartFluidStorageMonitor {
                 }
             }
 
-        } catch (final GridAccessException e) {
-            // :P
-        }
+        } catch (final GridAccessException ignored) {}
         return true;
     }
 
@@ -153,9 +151,7 @@ public class PartFluidConversionMonitor extends PartFluidStorageMonitor {
                         player.openContainer.detectAndSendChanges();
                     }
                 }
-            } catch (final GridAccessException e) {
-                // :P
-            }
+            } catch (final GridAccessException ignored) {}
         }
     }
 }

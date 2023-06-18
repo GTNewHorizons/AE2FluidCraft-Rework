@@ -45,7 +45,6 @@ public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCel
 
     @Override
     public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
-        // What even is a null fluid
         return requestedAddition == null || requestedAddition.getFluid() == null
                 || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }

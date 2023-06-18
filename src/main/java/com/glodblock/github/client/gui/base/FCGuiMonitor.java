@@ -433,7 +433,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
         if (slot instanceof SlotPatternTerm) {
             if (mouseButton == 6) {
-                return; // prevent weird double clicks..
+                return; // prevents weird double clicks
             }
             try {
                 NetworkHandler.instance.sendToServer(((SlotPatternTerm) slot).getRequest(isShiftKeyDown()));
@@ -442,13 +442,13 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
             }
         } else if (slot instanceof SlotCraftingTerm) {
             if (mouseButton == 6) {
-                return; // prevent weird double clicks..
+                return; // prevents weird double clicks
             }
             InventoryAction action;
             if (isShiftKeyDown()) {
                 action = InventoryAction.CRAFT_SHIFT;
             } else {
-                // Craft stack on right-click, craft single on left-click
+                // Craft a stack on right-click, craft a single one on left-click
                 action = (mouseButton == 1) ? InventoryAction.CRAFT_STACK : InventoryAction.CRAFT_ITEM;
             }
             final PacketInventoryAction p = new PacketInventoryAction(action, slotIdx, 0);

@@ -163,9 +163,7 @@ public abstract class FCPart extends AEBasePart
             if (this.getProxy().getNode().meetsChannelRequirements()) {
                 this.clientFlags = this.getClientFlags() | FCPart.CHANNEL_FLAG;
             }
-        } catch (final GridAccessException e) {
-            // um.. nothing.
-        }
+        } catch (final GridAccessException ignored) {}
 
         data.writeByte((byte) this.getClientFlags());
     }
@@ -276,9 +274,7 @@ public abstract class FCPart extends AEBasePart
     public IMEMonitor<IAEItemStack> getItemInventory() {
         try {
             return this.getProxy().getStorage().getItemInventory();
-        } catch (final GridAccessException e) {
-            // err nope?
-        }
+        } catch (final GridAccessException ignored) {}
         return null;
     }
 
@@ -286,9 +282,7 @@ public abstract class FCPart extends AEBasePart
     public IMEMonitor<IAEFluidStack> getFluidInventory() {
         try {
             return this.getProxy().getStorage().getFluidInventory();
-        } catch (final GridAccessException e) {
-            // err nope?
-        }
+        } catch (final GridAccessException ignored) {}
         return null;
     }
 

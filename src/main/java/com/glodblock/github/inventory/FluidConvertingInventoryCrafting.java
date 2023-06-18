@@ -22,7 +22,6 @@ public class FluidConvertingInventoryCrafting extends InventoryCrafting {
             if (fluid != null) {
                 super.setInventorySlotContents(index, ItemFluidPacket.newStack(new FluidStack(fluid, stack.stackSize)));
             } else {
-                // wtf?
                 super.setInventorySlotContents(
                         index,
                         ItemFluidPacket.newStack(new FluidStack(FluidRegistry.WATER, 1000)));
