@@ -35,8 +35,7 @@ public class FCTooltipHandlerWaila extends TooltipHandlerWaila {
                                 + EnumChatFormatting.RESET);
             }
             String modName = Util.getFluidModName(fs.getFluid());
-            if (modName != null && !modName.equals(""))
-                currenttip.set(currenttip.size() - 1, "\u00a79\u00a7o" + modName);
+            if (modName != null && !modName.equals("")) currenttip.set(currenttip.size() - 1, "§9§o" + modName);
         }
         return currenttip;
     }
