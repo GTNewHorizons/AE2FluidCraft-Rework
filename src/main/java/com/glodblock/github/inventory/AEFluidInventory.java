@@ -349,7 +349,7 @@ public class AEFluidInventory implements IAEFluidTank {
 
         @Override
         public int getCapacity() {
-            return Math.min(AEFluidInventory.this.capacity, Integer.MAX_VALUE);
+            return AEFluidInventory.this.capacity;
         }
 
         @Override
