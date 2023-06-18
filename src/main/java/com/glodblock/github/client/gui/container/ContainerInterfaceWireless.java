@@ -47,7 +47,7 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
     private static long autoBase = Long.MIN_VALUE;
 
     private final Multimap<IInterfaceHost, ContainerInterfaceWireless.InvTracker> diList = HashMultimap.create();
-    private final Map<Long, ContainerInterfaceWireless.InvTracker> byId = new HashMap<Long, ContainerInterfaceWireless.InvTracker>();
+    private final Map<Long, ContainerInterfaceWireless.InvTracker> byId = new HashMap<>();
     private IGrid grid;
     private NBTTagCompound data = new NBTTagCompound();
 

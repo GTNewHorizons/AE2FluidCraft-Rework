@@ -345,8 +345,8 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
 
     @Override
     public void sortCraftingItems() {
-        List<ItemStack> items = new ArrayList<ItemStack>();
-        List<ItemStack> fluids = new ArrayList<ItemStack>();
+        List<ItemStack> items = new ArrayList<>();
+        List<ItemStack> fluids = new ArrayList<>();
         for (ItemStack is : this.crafting) {
             if (is == null) continue;
             if (is.getItem() instanceof ItemFluidPacket) {

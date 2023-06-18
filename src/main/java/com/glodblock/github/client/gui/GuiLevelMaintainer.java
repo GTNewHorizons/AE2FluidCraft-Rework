@@ -364,7 +364,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         public void draw() {
             this.getQty().draw();
             this.getBatch().draw();
-            ArrayList<String> message = new ArrayList<String>();
+            ArrayList<String> message = new ArrayList<>();
             message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_TITLE) + "\n");
             switch (this.state) {
                 case Idling:

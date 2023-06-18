@@ -27,7 +27,7 @@ import appeng.helpers.IPriorityHost;
 
 public enum GuiType {
 
-    RENAMER(new PartOrItemGuiFactory<ITerminalHost>(ITerminalHost.class) {
+    RENAMER(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
@@ -39,7 +39,7 @@ public enum GuiType {
             return new GuiRenamer(player.inventory, inv);
         }
     }),
-    FLUID_AUTO_FILLER(new TileGuiFactory<TileFluidAutoFiller>(TileFluidAutoFiller.class) {
+    FLUID_AUTO_FILLER(new TileGuiFactory<>(TileFluidAutoFiller.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, TileFluidAutoFiller inv) {
@@ -52,7 +52,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_LEVEL_EMITTER(new PartGuiFactory<PartFluidLevelEmitter>(PartFluidLevelEmitter.class) {
+    FLUID_LEVEL_EMITTER(new PartGuiFactory<>(PartFluidLevelEmitter.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, PartFluidLevelEmitter inv) {
@@ -65,7 +65,7 @@ public enum GuiType {
         }
     }),
 
-    LEVEL_MAINTAINER(new TileGuiFactory<TileLevelMaintainer>(TileLevelMaintainer.class) {
+    LEVEL_MAINTAINER(new TileGuiFactory<>(TileLevelMaintainer.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, TileLevelMaintainer inv) {
@@ -78,7 +78,7 @@ public enum GuiType {
         }
     }),
 
-    OC_PATTERN_EDITOR(new TileGuiFactory<TileOCPatternEditor>(TileOCPatternEditor.class) {
+    OC_PATTERN_EDITOR(new TileGuiFactory<>(TileOCPatternEditor.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, TileOCPatternEditor inv) {
@@ -91,7 +91,7 @@ public enum GuiType {
         }
     }),
 
-    DUAL_INTERFACE(new TileOrPartGuiFactory<IInterfaceHost>(IInterfaceHost.class) {
+    DUAL_INTERFACE(new TileOrPartGuiFactory<>(IInterfaceHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IInterfaceHost inv) {
@@ -104,7 +104,7 @@ public enum GuiType {
         }
     }),
 
-    DUAL_INTERFACE_FLUID(new TileOrPartGuiFactory<IDualHost>(IDualHost.class) {
+    DUAL_INTERFACE_FLUID(new TileOrPartGuiFactory<>(IDualHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IDualHost inv) {
@@ -117,7 +117,7 @@ public enum GuiType {
         }
     }),
 
-    PRIORITY(new TileOrPartGuiFactory<IPriorityHost>(IPriorityHost.class) {
+    PRIORITY(new TileOrPartGuiFactory<>(IPriorityHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IPriorityHost inv) {
@@ -130,7 +130,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_BUS_IO(new PartGuiFactory<FCSharedFluidBus>(FCSharedFluidBus.class) {
+    FLUID_BUS_IO(new PartGuiFactory<>(FCSharedFluidBus.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, FCSharedFluidBus inv) {
@@ -143,7 +143,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_STORAGE_BUS(new PartGuiFactory<PartFluidStorageBus>(PartFluidStorageBus.class) {
+    FLUID_STORAGE_BUS(new PartGuiFactory<>(PartFluidStorageBus.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, PartFluidStorageBus inv) {
@@ -156,7 +156,7 @@ public enum GuiType {
         }
     }),
 
-    INGREDIENT_BUFFER(new TileGuiFactory<TileIngredientBuffer>(TileIngredientBuffer.class) {
+    INGREDIENT_BUFFER(new TileGuiFactory<>(TileIngredientBuffer.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, TileIngredientBuffer inv) {
@@ -169,7 +169,7 @@ public enum GuiType {
         }
     }),
 
-    LARGE_INGREDIENT_BUFFER(new TileGuiFactory<TileLargeIngredientBuffer>(TileLargeIngredientBuffer.class) {
+    LARGE_INGREDIENT_BUFFER(new TileGuiFactory<>(TileLargeIngredientBuffer.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, TileLargeIngredientBuffer inv) {
@@ -182,7 +182,7 @@ public enum GuiType {
         }
     }),
 
-    CRAFTING_STATUS(new PartOrItemGuiFactory<ITerminalHost>(ITerminalHost.class) {
+    CRAFTING_STATUS(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
@@ -195,7 +195,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_TERMINAL(new TileOrPartGuiFactory<ITerminalHost>(ITerminalHost.class) {
+    FLUID_TERMINAL(new TileOrPartGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
@@ -208,7 +208,7 @@ public enum GuiType {
         }
     }),
 
-    PORTABLE_FLUID_CELL(new ItemGuiFactory<IFluidPortableCell>(IFluidPortableCell.class) {
+    PORTABLE_FLUID_CELL(new ItemGuiFactory<>(IFluidPortableCell.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IFluidPortableCell inv) {
@@ -221,7 +221,7 @@ public enum GuiType {
         }
     }),
 
-    WIRELESS_FLUID_TERMINAL(new ItemGuiFactory<IWirelessTerminal>(IWirelessTerminal.class) {
+    WIRELESS_FLUID_TERMINAL(new ItemGuiFactory<>(IWirelessTerminal.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
@@ -234,7 +234,7 @@ public enum GuiType {
         }
     }),
 
-    WIRELESS_ESSENTIA_TERMINAL(new ItemGuiFactory<IWirelessTerminal>(IWirelessTerminal.class) {
+    WIRELESS_ESSENTIA_TERMINAL(new ItemGuiFactory<>(IWirelessTerminal.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
@@ -247,7 +247,7 @@ public enum GuiType {
         }
     }),
 
-    WIRELESS_FLUID_PATTERN_TERMINAL(new ItemGuiFactory<IWirelessTerminal>(IWirelessTerminal.class) {
+    WIRELESS_FLUID_PATTERN_TERMINAL(new ItemGuiFactory<>(IWirelessTerminal.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
@@ -259,7 +259,7 @@ public enum GuiType {
             return new GuiFluidPatternWireless(player.inventory, inv);
         }
     }),
-    WIRELESS_FLUID_PATTERN_TERMINAL_EX(new ItemGuiFactory<IWirelessTerminal>(IWirelessTerminal.class) {
+    WIRELESS_FLUID_PATTERN_TERMINAL_EX(new ItemGuiFactory<>(IWirelessTerminal.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
@@ -271,7 +271,7 @@ public enum GuiType {
             return new GuiFluidPatternExWireless(player.inventory, inv);
         }
     }),
-    WIRELESS_INTERFACE_TERMINAL(new ItemGuiFactory<IWirelessTerminal>(IWirelessTerminal.class) {
+    WIRELESS_INTERFACE_TERMINAL(new ItemGuiFactory<>(IWirelessTerminal.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
@@ -284,7 +284,7 @@ public enum GuiType {
         }
     }),
 
-    WIRELESS_CRAFTING_TERMINAL(new ItemGuiFactory<IWirelessTerminal>(IWirelessTerminal.class) {
+    WIRELESS_CRAFTING_TERMINAL(new ItemGuiFactory<>(IWirelessTerminal.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
@@ -297,7 +297,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_PATTERN_TERMINAL(new PartGuiFactory<ITerminalHost>(ITerminalHost.class) {
+    FLUID_PATTERN_TERMINAL(new PartGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
@@ -310,7 +310,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_PATTERN_TERMINAL_EX(new PartGuiFactory<ITerminalHost>(ITerminalHost.class) {
+    FLUID_PATTERN_TERMINAL_EX(new PartGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
@@ -323,7 +323,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_PATTERN_ENCODER(new TileGuiFactory<TileFluidPatternEncoder>(TileFluidPatternEncoder.class) {
+    FLUID_PATTERN_ENCODER(new TileGuiFactory<>(TileFluidPatternEncoder.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, TileFluidPatternEncoder inv) {
@@ -336,7 +336,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_CRAFTING_CONFIRM(new PartGuiFactory<FCPart>(FCPart.class) {
+    FLUID_CRAFTING_CONFIRM(new PartGuiFactory<>(FCPart.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, FCPart inv) {
@@ -349,7 +349,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_CRAFTING_CONFIRM_ITEM(new ItemGuiFactory<IWirelessTerminal>(IWirelessTerminal.class) {
+    FLUID_CRAFTING_CONFIRM_ITEM(new ItemGuiFactory<>(IWirelessTerminal.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
@@ -362,7 +362,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_CRAFTING_AMOUNT(new PartOrItemGuiFactory<ITerminalHost>(ITerminalHost.class) {
+    FLUID_CRAFTING_AMOUNT(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
@@ -375,7 +375,7 @@ public enum GuiType {
         }
     }),
 
-    FLUID_PACKET_DECODER(new TileGuiFactory<TileFluidPacketDecoder>(TileFluidPacketDecoder.class) {
+    FLUID_PACKET_DECODER(new TileGuiFactory<>(TileFluidPacketDecoder.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, TileFluidPacketDecoder inv) {
@@ -388,7 +388,7 @@ public enum GuiType {
         }
     }),
 
-    PATTERN_VALUE_SET(new PartOrItemGuiFactory<ITerminalHost>(ITerminalHost.class) {
+    PATTERN_VALUE_SET(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {

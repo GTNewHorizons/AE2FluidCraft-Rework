@@ -50,7 +50,7 @@ public class FluidCraftingTransferHandler implements IOverlayHandler {
                         Slot slot = (Slot) o;
                         if (slot.getSlotIndex() == col + row * 3) {
                             final NBTTagList tags = new NBTTagList();
-                            final List<ItemStack> list = new LinkedList<ItemStack>();
+                            final List<ItemStack> list = new LinkedList<>();
                             // prefer pure crystals.
                             for (int x = 0; x < positionedStack.items.length; x++) {
                                 if (Platform.isRecipePrioritized(positionedStack.items[x])) {

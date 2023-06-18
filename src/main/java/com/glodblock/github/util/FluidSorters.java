@@ -16,7 +16,7 @@ import appeng.util.Platform;
 public class FluidSorters {
 
     private static SortDir Direction = SortDir.ASCENDING;
-    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_MOD = new Comparator<IAEItemStack>() {
+    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_MOD = new Comparator<>() {
 
         @Override
         public int compare(final IAEItemStack o1, final IAEItemStack o2) {
@@ -44,7 +44,7 @@ public class FluidSorters {
         }
         return Platform.getItemDisplayName(o2).compareToIgnoreCase(Platform.getItemDisplayName(o1));
     };
-    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_SIZE = new Comparator<IAEItemStack>() {
+    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_SIZE = new Comparator<>() {
 
         @Override
         public int compare(final IAEItemStack o1, final IAEItemStack o2) {
@@ -55,7 +55,7 @@ public class FluidSorters {
         }
     };
     private static IInvTweaks api;
-    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_INV_TWEAKS = new Comparator<IAEItemStack>() {
+    public static final Comparator<IAEItemStack> CONFIG_BASED_SORT_BY_INV_TWEAKS = new Comparator<>() {
 
         @Override
         public int compare(final IAEItemStack o1, final IAEItemStack o2) {
