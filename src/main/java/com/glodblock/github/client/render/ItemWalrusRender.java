@@ -37,15 +37,12 @@ public class ItemWalrusRender implements IItemRenderer {
         Minecraft.getMinecraft().renderEngine.bindTexture(this.textureWalrus);
         GL11.glPushMatrix();
         switch (type) {
-            case EQUIPPED_FIRST_PERSON:
+            case EQUIPPED_FIRST_PERSON -> {
                 GL11.glRotated(180, 0, 1, 0);
                 GL11.glTranslatef(-1F, 0.5F, -0.5F);
-                break;
-            case INVENTORY:
-                GL11.glTranslatef(-0.5F, -0.5F, -0.1F);
-                break;
-            default:
-                break;
+            }
+            case INVENTORY -> GL11.glTranslatef(-0.5F, -0.5F, -0.1F);
+            default -> {}
         }
         this.modelWalrus.renderAll();
         GL11.glPopMatrix();

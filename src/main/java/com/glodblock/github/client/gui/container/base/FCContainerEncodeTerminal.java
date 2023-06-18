@@ -132,11 +132,11 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                 && (stack.getItem() instanceof IFluidContainerItem || FluidContainerRegistry.isContainer(stack))) {
             FluidStack fluid = null;
             switch (action) {
-                case PICKUP_OR_SET_DOWN:
+                case PICKUP_OR_SET_DOWN -> {
                     fluid = Util.getFluidFromItem(stack);
                     slot.putStack(ItemFluidPacket.newStack(fluid));
-                    break;
-                case SPLIT_OR_PLACE_SINGLE:
+                }
+                case SPLIT_OR_PLACE_SINGLE -> {
                     fluid = Util.getFluidFromItem(Util.copyStackWithSize(stack, 1));
                     FluidStack origin = ItemFluidPacket.getFluidStack(slot.getStack());
                     if (fluid != null && fluid.equals(origin)) {
@@ -144,7 +144,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                         if (fluid.amount <= 0) fluid = null;
                     }
                     slot.putStack(ItemFluidPacket.newStack(fluid));
-                    break;
+                }
             }
             if (fluid == null) {
                 super.doAction(player, action, slotId, id);

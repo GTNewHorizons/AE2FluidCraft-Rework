@@ -367,29 +367,30 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             ArrayList<String> message = new ArrayList<>();
             message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_TITLE) + "\n");
             switch (this.state) {
-                case Idling:
+                case Idling -> {
                     this.line.setColor(0xFF55FF55);
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT)
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_IDLE));
-                    break;
-                case Crafting:
+                }
+                case Crafting -> {
                     this.line.setColor(0xFFFFFF55);
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT)
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_LINK));
-                    break;
-                case Exporting:
+                }
+                case Exporting -> {
                     this.line.setColor(0xFFAA00AA);
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT)
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_EXPORT));
-                    break;
-                default:
+                }
+                default -> {
                     this.line.setColor(0);
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT)
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_NONE));
+                }
             }
             message.add("");
             if (isShiftKeyDown()) {

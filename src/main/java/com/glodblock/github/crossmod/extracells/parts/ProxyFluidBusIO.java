@@ -50,18 +50,10 @@ public class ProxyFluidBusIO extends ProxyPart {
         // Redstone mode
         RedstoneMode redstoneMode = RedstoneMode.values()[extra.getInteger("redstoneMode")];
         switch (redstoneMode) {
-            case LOW_SIGNAL:
-                extra.setString("REDSTONE_CONTROLLED", "LOW_SIGNAL");
-                break;
-            case HIGH_SIGNAL:
-                extra.setString("REDSTONE_CONTROLLED", "HIGH_SIGNAL");
-                break;
-            case SIGNAL_PULSE:
-                extra.setString("REDSTONE_CONTROLLED", "SIGNAL_PULSE");
-                break;
-            default:
-                extra.setString("REDSTONE_CONTROLLED", "IGNORE");
-                break;
+            case LOW_SIGNAL -> extra.setString("REDSTONE_CONTROLLED", "LOW_SIGNAL");
+            case HIGH_SIGNAL -> extra.setString("REDSTONE_CONTROLLED", "HIGH_SIGNAL");
+            case SIGNAL_PULSE -> extra.setString("REDSTONE_CONTROLLED", "SIGNAL_PULSE");
+            default -> extra.setString("REDSTONE_CONTROLLED", "IGNORE");
         }
         extra.removeTag("redstoneMode");
         // Part data

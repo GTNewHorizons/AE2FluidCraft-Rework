@@ -193,18 +193,10 @@ public abstract class FCPart extends AEBasePart
                 }
 
                 switch (this.getSpin()) {
-                    case 0:
-                        this.spin = 1;
-                        break;
-                    case 1:
-                        this.spin = 3;
-                        break;
-                    case 2:
-                        this.spin = 0;
-                        break;
-                    case 3:
-                        this.spin = 2;
-                        break;
+                    case 0 -> this.spin = 1;
+                    case 1 -> this.spin = 3;
+                    case 2 -> this.spin = 0;
+                    case 3 -> this.spin = 2;
                 }
 
                 this.getHost().markForUpdate();

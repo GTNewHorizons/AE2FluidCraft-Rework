@@ -133,20 +133,20 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements IPa
         if (slot instanceof SlotFluidConvertingFake) {
             final ItemStack stack = player.inventory.getItemStack();
             switch (action) {
-                case PICKUP_OR_SET_DOWN:
+                case PICKUP_OR_SET_DOWN -> {
                     if (stack == null) {
                         slot.putStack(null);
                     } else {
                         ((SlotFluidConvertingFake) slot).putConvertedStack(stack.copy());
                     }
-                    break;
-                case PLACE_SINGLE:
+                }
+                case PLACE_SINGLE -> {
                     if (stack != null) {
                         ((SlotFluidConvertingFake) slot)
                                 .putConvertedStack(Objects.requireNonNull(Util.copyStackWithSize(stack, 1)));
                     }
-                    break;
-                case SPLIT_OR_PLACE_SINGLE:
+                }
+                case SPLIT_OR_PLACE_SINGLE -> {
                     ItemStack inSlot = slot.getStack();
                     if (inSlot != null) {
                         if (stack == null) {
@@ -164,7 +164,7 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements IPa
                         ((SlotFluidConvertingFake) slot)
                                 .putConvertedStack(Objects.requireNonNull(Util.copyStackWithSize(stack, 1)));
                     }
-                    break;
+                }
             }
         } else {
             super.doAction(player, action, slotId, id);

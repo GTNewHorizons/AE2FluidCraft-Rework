@@ -27,16 +27,12 @@ public class DualityInterfaceTransformer extends FCClassTransformer.ClassMapper 
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            switch (name) {
-                case "pushItemsOut":
-                case "pushPattern":
-                case "isBusy":
-                    return new TransformInvAdaptorCalls(
-                            api,
-                            super.visitMethod(access, name, desc, signature, exceptions));
-                default:
-                    return super.visitMethod(access, name, desc, signature, exceptions);
-            }
+            return switch (name) {
+                case "pushItemsOut", "pushPattern", "isBusy" -> new TransformInvAdaptorCalls(
+                        api,
+                        super.visitMethod(access, name, desc, signature, exceptions));
+                default -> super.visitMethod(access, name, desc, signature, exceptions);
+            };
         }
     }
 

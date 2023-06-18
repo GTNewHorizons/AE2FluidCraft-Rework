@@ -124,7 +124,7 @@ public class OrderStack<T> {
         NBTTagCompound info = buf.getCompoundTag(index + ":");
         byte id = info.getByte("t");
         switch (id) {
-            case ITEM:
+            case ITEM -> {
                 List<ItemStack> list = new ArrayList<>();
                 if (info.hasKey(index + ":")) {
                     NBTTagList items = info.getTagList(index + ":", 10);
@@ -134,13 +134,15 @@ public class OrderStack<T> {
                     }
                 }
                 return new OrderStack<>(ItemStack.loadItemStackFromNBT(info), index, list.toArray(new ItemStack[0]));
-            case FLUID:
+            }
+            case FLUID -> {
                 return new OrderStack<>(FluidStack.loadFluidStackFromNBT(info), index);
-            case CUSTOM:
+            }
+            case CUSTOM -> {
                 if (dummy == null) throw new IllegalOrderStackID(id);
                 return new OrderStack<>(dummy.customNBTReader(buf), index);
-            default:
-                throw new IllegalOrderStackID(id);
+            }
+            default -> throw new IllegalOrderStackID(id);
         }
     }
 }

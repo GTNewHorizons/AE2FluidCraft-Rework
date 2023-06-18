@@ -18,10 +18,12 @@ public class FluidFilter {
             Item item = ((IAEItemStack) stack).getItem();
             if (item != null) {
                 switch (typeFilter) {
-                    case ITEMS:
+                    case ITEMS -> {
                         return !(item instanceof ItemFluidDrop);
-                    case FLUIDS:
+                    }
+                    case FLUIDS -> {
                         return item instanceof ItemFluidDrop;
+                    }
                 }
             }
         }

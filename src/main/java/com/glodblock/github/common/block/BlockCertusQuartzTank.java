@@ -78,16 +78,12 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
 
     @Override
     public IIcon getIcon(int side, int meta) {
-        switch (meta) {
-            case 1:
-                return this.sideTopIcon;
-            case 2:
-                return this.sideBottomIcon;
-            case 3:
-                return this.sideMiddleIcon;
-            default:
-                return side == 0 ? this.bottomIcon : side == 1 ? this.topIcon : this.sideIcon;
-        }
+        return switch (meta) {
+            case 1 -> this.sideTopIcon;
+            case 2 -> this.sideBottomIcon;
+            case 3 -> this.sideMiddleIcon;
+            default -> side == 0 ? this.bottomIcon : side == 1 ? this.topIcon : this.sideIcon;
+        };
     }
 
     @Override

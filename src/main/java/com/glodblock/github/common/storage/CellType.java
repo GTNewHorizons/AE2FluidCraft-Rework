@@ -57,24 +57,15 @@ public enum CellType {
     }
 
     public static EnumChatFormatting getTypeColor(CellType type) {
-        switch (type) {
-            case Cell1kPart:
-                return EnumChatFormatting.GOLD;
-            case Cell4kPart:
-                return EnumChatFormatting.YELLOW;
-            case Cell16kPart:
-                return EnumChatFormatting.GREEN;
-            case Cell64kPart:
-                return EnumChatFormatting.AQUA;
-            case Cell256kPart:
-                return EnumChatFormatting.BLUE;
-            case Cell1024kPart:
-                return EnumChatFormatting.LIGHT_PURPLE;
-            case Cell4096kPart:
-                return EnumChatFormatting.RED;
-            case Cell16384kPart:
-                return EnumChatFormatting.DARK_PURPLE;
-        }
-        return EnumChatFormatting.WHITE;
+        return switch (type) {
+            case Cell1kPart -> EnumChatFormatting.GOLD;
+            case Cell4kPart -> EnumChatFormatting.YELLOW;
+            case Cell16kPart -> EnumChatFormatting.GREEN;
+            case Cell64kPart -> EnumChatFormatting.AQUA;
+            case Cell256kPart -> EnumChatFormatting.BLUE;
+            case Cell1024kPart -> EnumChatFormatting.LIGHT_PURPLE;
+            case Cell4096kPart -> EnumChatFormatting.RED;
+            case Cell16384kPart -> EnumChatFormatting.DARK_PURPLE;
+        };
     }
 }

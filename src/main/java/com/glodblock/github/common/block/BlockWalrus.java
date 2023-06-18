@@ -76,21 +76,11 @@ public class BlockWalrus extends BaseBlockContainer {
     @Override
     public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
         switch (ForgeDirection.getOrientation(blockAccess.getBlockMetadata(x, y, z))) {
-            case NORTH:
-                setBlockBounds(0.0F, 0.0F, -1.0F, 1.0F, 1.0F, 1.0F);
-                break;
-            case EAST:
-                setBlockBounds(0.0F, 0.0F, 0.0F, 2.0F, 1.0F, 1.0F);
-                break;
-            case SOUTH:
-                setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 2.0F);
-                break;
-            case WEST:
-                setBlockBounds(-1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                break;
-            default:
-                setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                break;
+            case NORTH -> setBlockBounds(0.0F, 0.0F, -1.0F, 1.0F, 1.0F, 1.0F);
+            case EAST -> setBlockBounds(0.0F, 0.0F, 0.0F, 2.0F, 1.0F, 1.0F);
+            case SOUTH -> setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 2.0F);
+            case WEST -> setBlockBounds(-1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+            default -> setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 

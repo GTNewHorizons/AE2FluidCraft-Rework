@@ -128,15 +128,12 @@ public class GuiDualInterface extends GuiUpgradeable {
     @Override
     protected String getBackground() {
         if (!ModAndClassUtil.isBigInterface) return "guis/interface.png";
-        switch (((ContainerInterface) this.cvb).getPatternCapacityCardsInstalled()) {
-            case 1:
-                return "guis/interface2.png";
-            case 2:
-                return "guis/interface3.png";
-            case 3:
-                return "guis/interface4.png";
-        }
-        return "guis/interface.png";
+        return switch (((ContainerInterface) this.cvb).getPatternCapacityCardsInstalled()) {
+            case 1 -> "guis/interface2.png";
+            case 2 -> "guis/interface3.png";
+            case 3 -> "guis/interface4.png";
+            default -> "guis/interface.png";
+        };
     }
 
     @Override

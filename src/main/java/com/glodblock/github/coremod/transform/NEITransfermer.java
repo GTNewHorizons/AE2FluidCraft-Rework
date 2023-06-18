@@ -27,16 +27,15 @@ public class NEITransfermer extends FCClassTransformer.ClassMapper {
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            switch (name) {
-                case "getStackUnderMouse":
-                    return new TransformStackUnderMouse(
-                            api,
-                            super.visitMethod(access, name, desc, signature, exceptions));
-                case "shouldShowTooltip":
-                    return new TransformShowTooltip(api, super.visitMethod(access, name, desc, signature, exceptions));
-                default:
-                    return super.visitMethod(access, name, desc, signature, exceptions);
-            }
+            return switch (name) {
+                case "getStackUnderMouse" -> new TransformStackUnderMouse(
+                        api,
+                        super.visitMethod(access, name, desc, signature, exceptions));
+                case "shouldShowTooltip" -> new TransformShowTooltip(
+                        api,
+                        super.visitMethod(access, name, desc, signature, exceptions));
+                default -> super.visitMethod(access, name, desc, signature, exceptions);
+            };
         }
     }
 

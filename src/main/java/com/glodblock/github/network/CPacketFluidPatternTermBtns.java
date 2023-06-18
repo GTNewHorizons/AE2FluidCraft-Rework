@@ -67,57 +67,30 @@ public class CPacketFluidPatternTermBtns implements IMessage {
             if (Name.startsWith("PatternTerminal.") && (c instanceof FCContainerEncodeTerminal)) {
                 final FCContainerEncodeTerminal cpt = (FCContainerEncodeTerminal) c;
                 switch (Name) {
-                    case "PatternTerminal.CraftMode":
-                        cpt.getPatternTerminal().setCraftingRecipe(Value.equals("1"));
-                        break;
-                    case "PatternTerminal.Encode":
+                    case "PatternTerminal.CraftMode" -> cpt.getPatternTerminal().setCraftingRecipe(Value.equals("1"));
+                    case "PatternTerminal.Encode" -> {
                         switch (Value) {
-                            case "0":
-                                cpt.encode();
-                                break;
-                            case "1":
-                                cpt.encodeAndMoveToInventory();
-                                break;
-                            case "3":
-                                cpt.encodeAllItemAndMoveToInventory();
-                                break;
+                            case "0" -> cpt.encode();
+                            case "1" -> cpt.encodeAndMoveToInventory();
+                            case "3" -> cpt.encodeAllItemAndMoveToInventory();
                         }
-                        break;
-                    case "PatternTerminal.Clear":
-                        cpt.clear();
-                        break;
-                    case "PatternTerminal.Substitute":
-                        cpt.getPatternTerminal().setSubstitution(Value.equals("1"));
-                        break;
-                    case "PatternTerminal.Invert":
-                        cpt.getPatternTerminal().setInverted(Value.equals("1"));
-                        break;
-                    case "PatternTerminal.Double":
-                        cpt.doubleStacks(Value.equals("1"));
-                        break;
-                    case "PatternTerminal.Combine":
-                        cpt.getPatternTerminal().setCombineMode(Value.equals("1"));
-                        break;
-                    case "PatternTerminal.beSubstitute":
-                        cpt.getPatternTerminal().setBeSubstitute(Value.equals("1"));
-                        break;
-                    case "PatternTerminal.ActivePage":
-                        cpt.getPatternTerminal().setActivePage(Integer.parseInt(Value));
-                        break;
-                    case "PatternTerminal.Prioritize":
+                    }
+                    case "PatternTerminal.Clear" -> cpt.clear();
+                    case "PatternTerminal.Substitute" -> cpt.getPatternTerminal().setSubstitution(Value.equals("1"));
+                    case "PatternTerminal.Invert" -> cpt.getPatternTerminal().setInverted(Value.equals("1"));
+                    case "PatternTerminal.Double" -> cpt.doubleStacks(Value.equals("1"));
+                    case "PatternTerminal.Combine" -> cpt.getPatternTerminal().setCombineMode(Value.equals("1"));
+                    case "PatternTerminal.beSubstitute" -> cpt.getPatternTerminal().setBeSubstitute(Value.equals("1"));
+                    case "PatternTerminal.ActivePage" -> cpt.getPatternTerminal()
+                            .setActivePage(Integer.parseInt(Value));
+                    case "PatternTerminal.Prioritize" -> {
                         switch (Value) {
-                            case "0":
-                            case "1":
-                                cpt.getPatternTerminal().setPrioritization(Value.equals("1"));
-                                break;
-                            case "2":
-                                cpt.getPatternTerminal().sortCraftingItems();
-                                break;
+                            case "0", "1" -> cpt.getPatternTerminal().setPrioritization(Value.equals("1"));
+                            case "2" -> cpt.getPatternTerminal().sortCraftingItems();
                         }
-                        break;
-                    case "PatternTerminal.AutoFillerPattern":
-                        cpt.getPatternTerminal().setAutoFillPattern(Value.equals("1"));
-                        break;
+                    }
+                    case "PatternTerminal.AutoFillerPattern" -> cpt.getPatternTerminal()
+                            .setAutoFillPattern(Value.equals("1"));
                 }
                 cpt.getPatternTerminal().saveSettings();
             } else if (Name.startsWith("StorageBus.") && c instanceof ContainerFluidStorageBus) {
