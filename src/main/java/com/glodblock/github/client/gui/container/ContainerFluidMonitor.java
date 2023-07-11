@@ -345,16 +345,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
     private void extractFluid(IAEFluidStack fluid, ItemStack fluidContainer, EntityPlayer player, int heldContainers) {
         IAEFluidStack storedFluid = this.monitor.getStorageList().findPrecise(fluid);
         if (storedFluid == null || storedFluid.getStackSize() <= 0) return;
-        int capacity;
-        if (fluidContainer.getItem() instanceof IFluidContainerItem) {
-            capacity = ((IFluidContainerItem) fluidContainer.getItem()).getCapacity(fluidContainer);
-        } else if (FluidContainerRegistry.isContainer(fluidContainer)) {
-            // Fill with fluid container registry, or abort if it failed
-            ItemStack dummy = FluidContainerRegistry.fillFluidContainer(storedFluid.getFluidStack(), fluidContainer);
-            capacity = FluidContainerRegistry.getContainerCapacity(dummy);
-        } else {
-            return;
-        }
+        int capacity = Util.FluidUtil.getCapacity(fluidContainer, storedFluid.getFluid());
         if (capacity == 0) return;
         // The fluidstack that we will try to extract from the system.
         final IAEFluidStack canExtract = storedFluid.copy();
@@ -362,7 +353,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
         // run into issues w/ remainder fluid later.
         canExtract.setStackSize((long) capacity * fluidContainer.stackSize);
         IAEFluidStack actualExtract = this.host.getFluidInventory()
-                .extractItems(canExtract, Actionable.SIMULATE, this.getActionSource());
+                .extractItems(canExtract, Actionable.MODULATE, this.getActionSource());
         if (actualExtract == null) return;
         // Calculate the number of full fluid containers we extracted
         long toExtract = actualExtract.getStackSize();
@@ -402,19 +393,14 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
                 if (dummy == null) {
                     // Failed to fill partial...
                     partialStack.stackSize = 0;
-                    toExtract -= remainder;
                 } else {
                     partialStack = dummy;
-                    toExtract -= FluidContainerRegistry.getContainerCapacity(partialStack);
                     emptyTanks--;
                 }
             }
         } else {
             partialStack.stackSize = 0;
         }
-        // Now perform the real extraction.
-        actualExtract.setStackSize(toExtract);
-        this.host.getFluidInventory().extractItems(canExtract, Actionable.MODULATE, this.getActionSource());
 
         // Done. Put the output in the inventory or ground, and update stack size.
         // We can assume slotIndex == -1, since we don't actually allow extraction via shift click.
@@ -441,9 +427,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
                     (EntityPlayerMP) player);
         } else {
             FluidCraft.proxy.netHandler.sendTo(new SPacketFluidUpdate(new HashMap<>()), (EntityPlayerMP) player);
-
         }
-
     }
 
     void adjustStack(ItemStack stack) {
