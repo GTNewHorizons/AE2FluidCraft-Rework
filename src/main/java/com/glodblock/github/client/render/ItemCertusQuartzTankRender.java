@@ -19,6 +19,8 @@ import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.render.tank.ModelCertusTank;
 import com.glodblock.github.common.tile.TileCertusQuartzTank;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.ModAndClassUtil;
+import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 
@@ -66,6 +68,9 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
             if (storedFluid != null && storedFluid.getFluid() != null) {
                 IIcon fluidIcon = storedFluid.getFluid().getIcon();
                 if (fluidIcon == null) fluidIcon = FluidRegistry.LAVA.getIcon();
+                if (ModAndClassUtil.HODGEPODGE && fluidIcon instanceof IPatchedTextureAtlasSprite) {
+                    ((IPatchedTextureAtlasSprite) fluidIcon).markNeedsAnimationUpdate();
+                }
                 Tessellator tessellator = Tessellator.instance;
                 RenderBlocks renderer = new RenderBlocks();
                 GL11.glScalef(1, 1, -1);

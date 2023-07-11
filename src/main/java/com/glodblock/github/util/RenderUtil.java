@@ -12,6 +12,8 @@ import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
+import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
+
 import appeng.api.storage.data.IAEFluidStack;
 
 public final class RenderUtil {
@@ -50,6 +52,9 @@ public final class RenderUtil {
             if (aeFluidStack.getStackSize() > 0 && hi > 0) {
                 Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
                 IIcon fluidIcon = aeFluidStack.getFluid().getStillIcon();
+                if (ModAndClassUtil.HODGEPODGE && fluidIcon instanceof IPatchedTextureAtlasSprite) {
+                    ((IPatchedTextureAtlasSprite) fluidIcon).markNeedsAnimationUpdate();
+                }
                 GL11.glColor3f(
                         (float) (aeFluidStack.getFluid().getColor() >> 16 & 255) / 255.0F,
                         (float) (aeFluidStack.getFluid().getColor() >> 8 & 255) / 255.0F,

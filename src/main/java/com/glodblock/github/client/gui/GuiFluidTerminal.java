@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -22,7 +23,9 @@ import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.util.Ae2ReflectClient;
+import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
+import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEFluidStack;
@@ -94,20 +97,26 @@ public class GuiFluidTerminal extends GuiFluidMonitor {
     }
 
     private void drawWidget(int posX, int posY, Fluid fluid) {
+        if (fluid == null) return;
+        IIcon icon = fluid.getIcon();
+        if (icon == null) return;
+
+        if (ModAndClassUtil.HODGEPODGE && icon instanceof IPatchedTextureAtlasSprite) {
+            ((IPatchedTextureAtlasSprite) icon).markNeedsAnimationUpdate();
+        }
+
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor3f(1, 1, 1);
-        if (fluid != null && fluid.getIcon() != null) {
-            GL11.glColor3f(
-                    (fluid.getColor() >> 16 & 0xFF) / 255.0F,
-                    (fluid.getColor() >> 8 & 0xFF) / 255.0F,
-                    (fluid.getColor() & 0xFF) / 255.0F);
-            drawTexturedModelRectFromIcon(posX, posY, fluid.getIcon(), 16, 16);
-        }
+        GL11.glColor3f(
+                (fluid.getColor() >> 16 & 0xFF) / 255.0F,
+                (fluid.getColor() >> 8 & 0xFF) / 255.0F,
+                (fluid.getColor() & 0xFF) / 255.0F);
+        drawTexturedModelRectFromIcon(posX, posY, fluid.getIcon(), 16, 16);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
+        GL11.glColor3f(1, 1, 1);
     }
 
     @Override
