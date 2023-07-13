@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import cpw.mods.fml.common.Optional;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -37,6 +36,7 @@ import appeng.core.localization.PlayerMessages;
 import appeng.util.Platform;
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
