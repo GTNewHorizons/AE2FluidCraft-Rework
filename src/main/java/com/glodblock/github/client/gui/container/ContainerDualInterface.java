@@ -13,7 +13,7 @@ import appeng.helpers.IInterfaceHost;
 
 public class ContainerDualInterface extends ContainerInterface {
 
-    @GuiSync(10)
+    @GuiSync(11)
     public SidelessMode sidelessMode;
 
     private final boolean isTile;
