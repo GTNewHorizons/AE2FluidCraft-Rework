@@ -1,8 +1,5 @@
 package com.glodblock.github.common.item;
 
-import appeng.client.texture.CableBusTextures;
-import appeng.items.parts.ItemMultiPart;
-import appeng.items.parts.PartType;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -27,6 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemPartFluidP2PInterface extends FCBaseItem implements IPartItem {
 
     private IIcon icon;
+
     public ItemPartFluidP2PInterface() {
         this.setMaxStackSize(64);
         this.setUnlocalizedName(NameConst.ITEM_PART_FLUID_P2P_INTERFACE);
