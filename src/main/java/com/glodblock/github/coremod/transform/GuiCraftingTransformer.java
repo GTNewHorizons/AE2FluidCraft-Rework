@@ -27,7 +27,7 @@ public class GuiCraftingTransformer extends FCClassTransformer.ClassMapper {
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            if ("drawFG".equals(name)) {
+            if ("drawFG".equals(name) || "drawListFG".equals(name)) {
                 return new TransformFluidIcon(api, super.visitMethod(access, name, desc, signature, exceptions));
             }
             return super.visitMethod(access, name, desc, signature, exceptions);
