@@ -18,7 +18,7 @@ public class FCClassTransformer implements IClassTransformer {
             case "appeng.me.cluster.implementations.CraftingCPUCluster" -> tform = CraftingCpuTransformer.INSTANCE;
             case "appeng.helpers.DualityInterface" -> tform = DualityInterfaceTransformer.INSTANCE;
             case "appeng.container.implementations.ContainerInterfaceTerminal" -> tform = ContainerInterfaceTerminalTransformer.INSTANCE;
-            case "appeng.client.gui.implementations.GuiCraftingCPU", "appeng.client.gui.implementations.GuiCraftConfirm", "net.p455w0rd.wirelesscraftingterminal.client.gui.GuiCraftConfirm" -> tform = GuiCraftingTransformer.INSTANCE;
+            case "appeng.client.gui.implementations.GuiCraftingCPU", "appeng.client.gui.implementations.GuiCraftConfirm", "net.p455w0rd.wirelesscraftingterminal.client.gui.GuiCraftConfirm", "appeng.client.gui.widgets.GuiCraftingTree" -> tform = GuiCraftingTransformer.INSTANCE;
             case "appeng.integration.modules.NEI" -> tform = NEITransfermer.INSTANCE;
             case "appeng.core.features.registries.ExternalStorageRegistry" -> tform = ExternalStorageRegistryTransformer.INSTANCE;
             case "appeng.core.sync.packets.PacketCompressedNBT" -> tform = PacketCompressedNBTTransformer.INSTANCE;
