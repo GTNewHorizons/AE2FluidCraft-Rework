@@ -523,14 +523,40 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return false;
     }
 
+    static boolean canDouble(SlotFake[] slots, int mult) {
+        for (Slot s : slots) {
+            if (s.getStack() != null) {
+                long result = (long) s.getStack().stackSize * mult;
+                if (result > Integer.MAX_VALUE) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    static void doubleStacksInternal(SlotFake[] slots, int mult) {
+        List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
+        for (final Slot s : enabledSlots) {
+            ItemStack st = s.getStack();
+            if (st != null) {
+                st.stackSize *= mult;
+                s.putStack(st);
+            }
+        }
+    }
+
     public void doubleStacks(boolean isShift) {
-        if (canDoubleStacks(craftingSlots) && canDoubleStacks(outputSlots)) {
-            doubleStacksInternal(this.craftingSlots);
-            doubleStacksInternal(this.outputSlots);
-            if (isShift && (containsItem(outputSlots) || containsItem(craftingSlots))) {
-                while (canDoubleStacks(craftingSlots) && canDoubleStacks(outputSlots)) {
-                    doubleStacksInternal(this.craftingSlots);
-                    doubleStacksInternal(this.outputSlots);
+        if (!isCraftingMode()) {
+            if (isShift) {
+                if (canDouble(this.craftingSlots, 8) && canDouble(this.outputSlots, 8)) {
+                    doubleStacksInternal(this.craftingSlots, 8);
+                    doubleStacksInternal(this.outputSlots, 8);
+                }
+            } else {
+                if (canDouble(this.craftingSlots, 2) && canDouble(this.outputSlots, 2)) {
+                    doubleStacksInternal(this.craftingSlots, 2);
+                    doubleStacksInternal(this.outputSlots, 2);
                 }
             }
             this.detectAndSendChanges();
