@@ -339,10 +339,21 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
 
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
+        boolean focusIn = searchFieldInputs.isFocused();
+        boolean focusOut = searchFieldOutputs.isFocused();
+        boolean focusName = searchFieldNames.isFocused();
+
         searchFieldInputs.mouseClicked(xCoord, yCoord, btn);
         searchFieldOutputs.mouseClicked(xCoord, yCoord, btn);
         searchFieldNames.mouseClicked(xCoord, yCoord, btn);
 
+        if (focusIn && !searchFieldInputs.isFocused()) {
+            searchFieldInputsText = searchFieldInputs.getText();
+        } else if (focusOut && !searchFieldOutputs.isFocused()) {
+            searchFieldOutputsText = searchFieldOutputs.getText();
+        } else if (focusName && !searchFieldNames.isFocused()) {
+            searchFieldNamesText = searchFieldNames.getText();
+        }
         super.mouseClicked(xCoord, yCoord, btn);
     }
 
