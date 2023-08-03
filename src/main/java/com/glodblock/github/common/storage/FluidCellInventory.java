@@ -3,6 +3,8 @@ package com.glodblock.github.common.storage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -383,6 +385,22 @@ public class FluidCellInventory implements IFluidCellInventory {
             out.add(i);
         }
         return out;
+    }
+
+    @Override
+    public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request) {
+        long count = 0;
+        for (final IAEFluidStack is : this.getCellFluids()) {
+            if (is != null && is.getStackSize() > 0 && is.getFluid().getName().equals(request.getFluid().getName())) {
+                count += is.getStackSize();
+                if (count < 0) {
+                    // overflow
+                    count = Long.MAX_VALUE;
+                    break;
+                }
+            }
+        }
+        return count == 0 ? null : request.copy().setStackSize(count);
     }
 
     @Override

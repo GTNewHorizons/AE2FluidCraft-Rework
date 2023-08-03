@@ -2,6 +2,8 @@ package com.glodblock.github.inventory;
 
 import java.util.*;
 
+import javax.annotation.Nonnull;
+
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -187,6 +189,22 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         }
 
         return out;
+    }
+
+    @Override
+    public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request) {
+        long count = 0;
+        for (final IAEFluidStack is : this.cache) {
+            if (is != null && is.getStackSize() > 0 && is.getFluid().getName().equals(request.getFluid().getName())) {
+                count += is.getStackSize();
+                if (count < 0) {
+                    // overflow
+                    count = Long.MAX_VALUE;
+                    break;
+                }
+            }
+        }
+        return count == 0 ? null : request.copy().setStackSize(count);
     }
 
     public IItemList<IAEFluidStack> getStorageList() {

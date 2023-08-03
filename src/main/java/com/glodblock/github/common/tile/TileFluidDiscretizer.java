@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.item.ItemFluidDrop;
 
@@ -204,6 +206,24 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
         }
 
         @Override
+        public IAEItemStack getAvailableItem(@Nonnull IAEItemStack request) {
+            IMEMonitor<IAEFluidStack> fluidGrid = getFluidGrid();
+            if (fluidGrid == null) {
+                return null;
+            }
+            IAEFluidStack fluidRequest = ItemFluidDrop.getAeFluidStack(request);
+            if (fluidRequest == null) {
+                return null;
+            }
+            IAEFluidStack availableFluid = fluidGrid.getAvailableItem(fluidRequest);
+            if (availableFluid == null || availableFluid.getFluid() == null
+                    || FluidCraftAPI.instance().isBlacklistedInDisplay(availableFluid.getFluid().getClass())) {
+                return null;
+            }
+            return ItemFluidDrop.newAeStack(availableFluid);
+        }
+
+        @Override
         public StorageChannel getChannel() {
             return StorageChannel.ITEMS;
         }
@@ -275,6 +295,11 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
         @Override
         public IItemList<IAEFluidStack> getAvailableItems(IItemList<IAEFluidStack> out) {
             return out;
+        }
+
+        @Override
+        public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request) {
+            return null;
         }
 
         @Override
