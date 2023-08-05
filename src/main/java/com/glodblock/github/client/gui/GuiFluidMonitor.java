@@ -23,6 +23,7 @@ public class GuiFluidMonitor extends FCGuiMonitor<IAEFluidStack> {
             final ContainerFluidMonitor c) {
         super(inventoryPlayer, te, c);
         this.repo = new FluidRepo(getScrollBar(), this);
+        this.setScrollBar();
     }
 
     @Override
