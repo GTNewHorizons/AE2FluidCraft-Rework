@@ -525,10 +525,18 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
 
     static boolean canDouble(SlotFake[] slots, int mult) {
         for (Slot s : slots) {
-            if (s.getStack() != null) {
-                long result = (long) s.getStack().stackSize * mult;
-                if (result > Integer.MAX_VALUE) {
-                    return false;
+            ItemStack st = s.getStack();
+            if (st != null) {
+                if (st.getItem() instanceof ItemFluidPacket) {
+                    long result = (long) ItemFluidPacket.getFluidAmount(st) * mult;
+                    if (result > Integer.MAX_VALUE) {
+                        return false;
+                    }
+                } else {
+                    long result = (long) s.getStack().stackSize * mult;
+                    if (result > Integer.MAX_VALUE) {
+                        return false;
+                    }
                 }
             }
         }
@@ -540,8 +548,11 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         for (final Slot s : enabledSlots) {
             ItemStack st = s.getStack();
             if (st != null) {
-                st.stackSize *= mult;
-                s.putStack(st);
+                if (st.getItem() instanceof ItemFluidPacket) {
+                    ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
+                } else {
+                    st.stackSize *= mult;
+                }
             }
         }
     }

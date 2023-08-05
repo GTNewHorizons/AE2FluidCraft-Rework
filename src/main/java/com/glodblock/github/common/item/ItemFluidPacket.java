@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -86,6 +87,22 @@ public class ItemFluidPacket extends FCBaseItem {
     @Nullable
     public static FluidStack getFluidStack(@Nullable IAEItemStack stack) {
         return stack != null ? getFluidStack(stack.getItemStack()) : null;
+    }
+
+    public static void setFluidAmount(ItemStack stack, int amount) {
+        if (stack == null || !stack.hasTagCompound()
+                || stack.getTagCompound().hasKey("FluidStack", Constants.NBT.TAG_COMPOUND)) {
+            return;
+        }
+        stack.getTagCompound().getCompoundTag("FluidStack").setInteger("Amount", amount);
+    }
+
+    public static int getFluidAmount(ItemStack stack) {
+        if (stack == null || !stack.hasTagCompound()) {
+            return 0;
+        }
+        // Default to 0 if no tag exists
+        return stack.getTagCompound().getCompoundTag("FluidStack").getInteger("Amount");
     }
 
     @Nullable
