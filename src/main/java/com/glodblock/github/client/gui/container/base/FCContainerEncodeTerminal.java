@@ -115,7 +115,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
             return;
         }
         if (action == InventoryAction.MOVE_REGION) {
-            super.doAction(player, InventoryAction.SPLIT_OR_PLACE_SINGLE, slotId, id);
+            super.doAction(player, InventoryAction.MOVE_REGION, slotId, id);
             return;
         }
         if (action == InventoryAction.PICKUP_SINGLE) {
