@@ -413,11 +413,29 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
     }
 
     /**
-     * The extract operation. For input, we have an empty container stack. For outputs, we have the following: 1.
-     * Leftover empty container stack - primary output. 2. Filled containers (full) 3. Partially filled container x1 In
-     * order above, the itemstack at `slotIndex` is transformed into the output.
+     * The extract operation. For input, we have an empty container stack. For outputs, we have the following:
+     * <ol>
+     * <li>Leftover empty container stack</li>
+     * <li>Filled containers (full)</li>
+     * <li>Partially filled container x1</li>
+     * </ol>
+     * In order above, the itemstack at `slotIndex` is transformed into the output.
      */
     private void extractFluid(IAEFluidStack fluid, ItemStack fluidContainer, EntityPlayer player, int heldContainers) {
+        // Step 1: Check if fluid can actually get filled into the fluidContainer
+        if (fluidContainer.getItem() instanceof IFluidContainerItem fcItem) {
+            int test = fcItem.fill(fluidContainer, fluid.getFluidStack(), false);
+            if (test == 0) {
+                return;
+            }
+        } else if (FluidContainerRegistry.isContainer(fluidContainer)) {
+            ItemStack test = FluidContainerRegistry.fillFluidContainer(fluid.getFluidStack(), fluidContainer);
+            if (test == null) {
+                return;
+            }
+        } else {
+            return;
+        }
         IAEFluidStack storedFluid = this.monitor.getStorageList().findPrecise(fluid);
         if (storedFluid == null || storedFluid.getStackSize() <= 0) return;
         int capacity = Util.FluidUtil.getCapacity(fluidContainer, storedFluid.getFluid());
