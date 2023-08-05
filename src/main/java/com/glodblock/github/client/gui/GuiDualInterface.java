@@ -89,6 +89,7 @@ public class GuiDualInterface extends GuiUpgradeable {
                 Settings.ADVANCED_BLOCKING_MODE,
                 AdvancedBlockingMode.DEFAULT);
         this.buttonList.add(this.advancedBlockingMode);
+        this.advancedBlockingMode.visible = this.bc.getInstalledUpgrades(Upgrades.ADVANCED_BLOCKING) > 0;
 
         if (isTile()) {
             this.sidelessMode = new GuiImgButton(
@@ -177,5 +178,13 @@ public class GuiDualInterface extends GuiUpgradeable {
 
     private boolean isTile() {
         return this.host instanceof TileFluidInterface;
+    }
+
+    @Override
+    protected void handleButtonVisibility() {
+        super.handleButtonVisibility();
+        if (this.advancedBlockingMode != null) {
+            this.advancedBlockingMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.ADVANCED_BLOCKING) > 0);
+        }
     }
 }
