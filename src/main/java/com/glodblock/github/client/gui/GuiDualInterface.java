@@ -142,31 +142,19 @@ public class GuiDualInterface extends GuiUpgradeable {
     protected void actionPerformed(final GuiButton btn) {
         super.actionPerformed(btn);
         final boolean backwards = Mouse.isButtonDown(1);
-        if (btn == null) {
-            return;
-        }
         if (btn == this.priority) {
             FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(GuiType.PRIORITY));
-        }
-
-        if (btn == this.switcher) {
+        } else if (btn == this.switcher) {
             FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(GuiType.DUAL_INTERFACE_FLUID));
-        }
-
-        if (btn == this.interfaceMode) {
+        } else if (btn == this.interfaceMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(Settings.INTERFACE_TERMINAL, backwards));
-        }
-
-        if (btn == this.BlockMode) {
+        } else if (btn == this.BlockMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.BlockMode.getSetting(), backwards));
-        }
-        if (btn == this.insertionMode) {
+        } else if (btn == this.insertionMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.insertionMode.getSetting(), backwards));
-        }
-        if (btn == this.sidelessMode) {
+        } else if (btn == this.sidelessMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.sidelessMode.getSetting(), backwards));
-        }
-        if (btn == this.advancedBlockingMode) {
+        } else if (btn == this.advancedBlockingMode) {
             NetworkHandler.instance
                     .sendToServer(new PacketConfigButton(this.advancedBlockingMode.getSetting(), backwards));
         }
