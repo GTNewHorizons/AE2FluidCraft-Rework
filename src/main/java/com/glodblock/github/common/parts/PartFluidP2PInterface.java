@@ -513,4 +513,9 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         super.getDrops(drops, wrenched);
         duality.addDrops(drops);
     }
+
+    @Override
+    public boolean shouldDisplay() {
+        return IInterfaceHost.super.shouldDisplay() && !isOutput();
+    }
 }

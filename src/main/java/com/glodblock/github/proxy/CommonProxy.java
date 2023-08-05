@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.Config;
+import com.glodblock.github.common.parts.PartFluidP2PInterface;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
@@ -15,6 +16,7 @@ import com.glodblock.github.util.ModAndClassUtil;
 import appeng.api.AEApi;
 import appeng.api.IAppEngApi;
 import appeng.api.config.Upgrades;
+import appeng.helpers.InterfaceTerminalSupportedClassProvider;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -63,6 +65,7 @@ public class CommonProxy {
             Upgrades.CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_EXPORT_BUS), 1);
         }
         AEApi.instance().registries().externalStorage().addExternalStorageInterface(new AEFluidInterfaceHandler());
+        InterfaceTerminalSupportedClassProvider.register(PartFluidP2PInterface.class);
     }
 
     public void registerRenderers() {}
