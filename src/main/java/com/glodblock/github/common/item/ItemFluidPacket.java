@@ -91,7 +91,7 @@ public class ItemFluidPacket extends FCBaseItem {
 
     public static void setFluidAmount(ItemStack stack, int amount) {
         if (stack == null || !stack.hasTagCompound()
-                || stack.getTagCompound().hasKey("FluidStack", Constants.NBT.TAG_COMPOUND)) {
+                || !stack.getTagCompound().hasKey("FluidStack", Constants.NBT.TAG_COMPOUND)) {
             return;
         }
         stack.getTagCompound().getCompoundTag("FluidStack").setInteger("Amount", amount);
