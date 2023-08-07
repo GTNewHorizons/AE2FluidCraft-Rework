@@ -11,27 +11,20 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
-import com.glodblock.github.common.parts.PartFluidInterface;
-import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import appeng.api.config.*;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
+import appeng.api.util.DimensionalCoord;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketCompressedNBT;
-import appeng.helpers.DualityInterface;
-import appeng.helpers.IInterfaceHost;
-import appeng.helpers.InventoryAction;
+import appeng.helpers.*;
 import appeng.items.misc.ItemEncodedPattern;
 import appeng.parts.AEBasePart;
-import appeng.parts.misc.PartInterface;
-import appeng.parts.p2p.PartP2PInterface;
 import appeng.tile.inventory.AppEngInternalInventory;
-import appeng.tile.misc.TileInterface;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.inv.AdaptorIInventory;
@@ -46,7 +39,8 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
      */
     private static long autoBase = Long.MIN_VALUE;
 
-    private final Multimap<IInterfaceHost, ContainerInterfaceWireless.InvTracker> diList = HashMultimap.create();
+    private final Multimap<IInterfaceTerminalSupport, ContainerInterfaceWireless.InvTracker> supportedInterfaces = HashMultimap
+            .create();
     private final Map<Long, ContainerInterfaceWireless.InvTracker> byId = new HashMap<>();
     private IGrid grid;
     private NBTTagCompound data = new NBTTagCompound();
@@ -58,16 +52,6 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
         }
 
         this.bindPlayerInventory(ip, 14, 0);
-    }
-
-    private Set<IGridNode> getMachineNodes() {
-        Set<IGridNode> union = new HashSet<>();
-        this.grid.getMachines(TileFluidInterface.class).forEach(union::add);
-        this.grid.getMachines(TileInterface.class).forEach(union::add);
-        this.grid.getMachines(PartFluidInterface.class).forEach(union::add);
-        this.grid.getMachines(PartInterface.class).forEach(union::add);
-        this.grid.getMachines(PartP2PInterface.class).forEach(union::add);
-        return union;
     }
 
     @Override
@@ -88,19 +72,28 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
         if (host != null) {
             final IGridNode agn = host.getActionableNode();
             if (agn != null && agn.isActive()) {
-                for (final IGridNode gn : this.getMachineNodes()) {
-                    ContainerInterfaceWireless.InterfaceCheck interfaceCheck = new ContainerInterfaceWireless.InterfaceCheck()
-                            .invoke(gn);
-                    total += interfaceCheck.getTotal();
-                    missing |= interfaceCheck.isMissing();
+                for (var clz : InterfaceTerminalSupportedClassProvider.getSupportedClasses()) {
+                    for (final IGridNode gn : this.grid.getMachines(clz)) {
+                        final IInterfaceTerminalSupport interfaceTerminalSupport = (IInterfaceTerminalSupport) gn
+                                .getMachine();
+                        if (!gn.isActive() || !interfaceTerminalSupport.shouldDisplay()) continue;
+
+                        final Collection<InvTracker> t = supportedInterfaces.get(interfaceTerminalSupport);
+                        final String name = interfaceTerminalSupport.getName();
+                        missing = t.isEmpty() || t.stream().anyMatch(it -> !it.unlocalizedName.equals(name));
+                        total += interfaceTerminalSupport.getPatternsConfigurations().length;
+                        if (missing) break;
+                    }
+                    // we can stop if any is missing. The value of `total` is not important if `missing == true`
+                    if (missing) break;
                 }
             }
         }
 
-        if (total != this.diList.size() || missing) {
+        if (total != this.supportedInterfaces.size() || missing) {
             this.regenList(this.data);
         } else {
-            for (final ContainerInterfaceWireless.InvTracker inv : diList.values()) {
+            for (final ContainerInterfaceWireless.InvTracker inv : supportedInterfaces.values()) {
                 for (int x = 0; x < inv.client.getSizeInventory(); x++) {
                     if (this.isDifferent(inv.server.getStackInSlot(inv.offset + x), inv.client.getStackInSlot(x))) {
                         this.addItems(this.data, inv, x, 1);
@@ -244,25 +237,23 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
 
     private void regenList(final NBTTagCompound data) {
         this.byId.clear();
-        this.diList.clear();
+        this.supportedInterfaces.clear();
 
         final IActionHost host = this.getActionHost();
         if (host != null) {
             final IGridNode agn = host.getActionableNode();
             if (agn != null && agn.isActive()) {
-                for (final IGridNode gn : this.getMachineNodes()) {
-                    final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
-                    final DualityInterface dual = ih.getInterfaceDuality();
-                    if (gn.isActive() && dual.getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.YES) {
-                        for (int i = 0; i <= dual.getInstalledUpgrades(Upgrades.PATTERN_CAPACITY); ++i) {
-                            this.diList.put(
-                                    ih,
-                                    new ContainerInterfaceWireless.InvTracker(
-                                            dual,
-                                            dual.getPatterns(),
-                                            dual.getTermName(),
-                                            i * 9,
-                                            9));
+                for (var clz : InterfaceTerminalSupportedClassProvider.getSupportedClasses()) {
+                    for (final IGridNode gn : this.grid.getMachines(clz)) {
+                        final IInterfaceTerminalSupport terminalSupport = (IInterfaceTerminalSupport) gn.getMachine();
+                        if (!gn.isActive() || !terminalSupport.shouldDisplay()) continue;
+
+                        final var configurations = terminalSupport.getPatternsConfigurations();
+
+                        for (int i = 0; i < configurations.length; ++i) {
+                            this.supportedInterfaces.put(
+                                    terminalSupport,
+                                    new ContainerInterfaceWireless.InvTracker(terminalSupport, configurations[i], i));
                         }
                     }
                 }
@@ -271,7 +262,7 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
 
         data.setBoolean("clear", true);
 
-        for (final ContainerInterfaceWireless.InvTracker inv : this.diList.values()) {
+        for (final ContainerInterfaceWireless.InvTracker inv : this.supportedInterfaces.values()) {
             this.byId.put(inv.which, inv);
             this.addItems(data, inv, 0, inv.client.getSizeInventory());
         }
@@ -307,6 +298,7 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
             tag.setInteger("z", inv.Z);
             tag.setInteger("dim", inv.dim);
             tag.setInteger("side", inv.side.ordinal());
+            tag.setInteger("size", inv.client.getSizeInventory());
         }
 
         for (int x = 0; x < length; x++) {
@@ -341,22 +333,46 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
         private final int dim;
         private final ForgeDirection side;
 
-        public InvTracker(final DualityInterface dual, final IInventory patterns, final String unlocalizedName,
-                int offset, int size) {
+        public InvTracker(final DimensionalCoord coord, long sortValue, final IInventory patterns,
+                final String unlocalizedName, int offset, int size, ForgeDirection side) {
+            this(
+                    coord.x,
+                    coord.y,
+                    coord.z,
+                    coord.getDimension(),
+                    sortValue,
+                    patterns,
+                    unlocalizedName,
+                    offset,
+                    size,
+                    side);
+        }
+
+        public InvTracker(int x, int y, int z, int dim, long sortValue, final IInventory patterns,
+                final String unlocalizedName, int offset, int size, ForgeDirection side) {
             this.server = patterns;
             this.client = new AppEngInternalInventory(null, size);
             this.unlocalizedName = unlocalizedName;
-            this.sortBy = dual.getSortValue() + offset << 16;
+            this.sortBy = sortValue + offset << 16;
             this.offset = offset;
-            X = dual.getLocation().x;
-            Y = dual.getLocation().y;
-            Z = dual.getLocation().z;
-            dim = dual.getLocation().getDimension();
-            if (dual.getHost() instanceof AEBasePart) {
-                side = ((AEBasePart) dual.getHost()).getSide();
-            } else {
-                side = ForgeDirection.UNKNOWN;
-            }
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
+            this.dim = dim;
+            this.side = side;
+        }
+
+        public InvTracker(IInterfaceTerminalSupport terminalSupport,
+                IInterfaceTerminalSupport.PatternsConfiguration configuration, int index) {
+            this(
+                    terminalSupport.getLocation(),
+                    terminalSupport.getSortValue(),
+                    terminalSupport.getPatterns(index),
+                    terminalSupport.getName(),
+                    configuration.offset,
+                    configuration.size,
+                    terminalSupport instanceof AEBasePart ? ((AEBasePart) terminalSupport).getSide()
+                            : ForgeDirection.UNKNOWN);
         }
     }
 
@@ -369,49 +385,6 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
         @Override
         public boolean isItemValid(final ItemStack itemstack) {
             return itemstack != null && itemstack.getItem() instanceof ItemEncodedPattern;
-        }
-    }
-
-    private class InterfaceCheck {
-
-        int total = 0;
-        boolean missing = false;
-
-        public InterfaceCheck() {}
-
-        public int getTotal() {
-            return total;
-        }
-
-        public boolean isMissing() {
-            return missing;
-        }
-
-        public ContainerInterfaceWireless.InterfaceCheck invoke(IGridNode gn) {
-            if (gn.isActive()) {
-                final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
-                if (ih.getInterfaceDuality().getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.NO
-                        || ih instanceof PartP2PInterface && ((PartP2PInterface) ih).isOutput()) {
-                    return this;
-                }
-
-                final Collection<ContainerInterfaceWireless.InvTracker> t = ContainerInterfaceWireless.this.diList
-                        .get(ih);
-
-                if (t.isEmpty()) {
-                    missing = true;
-                } else {
-                    final DualityInterface dual = ih.getInterfaceDuality();
-                    for (ContainerInterfaceWireless.InvTracker it : t) {
-                        if (!it.unlocalizedName.equals(dual.getTermName())) {
-                            missing = true;
-                        }
-                    }
-                }
-
-                total += (ih.getInterfaceDuality().getInstalledUpgrades(Upgrades.PATTERN_CAPACITY) + 1);
-            }
-            return this;
         }
     }
 }

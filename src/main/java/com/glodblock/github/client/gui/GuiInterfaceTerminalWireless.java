@@ -520,8 +520,9 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
                 try {
                     final long id = Long.parseLong(key.substring(1), Character.MAX_RADIX);
                     final NBTTagCompound invData = in.getCompoundTag(key);
+                    int size = invData.getInteger("size");
                     final ClientDCInternalInv current = this
-                            .getById(id, invData.getLong("sortBy"), invData.getString("un"));
+                            .getById(id, invData.getLong("sortBy"), invData.getString("un"), size);
                     int X = invData.getInteger("x");
                     int Y = invData.getInteger("y");
                     int Z = invData.getInteger("z");
@@ -724,11 +725,12 @@ public class GuiInterfaceTerminalWireless extends FCBaseMEGui implements IDropTo
                 : Integer.MAX_VALUE;
     }
 
-    private ClientDCInternalInv getById(final long id, final long sortBy, final String unlocalizedName) {
+    private ClientDCInternalInv getById(final long id, final long sortBy, final String unlocalizedName,
+            final int sizeInit) {
         ClientDCInternalInv o = this.byId.get(id);
 
         if (o == null) {
-            this.byId.put(id, o = new ClientDCInternalInv(9, id, sortBy, unlocalizedName));
+            this.byId.put(id, o = new ClientDCInternalInv(sizeInit, id, sortBy, unlocalizedName));
             this.refreshList = true;
         }
 
