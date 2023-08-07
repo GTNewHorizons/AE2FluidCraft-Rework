@@ -1,5 +1,7 @@
 package com.glodblock.github.network;
 
+import java.util.Objects;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -53,7 +55,7 @@ public class SPacketStringUpdate implements IMessage {
         public IMessage onMessage(SPacketStringUpdate message, MessageContext ctx) {
             final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
             if (gs instanceof GuiRenamer) {
-                ((GuiRenamer) gs).postUpdate(message.text);
+                ((GuiRenamer) gs).postUpdate(Objects.equals(message.text, "\u200E") ? "" : message.text);
             }
             return null;
         }
