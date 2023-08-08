@@ -2,8 +2,6 @@ package com.glodblock.github.network;
 
 import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.getGuis;
 
-import java.util.Objects;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.DimensionManager;
@@ -100,8 +98,7 @@ public class CPacketRenamer implements IMessage {
     public static class Handler implements IMessageHandler<CPacketRenamer, IMessage> {
 
         private String getName(ICustomNameObject obj) {
-            // "‎" is a zero size character, sent because simple channel does not support empty string
-            return obj.hasCustomName() ? obj.getCustomName() : "\u200E";
+            return obj.hasCustomName() ? obj.getCustomName() : "";
         }
 
         private String getName(TileEntity tile, ForgeDirection side) {
@@ -113,9 +110,6 @@ public class CPacketRenamer implements IMessage {
         }
 
         private void setName(TileEntity tile, ForgeDirection side, String text) {
-            if (Objects.equals(text, "\u200E")) {
-                text = "";
-            }
             if (tile instanceof TileCableBus) {
                 ((ICustomNameObject) ((TileCableBus) tile).getPart(side)).setCustomName(text);
             } else {
