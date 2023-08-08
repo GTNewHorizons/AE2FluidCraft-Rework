@@ -4,7 +4,9 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.Config;
+import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.common.parts.PartFluidP2PInterface;
+import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
@@ -66,6 +68,8 @@ public class CommonProxy {
         }
         AEApi.instance().registries().externalStorage().addExternalStorageInterface(new AEFluidInterfaceHandler());
         InterfaceTerminalSupportedClassProvider.register(PartFluidP2PInterface.class);
+        InterfaceTerminalSupportedClassProvider.register(PartFluidInterface.class);
+        InterfaceTerminalSupportedClassProvider.register(TileFluidInterface.class);
     }
 
     public void registerRenderers() {}

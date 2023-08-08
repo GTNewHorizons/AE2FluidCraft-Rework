@@ -99,16 +99,16 @@ public class CPacketRenamer implements IMessage {
 
     public static class Handler implements IMessageHandler<CPacketRenamer, IMessage> {
 
-        private String _getName(ICustomNameObject obj) {
+        private String getName(ICustomNameObject obj) {
             // "‎" is a zero size character, sent because simple channel does not support empty string
             return obj.hasCustomName() ? obj.getCustomName() : "\u200E";
         }
 
         private String getName(TileEntity tile, ForgeDirection side) {
             if (tile instanceof TileCableBus) {
-                return _getName((ICustomNameObject) ((TileCableBus) tile).getPart(side));
+                return getName((ICustomNameObject) ((TileCableBus) tile).getPart(side));
             } else {
-                return _getName((ICustomNameObject) tile);
+                return getName((ICustomNameObject) tile);
             }
         }
 

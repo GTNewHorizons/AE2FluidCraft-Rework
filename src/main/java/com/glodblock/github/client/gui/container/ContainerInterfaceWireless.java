@@ -21,7 +21,9 @@ import appeng.api.networking.security.IActionHost;
 import appeng.api.util.DimensionalCoord;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketCompressedNBT;
-import appeng.helpers.*;
+import appeng.helpers.IInterfaceTerminalSupport;
+import appeng.helpers.InterfaceTerminalSupportedClassProvider;
+import appeng.helpers.InventoryAction;
 import appeng.items.misc.ItemEncodedPattern;
 import appeng.parts.AEBasePart;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -39,8 +41,7 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
      */
     private static long autoBase = Long.MIN_VALUE;
 
-    private final Multimap<IInterfaceTerminalSupport, ContainerInterfaceWireless.InvTracker> supportedInterfaces = HashMultimap
-            .create();
+    private final Multimap<IInterfaceTerminalSupport, InvTracker> supportedInterfaces = HashMultimap.create();
     private final Map<Long, ContainerInterfaceWireless.InvTracker> byId = new HashMap<>();
     private IGrid grid;
     private NBTTagCompound data = new NBTTagCompound();
