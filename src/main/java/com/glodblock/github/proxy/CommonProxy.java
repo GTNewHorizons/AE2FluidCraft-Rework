@@ -8,6 +8,7 @@ import com.glodblock.github.common.parts.PartFluidP2PInterface;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
+import com.glodblock.github.crossmod.waila.gregtech5.RecyclerBlacklist;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketMEUpdateBuffer;
@@ -41,6 +42,9 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {
         if (!ModAndClassUtil.EC2 && Config.replaceEC2) {
             EC2Replacer.initReplacer();
+        }
+        if (ModAndClassUtil.GT5) {
+            RecyclerBlacklist.run();
         }
         if (ModAndClassUtil.isBigInterface) {
             Upgrades.PATTERN_CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 3);
