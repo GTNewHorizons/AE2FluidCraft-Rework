@@ -306,7 +306,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
             // Step 2: Find out how much fluid we can extract from the container. If this is null or 0, return.
             ItemStack test = fluidContainer.copy();
             test.stackSize = 1;
-            FluidStack fluidStack = fcItem.drain(test, 1, false);
+            FluidStack fluidStack = fcItem.drain(test, fluidPerContainer, false);
             if (fluidStack == null || fluidStack.amount == 0) {
                 return;
             }
