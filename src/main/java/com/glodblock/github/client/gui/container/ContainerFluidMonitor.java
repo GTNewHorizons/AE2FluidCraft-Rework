@@ -325,8 +325,9 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
             // 4.2: Handle empty output
             if (insertionResults[ACT_IDX] > 0) {
                 emptyStack = fluidContainer.copy();
-                emptyStack.stackSize = insertionResults[ACT_IDX];
+                emptyStack.stackSize = 1;
                 fcItem.drain(emptyStack, fluidPerContainer, true);
+                emptyStack.stackSize = insertionResults[ACT_IDX];
             }
         } else if (FluidContainerRegistry.isContainer(fluidContainer)) {
             // Step 1: Find out how much fluid we can insert.
@@ -424,7 +425,9 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
     private void extractFluid(IAEFluidStack fluid, ItemStack fluidContainer, EntityPlayer player, int heldContainers) {
         // Step 1: Check if fluid can actually get filled into the fluidContainer
         if (fluidContainer.getItem() instanceof IFluidContainerItem fcItem) {
-            int test = fcItem.fill(fluidContainer, fluid.getFluidStack(), false);
+            ItemStack testStack = fluidContainer.copy();
+            testStack.stackSize = 1;
+            int test = fcItem.fill(testStack, fluid.getFluidStack(), false);
             if (test == 0) {
                 return;
             }
