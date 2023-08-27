@@ -3,11 +3,8 @@ package com.glodblock.github.client.render.tank;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
@@ -78,7 +75,7 @@ public class FluidTankRenderer {
             return null;
         }
         Map<Fluid, int[]> cache = flowing ? flowingRenderCache : stillRenderCache;
-        int[] diplayLists = getCachedData(fluid, cache);
+        int[] diplayLists = cache.get(fluid);
         if (diplayLists != null) {
             return diplayLists;
         }
@@ -122,11 +119,4 @@ public class FluidTankRenderer {
         return diplayLists;
     }
 
-    private static int[] getCachedData(@Nonnull Fluid fluid, Map<Fluid, int[]> cache) {
-        IIcon icon = fluid.getIcon();
-        if (icon instanceof TextureAtlasSprite sprite && sprite.hasAnimationMetadata()) {
-            return null;
-        }
-        return cache.get(fluid);
-    }
 }
