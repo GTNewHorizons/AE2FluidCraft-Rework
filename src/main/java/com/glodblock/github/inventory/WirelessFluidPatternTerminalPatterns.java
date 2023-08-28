@@ -27,6 +27,11 @@ public class WirelessFluidPatternTerminalPatterns extends AppEngInternalInventor
     }
 
     @Override
+    public void markDirty(int slotIndex) {
+        this.markDirty();
+    }
+
+    @Override
     public void setInventorySlotContents(final int slot, final ItemStack newItemStack) {
         final ItemStack oldStack = this.inv[slot];
         this.inv[slot] = newItemStack;
