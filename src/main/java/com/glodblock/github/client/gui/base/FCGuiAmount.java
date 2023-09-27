@@ -5,6 +5,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
+import org.lwjgl.input.Keyboard;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.network.CPacketSwitchGuis;
@@ -92,7 +94,7 @@ public abstract class FCGuiAmount extends AEBaseGui {
     @Override
     protected void keyTyped(final char character, final int key) {
         if (!this.checkHotbarKeys(key)) {
-            if (key == 28) {
+            if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
                 this.actionPerformed(this.submit);
             }
             this.amountBox.textboxKeyTyped(character, key);

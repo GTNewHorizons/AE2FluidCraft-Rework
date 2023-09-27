@@ -3,6 +3,8 @@ package com.glodblock.github.client.gui;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
+import org.lwjgl.input.Keyboard;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerRenamer;
 import com.glodblock.github.network.CPacketRenamer;
@@ -55,7 +57,7 @@ public class GuiRenamer extends AEBaseGui implements IDropToFillTextField {
 
     @Override
     protected void keyTyped(final char character, final int key) {
-        if (key == 28) { // Enter
+        if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
             FluidCraft.proxy.netHandler.sendToServer(new CPacketRenamer(this.textField.getText()));
         } else if (!this.textField.textboxKeyTyped(character, key)) {
             super.keyTyped(character, key);

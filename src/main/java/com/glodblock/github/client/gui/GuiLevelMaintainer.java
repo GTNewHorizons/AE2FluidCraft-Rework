@@ -202,7 +202,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             } else {
                 this.input.setTextColor(0xFFFFFF);
             }
-            if (key == Keyboard.KEY_RETURN) {
+            if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
                 this.input.setFocused(false);
                 this.input = null;
             }
