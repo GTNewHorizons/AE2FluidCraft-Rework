@@ -8,7 +8,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
-import com.glodblock.github.client.gui.*;
+import com.glodblock.github.client.gui.GuiEssentiaTerminal;
+import com.glodblock.github.client.gui.GuiFluidIO;
+import com.glodblock.github.client.gui.GuiFluidInterface;
+import com.glodblock.github.client.gui.GuiFluidLevelEmitter;
+import com.glodblock.github.client.gui.GuiFluidStorageBus;
+import com.glodblock.github.client.gui.GuiFluidTerminal;
+import com.glodblock.github.client.gui.GuiIngredientBuffer;
+import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
 import com.glodblock.github.util.Util;
 
 import appeng.api.storage.data.IAEFluidStack;

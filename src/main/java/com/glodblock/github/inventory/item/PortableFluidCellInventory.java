@@ -7,7 +7,12 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.common.storage.FluidCellInventory;
 
-import appeng.api.config.*;
+import appeng.api.config.Actionable;
+import appeng.api.config.PowerMultiplier;
+import appeng.api.config.Settings;
+import appeng.api.config.SortDir;
+import appeng.api.config.SortOrder;
+import appeng.api.config.ViewItems;
 import appeng.api.implementations.items.IAEItemPowerStorage;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.MEMonitorHandler;

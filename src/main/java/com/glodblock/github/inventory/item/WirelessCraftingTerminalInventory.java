@@ -11,7 +11,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import com.glodblock.github.inventory.ItemBiggerAppEngInventory;
 import com.glodblock.github.util.Util;
 
-import appeng.api.config.*;
+import appeng.api.config.Actionable;
+import appeng.api.config.PowerMultiplier;
+import appeng.api.config.Settings;
+import appeng.api.config.SortDir;
+import appeng.api.config.SortOrder;
+import appeng.api.config.TypeFilter;
+import appeng.api.config.ViewItems;
 import appeng.api.implementations.items.IAEItemPowerStorage;
 import appeng.api.networking.IGridNode;
 import appeng.api.storage.IMEInventoryHandler;

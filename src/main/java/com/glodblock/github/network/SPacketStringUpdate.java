@@ -3,7 +3,7 @@ package com.glodblock.github.network;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
-import com.glodblock.github.client.gui.*;
+import com.glodblock.github.client.gui.GuiRenamer;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;

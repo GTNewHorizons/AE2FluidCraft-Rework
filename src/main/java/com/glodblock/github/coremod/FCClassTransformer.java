@@ -6,7 +6,13 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
-import com.glodblock.github.coremod.transform.*;
+import com.glodblock.github.coremod.transform.CraftingCpuTransformer;
+import com.glodblock.github.coremod.transform.CraftingTreeNodeTransformer;
+import com.glodblock.github.coremod.transform.DualityInterfaceTransformer;
+import com.glodblock.github.coremod.transform.ExternalStorageRegistryTransformer;
+import com.glodblock.github.coremod.transform.GuiCraftingTransformer;
+import com.glodblock.github.coremod.transform.NEITransfermer;
+import com.glodblock.github.coremod.transform.PacketCompressedNBTTransformer;
 
 public class FCClassTransformer implements IClassTransformer {
 

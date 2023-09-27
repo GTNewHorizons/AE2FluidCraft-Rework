@@ -1,7 +1,9 @@
 package com.glodblock.github.client.gui.container;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -42,7 +44,7 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
     private static long autoBase = Long.MIN_VALUE;
 
     private final Multimap<IInterfaceTerminalSupport, InvTracker> supportedInterfaces = HashMultimap.create();
-    private final Map<Long, ContainerInterfaceWireless.InvTracker> byId = new HashMap<>();
+    private final Map<Long, InvTracker> byId = new HashMap<>();
     private IGrid grid;
     private NBTTagCompound data = new NBTTagCompound();
 

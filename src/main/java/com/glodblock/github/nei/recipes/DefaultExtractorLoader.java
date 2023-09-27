@@ -1,9 +1,23 @@
 package com.glodblock.github.nei.recipes;
 
-import com.glodblock.github.nei.recipes.extractor.*;
+import com.glodblock.github.nei.recipes.extractor.AvaritiaRecipeExtractor;
+import com.glodblock.github.nei.recipes.extractor.EnderIORecipeExtractor;
+import com.glodblock.github.nei.recipes.extractor.ForestryRecipeExtractor;
+import com.glodblock.github.nei.recipes.extractor.GTPPRecipeExtractor;
+import com.glodblock.github.nei.recipes.extractor.GregTech5RecipeExtractor;
+import com.glodblock.github.nei.recipes.extractor.GregTech6RecipeExtractor;
+import com.glodblock.github.nei.recipes.extractor.IndustrialCraftRecipeExtractor;
+import com.glodblock.github.nei.recipes.extractor.VanillaRecipeExtractor;
 import com.glodblock.github.util.ModAndClassUtil;
 
-import forestry.factory.recipes.nei.*;
+import forestry.factory.recipes.nei.NEIHandlerBottler;
+import forestry.factory.recipes.nei.NEIHandlerCarpenter;
+import forestry.factory.recipes.nei.NEIHandlerCentrifuge;
+import forestry.factory.recipes.nei.NEIHandlerFabricator;
+import forestry.factory.recipes.nei.NEIHandlerFermenter;
+import forestry.factory.recipes.nei.NEIHandlerMoistener;
+import forestry.factory.recipes.nei.NEIHandlerSqueezer;
+import forestry.factory.recipes.nei.NEIHandlerStill;
 import gregapi.recipes.Recipe;
 import gregtech.api.util.GTPP_Recipe;
 import gregtech.api.util.GT_Recipe;

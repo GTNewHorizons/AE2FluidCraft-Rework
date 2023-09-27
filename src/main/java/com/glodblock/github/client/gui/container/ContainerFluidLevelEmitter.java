@@ -10,7 +10,9 @@ import com.glodblock.github.common.parts.PartFluidLevelEmitter;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
 import com.glodblock.github.util.Ae2Reflect;
 
-import appeng.api.config.*;
+import appeng.api.config.RedstoneMode;
+import appeng.api.config.SecurityPermissions;
+import appeng.api.config.Settings;
 import appeng.api.implementations.IUpgradeableHost;
 import appeng.container.guisync.GuiSync;
 import appeng.tile.inventory.AppEngInternalAEInventory;

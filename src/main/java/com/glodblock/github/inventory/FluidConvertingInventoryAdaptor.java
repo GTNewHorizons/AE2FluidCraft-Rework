@@ -2,7 +2,11 @@ package com.glodblock.github.inventory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +28,9 @@ import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
 
-import appeng.api.config.*;
+import appeng.api.config.FuzzyMode;
+import appeng.api.config.InsertionMode;
+import appeng.api.config.Upgrades;
 import appeng.api.parts.IPart;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;

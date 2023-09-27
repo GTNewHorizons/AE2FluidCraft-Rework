@@ -14,7 +14,14 @@ import com.glodblock.github.common.parts.base.FCSharedFluidBus;
 import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
 import com.google.common.collect.ImmutableSet;
 
-import appeng.api.config.*;
+import appeng.api.config.Actionable;
+import appeng.api.config.FuzzyMode;
+import appeng.api.config.PowerMultiplier;
+import appeng.api.config.RedstoneMode;
+import appeng.api.config.SchedulingMode;
+import appeng.api.config.Settings;
+import appeng.api.config.Upgrades;
+import appeng.api.config.YesNo;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.ICraftingGrid;
 import appeng.api.networking.crafting.ICraftingLink;

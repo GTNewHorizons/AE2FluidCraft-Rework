@@ -16,7 +16,12 @@ import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 
-import appeng.api.config.*;
+import appeng.api.config.AdvancedBlockingMode;
+import appeng.api.config.InsertionMode;
+import appeng.api.config.Settings;
+import appeng.api.config.SidelessMode;
+import appeng.api.config.Upgrades;
+import appeng.api.config.YesNo;
 import appeng.client.gui.implementations.GuiUpgradeable;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiTabButton;

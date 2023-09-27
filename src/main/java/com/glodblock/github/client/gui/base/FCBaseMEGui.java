@@ -7,7 +7,13 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 
-import com.glodblock.github.client.gui.*;
+import com.glodblock.github.client.gui.GuiEssentiaTerminal;
+import com.glodblock.github.client.gui.GuiFCImgButton;
+import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
+import com.glodblock.github.client.gui.GuiFluidPatternExWireless;
+import com.glodblock.github.client.gui.GuiFluidPatternWireless;
+import com.glodblock.github.client.gui.GuiFluidPortableCell;
+import com.glodblock.github.client.gui.GuiInterfaceTerminalWireless;
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.gui.GuiType;

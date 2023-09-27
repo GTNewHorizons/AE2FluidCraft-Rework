@@ -9,8 +9,18 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
 import com.glodblock.github.common.item.ItemMultiFluidStorageCell;
-import com.glodblock.github.crossmod.extracells.parts.*;
-import com.glodblock.github.crossmod.extracells.storage.*;
+import com.glodblock.github.crossmod.extracells.parts.ProxyFluidBusIO;
+import com.glodblock.github.crossmod.extracells.parts.ProxyFluidInterface;
+import com.glodblock.github.crossmod.extracells.parts.ProxyFluidStorage;
+import com.glodblock.github.crossmod.extracells.parts.ProxyLevelEmitter;
+import com.glodblock.github.crossmod.extracells.parts.ProxyOreDictExportBus;
+import com.glodblock.github.crossmod.extracells.parts.ProxyStorageMonitor;
+import com.glodblock.github.crossmod.extracells.storage.ProxyExtremeStorageCell;
+import com.glodblock.github.crossmod.extracells.storage.ProxyFluidStorageCell;
+import com.glodblock.github.crossmod.extracells.storage.ProxyItemCellHandler;
+import com.glodblock.github.crossmod.extracells.storage.ProxyItemStorageCell;
+import com.glodblock.github.crossmod.extracells.storage.ProxyVoidCellHandler;
+import com.glodblock.github.crossmod.extracells.storage.ProxyVoidStorageCell;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 
 import appeng.api.AEApi;

@@ -10,7 +10,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.util.Util;
 
-import appeng.api.config.*;
+import appeng.api.config.Actionable;
+import appeng.api.config.PowerMultiplier;
+import appeng.api.config.Settings;
+import appeng.api.config.TerminalStyle;
 import appeng.api.implementations.items.IAEItemPowerStorage;
 import appeng.api.networking.IGridNode;
 import appeng.api.storage.IMEMonitor;

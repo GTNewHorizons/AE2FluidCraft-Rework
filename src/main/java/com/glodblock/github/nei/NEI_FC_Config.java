@@ -1,7 +1,11 @@
 package com.glodblock.github.nei;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.*;
+import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
+import com.glodblock.github.client.gui.GuiFluidPatternExWireless;
+import com.glodblock.github.client.gui.GuiFluidPatternTerminal;
+import com.glodblock.github.client.gui.GuiFluidPatternTerminalEx;
+import com.glodblock.github.client.gui.GuiFluidPatternWireless;
 import com.glodblock.github.nei.recipes.FluidRecipe;
 import com.glodblock.github.util.ModAndClassUtil;
 

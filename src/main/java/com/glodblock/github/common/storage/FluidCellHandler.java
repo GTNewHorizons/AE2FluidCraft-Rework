@@ -10,7 +10,11 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 
 import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.storage.*;
+import appeng.api.storage.ICellHandler;
+import appeng.api.storage.IMEInventory;
+import appeng.api.storage.IMEInventoryHandler;
+import appeng.api.storage.ISaveProvider;
+import appeng.api.storage.StorageChannel;
 import appeng.client.texture.ExtraBlockTextures;
 
 public class FluidCellHandler implements ICellHandler {

@@ -5,7 +5,23 @@ import net.minecraft.network.Packet;
 import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.network.*;
+import com.glodblock.github.network.CPacketCraftRequest;
+import com.glodblock.github.network.CPacketDumpTank;
+import com.glodblock.github.network.CPacketEncodePattern;
+import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.network.CPacketFluidUpdate;
+import com.glodblock.github.network.CPacketInventoryAction;
+import com.glodblock.github.network.CPacketLevelMaintainer;
+import com.glodblock.github.network.CPacketPatternValueSet;
+import com.glodblock.github.network.CPacketRenamer;
+import com.glodblock.github.network.CPacketSwitchGuis;
+import com.glodblock.github.network.CPacketTransferRecipe;
+import com.glodblock.github.network.CPacketValueConfig;
+import com.glodblock.github.network.SPacketFluidUpdate;
+import com.glodblock.github.network.SPacketMEFluidInvUpdate;
+import com.glodblock.github.network.SPacketMEItemInvUpdate;
+import com.glodblock.github.network.SPacketSetItemAmount;
+import com.glodblock.github.network.SPacketStringUpdate;
 
 import cpw.mods.fml.relauncher.Side;
 

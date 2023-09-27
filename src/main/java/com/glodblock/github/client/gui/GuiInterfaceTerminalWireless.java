@@ -1,6 +1,12 @@
 package com.glodblock.github.client.gui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -26,9 +32,16 @@ import com.glodblock.github.util.Util;
 import com.google.common.collect.HashMultimap;
 
 import appeng.api.AEApi;
-import appeng.api.config.*;
+import appeng.api.config.ActionItems;
+import appeng.api.config.Settings;
+import appeng.api.config.TerminalStyle;
+import appeng.api.config.YesNo;
 import appeng.api.util.WorldCoord;
-import appeng.client.gui.widgets.*;
+import appeng.client.gui.widgets.GuiImgButton;
+import appeng.client.gui.widgets.GuiScrollbar;
+import appeng.client.gui.widgets.GuiTabButton;
+import appeng.client.gui.widgets.IDropToFillTextField;
+import appeng.client.gui.widgets.MEGuiTextField;
 import appeng.client.me.ClientDCInternalInv;
 import appeng.client.me.SlotDisconnected;
 import appeng.client.render.BlockPosHighlighter;

@@ -1,6 +1,6 @@
 package com.glodblock.github.loader.filter;
 
-import static appeng.api.config.TypeFilter.*;
+import static appeng.api.config.TypeFilter.ALL;
 
 import net.minecraft.item.Item;
 

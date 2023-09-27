@@ -14,7 +14,11 @@ import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 
-import appeng.api.config.*;
+import appeng.api.config.ActionItems;
+import appeng.api.config.ItemSubstitution;
+import appeng.api.config.PatternBeSubstitution;
+import appeng.api.config.PatternSlotConfig;
+import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
 import appeng.client.gui.widgets.GuiImgButton;
 
