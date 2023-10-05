@@ -28,7 +28,13 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
 
     public FluidPatternDetails(ItemStack stack) {
         this.patternStack = stack;
-        this.patternStackAe = Objects.requireNonNull(AEItemStack.create(stack)); // s2g
+        if (stack.stackTagCompound.hasKey("author")) {
+            final ItemStack forComparison = this.patternStack.copy();
+            forComparison.stackTagCompound.removeTag("author");
+            this.patternStackAe = Objects.requireNonNull(AEItemStack.create(forComparison)); // s2g
+        } else {
+            this.patternStackAe = Objects.requireNonNull(AEItemStack.create(stack)); // s2g
+        }
     }
 
     public boolean canBeSubstitute() {
