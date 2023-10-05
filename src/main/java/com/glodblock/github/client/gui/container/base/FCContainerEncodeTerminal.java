@@ -257,13 +257,18 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return hasFluid && search; // search=false -> outputs were empty
     }
 
+    protected ItemStack stampAuthor(ItemStack patternStack) {
+        patternStack.stackTagCompound.setString("author", getPlayerInv().player.getCommandSenderName());
+        return patternStack;
+    }
+
     protected void encodeFluidPattern() {
         ItemStack patternStack = new ItemStack(ItemAndBlockHolder.PATTERN);
         FluidPatternDetails pattern = new FluidPatternDetails(patternStack);
         pattern.setInputs(collectInventory(this.craftingSlots));
         pattern.setOutputs(collectInventory(this.outputSlots));
         pattern.setCanBeSubstitute(this.beSubstitute ? 1 : 0);
-        patternSlotOUT.putStack(pattern.writeToStack());
+        patternSlotOUT.putStack(stampAuthor(pattern.writeToStack()));
     }
 
     protected static IAEItemStack[] collectInventory(Slot[] slots) {
@@ -440,6 +445,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         encodedValue.setBoolean("beSubstitute", this.beSubstitute);
         encodedValue.setBoolean("prioritize", this.prioritize);
         output.setTagCompound(encodedValue);
+        stampAuthor(output);
         this.patternSlotOUT.putStack(output);
     }
 
