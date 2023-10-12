@@ -258,6 +258,9 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     }
 
     protected ItemStack stampAuthor(ItemStack patternStack) {
+        if (patternStack.stackTagCompound == null) {
+            patternStack.stackTagCompound = new NBTTagCompound();
+        }
         patternStack.stackTagCompound.setString("author", getPlayerInv().player.getCommandSenderName());
         return patternStack;
     }
