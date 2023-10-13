@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import appeng.client.gui.IGuiTooltipHandler;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -13,7 +14,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
-import com.glodblock.github.client.gui.IGuiTooltipHandler;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.PartFluidInterface;

@@ -16,7 +16,7 @@ import com.glodblock.github.network.CPacketSwitchGuis;
 import appeng.api.storage.ITerminalHost;
 import appeng.client.gui.implementations.GuiCraftConfirm;
 
-public class GuiFluidCraftConfirm extends GuiCraftConfirm implements IGuiTooltipHandler {
+public class GuiFluidCraftConfirm extends GuiCraftConfirm {
 
     private GuiType originalGui;
 

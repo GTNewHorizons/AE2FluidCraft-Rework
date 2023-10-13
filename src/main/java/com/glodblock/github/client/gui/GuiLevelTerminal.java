@@ -85,7 +85,7 @@ import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.Loader;
 
-public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextField, IGuiTooltipHandler {
+public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextField {
 
     public static final int HEADER_HEIGHT = 52;
     public static final int INV_HEIGHT = 98;
