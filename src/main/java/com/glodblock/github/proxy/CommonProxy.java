@@ -21,6 +21,7 @@ import appeng.api.IAppEngApi;
 import appeng.api.config.Upgrades;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
@@ -69,6 +70,8 @@ public class CommonProxy {
         AEApi.instance().registries().interfaceTerminal().register(PartFluidInterface.class);
         AEApi.instance().registries().interfaceTerminal().register(TileFluidInterface.class);
     }
+
+    public void onLoadComplete(FMLLoadCompleteEvent event) {}
 
     public void registerRenderers() {}
 

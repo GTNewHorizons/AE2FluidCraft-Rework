@@ -94,14 +94,12 @@ public class OrderStack<T> {
         if (RealStack instanceof ItemStack) {
             NBTTagCompound tmp = new NBTTagCompound();
             tmp.setByte("t", (byte) ITEM);
-            ((ItemStack) RealStack).writeToNBT(tmp);
+            Util.writeItemStackToNBT(((ItemStack) RealStack), tmp);
             // replacement items
             if (items != null) {
                 NBTTagList list = new NBTTagList();
                 for (ItemStack is : this.items) {
-                    NBTTagCompound t = new NBTTagCompound();
-                    is.writeToNBT(t);
-                    list.appendTag(t);
+                    Util.writeItemStackToNBT(is, new NBTTagCompound());
                 }
                 tmp.setTag(index + ":", list);
             }
@@ -130,10 +128,10 @@ public class OrderStack<T> {
                     NBTTagList items = info.getTagList(index + ":", 10);
                     for (int x = 0; x < items.tagCount(); x++) {
                         final NBTTagCompound item = items.getCompoundTagAt(x);
-                        list.add(ItemStack.loadItemStackFromNBT(item));
+                        list.add(Util.loadItemStackFromNBT(item));
                     }
                 }
-                return new OrderStack<>(ItemStack.loadItemStackFromNBT(info), index, list.toArray(new ItemStack[0]));
+                return new OrderStack<>(Util.loadItemStackFromNBT(info), index, list.toArray(new ItemStack[0]));
             }
             case FLUID -> {
                 return new OrderStack<>(FluidStack.loadFluidStackFromNBT(info), index);
