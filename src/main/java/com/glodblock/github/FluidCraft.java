@@ -90,6 +90,11 @@ public class FluidCraft {
     }
 
     @Mod.EventHandler
+    public void onLoadComplete(FMLLoadCompleteEvent event) {
+        proxy.onLoadComplete(event);
+    }
+
+    @Mod.EventHandler
     public void onServerStart(FMLServerStartingEvent event) {
         SPacketMEUpdateBuffer.init();
     }
@@ -105,9 +110,6 @@ public class FluidCraft {
             EC2Replacer.replaceExtraCells(event);
         }
     }
-
-    @Mod.EventHandler
-    public void onLoadComplete(FMLLoadCompleteEvent event) {}
 
     public static ResourceLocation resource(String path) {
         return new ResourceLocation(MODID, path);

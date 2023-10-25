@@ -21,6 +21,7 @@ import appeng.api.config.Upgrades;
 import appeng.helpers.InterfaceTerminalSupportedClassProvider;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -71,6 +72,8 @@ public class CommonProxy {
         InterfaceTerminalSupportedClassProvider.register(PartFluidInterface.class);
         InterfaceTerminalSupportedClassProvider.register(TileFluidInterface.class);
     }
+
+    public void onLoadComplete(FMLLoadCompleteEvent event) {}
 
     public void registerRenderers() {}
 
