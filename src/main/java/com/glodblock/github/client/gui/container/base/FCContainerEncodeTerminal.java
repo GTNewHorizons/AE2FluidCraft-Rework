@@ -492,8 +492,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     protected NBTBase createItemTag(final ItemStack i) {
         final NBTTagCompound c = new NBTTagCompound();
         if (i != null) {
-            i.writeToNBT(c);
-            c.setInteger("Count", i.stackSize);
+            Util.writeItemStackToNBT(i, c);
         }
         return c;
     }
