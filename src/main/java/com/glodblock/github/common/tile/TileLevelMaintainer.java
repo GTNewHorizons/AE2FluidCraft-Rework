@@ -1,6 +1,7 @@
 package com.glodblock.github.common.tile;
 
 import java.util.concurrent.Future;
+import java.util.function.UnaryOperator;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -16,7 +17,6 @@ import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.AeStackInventory;
 import com.glodblock.github.inventory.AeStackInventoryImpl;
-import com.glodblock.github.util.Updater;
 import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
@@ -503,14 +503,14 @@ public class TileLevelMaintainer extends AENetworkTile
             jobs[idx] = job;
         }
 
-        private void updateField(int idx, Updater<NBTTagCompound, NBTTagCompound> updater) {
+        private void updateField(int idx, UnaryOperator<NBTTagCompound> updater) {
             IAEItemStack ias = requestStacks.getStack(idx);
             if (ias == null) return;
 
             ItemStack itemStack = ias.getItemStack();
             NBTTagCompound data = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
             data.setInteger(TLMTags.Index.tagName, idx);
-            itemStack.setTagCompound(updater.update(data));
+            itemStack.setTagCompound(updater.apply(data));
             IAEItemStack newRequestStack = AEItemStack.create(itemStack);
             newRequestStack.setStackSize(ias.getStackSize());
             requestStacks.setStack(idx, newRequestStack);
