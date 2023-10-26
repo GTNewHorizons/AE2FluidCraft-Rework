@@ -304,6 +304,18 @@ public final class Util {
         }
     }
 
+    public static void writeItemStackToNBT(ItemStack itemStack, NBTTagCompound tag) {
+        itemStack.writeToNBT(tag);
+        tag.setInteger("Count", itemStack.stackSize);
+    }
+
+    public static ItemStack loadItemStackFromNBT(NBTTagCompound tag) {
+        ItemStack itemStack = ItemStack.loadItemStackFromNBT(tag);
+        if (itemStack == null) return null;
+        itemStack.stackSize = tag.getInteger("Count");
+        return itemStack;
+    }
+
     public static IAEFluidStack loadFluidStackFromNBT(final NBTTagCompound i) {
         final FluidStack t = FluidRegistry.getFluidStack(i.getString("FluidName"), 1);
         if (t == null) return null;
