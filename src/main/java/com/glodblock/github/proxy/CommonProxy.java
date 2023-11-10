@@ -30,6 +30,7 @@ public class CommonProxy {
     public final FCNetworkWrapper netHandler = new FCNetworkWrapper(FluidCraft.MODID);
 
     public void preInit(FMLPreInitializationEvent event) {
+        ModAndClassUtil.init();
         ItemAndBlockHolder.init();
     }
 

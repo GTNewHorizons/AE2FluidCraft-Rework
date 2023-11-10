@@ -57,7 +57,6 @@ public class FluidCraft {
 
     @Mod.EventHandler
     public static void init(FMLInitializationEvent event) {
-        ModAndClassUtil.init();
         if (ModAndClassUtil.OC) {
             OCDriverInit.run();
         }
