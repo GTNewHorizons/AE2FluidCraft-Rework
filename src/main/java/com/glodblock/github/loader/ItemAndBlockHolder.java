@@ -47,6 +47,8 @@ import com.glodblock.github.util.NameConst;
 
 public class ItemAndBlockHolder {
 
+    public static void init() {}
+
     public static BlockCertusQuartzTank CERTUS_QUARTZ_TANK = new BlockCertusQuartzTank().register();
     public static BlockFluidAutoFiller FLUID_AUTO_FILLER = new BlockFluidAutoFiller().register();
     public static BlockFluidDiscretizer DISCRETIZER = new BlockFluidDiscretizer().register();

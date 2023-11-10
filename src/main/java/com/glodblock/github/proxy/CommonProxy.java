@@ -29,7 +29,9 @@ public class CommonProxy {
 
     public final FCNetworkWrapper netHandler = new FCNetworkWrapper(FluidCraft.MODID);
 
-    public void preInit(FMLPreInitializationEvent event) {}
+    public void preInit(FMLPreInitializationEvent event) {
+        ItemAndBlockHolder.init();
+    }
 
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
