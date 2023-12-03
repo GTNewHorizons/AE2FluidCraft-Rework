@@ -101,7 +101,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
             if (cellInventory != null) {
                 lines.add(
-                        EnumChatFormatting.WHITE + String.valueOf(cellInventory.getUsedBytes())
+                        EnumChatFormatting.WHITE + NumberFormat.getInstance().format(cellInventory.getUsedBytes())
                                 + EnumChatFormatting.GRAY
                                 + " "
                                 + GuiText.Of.getLocal()
@@ -112,7 +112,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
                                 + EnumChatFormatting.GRAY
                                 + GuiText.BytesUsed.getLocal());
                 lines.add(
-                        EnumChatFormatting.WHITE + String.valueOf(cellInventory.getStoredFluidTypes())
+                        EnumChatFormatting.WHITE + NumberFormat.getInstance().format(cellInventory.getStoredFluidTypes())
                                 + EnumChatFormatting.GRAY
                                 + " "
                                 + GuiText.Of.getLocal()

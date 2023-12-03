@@ -1,5 +1,6 @@
 package com.glodblock.github.common.item;
 
+import java.text.NumberFormat;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class ItemPortableFluidCell extends AEBasePoweredItem
             final IFluidCellInventory cellInventory = handler.getCellInv();
             if (cellInventory != null) {
                 lines.add(
-                        EnumChatFormatting.WHITE + String.valueOf(cellInventory.getUsedBytes())
+                        EnumChatFormatting.WHITE + NumberFormat.getInstance().format(cellInventory.getUsedBytes())
                                 + EnumChatFormatting.GRAY
                                 + " "
                                 + GuiText.Of.getLocal()
@@ -93,7 +94,7 @@ public class ItemPortableFluidCell extends AEBasePoweredItem
                                 + EnumChatFormatting.GRAY
                                 + GuiText.BytesUsed.getLocal());
                 lines.add(
-                        EnumChatFormatting.WHITE + String.valueOf(cellInventory.getStoredFluidTypes())
+                        EnumChatFormatting.WHITE + NumberFormat.getInstance().format(cellInventory.getStoredFluidTypes())
                                 + EnumChatFormatting.GRAY
                                 + " "
                                 + GuiText.Of.getLocal()
