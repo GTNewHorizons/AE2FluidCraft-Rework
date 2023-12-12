@@ -2,6 +2,7 @@ package com.glodblock.github.common.block;
 
 import java.util.EnumSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -59,6 +60,14 @@ public class BlockFluidInterface extends FCBaseBlock {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onNeighborBlockChange(World worldIn, int x, int y, int z, Block neighbor) {
+        TileFluidInterface tile = this.getTileEntity(worldIn, x, y, z);
+        if (tile != null) {
+            tile.getInterfaceDuality().updateRedstoneState();
+        }
     }
 
     @Override

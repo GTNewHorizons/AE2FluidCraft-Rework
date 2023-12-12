@@ -38,14 +38,11 @@ import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.ICraftingLink;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
-import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.networking.events.MENetworkChannelsChanged;
 import appeng.api.networking.events.MENetworkCraftingPatternChange;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.security.BaseActionSource;
-import appeng.api.networking.security.MachineSource;
-import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
@@ -68,7 +65,6 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import appeng.util.inv.IInventoryDestination;
-import appeng.util.item.AEFluidStack;
 
 public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInterface>
         implements IGridTickable, IStorageMonitorable, IInventoryDestination, IDualHost, ISidedInventory,
@@ -108,7 +104,6 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     };
     private final DualityFluidInterface dualityFluid = new DualityFluidInterface(this.getProxy(), this);
     private final AppEngInternalAEInventory config = new AppEngInternalAEInventory(this, 6);
-    private final BaseActionSource ownActionSource = new MachineSource(this);
 
     public PartFluidP2PInterface(ItemStack is) {
         super(is);
@@ -130,6 +125,11 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     public void gridChanged() {
         super.gridChanged();
         dualityFluid.gridChanged();
+    }
+
+    @Override
+    public void onNeighborChanged() {
+        this.duality.updateRedstoneState();
     }
 
     @Override
@@ -350,35 +350,9 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         return true;
     }
 
-    private IMEMonitor<IAEFluidStack> getFluidGrid() {
-        try {
-            return getProxy().getGrid().<IStorageGrid>getCache(IStorageGrid.class).getFluidInventory();
-        } catch (GridAccessException e) {
-            return null;
-        }
-    }
-
-    private IEnergyGrid getEnergyGrid() {
-        try {
-            return getProxy().getGrid().getCache(IEnergyGrid.class);
-        } catch (GridAccessException e) {
-            return null;
-        }
-    }
-
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-        IMEMonitor<IAEFluidStack> fluidGrid = getFluidGrid();
-        IEnergyGrid energyGrid = getEnergyGrid();
-        if (energyGrid == null || fluidGrid == null || resource == null) return 0;
-        int ori = resource.amount;
-        IAEFluidStack remove;
-        if (doFill) {
-            remove = fluidGrid.injectItems(AEFluidStack.create(resource), Actionable.MODULATE, ownActionSource);
-        } else {
-            remove = fluidGrid.injectItems(AEFluidStack.create(resource), Actionable.SIMULATE, ownActionSource);
-        }
-        return remove == null ? ori : (int) (ori - remove.getStackSize());
+        return dualityFluid.fill(from, resource, doFill);
     }
 
     @Override
@@ -393,12 +367,12 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
 
     @Override
     public boolean canFill(ForgeDirection from, Fluid fluid) {
-        return true;
+        return dualityFluid.canFill(from, fluid);
     }
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
-        return true;
+        return dualityFluid.canDrain(from, fluid);
     }
 
     @Override

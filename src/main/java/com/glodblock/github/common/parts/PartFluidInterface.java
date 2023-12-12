@@ -24,27 +24,19 @@ import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.Util;
 
-import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.IGridNode;
-import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.networking.events.MENetworkChannelsChanged;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
-import appeng.api.networking.security.BaseActionSource;
-import appeng.api.networking.security.MachineSource;
-import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.parts.IPartRenderHelper;
-import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.client.texture.CableBusTextures;
-import appeng.me.GridAccessException;
 import appeng.parts.misc.PartInterface;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
-import appeng.util.item.AEFluidStack;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -52,7 +44,6 @@ import io.netty.buffer.ByteBuf;
 
 public class PartFluidInterface extends PartInterface implements IDualHost {
 
-    private final BaseActionSource ownActionSource = new MachineSource(this);
     private final AppEngInternalAEInventory config = new AppEngInternalAEInventory(this, 6);
     private final DualityFluidInterface fluidDuality = new DualityFluidInterface(this.getProxy(), this);
 
@@ -201,35 +192,9 @@ public class PartFluidInterface extends PartInterface implements IDualHost {
         return getInterfaceDuality().getInstalledUpgrades(u);
     }
 
-    private IMEMonitor<IAEFluidStack> getFluidGrid() {
-        try {
-            return getProxy().getGrid().<IStorageGrid>getCache(IStorageGrid.class).getFluidInventory();
-        } catch (GridAccessException e) {
-            return null;
-        }
-    }
-
-    private IEnergyGrid getEnergyGrid() {
-        try {
-            return getProxy().getGrid().getCache(IEnergyGrid.class);
-        } catch (GridAccessException e) {
-            return null;
-        }
-    }
-
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-        IMEMonitor<IAEFluidStack> fluidGrid = getFluidGrid();
-        IEnergyGrid energyGrid = getEnergyGrid();
-        if (energyGrid == null || fluidGrid == null || resource == null) return 0;
-        int ori = resource.amount;
-        IAEFluidStack remove;
-        if (doFill) {
-            remove = fluidGrid.injectItems(AEFluidStack.create(resource), Actionable.MODULATE, ownActionSource);
-        } else {
-            remove = fluidGrid.injectItems(AEFluidStack.create(resource), Actionable.SIMULATE, ownActionSource);
-        }
-        return remove == null ? ori : (int) (ori - remove.getStackSize());
+        return fluidDuality.fill(from, resource, doFill);
     }
 
     @Override
@@ -244,12 +209,12 @@ public class PartFluidInterface extends PartInterface implements IDualHost {
 
     @Override
     public boolean canFill(ForgeDirection from, Fluid fluid) {
-        return true;
+        return fluidDuality.canFill(from, fluid);
     }
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
-        return true;
+        return fluidDuality.canDrain(from, fluid);
     }
 
     @Override

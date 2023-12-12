@@ -187,7 +187,7 @@ public class TileFluidInterface extends TileInterface implements IDualHost {
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
-        return true;
+        return fluidDuality.canDrain(from, fluid);
     }
 
     @Override
