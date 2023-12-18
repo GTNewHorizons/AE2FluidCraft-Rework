@@ -530,6 +530,54 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
 
     @Override
     public boolean shouldDisplay() {
-        return IInterfaceHost.super.shouldDisplay() && !isOutput();
+        return IInterfaceHost.super.shouldDisplay();
+    }
+
+    @Override
+    public IInventory getPatterns() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.getPatterns();
+            }
+            return IInterfaceHost.super.getPatterns();
+        }
+        return IInterfaceHost.super.getPatterns();
+    }
+
+    @Override
+    public int rows() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.rows();
+            }
+            return IInterfaceHost.super.rows();
+        }
+        return IInterfaceHost.super.rows();
+    }
+
+    @Override
+    public int rowSize() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.rowSize();
+            }
+            return IInterfaceHost.super.rowSize();
+        }
+        return IInterfaceHost.super.rowSize();
+    }
+
+    @Override
+    public String getName() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.getName();
+            }
+            return IInterfaceHost.super.getName();
+        }
+        return IInterfaceHost.super.getName();
     }
 }
