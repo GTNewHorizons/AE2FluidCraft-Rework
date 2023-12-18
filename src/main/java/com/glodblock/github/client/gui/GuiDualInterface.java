@@ -17,6 +17,7 @@ import com.glodblock.github.util.NameConst;
 
 import appeng.api.config.AdvancedBlockingMode;
 import appeng.api.config.InsertionMode;
+import appeng.api.config.LockCraftingMode;
 import appeng.api.config.Settings;
 import appeng.api.config.SidelessMode;
 import appeng.api.config.Upgrades;
@@ -40,6 +41,7 @@ public class GuiDualInterface extends GuiUpgradeable {
     private GuiImgButton insertionMode;
     private GuiImgButton sidelessMode;
     private GuiImgButton advancedBlockingMode;
+    private GuiImgButton lockCraftingMode;
     private final IInterfaceHost host;
 
     public GuiDualInterface(InventoryPlayer inventoryPlayer, IInterfaceHost te) {
@@ -103,6 +105,14 @@ public class GuiDualInterface extends GuiUpgradeable {
                     SidelessMode.SIDELESS);
             this.buttonList.add(this.sidelessMode);
         }
+
+        this.lockCraftingMode = new GuiImgButton(
+                this.guiLeft - 18,
+                this.guiTop + 98,
+                Settings.LOCK_CRAFTING_MODE,
+                LockCraftingMode.NONE);
+        this.lockCraftingMode.visible = this.bc.getInstalledUpgrades(Upgrades.LOCK_CRAFTING) > 0;
+        this.buttonList.add(lockCraftingMode);
     }
 
     @Override
@@ -122,6 +132,9 @@ public class GuiDualInterface extends GuiUpgradeable {
         }
         if (this.advancedBlockingMode != null) {
             this.advancedBlockingMode.set(((ContainerDualInterface) this.cvb).getAdvancedBlockingMode());
+        }
+        if (this.lockCraftingMode != null) {
+            this.lockCraftingMode.set(((ContainerInterface) this.cvb).getLockCraftingMode());
         }
         this.fontRendererObj.drawString(
                 getGuiDisplayName(StatCollector.translateToLocal(NameConst.GUI_FLUID_INTERFACE)),
@@ -161,6 +174,8 @@ public class GuiDualInterface extends GuiUpgradeable {
         } else if (btn == this.advancedBlockingMode) {
             NetworkHandler.instance
                     .sendToServer(new PacketConfigButton(this.advancedBlockingMode.getSetting(), backwards));
+        } else if (btn == this.lockCraftingMode) {
+            NetworkHandler.instance.sendToServer(new PacketConfigButton(this.lockCraftingMode.getSetting(), backwards));
         }
     }
 
@@ -177,6 +192,9 @@ public class GuiDualInterface extends GuiUpgradeable {
         super.handleButtonVisibility();
         if (this.advancedBlockingMode != null) {
             this.advancedBlockingMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.ADVANCED_BLOCKING) > 0);
+        }
+        if (this.lockCraftingMode != null) {
+            this.lockCraftingMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.LOCK_CRAFTING) > 0);
         }
     }
 }
