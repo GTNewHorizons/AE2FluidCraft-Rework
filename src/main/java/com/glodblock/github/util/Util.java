@@ -229,8 +229,7 @@ public final class Util {
     }
 
     public static AEFluidStack getAEFluidFromItem(ItemStack stack) {
-        if (stack != null
-                && (stack.getItem() instanceof IFluidContainerItem || FluidContainerRegistry.isContainer(stack))) {
+        if (stack != null) {
             if (stack.getItem() instanceof IFluidContainerItem) {
                 FluidStack fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
                 if (fluid != null) {
@@ -252,8 +251,7 @@ public final class Util {
     }
 
     public static FluidStack getFluidFromItem(ItemStack stack) {
-        if (stack != null
-                && (stack.getItem() instanceof IFluidContainerItem || FluidContainerRegistry.isContainer(stack))) {
+        if (stack != null) {
             if (stack.getItem() instanceof IFluidContainerItem) {
                 FluidStack fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
                 if (fluid != null) {

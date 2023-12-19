@@ -1,19 +1,14 @@
 package com.glodblock.github.network;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.client.gui.container.ContainerFluidMonitor;
-import com.glodblock.github.util.Util;
 
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.util.item.AEItemStack;
+import appeng.util.item.AEFluidStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -21,37 +16,42 @@ import io.netty.buffer.ByteBuf;
 
 public class CPacketFluidUpdate implements IMessage {
 
-    private Map<Integer, IAEFluidStack> list;
-    private ItemStack itemStack;
+    private IAEFluidStack fluid;
+    private boolean shift;
     private int slotIndex;
 
     public CPacketFluidUpdate() {}
 
-    public CPacketFluidUpdate(Map<Integer, IAEFluidStack> data, ItemStack itemStack) {
-        this.list = data;
-        this.itemStack = itemStack;
-        this.slotIndex = -1;
+    /**
+     * Used by transferStackInSlot. No clicked fluid, always shift.
+     */
+    public CPacketFluidUpdate(int slotIndex) {
+        this(null, slotIndex, true);
     }
 
-    public CPacketFluidUpdate(Map<Integer, IAEFluidStack> data) {
-        this.list = data;
+    /**
+     * Used by handleMouseClick. Always uses mouse stack.
+     */
+    public CPacketFluidUpdate(IAEFluidStack fluid, boolean shift) {
+        this(fluid, -1, shift);
     }
 
-    public CPacketFluidUpdate(Map<Integer, IAEFluidStack> data, ItemStack itemStack, int slotIndex) {
-        this.list = data;
-        this.itemStack = itemStack;
+    private CPacketFluidUpdate(IAEFluidStack fluid, int slotIndex, boolean shift) {
+        this.fluid = fluid;
         this.slotIndex = slotIndex;
+        this.shift = shift;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.list = new HashMap<>();
         try {
-            Util.readFluidMapFromBuf(this.list, buf);
             if (buf.readBoolean()) {
-                this.itemStack = AEItemStack.loadItemStackFromPacket(buf).getItemStack();
-                this.slotIndex = buf.readInt();
+                this.fluid = AEFluidStack.loadFluidStackFromPacket(buf);
+            } else {
+                this.fluid = null;
             }
+            this.slotIndex = buf.readInt();
+            this.shift = buf.readBoolean();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,14 +60,14 @@ public class CPacketFluidUpdate implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
         try {
-            Util.writeFluidMapToBuf(this.list, buf);
-            if (this.itemStack != null) {
-                buf.writeBoolean(true);
-                AEItemStack.create(itemStack).writeToPacket(buf);
-                buf.writeInt(this.slotIndex);
-            } else {
+            if (fluid == null) {
                 buf.writeBoolean(false);
+            } else {
+                buf.writeBoolean(true);
+                fluid.writeToPacket(buf);
             }
+            buf.writeInt(this.slotIndex);
+            buf.writeBoolean(this.shift);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,12 +80,7 @@ public class CPacketFluidUpdate implements IMessage {
             Container container = ctx.getServerHandler().playerEntity.openContainer;
             EntityPlayer player = ctx.getServerHandler().playerEntity;
             if (container instanceof ContainerFluidMonitor) {
-                ItemStack item = player.inventory.getItemStack();
-                ((ContainerFluidMonitor) container).postChange(
-                        new ArrayList<>(message.list.values()),
-                        message.itemStack == null ? item : message.itemStack,
-                        player,
-                        message.slotIndex);
+                ((ContainerFluidMonitor) container).postChange(message.fluid, player, message.slotIndex, message.shift);
             }
             return null;
         }

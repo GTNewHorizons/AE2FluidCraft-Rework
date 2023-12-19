@@ -1,8 +1,5 @@
 package com.glodblock.github.client.gui;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -121,13 +118,8 @@ public class GuiFluidTerminal extends GuiFluidMonitor {
     @Override
     protected void handleMouseClick(final Slot slot, final int slotIdx, final int ctrlDown, final int mouseButton) {
         if (slot instanceof SlotME && Util.FluidUtil.isFluidContainer(player.inventory.getItemStack())) {
-            Map<Integer, IAEFluidStack> tmp = new HashMap<>();
-            ItemStack itemStack = this.player.inventory.getItemStack().copy();
-            tmp.put(0, ItemFluidDrop.getAeFluidStack(((SlotME) slot).getAEStack()));
-            if (!isShiftKeyDown()) {
-                itemStack.stackSize = 1;
-            }
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidUpdate(tmp, itemStack));
+            IAEFluidStack fluid = ItemFluidDrop.getAeFluidStack(((SlotME) slot).getAEStack());
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidUpdate(fluid, isShiftKeyDown()));
         }
         if (mouseButton == 3 && slot instanceof SlotME) {
             return;
