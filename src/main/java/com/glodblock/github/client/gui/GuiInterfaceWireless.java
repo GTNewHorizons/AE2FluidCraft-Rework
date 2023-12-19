@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import appeng.api.config.YesNo;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
@@ -42,6 +41,7 @@ import appeng.api.AEApi;
 import appeng.api.config.ActionItems;
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
+import appeng.api.config.YesNo;
 import appeng.api.util.DimensionalCoord;
 import appeng.api.util.WorldCoord;
 import appeng.client.gui.IInterfaceTerminalPostUpdate;
@@ -149,10 +149,10 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         searchFieldNames.setFocused(true);
 
         searchStringSave = new GuiImgButton(
-            0,
-            0,
-            Settings.SAVE_SEARCH,
-            AEConfig.instance.preserveSearchBar ? YesNo.YES : YesNo.NO);
+                0,
+                0,
+                Settings.SAVE_SEARCH,
+                AEConfig.instance.preserveSearchBar ? YesNo.YES : YesNo.NO);
         guiButtonAssemblersOnly = new GuiImgButton(0, 0, Settings.ACTIONS, null);
         guiButtonHideFull = new GuiImgButton(0, 0, Settings.ACTIONS, null);
         guiButtonBrokenRecipes = new GuiImgButton(0, 0, Settings.ACTIONS, null);
