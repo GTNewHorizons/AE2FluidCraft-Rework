@@ -24,6 +24,7 @@ import com.glodblock.github.network.SPacketMEFluidInvUpdate;
 import com.glodblock.github.network.SPacketMEItemInvUpdate;
 import com.glodblock.github.network.SPacketSetItemAmount;
 import com.glodblock.github.network.SPacketStringUpdate;
+import com.glodblock.github.network.SPacketSwitchBack;
 import com.glodblock.github.network.wrapper.FCNetworkWrapper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -66,6 +67,7 @@ public class ChannelLoader implements Runnable {
         netHandler.registerMessage(new SPacketSetItemAmount.Handler(), SPacketSetItemAmount.class, id++, Side.CLIENT);
         netHandler.registerMessage(new CPacketRenamer.Handler(), CPacketRenamer.class, id++, Side.SERVER);
         netHandler.registerMessage(new SPacketStringUpdate.Handler(), SPacketStringUpdate.class, id++, Side.CLIENT);
+        netHandler.registerMessage(new SPacketSwitchBack.Handler(), SPacketSwitchBack.class, id++, Side.CLIENT);
         netHandler.registerMessage(
                 new SPacketLevelTerminalUpdate.Handler(),
                 SPacketLevelTerminalUpdate.class,

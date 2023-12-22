@@ -318,19 +318,18 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         }
     }
 
-    public GuiType getOriginalGui() {
-        return originalGui;
-    }
-
     public void switchGui() {
-        FluidCraft.proxy.netHandler.sendToServer(
-                new CPacketLevelTerminalCommands(
-                        CPacketLevelTerminalCommands.Action.BACK,
-                        originalBlockPos.x,
-                        originalBlockPos.y,
-                        originalBlockPos.z,
-                        originalBlockPos.getDimension(),
-                        originalBlockPos.getSide()));
+        CPacketLevelTerminalCommands message = new CPacketLevelTerminalCommands(
+                CPacketLevelTerminalCommands.Action.BACK,
+                originalBlockPos.x,
+                originalBlockPos.y,
+                originalBlockPos.z,
+                originalBlockPos.getDimension(),
+                originalBlockPos.getSide());
+        if (originalGui != null) {
+            message.setOriginalGui(originalGui.ordinal());
+        }
+        FluidCraft.proxy.netHandler.sendToServer(message);
     }
 
     @Override

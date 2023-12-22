@@ -1,14 +1,11 @@
 package com.glodblock.github.network;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.GuiRenamer;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IClickableInTerminal;
@@ -179,10 +176,7 @@ public class CPacketRenamer implements IMessage {
                                 .getTileEntity(intMsg.x, intMsg.y, intMsg.z);
                         this.setName(tile, intMsg.getSide(), message.text);
 
-                        final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
-                        if (gs instanceof GuiRenamer guiRenamer) {
-                            guiRenamer.switchGui();
-                        }
+                        FluidCraft.proxy.netHandler.sendTo(new SPacketSwitchBack(), player);
                     }
                 }
             }

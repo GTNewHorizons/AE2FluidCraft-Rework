@@ -348,7 +348,8 @@ public class TileLevelMaintainer extends AENetworkTile
     }
 
     private ItemStack removeRecursion(ItemStack itemStack) {
-        if (itemStack.hasTagCompound() && itemStack.getTagCompound().hasKey(TLMTags.Stack.tagName)) {
+        if (itemStack != null && itemStack.hasTagCompound()
+                && itemStack.getTagCompound().hasKey(TLMTags.Stack.tagName)) {
             return removeRecursion(loadItemStackFromTag(itemStack));
         }
         return itemStack;

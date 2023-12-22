@@ -35,6 +35,8 @@ public class GuiRenamer extends AEBaseGui implements IDropToFillTextField {
 
     protected ItemStack icon = null;
 
+    protected GuiType originalGui;
+
     public GuiRenamer(InventoryPlayer ip, ITerminalHost monitorable) {
         super(new ContainerRenamer(ip, monitorable));
         this.host = monitorable;
@@ -51,12 +53,16 @@ public class GuiRenamer extends AEBaseGui implements IDropToFillTextField {
         FluidCraft.proxy.netHandler.sendToServer(new CPacketRenamer(CPacketRenamer.Action.GET_TEXT));
         if (host instanceof PartLevelTerminal) {
             icon = ItemAndBlockHolder.LEVEL_TERMINAL.stack();
+            originalGui = GuiType.LEVEL_TERMINAL;
         } else if (host instanceof IWirelessTerminal terminal && terminal.isUniversal(host)) {
             icon = ItemAndBlockHolder.WIRELESS_ULTRA_TERM.stack();
+            originalGui = ItemWirelessUltraTerminal.readMode(terminal.getItemStack());
         } else if (host instanceof WirelessLevelTerminalInventory) {
             icon = ItemAndBlockHolder.WIRELESS_LEVEL_TERM.stack();
+            originalGui = GuiType.WIRELESS_LEVEL_TERMINAL;
         } else if (host instanceof WirelessInterfaceTerminalInventory) {
             icon = ItemAndBlockHolder.WIRELESS_INTERFACE_TERM.stack();
+            originalGui = GuiType.WIRELESS_INTERFACE_TERMINAL;
         }
         if (this.icon != null) {
             this.buttonList.add(
@@ -114,13 +120,9 @@ public class GuiRenamer extends AEBaseGui implements IDropToFillTextField {
     }
 
     public void switchGui() {
-        if (host instanceof PartLevelTerminal) InventoryHandler.switchGui(GuiType.LEVEL_TERMINAL);
-        else if (host instanceof IWirelessTerminal terminal && terminal.isUniversal(host))
-            InventoryHandler.switchGui(ItemWirelessUltraTerminal.readMode(terminal.getItemStack()));
-        else if (host instanceof WirelessInterfaceTerminalInventory)
-            InventoryHandler.switchGui(GuiType.WIRELESS_INTERFACE_TERMINAL);
-        else if (host instanceof WirelessLevelTerminalInventory)
-            InventoryHandler.switchGui(GuiType.WIRELESS_LEVEL_TERMINAL);
+        if (originalGui != null) {
+            InventoryHandler.switchGui(originalGui);
+        }
     }
 
     public void setTextFieldValue(final String displayName, final int mousex, final int mousey, final ItemStack stack) {
