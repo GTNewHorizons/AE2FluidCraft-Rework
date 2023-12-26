@@ -124,9 +124,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
                     if (dbStack == null) {
                         throw new IllegalArgumentException("Invalid slot");
                     }
-                    dbStack.stackSize = 1;
-                    ((AeItemStackHandler) tileEntity.getInventory()).getAeInventory()
-                            .setStack(slot, AEItemStack.create(dbStack));
+                    tileEntity.requests.updateStack(slot, dbStack);
                 } else {
                     throw new IllegalArgumentException("Not a database");
                 }
