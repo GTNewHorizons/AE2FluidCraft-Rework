@@ -10,11 +10,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
 
-import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.NamedBlock;
@@ -124,9 +122,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
                     if (dbStack == null) {
                         throw new IllegalArgumentException("Invalid slot");
                     }
-                    dbStack.stackSize = 1;
-                    ((AeItemStackHandler) tileEntity.getInventory()).getAeInventory()
-                            .setStack(slot, AEItemStack.create(dbStack));
+                    tileEntity.requests.updateStack(slot, dbStack);
                 } else {
                     throw new IllegalArgumentException("Not a database");
                 }
