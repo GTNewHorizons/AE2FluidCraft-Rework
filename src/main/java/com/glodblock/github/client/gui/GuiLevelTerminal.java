@@ -1386,7 +1386,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
                 if (action != null) {
                     ItemStack itemStack = getInventory().getStackInSlot(slotIdx);
-                    if (itemStack.hasTagCompound() && itemStack.getTagCompound().hasKey(TLMTags.Stack.tagName)) {
+                    if (itemStack != null && itemStack.hasTagCompound()
+                            && itemStack.getTagCompound().hasKey(TLMTags.Stack.tagName)) {
                         long batch = itemStack.getTagCompound().getLong(TLMTags.Batch.tagName);
                         NBTTagCompound stackData = itemStack.getTagCompound().getCompoundTag(TLMTags.Stack.tagName);
                         ItemStack is = ItemStack.loadItemStackFromNBT(stackData);
