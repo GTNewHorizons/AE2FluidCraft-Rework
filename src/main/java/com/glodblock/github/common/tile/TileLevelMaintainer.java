@@ -60,6 +60,7 @@ public class TileLevelMaintainer extends AENetworkTile
 
     public static final int REQ_COUNT = 5;
     public final InventoryRequest requests = new InventoryRequest(this);
+    private int firstRequest = 0;
     private final BaseActionSource source;
     private final IInventory inv = new AeItemStackHandler(requests.requestStacks);
     private boolean isPowered = false;
@@ -139,7 +140,17 @@ public class TileLevelMaintainer extends AENetworkTile
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
             final IGrid grid = getProxy().getGrid();
             final IItemList<IAEItemStack> inv = getProxy().getStorage().getItemInventory().getStorageList();
-            for (int i = 0; i < REQ_COUNT; i++) {
+
+            // Find a request that we can submit to the network.
+            // If there is none, find the next request we can begin calculating.
+            ICraftingJob jobToSubmit = null;
+            int jobToSubmitIdx = -1;
+            IAEItemStack itemToBegin = null;
+            int itemToBeginIdx = -1;
+
+            for (int j = 0; j < REQ_COUNT; ++j) {
+                int i = (firstRequest + j) % REQ_COUNT;
+
                 long quantity = requests.getQuantity(i);
                 long batchSize = requests.getBatchSize(i);
                 boolean isEnable = requests.isEnable(i);
@@ -159,28 +170,18 @@ public class TileLevelMaintainer extends AENetworkTile
                     // do crafting
                     Future<ICraftingJob> jobTask = requests.getJob(i);
                     if (jobTask == null) {
-                        requests.updateJob(
-                                i,
-                                craftingGrid.beginCraftingJob(getWorldObj(), grid, source, craftItem, null));
-                        requests.updateState(i, State.Craft);
-
-                        // calculate only one job per tick request
-                        return TickRateModulation.SAME;
+                        if (itemToBegin == null) {
+                            itemToBegin = craftItem;
+                            itemToBeginIdx = i;
+                        }
                     } else if (jobTask.isDone()) {
                         requests.updateState(i, State.Craft);
                         try {
                             ICraftingJob job = jobTask.get();
                             if (job != null) {
-                                ICraftingLink link = craftingGrid.submitJob(job, this, null, false, source);
-                                requests.updateJob(i, null);
-                                if (link != null) {
-                                    requests.updateState(i, State.Craft);
-                                    requests.updateLink(i, link);
-
-                                    // submit only one job per tick request
-                                    return TickRateModulation.SAME;
-                                } else {
-                                    requests.updateState(i, State.Error);
+                                if (jobToSubmit == null) {
+                                    jobToSubmit = job;
+                                    jobToSubmitIdx = i;
                                 }
                             } else {
                                 requests.updateState(i, State.Error);
@@ -190,6 +191,31 @@ public class TileLevelMaintainer extends AENetworkTile
                         }
                     }
                 }
+            }
+
+            if (jobToSubmit != null) {
+                // Finished calculating a request, try to submit it.
+                ICraftingLink link = craftingGrid.submitJob(jobToSubmit, this, null, false, source);
+                requests.updateJob(jobToSubmitIdx, null);
+                if (link != null) {
+                    requests.updateState(jobToSubmitIdx, State.Craft);
+                    requests.updateLink(jobToSubmitIdx, link);
+                } else {
+                    requests.updateState(jobToSubmitIdx, State.Error);
+                }
+            } else if (itemToBegin != null) {
+                // No jobs to submit, start calculating some item.
+                requests.updateJob(
+                        itemToBeginIdx,
+                        craftingGrid.beginCraftingJob(getWorldObj(), grid, source, itemToBegin, null));
+                requests.updateState(itemToBeginIdx, State.Craft);
+
+                // Try the next item next time.
+                firstRequest = (firstRequest + 1) % REQ_COUNT;
+            } else {
+                // No work to be done:
+                // Every item is at desired quantity, being crafted, or has no patterns.
+                return TickRateModulation.IDLE;
             }
         } catch (final GridAccessException ignore) {
 
