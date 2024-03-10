@@ -338,8 +338,13 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     }
 
     private boolean isGTMachine(Object o) {
-        return ModAndClassUtil.GT5 && o instanceof TileEntity
-                && ((TileEntity) o).getBlockType().getUnlocalizedName().equals("gt.blockmachines");
+        if (!(ModAndClassUtil.GT5 || ModAndClassUtil.GT5NH)) return false;
+
+        if (o instanceof TileEntity te){
+            return te.getBlockType().getUnlocalizedName().equals("gt.blockmachines");
+        }
+
+        return false;
     }
 
     private boolean isItemConduit(TileEntity te) {
