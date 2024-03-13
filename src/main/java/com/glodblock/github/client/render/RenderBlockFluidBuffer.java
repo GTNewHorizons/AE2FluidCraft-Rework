@@ -8,8 +8,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import org.lwjgl.opengl.GL11;
-
 import com.glodblock.github.common.block.BlockFluidBuffer;
 import com.glodblock.github.common.tile.TileFluidBuffer;
 
