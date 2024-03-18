@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import appeng.api.config.*;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -23,12 +24,6 @@ import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.AEApi;
-import appeng.api.config.AccessRestriction;
-import appeng.api.config.FuzzyMode;
-import appeng.api.config.IncludeExclude;
-import appeng.api.config.Settings;
-import appeng.api.config.StorageFilter;
-import appeng.api.config.Upgrades;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.events.MENetworkCellArrayUpdate;
 import appeng.api.networking.events.MENetworkChannelsChanged;
@@ -93,6 +88,7 @@ public class PartFluidStorageBus extends PartUpgradeable
         this.getConfigManager().registerSetting(Settings.ACCESS, AccessRestriction.READ_WRITE);
         this.getConfigManager().registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL);
         this.getConfigManager().registerSetting(Settings.STORAGE_FILTER, StorageFilter.EXTRACTABLE_ONLY);
+        this.getConfigManager().registerSetting(Settings.STICKY_MODE, YesNo.NO);
         this.source = new MachineSource(this);
     }
 
@@ -371,6 +367,7 @@ public class PartFluidStorageBus extends PartUpgradeable
                     this.handler.setWhitelist(
                             this.getInstalledUpgrades(Upgrades.INVERTER) > 0 ? IncludeExclude.BLACKLIST
                                     : IncludeExclude.WHITELIST);
+                    this.handler.setSticky(this.getInstalledUpgrades(Upgrades.STICKY) > 0);
                     this.handler.setPriority(this.priority);
                     if (inv instanceof IMEMonitor) {
                         ((IBaseMonitor) inv).addListener(this, this.handler);
