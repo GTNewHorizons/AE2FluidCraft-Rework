@@ -17,6 +17,7 @@ import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
 import com.glodblock.github.client.gui.GuiFluidIO;
 import com.glodblock.github.client.gui.GuiFluidInterface;
 import com.glodblock.github.client.gui.GuiFluidLevelEmitter;
+import com.glodblock.github.client.gui.GuiFluidOptimizePatterns;
 import com.glodblock.github.client.gui.GuiFluidPacketDecoder;
 import com.glodblock.github.client.gui.GuiFluidPatternEncoder;
 import com.glodblock.github.client.gui.GuiFluidPatternExWireless;
@@ -44,6 +45,7 @@ import com.glodblock.github.client.gui.container.ContainerFluidIO;
 import com.glodblock.github.client.gui.container.ContainerFluidInterface;
 import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
 import com.glodblock.github.client.gui.container.ContainerFluidMonitor;
+import com.glodblock.github.client.gui.container.ContainerFluidOptimizePatterns;
 import com.glodblock.github.client.gui.container.ContainerFluidPacketDecoder;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternEncoder;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternExWireless;
@@ -444,6 +446,32 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, IWirelessTerminal inv) {
             return new GuiFluidCraftConfirm(player.inventory, inv);
+        }
+    }),
+
+    FLUID_OPTIMIZE_PATTERNS(new PartGuiFactory<>(FCPart.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, FCPart inv) {
+            return new ContainerFluidOptimizePatterns(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, FCPart inv) {
+            return new GuiFluidOptimizePatterns(player.inventory, inv);
+        }
+    }),
+
+    FLUID_OPTIMIZE_PATTERNS_ITEM(new ItemGuiFactory<>(IWirelessTerminal.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
+            return new ContainerFluidOptimizePatterns(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, IWirelessTerminal inv) {
+            return new GuiFluidOptimizePatterns(player.inventory, inv);
         }
     }),
 

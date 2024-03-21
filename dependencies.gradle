@@ -54,5 +54,7 @@ dependencies {
     compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.6.4-GTNH:dev') { transitive = false }
     compileOnly("com.github.GTNewHorizons:Hodgepodge:2.4.39:dev") { transitive = false }
 
-    runtimeOnlyNonPublishable("com.github.GTNewHorizons:DuraDisplay:1.2.2:dev")
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:DuraDisplay:1.2.2:dev"){
+        exclude group: 'io.github.legacymoddingmc', module: 'unimixins'
+    }
 }
