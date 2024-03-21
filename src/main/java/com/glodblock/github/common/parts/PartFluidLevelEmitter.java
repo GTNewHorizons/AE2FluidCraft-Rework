@@ -190,6 +190,11 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
             if (this.myWatcher != null && myStack != null) {
                 this.myWatcher.add(myStack);
             }
+
+            if (myStack == null) {
+                this.getProxy().getStorage().getFluidInventory().addListener(this, this.getProxy().getGrid());
+            }
+
             this.updateReportingValue(this.getProxy().getStorage().getFluidInventory());
         } catch (final GridAccessException ignored) {}
     }
