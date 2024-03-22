@@ -102,6 +102,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected GuiImgButton searchStringSave;
     protected GuiImgButton typeFilter;
     protected boolean hasShiftKeyDown = false;
+    private boolean reInitializationRequested = false;
 
     @SuppressWarnings("unchecked")
     public FCGuiMonitor(final InventoryPlayer inventoryPlayer, final ITerminalHost te, final FCContainerMonitor<T> c) {
@@ -168,8 +169,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     }
 
     protected void reInitalize() {
-        this.buttonList.clear();
-        this.initGui();
+        reInitializationRequested = true;
     }
 
     @Override
@@ -667,6 +667,11 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     public void updateScreen() {
+        if (reInitializationRequested) {
+            reInitializationRequested = false;
+            this.buttonList.clear();
+            this.initGui();
+        }
         this.repo.setPowered(this.monitorableContainer.isPowered());
         super.updateScreen();
     }
