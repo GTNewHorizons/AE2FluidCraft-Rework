@@ -183,7 +183,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
         final boolean hasNEI = IntegrationRegistry.INSTANCE.isEnabled(IntegrationType.NEI);
 
-        final int NEI = 0;
+        final int NEI = hasNEI ? 1 : 0;
         int top = hasNEI ? 22 : 0;
 
         final int magicNumber = 114 + 1;
