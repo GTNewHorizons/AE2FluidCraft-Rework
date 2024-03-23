@@ -41,6 +41,7 @@ dependencies {
 
     implementation("com.github.GTNewHorizons:WirelessCraftingTerminal:1.11.1:dev")
 
+    compileOnly("com.github.GTNewHorizons:GTNHLib:0.2.10:dev") { transitive = false }
     compileOnly('com.github.GTNewHorizons:Baubles:1.0.4:dev')
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.34:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ForestryMC:4.8.7:dev')

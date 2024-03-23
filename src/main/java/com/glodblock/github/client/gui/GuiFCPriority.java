@@ -9,6 +9,7 @@ import com.glodblock.github.common.parts.PartFluidStorageBus;
 import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.gtnewhorizon.gtnhlib.util.parsing.MathExpressionParser;
 
 import appeng.container.implementations.ContainerPriority;
 import appeng.core.AEConfig;
@@ -19,6 +20,7 @@ import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.IPriorityHost;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
+import cpw.mods.fml.common.Loader;
 
 public class GuiFCPriority extends FCGuiAmount {
 
@@ -90,7 +92,12 @@ public class GuiFCPriority extends FCGuiAmount {
     protected int getAmount() {
         try {
             String out = this.amountBox.getText();
-            double result = Calculator.conversion(out);
+            double result;
+            if (Loader.isModLoaded("gtnhlib")) {
+                result = MathExpressionParser.parse(out);
+            } else {
+                result = Calculator.conversion(out);
+            }
             if (Double.isNaN(result)) {
                 return 0;
             } else {
