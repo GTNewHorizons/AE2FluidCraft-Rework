@@ -422,7 +422,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                     long value = (long) MathExpressionParser.parse(widget.textField.getText());
                     widget.textField.setText(String.valueOf(value));
                 }
-                if (!widget.textField.getText().isEmpty() && widget.textField.getText().matches("^[0-9]+")) {
+                if (!widget.textField.getText().isEmpty() && numberPattern.matcher(widget.textField.getText()).matches()) {
                     String str = widget.textField.getText().replaceAll("^(0+)", "");
                     widget.textField.setText(str.isEmpty() ? "0" : str);
                     FluidCraft.proxy.netHandler.sendToServer(
