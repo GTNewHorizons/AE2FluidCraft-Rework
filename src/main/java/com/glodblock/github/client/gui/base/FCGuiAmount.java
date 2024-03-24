@@ -9,7 +9,6 @@ import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
-import com.gtnewhorizon.gtnhlib.util.parsing.MathExpressionParser;
 
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiTabButton;
@@ -18,7 +17,6 @@ import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
-import cpw.mods.fml.common.Loader;
 
 public abstract class FCGuiAmount extends AEBaseGui {
 
@@ -147,12 +145,7 @@ public abstract class FCGuiAmount extends AEBaseGui {
     protected int getAmount() {
         try {
             String out = this.amountBox.getText();
-            double result;
-            if (Loader.isModLoaded("gtnhlib")) {
-                result = MathExpressionParser.parse(out);
-            } else {
-                result = Calculator.conversion(out);
-            }
+            double result = Calculator.conversion(out);
             if (result <= 0 || Double.isNaN(result)) {
                 return 0;
             } else {

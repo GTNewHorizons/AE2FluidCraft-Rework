@@ -78,8 +78,8 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     protected Util.DimensionalCoordSide originalBlockPos;
     protected GuiTabButton originalGuiBtn;
 
-    protected static final Pattern numberPattern = Loader.isModLoaded("gtnhlib")
-            ? MathExpressionParser.EXPRESSION_PATTERN
+    protected static final boolean isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
+    protected static final Pattern numberPattern = isGTNHLibLoaded ? MathExpressionParser.EXPRESSION_PATTERN
             : Pattern.compile("^[0-9]+");
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
@@ -418,7 +418,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
         private boolean send(Widget widget) {
             if (((SlotFluidConvertingFake) cont.inventorySlots.get(widget.idx)).getHasStack()) {
-                if (Loader.isModLoaded("gtnhlib")) {
+                if (isGTNHLibLoaded) {
                     long value = (long) MathExpressionParser.parse(widget.textField.getText());
                     widget.textField.setText(String.valueOf(value));
                 }
