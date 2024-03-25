@@ -26,6 +26,7 @@ import appeng.api.implementations.IPowerChannelState;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.crafting.ICraftingCPU;
 import appeng.api.networking.crafting.ICraftingGrid;
 import appeng.api.networking.crafting.ICraftingJob;
 import appeng.api.networking.crafting.ICraftingLink;
@@ -141,6 +142,17 @@ public class TileLevelMaintainer extends AENetworkTile
             final IGrid grid = getProxy().getGrid();
             final IItemList<IAEItemStack> inv = getProxy().getStorage().getItemInventory().getStorageList();
 
+            // Check there are available crafting CPUs before doing any work.
+            // This hopefully stops level maintainers busy-looping calculating
+            // crafting tasks that cannot be successfully submitted.
+            boolean allBusy = true;
+            for (final ICraftingCPU cpu : craftingGrid.getCpus()) {
+                if (!cpu.isBusy()) {
+                    allBusy = false;
+                    break;
+                }
+            }
+
             // Find a request that we can submit to the network.
             // If there is none, find the next request we can begin calculating.
             ICraftingJob jobToSubmit = null;
@@ -163,9 +175,10 @@ public class TileLevelMaintainer extends AENetworkTile
                     boolean shouldCraft = isCraftable && aeItem.getStackSize() < quantity;
                     if (isDone) requests.updateState(i, State.Idle);
                     if (!isCraftable) requests.updateState(i, State.Error);
-                    if (craftingGrid.canEmitFor(craftItem) || craftingGrid.isRequesting(craftItem)
-                            || !isDone
-                            || !shouldCraft)
+                    if (allBusy || !isDone
+                            || !shouldCraft
+                            || craftingGrid.canEmitFor(craftItem)
+                            || craftingGrid.isRequesting(craftItem))
                         continue;
                     // do crafting
                     Future<ICraftingJob> jobTask = requests.getJob(i);
