@@ -58,21 +58,18 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
 
     public IAEFluidStack injectItems(IAEFluidStack input, Actionable type, BaseActionSource src) {
         int filled = this.handler.fill(this.side, input.getFluidStack(), type == Actionable.MODULATE);
-        if (filled == 0) {
-            return input.copy();
-        } else if ((long) filled == input.getStackSize()) {
-            return null;
-        } else {
-            IAEFluidStack o = input.copy();
-            o.setStackSize(input.getStackSize() - (long) filled);
-            if (type == Actionable.MODULATE) {
-                IAEFluidStack added = o.copy();
-                this.cache.add(added);
-                this.postDifference(Collections.singletonList(added));
-                this.onTick();
-            }
-            return o;
+
+        if (type == Actionable.MODULATE) {
+            this.onTick();
         }
+
+        if ((long) filled == input.getStackSize()) {
+            return null;
+        }
+
+        IAEFluidStack o = input.copy();
+        o.setStackSize(input.getStackSize() - (long) filled);
+        return o;
     }
 
     public IAEFluidStack extractItems(IAEFluidStack request, Actionable type, BaseActionSource src) {
