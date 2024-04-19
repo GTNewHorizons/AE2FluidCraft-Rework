@@ -25,6 +25,9 @@ item.wireless_ultra_terminal.WIRELESS_ESSENTIA_TERMINAL.name=Universal Wireless 
 item.wireless_ultra_terminal.WIRELESS_INTERFACE_TERMINAL.name=Universal Wireless Terminal - Interface
 item.wireless_ultra_terminal.WIRELESS_FLUID_PATTERN_TERMINAL_EX.name=Universal Wireless Terminal - Processing Pattern
 item.fluid_packet.name=Fluid Packet
+item.magnet_card.name=Magnet Card
+item.quantum_bridge_card.name=Quantum Bridge Card
+item.energy_card.name=Energy Card
 item.creative_fluid_storage.name=Creative ME Fluid Storage Cell
 item.fluid_storage.1.name=%s1k%s ME Fluid Storage Cell
 item.fluid_storage.4.name=%s4k%s ME Fluid Storage Cell
@@ -44,6 +47,8 @@ item.multi_fluid_storage.4096.name=%s4096k%s ME Multi-Fluid Storage Cell
 item.multi_fluid_storage.16384.name=%s16384k%s ME Multi-Fluid Storage Cell
 item.fluid_storage.quantum.name=ME Fluid Quantum Storage Cell
 item.fluid_storage.singularity.name=ME Fluid Digital Singularity Storage Cell
+item.fluid_storage.infinity.water.name=ME Fluid Infinity Water Storage Cell
+item.fluid_storage.infinity.lava.name=ME Fluid Infinity Lava Storage Cell
 item.fluid_part.0.name=%s1k%s ME Fluid Storage Component
 item.fluid_part.1.name=%s4k%s ME Fluid Storage Component
 item.fluid_part.2.name=%s16k%s ME Fluid Storage Component
@@ -110,10 +115,15 @@ ae2fc.tooltip.ultra_terminal=Right click + sneaking to switch mode.
 ae2fc.tooltip.ultra_terminal.tips=ToolTips:
 ae2fc.tooltip.ultra_terminal.tips.desc=1.You can put it to baubles slot and use hotkey to open.\n2.Interface mode hold §3Shift§7 toggle interface renamer button.\n3.When you are in the crafting plan screen.\nHold §3Shift§7 click cancel button will automatically add missing items to NEI bookmark.
 
+ae2fc.tooltip.quantum_bridge_card.desc=Allows wireless terminals to connect to a quantum bridge, allowing for unlimited range
+ae2fc.tooltip.magnet_card.desc=Magnet upgrade for the Wireless Terminal
+ae2fc.tooltip.energy_card.desc=Infinity Energy for the Wireless Terminal
+
 ae2fc.tooltip.cell_contents=Contains Fluid:
 ae2fc.tooltip.cell_empty=Cell is empty
 ae2fc.tooltip.cell_portable=Right click to open its GUI. It works like a backpack, but you need to charge it before using.
 ae2fc.tooltip.fluid_terminal=uh So we don't need EC2 anymore?
+ae2fc.tooltip.fluid_terminal.amount=Amount: %s L
 ae2fc.tooltip.level_terminal=uh...
 ae2fc.tooltip.invalid_fluid=Invalid fluid!
 ae2fc.tooltip.encode_pattern=Encode Pattern
@@ -149,6 +159,23 @@ ae2fc.tooltip.fill_pattern.hint=Enabled
 ae2fc.tooltip.not_fill_pattern.hint=Disabled
 ae2fc.tooltip.open_configuration=Open configuration
 ae2fc.tooltip.block_highlight=Highlight Block
+ae2fc.tooltip.magnet_card.off=Magnet Card
+ae2fc.tooltip.magnet_card.off.hint=Off
+ae2fc.tooltip.magnet_card.inv=Magnet Card
+ae2fc.tooltip.magnet_card.inv.hint=Pickup to Inventory
+ae2fc.tooltip.magnet_card.me=Magnet Card
+ae2fc.tooltip.magnet_card.me.hint=Pickup to ME
+ae2fc.tooltip.magnet_card.filter=Magnet Filter
+ae2fc.tooltip.restock.on=Toggle Restock
+ae2fc.tooltip.restock.on.hint=Enable
+ae2fc.tooltip.restock.off=Toggle Restock
+ae2fc.tooltip.restock.off.hint=Disable
+ae2fc.tooltip.crafting_complete=Item: %s x%s Crafting Complete
+
+ae2fc.tooltip.data_sync.enable=Data Sync
+ae2fc.tooltip.data_sync.enable.hint=Enable
+ae2fc.tooltip.data_sync.disable=Data Sync
+ae2fc.tooltip.data_sync.disable.hint=Disable
 
 ae2fc.gui.part_fluid_pattern_terminal=Fluid Pattern Terminal
 ae2fc.gui.part_fluid_pattern_terminal_ex=Fluid Processing Pattern Terminal
@@ -173,6 +200,12 @@ ae2fc.gui.part_fluid_export=ME Fluid Export Bus
 ae2fc.gui.part_fluid_terminal=ME Fluid Terminal
 ae2fc.gui.part_fluid_storage_bus=ME Fluid Storage Bus
 ae2fc.gui.fluid_auto_filler=ME Fluid Auto Filler
+ae2fc.gui.magnet_card=Magnet Filter
+ae2fc.gui.magnet_card.nbt=Ignore NBT Data
+ae2fc.gui.magnet_card.meta=Ignore Meta Data
+ae2fc.gui.magnet_card.ore=Use Ore Dictionary
+ae2fc.gui.magnet_card.whitelist=Whitelisting
+ae2fc.gui.magnet_card.blacklist=BlackListing
 
 ae2fc.gui.color.StateNone=00000000
 ae2fc.gui.color.StateIdle=FF55FF55
@@ -182,6 +215,7 @@ ae2fc.gui.color.StateError=FFFF5555
 
 error.unknown=Unknown
 
-key.OpenTerminal=Open Wireless Universal Terminal
+ae2fc.key.OpenTerminal=Open Wireless Universal Terminal
+ae2fc.key.Restock=Toggle Restock
 
 itemGroup.ae2fc=Fluid Craft For AE2

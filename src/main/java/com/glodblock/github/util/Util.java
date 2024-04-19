@@ -1,6 +1,10 @@
 package com.glodblock.github.util;
 
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityBoosterCard;
+import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityEnergyCard;
+import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.magnetCard;
+import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.restockItems;
+import static net.minecraft.init.Items.glass_bottle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,8 +13,10 @@ import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -62,129 +68,196 @@ import io.netty.buffer.ByteBuf;
 
 public final class Util {
 
-    public static int drainItemPower(AEBaseContainer c, InventoryPlayer ip, int slot, int ticks, double pm,
-            IFluidPortableCell wt) {
-        if (slot != -1) {
-            final ItemStack currentItem = getWirelessTerminal(ip.player, slot);
-            if (wt != null) {
-                if (currentItem != wt.getItemStack()) {
-                    if (currentItem != null) {
-                        if (Platform.isSameItem(wt.getItemStack(), currentItem)) {
-                            if (GuiHelper.decodeInvType(slot).getLeft() == GuiHelper.InvType.PLAYER_INV) {
-                                ip.setInventorySlotContents(slot, wt.getItemStack());
+    public static class Wireless {
+
+        public static boolean hasInfinityBoosterCard(ItemStack is) {
+            if (is.getItem() instanceof ItemBaseWirelessTerminal) {
+                NBTTagCompound data = Platform.openNbtData(is);
+                return data.hasKey(infinityBoosterCard) && data.getBoolean(infinityBoosterCard);
+            }
+            return false;
+        }
+
+        public static boolean rangeCheck(ItemStack is, EntityPlayer player, IGrid grid) {
+            boolean canConnect = false;
+            if (hasInfinityBoosterCard(is)) {
+                canConnect = true;
+            } else {
+                for (IGridNode node : grid.getMachines(TileWireless.class)) {
+                    IWirelessAccessPoint accessPoint = (IWirelessAccessPoint) node.getMachine();
+                    if (accessPoint.isActive() && accessPoint.getLocation().getDimension() == player.dimension) {
+                        WorldCoord distance = accessPoint.getLocation()
+                                .subtract((int) player.posX, (int) player.posY, (int) player.posZ);
+                        int squaredDistance = distance.x * distance.x + distance.y * distance.y
+                                + distance.z * distance.z;
+                        if (squaredDistance <= accessPoint.getRange() * accessPoint.getRange()) {
+                            canConnect = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return canConnect;
+        }
+
+        public static boolean rangeCheck(ItemStack is, EntityPlayer player, IGridNode grid) {
+            if (grid.getGrid() == null) return false;
+            return rangeCheck(is, player, grid.getGrid());
+        }
+
+        public static boolean isRestock(ItemStack is) {
+            if (is.getItem() instanceof ItemBaseWirelessTerminal) {
+                NBTTagCompound data = Platform.openNbtData(is);
+                return data.hasKey(restockItems) && data.getBoolean(restockItems);
+            }
+            return false;
+        }
+
+        public static boolean hasMagnetCard(ItemStack is) {
+            if (is.getItem() instanceof ItemBaseWirelessTerminal) {
+                NBTTagCompound data = Platform.openNbtData(is);
+                return data.hasKey(magnetCard) && data.getBoolean(magnetCard);
+            }
+            return false;
+        }
+
+        public static boolean hasEnergyCard(ItemStack is) {
+            if (is.getItem() instanceof ItemBaseWirelessTerminal) {
+                NBTTagCompound data = Platform.openNbtData(is);
+                return data.hasKey(infinityEnergyCard) && data.getBoolean(infinityEnergyCard);
+            }
+            return false;
+        }
+
+        public static int drainItemPower(AEBaseContainer c, InventoryPlayer ip, int slot, int ticks, double pm,
+                IFluidPortableCell wt) {
+            if (slot != -1) {
+                final ItemStack currentItem = getWirelessTerminal(ip.player, slot);
+                if (wt != null) {
+                    if (currentItem != wt.getItemStack()) {
+                        if (currentItem != null) {
+                            if (Platform.isSameItem(wt.getItemStack(), currentItem)) {
+                                if (GuiHelper.decodeInvType(slot).getLeft() == GuiHelper.InvType.PLAYER_INV) {
+                                    ip.setInventorySlotContents(slot, wt.getItemStack());
+                                } else {
+                                    BaublesApi.getBaubles(ip.player).setInventorySlotContents(
+                                            GuiHelper.decodeInvType(slot).getRight(),
+                                            wt.getItemStack());
+                                }
                             } else {
-                                BaublesApi.getBaubles(ip.player).setInventorySlotContents(
-                                        GuiHelper.decodeInvType(slot).getRight(),
-                                        wt.getItemStack());
+                                c.setValidContainer(false);
                             }
                         } else {
                             c.setValidContainer(false);
                         }
-                    } else {
-                        c.setValidContainer(false);
                     }
+                } else {
+                    c.setValidContainer(false);
                 }
             } else {
                 c.setValidContainer(false);
             }
-        } else {
-            c.setValidContainer(false);
+            ticks++;
+            if (wt != null) {
+                if (hasEnergyCard(wt.getItemStack())) {
+                    ticks = 0;
+                } else if (ticks > 10) {
+                    wt.extractAEPower(pm * ticks, Actionable.MODULATE, PowerMultiplier.CONFIG);
+                    ticks = 0;
+                }
+            }
+            return ticks;
         }
-        ticks++;
-        if (ticks > 10 && wt != null) {
-            wt.extractAEPower(pm * ticks, Actionable.MODULATE, PowerMultiplier.CONFIG);
-            ticks = 0;
-        }
-        return ticks;
-    }
 
-    public static boolean hasInfinityBoosterCard(ItemStack is) {
-        if (ModAndClassUtil.WCT && is.getItem() instanceof ItemBaseWirelessTerminal) {
-            NBTTagCompound data = Platform.openNbtData(is);
-            return data.hasKey(infinityBoosterCard) && data.getBoolean(infinityBoosterCard);
+        public static IGridNode getWirelessGrid(ItemStack is) {
+            if (is.getItem() instanceof ToolWirelessTerminal) {
+                String key = ((ToolWirelessTerminal) is.getItem()).getEncryptionKey(is);
+                IGridHost securityTerminal = (IGridHost) AEApi.instance().registries().locatable()
+                        .getLocatableBy(Long.parseLong(key));
+                if (securityTerminal == null) return null;
+                return securityTerminal.getGridNode(ForgeDirection.UNKNOWN);
+            }
+            return null;
         }
-        return false;
-    }
 
-    public static IGridNode getWirelessGrid(ItemStack is) {
-        if (is.getItem() instanceof ToolWirelessTerminal) {
-            String key = ((ToolWirelessTerminal) is.getItem()).getEncryptionKey(is);
-            IGridHost securityTerminal = (IGridHost) AEApi.instance().registries().locatable()
-                    .getLocatableBy(Long.parseLong(key));
-            if (securityTerminal == null) return null;
-            return securityTerminal.getGridNode(ForgeDirection.UNKNOWN);
-        }
-        return null;
-    }
-
-    public static IMEInventoryHandler<?> getWirelessInv(ItemStack is, EntityPlayer player, StorageChannel channel) {
-        if (Platform.isClient()) return new NullInventory<>();
-        IGridNode gridNode = getWirelessGrid(is);
-        if (gridNode == null) return null;
-        IGrid grid = gridNode.getGrid();
-        if (grid == null) return null;
-        boolean canConnect = false;
-        if (hasInfinityBoosterCard(is)) {
-            canConnect = true;
-        } else {
-            for (IGridNode node : grid.getMachines(TileWireless.class)) {
-                IWirelessAccessPoint accessPoint = (IWirelessAccessPoint) node.getMachine();
-                if (accessPoint.isActive() && accessPoint.getLocation().getDimension() == player.dimension) {
-                    WorldCoord distance = accessPoint.getLocation()
-                            .subtract((int) player.posX, (int) player.posY, (int) player.posZ);
-                    int squaredDistance = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z;
-                    if (squaredDistance <= accessPoint.getRange() * accessPoint.getRange()) {
-                        canConnect = true;
-                        break;
+        public static IMEInventoryHandler<?> getWirelessInv(ItemStack is, EntityPlayer player, StorageChannel channel) {
+            if (Platform.isClient()) return new NullInventory<>();
+            IGridNode gridNode = getWirelessGrid(is);
+            if (gridNode == null) return null;
+            IGrid grid = gridNode.getGrid();
+            if (grid == null) return null;
+            boolean canConnect = rangeCheck(is, player, grid);
+            if (canConnect) {
+                IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
+                if (gridCache != null) {
+                    if (channel == StorageChannel.FLUIDS) {
+                        return gridCache.getFluidInventory();
+                    } else {
+                        return gridCache.getItemInventory();
                     }
                 }
             }
-        }
-        if (canConnect) {
-            IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
-            if (gridCache != null) {
-                if (channel == StorageChannel.FLUIDS) {
-                    return gridCache.getFluidInventory();
-                } else {
-                    return gridCache.getItemInventory();
-                }
-            }
-        }
-        return null;
-    }
-
-    public static ItemStack getWirelessTerminal(EntityPlayer player, int x) {
-        ImmutablePair<GuiHelper.InvType, Integer> result = GuiHelper.decodeInvType(x);
-        if (result.getLeft() == GuiHelper.InvType.PLAYER_INV) {
-            return player.inventory.getStackInSlot(result.getRight());
-        } else {
-            return BaublesApi.getBaubles(player).getStackInSlot(result.getRight());
-        }
-    }
-
-    public static ImmutablePair<Integer, ItemStack> getUltraWirelessTerm(EntityPlayer player) {
-        int invSize = player.inventory.getSizeInventory();
-
-        if (invSize <= 0) {
             return null;
         }
-        for (int i = 0; i < invSize; ++i) {
-            ItemStack is = player.inventory.getStackInSlot(i);
-            if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
-                return new ImmutablePair<>(i, is);
+
+        public static ItemStack getWirelessTerminal(EntityPlayer player, int x) {
+            ImmutablePair<GuiHelper.InvType, Integer> result = GuiHelper.decodeInvType(x);
+            if (result.getLeft() == GuiHelper.InvType.PLAYER_INV) {
+                return player.inventory.getStackInSlot(result.getRight());
+            } else {
+                return BaublesApi.getBaubles(player).getStackInSlot(result.getRight());
             }
         }
-        IInventory handler = BaublesApi.getBaubles(player);
-        if (handler != null) {
-            invSize = handler.getSizeInventory();
+
+        public static ItemStack getWirelessTerm(EntityPlayer player) {
+            int invSize = player.inventory.getSizeInventory();
+
+            if (invSize <= 0) {
+                return null;
+            }
             for (int i = 0; i < invSize; ++i) {
-                ItemStack is = handler.getStackInSlot(i);
-                if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
-                    return new ImmutablePair<>(GuiHelper.encodeType(i, GuiHelper.InvType.PLAYER_BAUBLES), is);
+                ItemStack is = player.inventory.getStackInSlot(i);
+                if (is != null && is.getItem() instanceof ItemBaseWirelessTerminal) {
+                    return is;
                 }
             }
+            IInventory handler = BaublesApi.getBaubles(player);
+            if (handler != null) {
+                invSize = handler.getSizeInventory();
+                for (int i = 0; i < invSize; ++i) {
+                    ItemStack is = handler.getStackInSlot(i);
+                    if (is != null && is.getItem() instanceof ItemBaseWirelessTerminal) {
+                        return is;
+                    }
+                }
+            }
+            return null;
         }
-        return null;
+
+        public static ImmutablePair<Integer, ItemStack> getUltraWirelessTerm(EntityPlayer player) {
+            int invSize = player.inventory.getSizeInventory();
+
+            if (invSize <= 0) {
+                return null;
+            }
+            for (int i = 0; i < invSize; ++i) {
+                ItemStack is = player.inventory.getStackInSlot(i);
+                if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
+                    return new ImmutablePair<>(i, is);
+                }
+            }
+            IInventory handler = BaublesApi.getBaubles(player);
+            if (handler != null) {
+                invSize = handler.getSizeInventory();
+                for (int i = 0; i < invSize; ++i) {
+                    ItemStack is = handler.getStackInSlot(i);
+                    if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
+                        return new ImmutablePair<>(GuiHelper.encodeType(i, GuiHelper.InvType.PLAYER_BAUBLES), is);
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     public static int findItemInPlayerInvSlot(EntityPlayer player, ItemStack itemStack) {
@@ -424,6 +497,20 @@ public final class Util {
     }
 
     public static class FluidUtil {
+
+        public static final ItemStack glassBottle = new ItemStack(glass_bottle, 1);
+        public static final ItemStack water_bucket = new ItemStack(Items.water_bucket, 1);
+        public static final ItemStack lava_bucket = new ItemStack(Items.lava_bucket, 1);
+
+        public static ItemStack getPotion(FluidStack fs) {
+            if (fs == null) return null;
+            MutablePair<Integer, ItemStack> fillStack = Util.FluidUtil.fillStack(glassBottle, fs);
+            if (fillStack != null && fillStack.getRight() != null
+                    && fillStack.getRight().getItem() instanceof ItemPotion) {
+                return fillStack.right;
+            }
+            return null;
+        }
 
         public static void fluidTankInfoWriteToNBT(FluidTankInfo[] infos, NBTTagCompound data) {
             int i = 0;

@@ -1,4 +1,4 @@
-package com.glodblock.github.client.gui;
+package com.glodblock.github.client.gui.widget;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +66,16 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             this.registerApp(22, "SWITCH", "DISABLE", "disable");
             this.registerApp(23, "CONFIG", "YES", "open_configuration");
             this.registerApp(24, "HIGHLIGHT", "YES", "block_highlight");
+            this.registerApp(30, "MAGNET_CARD", "INV", "magnet_card.inv");
+            this.registerApp(30, "MAGNET_CARD", "ME", "magnet_card.me");
+            this.registerApp(30, "MAGNET_CARD", "FILTER", "magnet_card.filter");
+            this.registerApp(31, "MAGNET_CARD", "OFF", "magnet_card.off");
+            this.registerApp(32, "DATA_SYNC", "ENABLE", "data_sync.enable");
+            this.registerApp(33, "ENABLE_12x", "ENABLE", "enable");
+            this.registerApp(34, "DISABLE_12x", "DISABLE", "disable");
+            this.registerApp(35, "DATA_SYNC", "DISABLE", "data_sync.disable");
+            this.registerApp(36, "RESTOCK", "ENABLE", "restock.on");
+            this.registerApp(37, "RESTOCK", "DISABLE", "restock.off");
         }
     }
 

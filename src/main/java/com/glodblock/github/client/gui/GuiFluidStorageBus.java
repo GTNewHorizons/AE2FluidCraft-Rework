@@ -11,7 +11,7 @@ import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
 import com.glodblock.github.common.parts.PartFluidStorageBus;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.network.CPacketFluidTerminalBtns;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.config.AccessRestriction;
@@ -89,9 +89,9 @@ public class GuiFluidStorageBus extends GuiUpgradeable {
         super.actionPerformed(btn);
         final boolean backwards = Mouse.isButtonDown(1);
         if (btn == this.partition) {
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("StorageBus.Action", "Partition"));
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidTerminalBtns("StorageBus.Action", "Partition"));
         } else if (btn == this.clear) {
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("StorageBus.Action", "Clear"));
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidTerminalBtns("StorageBus.Action", "Clear"));
         } else if (btn == this.priority) {
             InventoryHandler.switchGui(GuiType.PRIORITY);
         } else if (btn == this.rwMode) {

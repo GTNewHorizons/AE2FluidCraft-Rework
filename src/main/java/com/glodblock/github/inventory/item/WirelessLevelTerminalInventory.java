@@ -36,7 +36,7 @@ public class WirelessLevelTerminalInventory implements IClickableInTerminal, IWi
     private Util.DimensionalCoordSide tile;
 
     public WirelessLevelTerminalInventory(ItemStack is, int slot, IGridNode gridNode, EntityPlayer player) {
-        Objects.requireNonNull(Util.getWirelessInv(is, player, StorageChannel.ITEMS));
+        Objects.requireNonNull(Util.Wireless.getWirelessInv(is, player, StorageChannel.ITEMS));
         this.ips = (ToolWirelessTerminal) is.getItem();
         this.grid = gridNode;
         this.target = is;

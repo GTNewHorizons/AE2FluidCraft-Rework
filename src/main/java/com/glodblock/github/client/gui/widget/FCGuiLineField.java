@@ -1,4 +1,4 @@
-package com.glodblock.github.client.gui;
+package com.glodblock.github.client.gui.widget;
 
 import net.minecraft.client.gui.FontRenderer;
 

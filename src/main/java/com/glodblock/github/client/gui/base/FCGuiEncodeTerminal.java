@@ -8,14 +8,14 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.GuiFCImgButton;
 import com.glodblock.github.client.gui.GuiItemMonitor;
 import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
+import com.glodblock.github.client.gui.widget.GuiFCImgButton;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.slot.SlotSingleItem;
-import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.network.CPacketFluidTerminalBtns;
 import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.storage.ITerminalHost;
@@ -67,17 +67,16 @@ public abstract class FCGuiEncodeTerminal extends GuiItemMonitor {
         super.initGui();
         this.buttonList.add(
                 this.autoFillPatternEnableBtn = new GuiFCImgButton(
-                        this.guiLeft - 18,
-                        this.offsetY,
+                        this.guiLeft + this.xSize - 18,
+                        this.guiTop + this.ySize - 64,
                         "FILL_PATTERN",
                         "DO_FILL"));
         this.buttonList.add(
                 this.autoFillPatternDisableBtn = new GuiFCImgButton(
-                        this.guiLeft - 18,
-                        this.offsetY,
+                        this.guiLeft + this.xSize - 18,
+                        this.guiTop + this.ySize - 64,
                         "NOT_FILL_PATTERN",
                         "DONT_FILL"));
-        this.offsetY += 20;
     }
 
     @Override
@@ -87,48 +86,44 @@ public abstract class FCGuiEncodeTerminal extends GuiItemMonitor {
             InventoryHandler.switchGui(GuiType.CRAFTING_STATUS);
         } else if (this.tabCraftButton == btn || this.tabProcessButton == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns(
+                    new CPacketFluidTerminalBtns(
                             "PatternTerminal.CraftMode",
                             this.tabProcessButton == btn ? MODE_CRAFTING : MODE_PROCESSING));
         } else if (this.encodeBtn == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns(
+                    new CPacketFluidTerminalBtns(
                             "PatternTerminal.Encode",
                             (isCtrlKeyDown() ? 1 : 0) << 1 | (isShiftKeyDown() ? 1 : 0)));
         } else if (this.clearBtn == btn) {
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("PatternTerminal.Clear", "1"));
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidTerminalBtns("PatternTerminal.Clear", "1"));
         } else if (this.substitutionsEnabledBtn == btn || this.substitutionsDisabledBtn == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns(
+                    new CPacketFluidTerminalBtns(
                             "PatternTerminal.Substitute",
                             this.substitutionsEnabledBtn == btn ? SUBSTITUTION_DISABLE : SUBSTITUTION_ENABLE));
         } else if (this.fluidPrioritizedEnabledBtn == btn || this.fluidPrioritizedDisabledBtn == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns(
+                    new CPacketFluidTerminalBtns(
                             "PatternTerminal.Prioritize",
                             isShiftKeyDown() ? "2" : (container.prioritize ? PRIORITY_DISABLE : PRIORITY_ENABLE)));
         } else if (this.invertBtn == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns("PatternTerminal.Invert", container.inverted ? "0" : "1"));
+                    new CPacketFluidTerminalBtns("PatternTerminal.Invert", container.inverted ? "0" : "1"));
         } else if (this.combineDisableBtn == btn || this.combineEnableBtn == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns(
-                            "PatternTerminal.Combine",
-                            this.combineDisableBtn == btn ? "1" : "0"));
+                    new CPacketFluidTerminalBtns("PatternTerminal.Combine", this.combineDisableBtn == btn ? "1" : "0"));
         } else if (ModAndClassUtil.isDoubleButton && doubleBtn == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns(
+                    new CPacketFluidTerminalBtns(
                             "PatternTerminal.Double",
                             Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? "1" : "0"));
         } else if (ModAndClassUtil.isBeSubstitutionsButton && beSubstitutionsDisabledBtn == btn) {
-            FluidCraft.proxy.netHandler
-                    .sendToServer(new CPacketFluidPatternTermBtns("PatternTerminal.beSubstitute", "1"));
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidTerminalBtns("PatternTerminal.beSubstitute", "1"));
         } else if (ModAndClassUtil.isBeSubstitutionsButton && beSubstitutionsEnabledBtn == btn) {
-            FluidCraft.proxy.netHandler
-                    .sendToServer(new CPacketFluidPatternTermBtns("PatternTerminal.beSubstitute", "0"));
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidTerminalBtns("PatternTerminal.beSubstitute", "0"));
         } else if (this.autoFillPatternDisableBtn == btn || this.autoFillPatternEnableBtn == btn) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns(
+                    new CPacketFluidTerminalBtns(
                             "PatternTerminal.AutoFillerPattern",
                             this.autoFillPatternDisableBtn == btn ? "1" : "0"));
         }

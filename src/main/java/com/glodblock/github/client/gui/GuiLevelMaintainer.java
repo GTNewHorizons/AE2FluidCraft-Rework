@@ -23,6 +23,9 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
+import com.glodblock.github.client.gui.widget.FCGuiLineField;
+import com.glodblock.github.client.gui.widget.FCGuiTextField;
+import com.glodblock.github.client.gui.widget.GuiFCImgButton;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.common.tile.TileLevelMaintainer;

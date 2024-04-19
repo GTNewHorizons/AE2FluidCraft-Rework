@@ -30,7 +30,7 @@ public abstract class ItemGuiFactory<T> implements IGuiFactory {
     @Nullable
     @Override
     public Object createServerGui(EntityPlayer player, World world, int x, int y, int z, ForgeDirection face) {
-        ItemStack item = Util.getWirelessTerminal(player, x);
+        ItemStack item = Util.Wireless.getWirelessTerminal(player, x);
         if (item == null || !(item.getItem() instanceof IItemInventory)) {
             return null;
         }
@@ -57,7 +57,7 @@ public abstract class ItemGuiFactory<T> implements IGuiFactory {
     @Nullable
     @Override
     public Object createClientGui(EntityPlayer player, World world, int x, int y, int z, ForgeDirection face) {
-        ItemStack item = Util.getWirelessTerminal(player, x);
+        ItemStack item = Util.Wireless.getWirelessTerminal(player, x);
         if (item == null || !(item.getItem() instanceof IItemInventory)) {
             return null;
         }

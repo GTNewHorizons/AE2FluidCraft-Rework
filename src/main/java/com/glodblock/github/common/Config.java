@@ -15,10 +15,9 @@ public class Config {
     public static boolean noFluidPacket;
     public static boolean fluidIOBus;
     public static boolean removeRecipe;
+    public static boolean testItemRecipe;
     public static double portableCellBattery;
     public static boolean fluidP2PInterface;
-    public static int packetSize;
-    public static int packetRate;
     public static boolean replaceEC2;
     public static int levelMaintainerMinTicks;
     public static int levelMaintainerMaxTicks;
@@ -56,13 +55,8 @@ public class Config {
                 "Disable all recipes, for quick tweaker.");
         portableCellBattery = Config.get("Fluid Craft for AE2", "Portable Fluid Cell Battery Capacity", 20000D)
                 .getDouble();
-        packetSize = Config.get("Fluid Craft for AE2", "packetSize", 256, "Number of items to be sent per packet")
-                .getInt();
-        if (packetSize <= 0) packetSize = 256;
-        packetRate = Config
-                .get("Fluid Craft for AE2", "packetRate", 50, "Period at which packets are dispatched, in ms.")
-                .getInt();
-        if (packetRate <= 0) packetRate = 50;
+        testItemRecipe = Config.get("Fluid Craft for AE2", "Experimental items", true, "Experimental items")
+                .getBoolean();
         replaceEC2 = Config.getBoolean(
                 "replaceEC2",
                 "Fluid Craft for AE2",

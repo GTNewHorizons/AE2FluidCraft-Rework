@@ -20,7 +20,7 @@ import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.network.SPacketFluidUpdate;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
+import com.glodblock.github.network.SPacketMEFluidInvUpdate;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
@@ -143,9 +143,11 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
                     toSend.add(is);
                 }
             }
+            SPacketMEFluidInvUpdate piu = new SPacketMEFluidInvUpdate();
+            piu.addAll(toSend);
             for (final Object c : this.crafters) {
                 if (c instanceof EntityPlayerMP) {
-                    SPacketMEUpdateBuffer.scheduleFluidUpdate((EntityPlayerMP) c, toSend);
+                    FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) c);
                 }
             }
             this.fluids.resetStatus();
@@ -160,7 +162,9 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
             for (final IAEFluidStack is : monitorCache) {
                 toSend.add(is);
             }
-            SPacketMEUpdateBuffer.scheduleFluidUpdate((EntityPlayerMP) c, toSend);
+            SPacketMEFluidInvUpdate piu = new SPacketMEFluidInvUpdate();
+            piu.addAll(toSend);
+            FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) c);
         }
     }
 

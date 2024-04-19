@@ -41,7 +41,7 @@ public class ItemWirelessLevelTerminal extends ItemBaseWirelessTerminal
     @Override
     public Object getInventory(ItemStack stack, World world, int x, int y, int z, EntityPlayer player) {
         try {
-            IGridNode gridNode = Util.getWirelessGrid(stack);
+            IGridNode gridNode = Util.Wireless.getWirelessGrid(stack);
             return new WirelessLevelTerminalInventory(stack, x, gridNode, player);
         } catch (Exception e) {
             player.addChatMessage(PlayerMessages.OutOfRange.get());

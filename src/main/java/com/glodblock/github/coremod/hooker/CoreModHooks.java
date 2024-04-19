@@ -1,17 +1,21 @@
 package com.glodblock.github.coremod.hooker;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -20,8 +24,10 @@ import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
 import com.glodblock.github.inventory.FluidConvertingInventoryCrafting;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.network.SPacketMEItemInvUpdate;
 import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.SetBackedMachineSet;
+import com.glodblock.github.util.Util;
 import com.google.common.collect.Sets;
 
 import appeng.api.config.Actionable;
@@ -29,6 +35,8 @@ import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.IMachineSet;
+import appeng.api.networking.security.BaseActionSource;
+import appeng.api.networking.security.PlayerSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.data.IAEFluidStack;
@@ -188,5 +196,48 @@ public class CoreModHooks {
             return guiCraftConfirm.getHoveredStack() == null;
         }
         return true;
+    }
+
+    public static void craftingComplete(CraftingCPUCluster cpuCluster) {
+        try {
+            if (cpuCluster.isBusy()) return;
+            Field f;
+            f = cpuCluster.getClass().getField("player");
+            EntityPlayer player = (EntityPlayer) f.get(cpuCluster);
+            if (player != null) {
+                ItemStack term = Util.Wireless.getWirelessTerm(player);
+                if (term != null) {
+                    SPacketMEItemInvUpdate piu = new SPacketMEItemInvUpdate((byte) 2);
+                    f = cpuCluster.getClass().getField("requestItem");
+                    IAEItemStack is = (IAEItemStack) f.get(cpuCluster);
+                    if (is != null) {
+                        piu.appendItem(is);
+                        FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) player);
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+
+        }
+    }
+
+    public static void craftingAddActionSource(CraftingCPUCluster cpuCluster, BaseActionSource src) {
+        try {
+            Field f;
+            f = cpuCluster.getClass().getField("player");
+            if (src instanceof PlayerSource) {
+                f.set(cpuCluster, ((PlayerSource) src).player);
+            } else {
+                f.set(cpuCluster, null);
+            }
+            f = cpuCluster.getClass().getField("requestItem");
+            IAEItemStack is = cpuCluster.getFinalOutput();
+            if (is != null) {
+                f.set(cpuCluster, is.copy());
+            }
+
+        } catch (Exception ignored) {
+
+        }
     }
 }

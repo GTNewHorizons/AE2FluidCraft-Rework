@@ -46,6 +46,7 @@ import org.lwjgl.opengl.GL12;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.base.FCBaseMEGui;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
+import com.glodblock.github.client.gui.widget.GuiFCImgButton;
 import com.glodblock.github.common.tile.TileLevelMaintainer.State;
 import com.glodblock.github.common.tile.TileLevelMaintainer.TLMTags;
 import com.glodblock.github.inventory.InventoryHandler;

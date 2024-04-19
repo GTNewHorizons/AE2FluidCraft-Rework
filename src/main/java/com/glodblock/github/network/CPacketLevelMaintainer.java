@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 
@@ -112,7 +113,9 @@ public class CPacketLevelMaintainer implements IMessage {
                     case Refresh -> this.refresh(clm);
                 };
 
-                SPacketMEUpdateBuffer.scheduleItemUpdate(player, toSend);
+                SPacketMEItemInvUpdate piu = new SPacketMEItemInvUpdate();
+                piu.addAll(toSend);
+                FluidCraft.proxy.netHandler.sendTo(piu, player);
             }
             return null;
         }

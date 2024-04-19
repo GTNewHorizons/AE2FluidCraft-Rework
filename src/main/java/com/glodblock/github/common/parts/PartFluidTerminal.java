@@ -3,10 +3,11 @@ package com.glodblock.github.common.parts;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.parts.base.FCPart;
+import com.glodblock.github.common.parts.base.FCPartBaseMonitorTerminal;
 import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.inventory.item.IItemTerminal;
 
-public class PartFluidTerminal extends FCPart {
+public class PartFluidTerminal extends FCPartBaseMonitorTerminal implements IItemTerminal {
 
     private static final FCPartsTexture FRONT_BRIGHT_ICON = FCPartsTexture.PartFluidTerminal_Bright;
     private static final FCPartsTexture FRONT_DARK_ICON = FCPartsTexture.PartFluidTerminal_Colored;

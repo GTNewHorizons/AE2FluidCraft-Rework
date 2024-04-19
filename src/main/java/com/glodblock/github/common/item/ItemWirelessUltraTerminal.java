@@ -25,6 +25,7 @@ import com.glodblock.github.inventory.item.WirelessCraftingTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessFluidTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessInterfaceTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalExInventory;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.IRegister;
@@ -100,9 +101,11 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     @Override
     public Object getInventory(ItemStack stack, World world, int x, int y, int z, EntityPlayer player) {
         try {
-            IGridNode gridNode = Util.getWirelessGrid(stack);
+            IGridNode gridNode = Util.Wireless.getWirelessGrid(stack);
             final GuiType gui;
-            if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z > 0) {
+            if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z == -1) {
+                gui = GuiType.WIRELESS_MAGNET_CARD_FILTER;
+            } else if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z > 0) {
                 gui = getGuis().get(Util.GuiHelper.decodeType(y).getRight());
             } else {
                 gui = readMode(stack);
@@ -121,6 +124,8 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 return new WirelessLevelTerminalInventory(stack, x, gridNode, player);
             } else if (gui == GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX) {
                 return new WirelessPatternTerminalExInventory(stack, x, gridNode, player);
+            } else if (gui == GuiType.WIRELESS_MAGNET_CARD_FILTER) {
+                return new WirelessMagnetCardFilterInventory(stack, x, gridNode, player);
             } else {
                 this.setMode(GuiType.WIRELESS_FLUID_TERMINAL, stack); // set as default mode
                 return new WirelessFluidTerminalInventory(stack, x, gridNode, player);
@@ -179,7 +184,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     }
 
     public static void switchTerminal(EntityPlayer player, GuiType guiType) {
-        ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(player);
+        ImmutablePair<Integer, ItemStack> term = Util.Wireless.getUltraWirelessTerm(player);
         if (term == null) return;
         if (term.getRight().getItem() instanceof ItemWirelessUltraTerminal) {
             ((ItemWirelessUltraTerminal) term.getRight().getItem()).setMode(guiType, term.getRight());
@@ -202,10 +207,10 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     }
 
     public static boolean hasInfinityBoosterCard(EntityPlayer player) {
-        ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(player);
+        ImmutablePair<Integer, ItemStack> term = Util.Wireless.getUltraWirelessTerm(player);
         if (term == null) return false;
         if (term.getRight().getItem() instanceof ItemWirelessUltraTerminal) {
-            return Util.hasInfinityBoosterCard(term.getRight());
+            return Util.Wireless.hasInfinityBoosterCard(term.getRight());
         }
         return false;
     }

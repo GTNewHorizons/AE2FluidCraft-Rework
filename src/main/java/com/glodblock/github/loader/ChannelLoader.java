@@ -8,7 +8,7 @@ import com.glodblock.github.FluidCraft;
 import com.glodblock.github.network.CPacketCraftRequest;
 import com.glodblock.github.network.CPacketDumpTank;
 import com.glodblock.github.network.CPacketEncodePattern;
-import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.network.CPacketFluidTerminalBtns;
 import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.network.CPacketLevelMaintainer;
@@ -39,8 +39,8 @@ public class ChannelLoader implements Runnable {
         FCNetworkWrapper netHandler = FluidCraft.proxy.netHandler;
         netHandler.registerMessage(new CPacketSwitchGuis.Handler(), CPacketSwitchGuis.class, id++, Side.SERVER);
         netHandler.registerMessage(
-                new CPacketFluidPatternTermBtns.Handler(),
-                CPacketFluidPatternTermBtns.class,
+                new CPacketFluidTerminalBtns.Handler(),
+                CPacketFluidTerminalBtns.class,
                 id++,
                 Side.SERVER);
         netHandler.registerMessage(new CPacketEncodePattern.Handler(), CPacketEncodePattern.class, id++, Side.SERVER);

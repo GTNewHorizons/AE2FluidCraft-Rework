@@ -1,13 +1,18 @@
 package com.glodblock.github.common.item;
 
-import static com.glodblock.github.loader.recipe.WirelessTerminalRecipe.getInfinityBoosterCard;
-import static com.glodblock.github.util.Util.hasInfinityBoosterCard;
+import static com.glodblock.github.loader.recipe.WirelessTerminalEnergyRecipe.getEnergyCard;
+import static com.glodblock.github.loader.recipe.WirelessTerminalInfinityBoosterRecipe.getInfinityBoosterCard;
+import static com.glodblock.github.loader.recipe.WirelessTerminalMagnetRecipe.getMagnetCard;
+import static com.glodblock.github.util.Util.Wireless.hasEnergyCard;
+import static com.glodblock.github.util.Util.Wireless.hasInfinityBoosterCard;
+import static com.glodblock.github.util.Util.Wireless.hasMagnetCard;
 
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -33,10 +38,31 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
 
     protected GuiType type;
     public static String infinityBoosterCard = "infinityBoosterCard";
+    public static String magnetCard = "magnetCard";
+    public static String restockItems = "restock";
+    public static String infinityEnergyCard = "InfinityEnergyCard";
+    public static String syncData = "syncData";
+    private static boolean effect = false;
 
     public ItemBaseWirelessTerminal(GuiType t) {
         super();
         this.type = t;
+    }
+
+    public static void setEffect(boolean e) {
+        effect = e;
+    }
+
+    public static boolean getEffect() {
+        return effect;
+    }
+
+    @Override
+    public boolean hasEffect(ItemStack par1ItemStack, int pass) {
+        if (Platform.isClient()) {
+            return getEffect();
+        }
+        return super.hasEffect(par1ItemStack, pass);
     }
 
     @Override
@@ -44,6 +70,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         if (player.isSneaking()) return removeInfinityBoosterCard(player, item);
         if (ForgeEventFactory.onItemUseStart(player, item, 1) > 0) {
             if (Platform.isClient()) {
+                setEffect(false);
                 return item;
             }
             IWirelessTermRegistry term = AEApi.instance().registries().wireless();
@@ -88,6 +115,21 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         return is;
     }
 
+    private ItemStack removeMagnetCard(final EntityPlayer player, ItemStack is) {
+        if (hasMagnetCard(is)) {
+            if (!player.inventory.addItemStackToInventory(getMagnetCard())) {
+                player.entityDropItem(getMagnetCard(), 0);
+            }
+            is.getTagCompound().setBoolean(magnetCard, false);
+        }
+        return is;
+    }
+
+    public static void toggleRestockItemsMode(ItemStack is, boolean state) {
+        NBTTagCompound data = Platform.openNbtData(is);
+        data.setBoolean(restockItems, state);
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void addCheckedInformation(ItemStack stack, EntityPlayer player, List<String> lines,
@@ -97,6 +139,12 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
             lines.add(NameConst.i18n(NameConst.TT_WIRELESS_INSTALLED));
             if (hasInfinityBoosterCard(stack)) {
                 lines.add("  " + EnumChatFormatting.GOLD + getInfinityBoosterCard().getDisplayName());
+            }
+            if (hasMagnetCard(stack)) {
+                lines.add("  " + EnumChatFormatting.GOLD + getMagnetCard().getDisplayName());
+            }
+            if (hasEnergyCard(stack)) {
+                lines.add("  " + EnumChatFormatting.GOLD + getEnergyCard().getDisplayName());
             }
         } else {
             lines.add(NameConst.i18n(NameConst.TT_CTRL_FOR_MORE));

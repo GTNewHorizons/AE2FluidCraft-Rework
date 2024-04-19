@@ -11,7 +11,6 @@ import net.minecraft.inventory.ICrafting;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -44,13 +43,13 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
 
     protected final SlotRestrictedInput[] cellView = new SlotRestrictedInput[5];
     protected final IConfigManager clientCM;
-    protected final ITerminalHost host;
 
     @GuiSync(99)
     public boolean canAccessViewCells = false;
 
     @GuiSync(98)
     public boolean hasPower = false;
+    protected boolean forceSync = true;
 
     protected IConfigManagerHost gui;
     protected IConfigManager serverCM;
@@ -105,7 +104,10 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
                     }
                 }
             }
-            processItemList();
+            if (sync || forceSync) {
+                forceSync = false;
+                processItemList();
+            }
             this.updatePowerStatus();
             final boolean oldAccessible = this.canAccessViewCells;
             this.canAccessViewCells = this.host instanceof WirelessTerminalGuiObject
@@ -166,10 +168,6 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
         super.onContainerClosed(player);
         if (this.monitor != null) {
             this.monitor.removeListener(this);
-            if (player instanceof EntityPlayerMP && Platform.isServer()) {
-                SPacketMEUpdateBuffer.clear((EntityPlayerMP) player);
-            }
-
         }
     }
 
@@ -230,7 +228,4 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
         }
     }
 
-    public ITerminalHost getHost() {
-        return this.host;
-    }
 }

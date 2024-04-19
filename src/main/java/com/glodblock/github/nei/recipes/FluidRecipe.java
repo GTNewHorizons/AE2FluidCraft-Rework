@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.minecraft.item.ItemStack;
@@ -58,19 +59,30 @@ public final class FluidRecipe {
     }
 
     private static List<OrderStack<?>> getDefaultPackageInputs(TemplateRecipeHandler tRecipe, int index) {
-        List<OrderStack<?>> tmp = new LinkedList<>();
-        AtomicInteger i = new AtomicInteger(0);
-        tRecipe.getIngredientStacks(index)
-                .forEach(ps -> tmp.add(new OrderStack<>(ps.item, i.getAndIncrement(), ps.items)));
-        return tmp;
+        try {
+            List<OrderStack<?>> tmp = new LinkedList<>();
+            AtomicInteger i = new AtomicInteger(0);
+            tRecipe.getIngredientStacks(index).stream().filter(Objects::nonNull).filter(ps -> ps.item != null)
+                    .forEach(ps -> tmp.add(new OrderStack<>(ps.item, i.getAndIncrement(), ps.items)));
+            return tmp;
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
     private static List<OrderStack<?>> getDefaultPackageOutputs(TemplateRecipeHandler tRecipe, int index) {
-        List<OrderStack<?>> tmp = new LinkedList<>();
-        AtomicInteger i = new AtomicInteger(0);
-        tmp.add(new OrderStack<>(tRecipe.getResultStack(index).item, i.getAndIncrement()));
-        tRecipe.getOtherStacks(index).forEach(ps -> tmp.add(new OrderStack<>(ps.item, i.getAndIncrement())));
-        return tmp;
+        try {
+            List<OrderStack<?>> tmp = new LinkedList<>();
+            AtomicInteger i = new AtomicInteger(0);
+            if (tRecipe.getResultStack(index) != null) {
+                tmp.add(new OrderStack<>(tRecipe.getResultStack(index).item, i.getAndIncrement()));
+            }
+            tRecipe.getOtherStacks(index).stream().filter(Objects::nonNull).filter(ps -> ps.item != null)
+                    .forEach(ps -> tmp.add(new OrderStack<>(ps.item, i.getAndIncrement())));
+            return tmp;
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
     public static List<OrderStack<?>> getPackageOutputs(IRecipeHandler recipe, int index, boolean useOther) {

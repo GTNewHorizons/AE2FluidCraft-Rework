@@ -19,10 +19,12 @@ import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.ICraftingGrid;
 import appeng.api.networking.crafting.ICraftingJob;
+import appeng.api.storage.data.IAEItemStack;
 import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.core.AELog;
+import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -32,24 +34,55 @@ public class CPacketCraftRequest implements IMessage {
 
     private long amount;
     private boolean heldShift;
+    private IAEItemStack item = null;
+    private Mode mode;
+
+    private enum Mode {
+        ITEM,
+        STACK_SIZE
+    }
 
     public CPacketCraftRequest() {}
 
-    public CPacketCraftRequest(final int craftAmt, final boolean shift) {
+    public CPacketCraftRequest(final IAEItemStack item, final boolean shift) {
+        this.item = item;
+        this.heldShift = shift;
+        this.mode = Mode.ITEM;
+    }
+
+    public CPacketCraftRequest(final long craftAmt, final boolean shift) {
         amount = craftAmt;
         heldShift = shift;
+        mode = Mode.STACK_SIZE;
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeLong(amount);
-        buf.writeBoolean(heldShift);
+        buf.writeInt(mode.ordinal());
+        if (mode == Mode.ITEM) {
+            try {
+                item.writeToPacket(buf);
+                buf.writeBoolean(heldShift);
+            } catch (Exception ignored) {}
+        } else {
+            buf.writeLong(amount);
+            buf.writeBoolean(heldShift);
+        }
+
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        amount = buf.readLong();
-        heldShift = buf.readBoolean();
+        mode = Mode.values()[buf.readInt()];
+        if (mode == Mode.ITEM) {
+            try {
+                item = AEItemStack.loadItemStackFromPacket(buf);
+                heldShift = buf.readBoolean();
+            } catch (Exception ignored) {}
+        } else {
+            amount = buf.readLong();
+            heldShift = buf.readBoolean();
+        }
     }
 
     public static class Handler implements IMessageHandler<CPacketCraftRequest, IMessage> {

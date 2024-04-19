@@ -9,8 +9,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
+import com.glodblock.github.network.SPacketMEItemInvUpdate;
 
 import appeng.api.AEApi;
 import appeng.api.implementations.tiles.IViewCellStorage;
@@ -105,9 +106,11 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
                     toSend.add(is);
                 }
             }
+            SPacketMEItemInvUpdate piu = new SPacketMEItemInvUpdate();
+            piu.addAll(toSend);
             for (final Object c : this.crafters) {
                 if (c instanceof EntityPlayer) {
-                    SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
+                    FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) c);
                 }
             }
             this.items.resetStatus();
@@ -122,7 +125,9 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
             for (final IAEItemStack is : monitorCache) {
                 toSend.add(is);
             }
-            SPacketMEUpdateBuffer.scheduleItemUpdate((EntityPlayerMP) c, toSend);
+            SPacketMEItemInvUpdate piu = new SPacketMEItemInvUpdate();
+            piu.addAll(toSend);
+            FluidCraft.proxy.netHandler.sendTo(piu, (EntityPlayerMP) c);
         }
     }
 
@@ -131,9 +136,6 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
         super.removeCraftingFromCrafters(c);
         if (this.crafters.isEmpty() && this.monitor != null) {
             this.monitor.removeListener(this);
-            if (c instanceof EntityPlayerMP) {
-                SPacketMEUpdateBuffer.clear((EntityPlayerMP) c);
-            }
         }
     }
 

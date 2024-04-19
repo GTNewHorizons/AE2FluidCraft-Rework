@@ -9,8 +9,9 @@ import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.base.FCGuiEncodeTerminal;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternExWireless;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternTerminalEx;
+import com.glodblock.github.client.gui.widget.GuiFCImgButton;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.network.CPacketFluidTerminalBtns;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 
@@ -219,7 +220,7 @@ public class GuiFluidPatternTerminalEx extends FCGuiEncodeTerminal {
 
     private void changeActivePage() {
         FluidCraft.proxy.netHandler.sendToServer(
-                new CPacketFluidPatternTermBtns(
+                new CPacketFluidTerminalBtns(
                         "PatternTerminal.ActivePage",
                         String.valueOf(this.processingScrollBar.getCurrentScroll())));
     }

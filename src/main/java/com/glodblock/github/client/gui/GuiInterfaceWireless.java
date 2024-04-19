@@ -34,6 +34,7 @@ import org.lwjgl.opengl.GL12;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.base.FCBaseMEGui;
 import com.glodblock.github.client.gui.container.ContainerInterfaceWireless;
+import com.glodblock.github.client.gui.widget.GuiFCImgButton;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.network.CPacketRenamer;
 

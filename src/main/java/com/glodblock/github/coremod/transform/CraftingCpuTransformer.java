@@ -1,6 +1,7 @@
 package com.glodblock.github.coremod.transform;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -32,8 +33,68 @@ public class CraftingCpuTransformer extends FCClassTransformer.ClassMapper {
                 return new TransformExecuteCrafting(api, super.visitMethod(access, name, desc, signature, exceptions));
             } else if (name.equals("cancel")) {
                 return new TransformStoreItems(api, super.visitMethod(access, name, desc, signature, exceptions));
+            } else if (name.equals("completeJob")) {
+                return new TransformCompleteJob(api, super.visitMethod(access, name, desc, signature, exceptions));
+            } else if (name.equals("submitJob")) {
+                return new TransformSubmitJob(api, super.visitMethod(access, name, desc, signature, exceptions));
             }
             return super.visitMethod(access, name, desc, signature, exceptions);
+        }
+
+        @Override
+        public void visitEnd() {
+            FieldVisitor p = cv
+                    .visitField(Opcodes.ACC_PUBLIC, "player", "Lnet/minecraft/entity/player/EntityPlayer;", null, null);
+            p.visitEnd();
+            FieldVisitor is = cv.visitField(
+                    Opcodes.ACC_PUBLIC,
+                    "requestItem",
+                    "Lappeng/api/storage/data/IAEItemStack;",
+                    null,
+                    null);
+            is.visitEnd();
+            super.visitEnd();
+        }
+    }
+
+    private static class TransformSubmitJob extends MethodVisitor {
+
+        TransformSubmitJob(int api, MethodVisitor mv) {
+            super(api, mv);
+        }
+
+        @Override
+        public void visitInsn(int opcode) {
+            if (opcode == Opcodes.ARETURN) {
+                super.visitVarInsn(Opcodes.ALOAD, 0);
+                super.visitVarInsn(Opcodes.ALOAD, 3);
+                super.visitMethodInsn(
+                        Opcodes.INVOKESTATIC,
+                        "com/glodblock/github/coremod/hooker/CoreModHooks",
+                        "craftingAddActionSource",
+                        "(Lappeng/me/cluster/implementations/CraftingCPUCluster;Lappeng/api/networking/security/BaseActionSource;)V");
+            }
+            super.visitInsn(opcode);
+        }
+    }
+
+    private static class TransformCompleteJob extends MethodVisitor {
+
+        TransformCompleteJob(int api, MethodVisitor mv) {
+            super(api, mv);
+        }
+
+        @Override
+        public void visitInsn(int opcode) {
+            if (opcode == Opcodes.RETURN) {
+                super.visitVarInsn(Opcodes.ALOAD, 0);
+                super.visitMethodInsn(
+                        Opcodes.INVOKESTATIC,
+                        "com/glodblock/github/coremod/hooker/CoreModHooks",
+                        "craftingComplete",
+                        "(Lappeng/me/cluster/implementations/CraftingCPUCluster;)V");
+            }
+            super.visitInsn(opcode);
         }
     }
 

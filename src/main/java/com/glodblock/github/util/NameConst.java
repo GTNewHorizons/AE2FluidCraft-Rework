@@ -40,6 +40,9 @@ public class NameConst {
     public static final String ITEM_MULTI_FLUID_STORAGE = "multi_fluid_storage";
     public static final String ITEM_QUANTUM_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".quantum";
     public static final String ITEM_SINGULARITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".singularity";
+    public static final String ITEM_INFINITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".infinity";
+    public static final String ITEM_INFINITY_WATER_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".water";
+    public static final String ITEM_INFINITY_LAVA_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".lava";
     public static final String ITEM_CREATIVE_FLUID_STORAGE = "creative_" + ITEM_FLUID_STORAGE;
     public static final String ITEM_FLUID_PORTABLE_CELL = "portable_fluid_cell";
     public static final String ITEM_WIRELESS_FLUID_TERMINAL = "wireless_fluid_terminal";
@@ -49,9 +52,14 @@ public class NameConst {
     public static final String ITEM_WIRELESS_FLUID_PATTERN_TERMINAL = "wireless_fluid_pattern_terminal";
     public static final String ITEM_FLUID_PART = "fluid_part";
     public static final String ITEM_FLUID_STORAGE_HOUSING = "fluid_storage_housing";
+    public static final String ITEM_MAGNET_CARD = "magnet_card";
+    public static final String ITEM_QUANTUM_BRIDGE_CARD = "quantum_bridge_card";
+    public static final String ITEM_ENERGY_CARD = "energy_card";
 
     public static final String TT_KEY = FluidCraft.MODID + ".tooltip.";
+    public static final String TT_CRAFTING_COMPLETE = TT_KEY + "crafting_complete";
     public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";
+    public static final String TT_FLUID_TERMINAL_AMOUNT = TT_FLUID_TERMINAL + ".amount";
     public static final String TT_LEVEL_TERMINAL = TT_KEY + "level_terminal";
     public static final String TT_INVALID_FLUID = TT_KEY + "invalid_fluid";
     public static final String TT_FLUID_PACKET = TT_KEY + "fluid_packet";
@@ -84,6 +92,12 @@ public class NameConst {
     public static final String TT_LEVEL_MAINTAINER_EXPORT_DESC = TT_LEVEL_MAINTAINER + "export_desc";
     public static final String TT_LEVEL_MAINTAINER_ERROR = TT_LEVEL_MAINTAINER + "error";
     public static final String TT_LEVEL_MAINTAINER_ERROR_DESC = TT_LEVEL_MAINTAINER + "error_desc";
+    public static final String TT_QUANTUM_BRIDGE_CARD = TT_KEY + "quantum_bridge_card";
+    public static final String TT_QUANTUM_BRIDGE_CARD_DESC = TT_QUANTUM_BRIDGE_CARD + ".desc";
+    public static final String TT_MAGNET_CARD = TT_KEY + "magnet_card";
+    public static final String TT_MAGNET_CARD_DESC = TT_MAGNET_CARD + ".desc";
+    public static final String TT_ENERGY_CARD = TT_KEY + "energy_card";
+    public static final String TT_ENERGY_CARD_DESC = TT_ENERGY_CARD + ".desc";
     public static final String TT_CELL_CONTENTS = TT_KEY + "cell_contents";
     public static final String TT_CELL_EMPTY = TT_KEY + "cell_empty";
     public static final String TT_CELL_PORTABLE = TT_KEY + "cell_portable";
@@ -93,6 +107,10 @@ public class NameConst {
     public static final String TT_ULTRA_TERMINAL = TT_KEY + "ultra_terminal";
     public static final String TT_ULTRA_TERMINAL_TIPS = TT_ULTRA_TERMINAL + ".tips";
     public static final String TT_ULTRA_TERMINAL_TIPS_DESC = TT_ULTRA_TERMINAL_TIPS + ".desc";
+
+    public static final String TT_ULTRA_TERMINAL_RESTOCK = TT_ULTRA_TERMINAL + ".restock";
+    public static final String TT_ULTRA_TERMINAL_RESTOCK_ON = TT_ULTRA_TERMINAL_RESTOCK + ".on";
+    public static final String TT_ULTRA_TERMINAL_RESTOCK_OFF = TT_ULTRA_TERMINAL_RESTOCK + ".off";
 
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
@@ -117,6 +135,12 @@ public class NameConst {
     public static final String GUI_FLUID_IMPORT = GUI_KEY + ITEM_PART_FLUID_IMPORT;
     public static final String GUI_FLUID_EXPORT = GUI_KEY + ITEM_PART_FLUID_EXPORT;
     public static final String GUI_FLUID_STORAGE_BUS = GUI_KEY + ITEM_PART_FLUID_STORAGE_BUS;
+    public static final String GUI_MAGNET_CARD = GUI_KEY + ITEM_MAGNET_CARD;
+    public static final String GUI_MAGNET_CARD_NBT = GUI_MAGNET_CARD + ".nbt";
+    public static final String GUI_MAGNET_CARD_META = GUI_MAGNET_CARD + ".meta";
+    public static final String GUI_MAGNET_CARD_ORE = GUI_MAGNET_CARD + ".ore";
+    public static final String GUI_MAGNET_CARD_WhiteList = GUI_MAGNET_CARD + ".whitelist";
+    public static final String GUI_MAGNET_CARD_BlackList = GUI_MAGNET_CARD + ".blacklist";
 
     public static String i18n(String t, String delimiter, boolean hint) {
         if (!hint) {

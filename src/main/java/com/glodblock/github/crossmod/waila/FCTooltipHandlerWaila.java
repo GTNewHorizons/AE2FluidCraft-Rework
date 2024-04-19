@@ -1,14 +1,17 @@
 package com.glodblock.github.crossmod.waila;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
 
 import mcp.mobius.waila.handlers.nei.TooltipHandlerWaila;
@@ -36,6 +39,14 @@ public class FCTooltipHandlerWaila extends TooltipHandlerWaila {
             }
             String modName = Util.getFluidModName(fs.getFluid());
             if (modName != null && !modName.equals("")) currenttip.set(currenttip.size() - 1, "§9§o" + modName);
+            if (ModAndClassUtil.GT5NH || ModAndClassUtil.GT5) {
+                ItemStack potion = Util.FluidUtil.getPotion(fs);
+                if (potion != null && potion.getItem() instanceof ItemPotion) {
+                    List<String> potionEffects = new ArrayList<>();
+                    potion.getItem().addInformation(potion, Minecraft.getMinecraft().thePlayer, potionEffects, false);
+                    currenttip.addAll(currenttip.size() - 1, potionEffects);
+                }
+            }
         }
         return currenttip;
     }

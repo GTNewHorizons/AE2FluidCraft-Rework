@@ -9,6 +9,7 @@ import net.minecraft.util.StatCollector;
 import com.glodblock.github.client.gui.base.FCGuiEncodeTerminal;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternTerminal;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternWireless;
+import com.glodblock.github.client.gui.widget.GuiFCImgButton;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;

@@ -13,7 +13,7 @@ import com.glodblock.github.inventory.item.IItemPatternTerminal;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.tile.inventory.AppEngInternalInventory;
 
-public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatternTerminal {
+public abstract class FCFluidEncodeTerminal extends FCPartBaseMonitorTerminal implements IItemPatternTerminal {
 
     protected AppEngInternalInventory crafting;
     protected AppEngInternalInventory output;

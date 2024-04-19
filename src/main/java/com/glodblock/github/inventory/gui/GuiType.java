@@ -33,6 +33,7 @@ import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLevelMaintainer;
 import com.glodblock.github.client.gui.GuiLevelTerminal;
 import com.glodblock.github.client.gui.GuiLevelWireless;
+import com.glodblock.github.client.gui.GuiMagnet;
 import com.glodblock.github.client.gui.GuiOCPatternEditor;
 import com.glodblock.github.client.gui.GuiPatternValueAmount;
 import com.glodblock.github.client.gui.GuiRenamer;
@@ -60,6 +61,7 @@ import com.glodblock.github.client.gui.container.ContainerLargeIngredientBuffer;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
 import com.glodblock.github.client.gui.container.ContainerLevelWireless;
+import com.glodblock.github.client.gui.container.ContainerMagnet;
 import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.client.gui.container.ContainerRenamer;
@@ -88,6 +90,18 @@ import appeng.helpers.IPriorityHost;
 
 public enum GuiType {
 
+    WIRELESS_MAGNET_CARD_FILTER(new ItemGuiFactory<>(ITerminalHost.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
+            return new ContainerMagnet(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
+            return new GuiMagnet(player.inventory, inv);
+        }
+    }),
     RENAMER(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
@@ -299,12 +313,12 @@ public enum GuiType {
 
         @Override
         protected Object createServerGui(EntityPlayer player, IWirelessTerminal inv) {
-            return new ContainerFluidPortableCell(player.inventory, inv);
+            return new ContainerFluidMonitor(player.inventory, inv);
         }
 
         @Override
         protected Object createClientGui(EntityPlayer player, IWirelessTerminal inv) {
-            return new GuiFluidPortableCell(player.inventory, inv);
+            return new GuiFluidTerminal(player.inventory, inv);
         }
     }),
 
