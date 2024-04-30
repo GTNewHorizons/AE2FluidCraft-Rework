@@ -10,8 +10,6 @@
 
 package com.glodblock.github.client.me;
 
-import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -47,14 +45,12 @@ public class FluidRepo implements IDisplayRepo {
     protected final IItemList<IAEItemStack> list = AEApi.instance().storage().createItemList();
     protected final ArrayList<IAEItemStack> view = new ArrayList<>();
     protected final ArrayList<ItemStack> dsp = new ArrayList<>();
-    protected final ArrayList<IAEItemStack> cache = new ArrayList<>();
     protected final IScrollSource src;
     protected final ISortSource sortSrc;
 
     protected int rowSize = 9;
 
     protected String searchString = "";
-    protected String lastSearchString = "";
     protected IPartitionList<IAEItemStack> myPartitionList;
     private String NEIWord = null;
     private boolean hasPower;
@@ -90,17 +86,9 @@ public class FluidRepo implements IDisplayRepo {
         if (st != null) {
             st.reset();
             st.add(is);
-            if (isShiftKeyDown() && this.view.contains(st)) {
-                this.view.get(this.view.indexOf(st)).setStackSize(st.getStackSize());
-            }
         } else {
-            if (isShiftKeyDown()) this.cache.add(is);
             this.list.add(is);
         }
-    }
-
-    protected boolean needUpdateView() {
-        return !isShiftKeyDown() || !this.lastSearchString.equals(this.searchString);
     }
 
     @Override
@@ -111,7 +99,7 @@ public class FluidRepo implements IDisplayRepo {
 
     @Override
     public void updateView() {
-        if (needUpdateView()) this.view.clear();
+        this.view.clear();
         this.dsp.clear();
 
         this.view.ensureCapacity(this.list.size());
@@ -142,7 +130,7 @@ public class FluidRepo implements IDisplayRepo {
             }
         }
 
-        for (IAEItemStack is : needUpdateView() ? this.list : this.cache) {
+        for (IAEItemStack is : this.list) {
             if (this.myPartitionList != null) {
                 if (!this.myPartitionList.isListed(is)) {
                     continue;
@@ -179,30 +167,26 @@ public class FluidRepo implements IDisplayRepo {
                 }
             }
         }
-        if (needUpdateView()) {
-            final Enum<?> SortBy = this.sortSrc.getSortBy();
-            final Enum<?> SortDir = this.sortSrc.getSortDir();
 
-            FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
-            FluidSorters.init();
+        final Enum<?> SortBy = this.sortSrc.getSortBy();
+        final Enum<?> SortDir = this.sortSrc.getSortDir();
 
-            if (SortBy == SortOrder.MOD) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
-            } else if (SortBy == SortOrder.AMOUNT) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
-            } else if (SortBy == SortOrder.INVTWEAKS) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
-            } else {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
-            }
+        FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
+        FluidSorters.init();
+
+        if (SortBy == SortOrder.MOD) {
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
+        } else if (SortBy == SortOrder.AMOUNT) {
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
+        } else if (SortBy == SortOrder.INVTWEAKS) {
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
         } else {
-            this.cache.clear();
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
         }
 
         for (final IAEItemStack is : this.view) {
             this.dsp.add(is.getItemStack());
         }
-        this.lastSearchString = this.searchString;
     }
 
     protected void updateNEI(final String filter) {

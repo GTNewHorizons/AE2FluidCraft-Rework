@@ -101,8 +101,11 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected GuiImgButton terminalStyleBox;
     protected GuiImgButton searchStringSave;
     protected GuiImgButton typeFilter;
+<<<<<<< HEAD
     protected boolean hasShiftKeyDown = false;
     private boolean reInitializationRequested = false;
+=======
+>>>>>>> parent of 0bf904f (hold the shift to stop sort items (#188))
 
     @SuppressWarnings("unchecked")
     public FCGuiMonitor(final InventoryPlayer inventoryPlayer, final ITerminalHost te, final FCContainerMonitor<T> c) {

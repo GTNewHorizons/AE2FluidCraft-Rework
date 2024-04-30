@@ -29,7 +29,7 @@ public class EssentiaRepo extends FluidRepo {
 
     @Override
     public void updateView() {
-        if (needUpdateView()) this.view.clear();
+        this.view.clear();
         this.dsp.clear();
 
         this.view.ensureCapacity(this.list.size());
@@ -58,7 +58,7 @@ public class EssentiaRepo extends FluidRepo {
             }
         }
 
-        for (IAEItemStack is : needUpdateView() ? this.list : this.cache) {
+        for (IAEItemStack is : this.list) {
             if (this.myPartitionList != null) {
                 if (!this.myPartitionList.isListed(is)) {
                     continue;
@@ -87,30 +87,26 @@ public class EssentiaRepo extends FluidRepo {
                 this.view.add(is);
             }
         }
-        if (needUpdateView()) {
-            final Enum<?> SortBy = this.sortSrc.getSortBy();
-            final Enum<?> SortDir = this.sortSrc.getSortDir();
 
-            FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
-            FluidSorters.init();
+        final Enum<?> SortBy = this.sortSrc.getSortBy();
+        final Enum<?> SortDir = this.sortSrc.getSortDir();
 
-            if (SortBy == SortOrder.MOD) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
-            } else if (SortBy == SortOrder.AMOUNT) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
-            } else if (SortBy == SortOrder.INVTWEAKS) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
-            } else {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
-            }
+        FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
+        FluidSorters.init();
+
+        if (SortBy == SortOrder.MOD) {
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
+        } else if (SortBy == SortOrder.AMOUNT) {
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
+        } else if (SortBy == SortOrder.INVTWEAKS) {
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
         } else {
-            this.cache.clear();
+            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
         }
 
         for (final IAEItemStack is : this.view) {
             this.dsp.add(is.getItemStack());
         }
-        this.lastSearchString = this.searchString;
         Iterator<IAEItemStack> it1 = this.view.iterator();
         while (it1.hasNext()) {
             IAEFluidStack fluid = ItemFluidDrop.getAeFluidStack(it1.next());
