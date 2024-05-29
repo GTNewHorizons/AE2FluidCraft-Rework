@@ -314,8 +314,15 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
         }
 
         // Step 4: calculate outputs
-        final int emptiedTanks = (int) (totalInserted / fluidPerContainer);
-        final int partialDrain = (int) (totalInserted % fluidPerContainer);
+        final int emptiedTanks;
+        final int partialDrain;
+        if (fluidPerContainer > 0) {
+            emptiedTanks = (int) (totalInserted / fluidPerContainer);
+            partialDrain = (int) (totalInserted % fluidPerContainer);
+        } else {
+            emptiedTanks = containersRequestedToInsert;
+            partialDrain = 0;
+        }
         final int partialTanks = partialDrain > 0 && partialInsertSupported ? 1 : 0;
         final int usedTanks = emptiedTanks + partialTanks;
         final int untouchedTanks = targetStack.stackSize - usedTanks;
