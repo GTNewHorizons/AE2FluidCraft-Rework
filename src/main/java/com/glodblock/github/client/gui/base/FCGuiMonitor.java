@@ -217,6 +217,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         }
 
         super.initGui();
+        this.setScrollBar();
         // full size : 204
         // extra slots : 72
         // slot 18
