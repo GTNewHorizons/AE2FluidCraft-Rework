@@ -1,6 +1,8 @@
 package com.glodblock.github.common.item;
 
+import static com.glodblock.github.loader.recipe.WirelessTerminalEnergyRecipe.getEnergyCard;
 import static com.glodblock.github.loader.recipe.WirelessTerminalRecipe.getInfinityBoosterCard;
+import static com.glodblock.github.util.Util.DimensionalCoordSide.hasEnergyCard;
 import static com.glodblock.github.util.Util.hasInfinityBoosterCard;
 
 import java.util.List;
@@ -33,6 +35,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
 
     protected GuiType type;
     public static String infinityBoosterCard = "infinityBoosterCard";
+    public static String infinityEnergyCard = "InfinityEnergyCard";
 
     public ItemBaseWirelessTerminal(GuiType t) {
         super();
@@ -41,7 +44,8 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
 
     @Override
     public ItemStack onItemRightClick(final ItemStack item, final World w, final EntityPlayer player) {
-        if (player.isSneaking()) return removeInfinityBoosterCard(player, item);
+        if (player.isSneaking()) return removeInfinityBoosterCard(player, item); // todo: doesn't work in universal
+                                                                                 // terminal
         if (ForgeEventFactory.onItemUseStart(player, item, 1) > 0) {
             if (Platform.isClient()) {
                 return item;
@@ -97,6 +101,9 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
             lines.add(NameConst.i18n(NameConst.TT_WIRELESS_INSTALLED));
             if (hasInfinityBoosterCard(stack)) {
                 lines.add("  " + EnumChatFormatting.GOLD + getInfinityBoosterCard().getDisplayName());
+            }
+            if (hasEnergyCard(stack)) {
+                lines.add("  " + EnumChatFormatting.GOLD + getEnergyCard().getDisplayName());
             }
         } else {
             lines.add(NameConst.i18n(NameConst.TT_CTRL_FOR_MORE));
