@@ -76,6 +76,9 @@ public class FluidCraft {
         if (!Config.removeRecipe) {
             RecipeLoader.INSTANCE.run();
         }
+        if (!ModAndClassUtil.NEW_HORIZONS_CORE_MOD) {
+            RecipeLoader.addTerminalCards();
+        }
         RecipeLoader.runTerminalRecipe();
 
         if (ModAndClassUtil.isV2) {

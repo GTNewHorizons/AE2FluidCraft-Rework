@@ -49,6 +49,8 @@ public class NameConst {
     public static final String ITEM_WIRELESS_FLUID_PATTERN_TERMINAL = "wireless_fluid_pattern_terminal";
     public static final String ITEM_FLUID_PART = "fluid_part";
     public static final String ITEM_FLUID_STORAGE_HOUSING = "fluid_storage_housing";
+    public static final String ITEM_QUANTUM_BRIDGE_CARD = "quantum_bridge_card";
+    public static final String ITEM_ENERGY_CARD = "energy_card";
 
     public static final String TT_KEY = FluidCraft.MODID + ".tooltip.";
     public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";
@@ -93,6 +95,10 @@ public class NameConst {
     public static final String TT_ULTRA_TERMINAL = TT_KEY + "ultra_terminal";
     public static final String TT_ULTRA_TERMINAL_TIPS = TT_ULTRA_TERMINAL + ".tips";
     public static final String TT_ULTRA_TERMINAL_TIPS_DESC = TT_ULTRA_TERMINAL_TIPS + ".desc";
+    public static final String TT_ENERGY_CARD = TT_KEY + "energy_card";
+    public static final String TT_ENERGY_CARD_DESC = TT_ENERGY_CARD + ".desc";
+    public static final String TT_QUANTUM_BRIDGE_CARD = TT_KEY + "quantum_bridge_card";
+    public static final String TT_QUANTUM_BRIDGE_CARD_DESC = TT_QUANTUM_BRIDGE_CARD + ".desc";
 
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
