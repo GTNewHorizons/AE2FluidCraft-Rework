@@ -188,16 +188,6 @@ public class DriverOCPatternEditor extends DriverSidedTileEntity {
             return new Object[] { stack };
         }
 
-        @Callback(
-                doc = "function([slot:number][, database:address, entry:number[, size:number]]):boolean -- Configure the interface.")
-        public Object[] setInterfaceConfiguration(Context context, Arguments args) {
-            IInventory config = tileEntity.getInternalInventory();
-            int slot = args.isString(0) ? 0 : optSlot(args, config, 0, 0);
-            config.setInventorySlotContents(slot, getStack(args));
-            context.pause(0.5);
-            return new Object[] { true };
-        }
-
         @Callback(doc = "function([slot:number]):table -- Get the given pattern in the interface.")
         public Object[] getInterfacePattern(Context context, Arguments args) {
             IInventory inv = tileEntity.getInternalInventory();
