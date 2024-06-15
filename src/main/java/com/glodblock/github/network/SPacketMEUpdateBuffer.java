@@ -45,8 +45,12 @@ public class SPacketMEUpdateBuffer {
     }
 
     public static void disable() {
-        task.cancel(false);
-        executor.shutdown();
+        if (task != null) {
+            task.cancel(false);
+        }
+        if (executor != null) {
+            executor.shutdown();
+        }
     }
 
     public static void scheduleItemUpdate(EntityPlayerMP player, List<IAEItemStack> stacks) {
