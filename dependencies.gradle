@@ -34,8 +34,8 @@
  * For more details, see https://docs.gradle.org/8.0.1/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
-    api('com.github.GTNewHorizons:NotEnoughItems:2.6.1-GTNH:dev')
-    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-404-GTNH:dev')
+    api('com.github.GTNewHorizons:NotEnoughItems:2.6.5-GTNH:dev')
+    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-405-GTNH:dev')
     api('curse.maven:cofh-core-69162:2388751')
     api('com.github.GTNewHorizons:waila:1.8.0:dev')
 
@@ -46,14 +46,14 @@ dependencies {
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.34:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ForestryMC:4.9.3:dev')
     compileOnly('com.github.GTNewHorizons:EnderIO:2.8.6:dev')
-    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.48.20:dev') {
+    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.48.37:dev') {
         exclude group: 'com.github.GTNewHorizons', module: 'AE2FluidCraft-Rework'
     }
     compileOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
     compileOnly('com.gregoriust.gregtech:gregtech_1.7.10:6.14.23:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:OpenComputers:1.10.11-GTNH:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.6.10-GTNH:dev') { transitive = false }
-    compileOnly("com.github.GTNewHorizons:Hodgepodge:2.5.15:dev") { transitive = false }
+    compileOnly("com.github.GTNewHorizons:Hodgepodge:2.5.19:dev") { transitive = false }
 
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:DuraDisplay:1.2.3:dev")
 }
