@@ -78,6 +78,7 @@ public class FluidCraft {
         }
         if (!ModAndClassUtil.NEW_HORIZONS_CORE_MOD) {
             RecipeLoader.addTerminalCards();
+            RecipeLoader.addRecipesIfDreamCoreNotExist();
         }
         RecipeLoader.runTerminalRecipe();
 

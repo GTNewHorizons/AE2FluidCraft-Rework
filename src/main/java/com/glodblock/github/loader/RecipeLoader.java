@@ -37,6 +37,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_MONIT
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL_EX;
+import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INTERFACE;
 import static com.glodblock.github.loader.ItemAndBlockHolder.LARGE_BUFFER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.LEVEL_MAINTAINER;
@@ -167,6 +168,15 @@ public class RecipeLoader implements Runnable {
             .findItemStack("appliedenergistics2", "tile.BlockQuantumRing", 1);
     public static final ItemStack AE2_DENSE_ENERGY_CELL = GameRegistry
             .findItemStack("appliedenergistics2", "tile.BlockDenseEnergyCell", 1);
+    public static final ItemStack AE2_ANNIHILATION_CORE = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
+            1,
+            44);
+
+    public static final ItemStack AE2_FORMATION_CORE = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
+            1,
+            43);
     public static final ItemStack THE_WIRELESS_TERM = GameRegistry
             .findItemStack("thaumicenergistics", "wireless.essentia.terminal", 1);
     private static final ItemStack WCT_WIRELESS_TERM = GameRegistry
@@ -188,6 +198,7 @@ public class RecipeLoader implements Runnable {
             1,
             47);
     public static final ItemStack NETHER_STAR = new ItemStack(Items.nether_star, 1);
+    public static final ItemStack WATER_BUCKET = new ItemStack(Items.water_bucket, 1);
 
     @Override
     public void run() {
@@ -687,6 +698,27 @@ public class RecipeLoader implements Runnable {
                         NETHER_STAR,
                         'W',
                         AE2_WIRELESS_RECEIVER));
+    }
+
+    public static void addRecipesIfDreamCoreNotExist() {
+        GameRegistry.addRecipe(
+                new ShapedOreRecipe(
+                        INFINITY_WATER_CELL,
+                        "BKB",
+                        "ACF",
+                        "BMB",
+                        'B',
+                        WATER_BUCKET,
+                        'K',
+                        CellType.Cell64kPart.stack(1),
+                        'A',
+                        AE2_ANNIHILATION_CORE,
+                        'C',
+                        CELL_HOUSING.stack(1, 1),
+                        'F',
+                        AE2_FORMATION_CORE,
+                        'M',
+                        AE2_MATTER_CONDENSER));
     }
 
     public static void runTerminalRecipe() {

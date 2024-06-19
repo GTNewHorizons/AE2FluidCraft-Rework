@@ -40,6 +40,8 @@ public class NameConst {
     public static final String ITEM_MULTI_FLUID_STORAGE = "multi_fluid_storage";
     public static final String ITEM_QUANTUM_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".quantum";
     public static final String ITEM_SINGULARITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".singularity";
+    public static final String ITEM_INFINITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".infinity";
+    public static final String ITEM_INFINITY_WATER_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".water";
     public static final String ITEM_CREATIVE_FLUID_STORAGE = "creative_" + ITEM_FLUID_STORAGE;
     public static final String ITEM_FLUID_PORTABLE_CELL = "portable_fluid_cell";
     public static final String ITEM_WIRELESS_FLUID_TERMINAL = "wireless_fluid_terminal";
@@ -95,6 +97,7 @@ public class NameConst {
     public static final String TT_ULTRA_TERMINAL = TT_KEY + "ultra_terminal";
     public static final String TT_ULTRA_TERMINAL_TIPS = TT_ULTRA_TERMINAL + ".tips";
     public static final String TT_ULTRA_TERMINAL_TIPS_DESC = TT_ULTRA_TERMINAL_TIPS + ".desc";
+    public static final String TT_INFINITY_FLUID_STORAGE_TIPS = TT_KEY + "infinity_fluid";
     public static final String TT_ENERGY_CARD = TT_KEY + "energy_card";
     public static final String TT_ENERGY_CARD_DESC = TT_ENERGY_CARD + ".desc";
     public static final String TT_QUANTUM_BRIDGE_CARD = TT_KEY + "quantum_bridge_card";

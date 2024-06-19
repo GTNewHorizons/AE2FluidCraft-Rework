@@ -11,6 +11,7 @@ import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -430,6 +431,8 @@ public final class Util {
     }
 
     public static class FluidUtil {
+
+        public static final ItemStack water_bucket = new ItemStack(Items.water_bucket, 1);
 
         public static void fluidTankInfoWriteToNBT(FluidTankInfo[] infos, NBTTagCompound data) {
             int i = 0;
