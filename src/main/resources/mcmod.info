@@ -10,9 +10,6 @@
     "authorList": ["GlodBlock"],
     "credits":"phantamanta44",
     "logoFile": "assets/ae2fc/logo.png",
-    "screenshots": [],
-    "useDependencyInformation": true,
-    "dependencies": ["appliedenergistics2"],
-    "requiredMods": ["appliedenergistics2"]
+    "screenshots": []
   }
 ]
