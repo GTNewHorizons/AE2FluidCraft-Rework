@@ -700,7 +700,7 @@ public class RecipeLoader implements Runnable {
                         AE2_WIRELESS_RECEIVER));
     }
 
-    public static void addRecipesIfDreamCoreNotExist() {
+    public static void addInfiniteWaterCell() {
         GameRegistry.addRecipe(
                 new ShapedOreRecipe(
                         INFINITY_WATER_CELL,
