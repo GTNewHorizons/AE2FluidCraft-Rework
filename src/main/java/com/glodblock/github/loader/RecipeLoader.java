@@ -722,8 +722,8 @@ public class RecipeLoader implements Runnable {
     }
 
     public static void runTerminalRecipe() {
-        ItemStack[] fc2Terms = { WIRELESS_FLUID_TERM.stack(), WIRELESS_PATTERN_TERM.stack(),
-                WIRELESS_INTERFACE_TERM.stack(), WIRELESS_LEVEL_TERM.stack() };
+        ItemStack[] fc2Terms = { WIRELESS_ULTRA_TERM.stack(), WIRELESS_FLUID_TERM.stack(),
+                WIRELESS_PATTERN_TERM.stack(), WIRELESS_INTERFACE_TERM.stack(), WIRELESS_LEVEL_TERM.stack() };
 
         for (ItemStack fc2term : fc2Terms) {
             if (fc2term != null) {
