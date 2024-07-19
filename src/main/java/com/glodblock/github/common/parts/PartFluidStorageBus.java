@@ -435,11 +435,6 @@ public class PartFluidStorageBus extends PartUpgradeable
     }
 
     @Override
-    public void blinkCell(int slot) {
-        // NO-OP
-    }
-
-    @Override
     public void saveChanges(final IMEInventory cellInventory) {
         // NO-OP
     }

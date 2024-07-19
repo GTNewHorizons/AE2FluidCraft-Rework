@@ -81,11 +81,6 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
     }
 
     @Override
-    public void blinkCell(int slot) {
-        // do nothing
-    }
-
-    @Override
     public void gridChanged() {
         IMEMonitor<IAEFluidStack> fluidGrid = getFluidGrid();
         if (fluidGrid != null) {
