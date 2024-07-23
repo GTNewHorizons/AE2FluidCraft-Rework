@@ -104,6 +104,7 @@ public class CPacketCraftRequest implements IMessage {
                             }
 
                             if (player.openContainer instanceof final ContainerCraftConfirm ccc) {
+                                ccc.setItemToCraft(cca.getItemToCraft());
                                 ccc.setAutoStart(message.heldShift);
                                 ccc.setJob(futureJob);
                                 cca.detectAndSendChanges();
