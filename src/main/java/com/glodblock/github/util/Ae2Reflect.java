@@ -9,10 +9,12 @@ import net.minecraftforge.fluids.IFluidHandler;
 import appeng.api.implementations.IUpgradeableHost;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.crafting.ICraftingCPU;
+import appeng.api.networking.crafting.ICraftingJob;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.networking.security.MachineSource;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.container.implementations.ContainerUpgradeable;
 import appeng.container.implementations.CraftingCPURecord;
 import appeng.crafting.MECraftingInventory;
@@ -38,11 +40,13 @@ public class Ae2Reflect {
     private static final Field fCPU_machineSrc;
     private static final Field fContainerUpgradeable_upgradeable;
     private static final Field fDualInterface_gridProxy;
+    private static final Field fCraftConfirm_result;
     private static final Method mItemSlot_setExtractable;
     private static final Method mCPU_getGrid;
     private static final Method mCPU_postChange;
     private static final Method mCPU_markDirty;
     private static final Method mP2PLiquids_getTarget;
+    private static final Method mCraftConfirm_getGrid;
 
     static {
         try {
@@ -66,6 +70,8 @@ public class Ae2Reflect {
                     BaseActionSource.class);
             mCPU_markDirty = reflectMethod(CraftingCPUCluster.class, "markDirty");
             mP2PLiquids_getTarget = reflectMethod(PartP2PLiquids.class, "getTarget");
+            fCraftConfirm_result = reflectField(ContainerCraftConfirm.class, "result");
+            mCraftConfirm_getGrid = reflectMethod(ContainerCraftConfirm.class, "getGrid");
         } catch (Exception e) {
             throw new IllegalStateException("Failed to initialize AE2 reflection hacks!", e);
         }
@@ -152,6 +158,18 @@ public class Ae2Reflect {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to invoke method: " + mCPU_getGrid, e);
         }
+    }
+
+    public static IGrid getGrid(ContainerCraftConfirm ccc) {
+        try {
+            return (IGrid) mCraftConfirm_getGrid.invoke(ccc);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to invoke method: " + mCPU_getGrid, e);
+        }
+    }
+
+    public static ICraftingJob getResult(ContainerCraftConfirm ccc) {
+        return Ae2Reflect.readField(ccc, fCraftConfirm_result);
     }
 
     public static MECraftingInventory getCPUInventory(CraftingCPUCluster cpu) {

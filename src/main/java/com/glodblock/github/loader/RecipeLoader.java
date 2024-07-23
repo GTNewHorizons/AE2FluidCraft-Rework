@@ -23,6 +23,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.CERTUS_QUARTZ_TANK;
 import static com.glodblock.github.loader.ItemAndBlockHolder.DECODER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.DISCRETIZER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENCODER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.ENERGY_CARD;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_AUTO_FILLER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_BUFFER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_CONVERSION_MONITOR;
@@ -36,6 +37,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_MONIT
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL_EX;
+import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INTERFACE;
 import static com.glodblock.github.loader.ItemAndBlockHolder.LARGE_BUFFER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.LEVEL_MAINTAINER;
@@ -43,6 +45,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.LEVEL_TERMINAL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.OC_EDITOR;
 import static com.glodblock.github.loader.ItemAndBlockHolder.PATTERN;
 import static com.glodblock.github.loader.ItemAndBlockHolder.PORTABLE_FLUID_CELL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_BRIDGE_CARD;
 import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.SINGULARITY_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WALRUS;
@@ -67,6 +70,8 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.storage.CellType;
+import com.glodblock.github.loader.recipe.WirelessTerminalEnergyRecipe;
+import com.glodblock.github.loader.recipe.WirelessTerminalQuantumBridgeRecipe;
 import com.glodblock.github.loader.recipe.WirelessTerminalRecipe;
 import com.glodblock.github.util.ModAndClassUtil;
 
@@ -163,12 +168,37 @@ public class RecipeLoader implements Runnable {
             .findItemStack("appliedenergistics2", "tile.BlockQuantumRing", 1);
     public static final ItemStack AE2_DENSE_ENERGY_CELL = GameRegistry
             .findItemStack("appliedenergistics2", "tile.BlockDenseEnergyCell", 1);
+    public static final ItemStack AE2_ANNIHILATION_CORE = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
+            1,
+            44);
+
+    public static final ItemStack AE2_FORMATION_CORE = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
+            1,
+            43);
     public static final ItemStack THE_WIRELESS_TERM = GameRegistry
             .findItemStack("thaumicenergistics", "wireless.essentia.terminal", 1);
     private static final ItemStack WCT_WIRELESS_TERM = GameRegistry
             .findItemStack("ae2wct", "wirelessCraftingTerminal", 1);
     public static final ItemStack BUCKET = new ItemStack(Items.bucket, 1);
     public static final ItemStack IRON_BAR = new ItemStack(Blocks.iron_bars, 1);
+    public static final ItemStack AE2_ADVANCED_CARD = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
+            1,
+            28);
+    public static final ItemStack AE2_WIRELESS_RECEIVER = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
+            1,
+            41);
+    public static final ItemStack AE2_BLOCK_CHARGER = GameRegistry
+            .findItemStack("appliedenergistics2", "tile.BlockCharger", 1);
+    public static final ItemStack AE2_SINGULARITY = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
+            1,
+            47);
+    public static final ItemStack NETHER_STAR = new ItemStack(Items.nether_star, 1);
+    public static final ItemStack WATER_BUCKET = new ItemStack(Items.water_bucket, 1);
 
     @Override
     public void run() {
@@ -639,13 +669,70 @@ public class RecipeLoader implements Runnable {
         }
     }
 
+    public static void addTerminalCards() {
+        GameRegistry.addRecipe(
+                new ShapedOreRecipe(
+                        ENERGY_CARD.stack(),
+                        "DSD",
+                        "HAH",
+                        "DSD",
+                        'H',
+                        AE2_BLOCK_CHARGER,
+                        'D',
+                        AE2_DENSE_ENERGY_CELL,
+                        'A',
+                        AE2_ADVANCED_CARD,
+                        'S',
+                        AE2_SINGULARITY));
+        GameRegistry.addRecipe(
+                new ShapedOreRecipe(
+                        QUANTUM_BRIDGE_CARD.stack(),
+                        "QSQ",
+                        "WAW",
+                        "QSQ",
+                        'Q',
+                        AE2_QUANTUM_RING,
+                        'A',
+                        AE2_ADVANCED_CARD,
+                        'S',
+                        NETHER_STAR,
+                        'W',
+                        AE2_WIRELESS_RECEIVER));
+    }
+
+    public static void addInfiniteWaterCell() {
+        GameRegistry.addRecipe(
+                new ShapedOreRecipe(
+                        INFINITY_WATER_CELL,
+                        "BKB",
+                        "ACF",
+                        "BMB",
+                        'B',
+                        WATER_BUCKET,
+                        'K',
+                        CellType.Cell64kPart.stack(1),
+                        'A',
+                        AE2_ANNIHILATION_CORE,
+                        'C',
+                        CELL_HOUSING.stack(1, 1),
+                        'F',
+                        AE2_FORMATION_CORE,
+                        'M',
+                        AE2_MATTER_CONDENSER));
+    }
+
     public static void runTerminalRecipe() {
-        if (ModAndClassUtil.WCT) {
-            GameRegistry.addRecipe(new WirelessTerminalRecipe(WIRELESS_PATTERN_TERM.stack()));
-            GameRegistry.addRecipe(new WirelessTerminalRecipe(WIRELESS_FLUID_TERM.stack()));
-            GameRegistry.addRecipe(new WirelessTerminalRecipe(WIRELESS_ULTRA_TERM.stack()));
-            GameRegistry.addRecipe(new WirelessTerminalRecipe(WIRELESS_INTERFACE_TERM.stack()));
-            GameRegistry.addRecipe(new WirelessTerminalRecipe(WIRELESS_LEVEL_TERM.stack()));
+        ItemStack[] fc2Terms = { WIRELESS_ULTRA_TERM.stack(), WIRELESS_FLUID_TERM.stack(),
+                WIRELESS_PATTERN_TERM.stack(), WIRELESS_INTERFACE_TERM.stack(), WIRELESS_LEVEL_TERM.stack() };
+
+        for (ItemStack fc2term : fc2Terms) {
+            if (fc2term != null) {
+                if (ModAndClassUtil.WCT) { // deprecated, adding Infinity Booster Card from WCT mod
+                    GameRegistry.addRecipe(new WirelessTerminalRecipe(fc2term));
+                }
+                GameRegistry.addRecipe(new WirelessTerminalQuantumBridgeRecipe(fc2term));
+                GameRegistry.addRecipe(new WirelessTerminalEnergyRecipe(fc2term));
+            }
         }
 
         ItemStack[] term = { AE2_WIRELESS_TERMINAL, WIRELESS_FLUID_TERM.stack(), WIRELESS_PATTERN_TERM.stack(),

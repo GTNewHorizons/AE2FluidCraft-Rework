@@ -102,6 +102,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected GuiImgButton searchStringSave;
     protected GuiImgButton typeFilter;
     protected boolean hasShiftKeyDown = false;
+    private boolean reInitializationRequested = false;
 
     @SuppressWarnings("unchecked")
     public FCGuiMonitor(final InventoryPlayer inventoryPlayer, final ITerminalHost te, final FCContainerMonitor<T> c) {
@@ -168,8 +169,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     }
 
     protected void reInitalize() {
-        this.buttonList.clear();
-        this.initGui();
+        reInitializationRequested = true;
     }
 
     @Override
@@ -183,7 +183,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
         final boolean hasNEI = IntegrationRegistry.INSTANCE.isEnabled(IntegrationType.NEI);
 
-        final int NEI = 0;
+        final int NEI = hasNEI ? 1 : 0;
         int top = hasNEI ? 22 : 0;
 
         final int magicNumber = 114 + 1;
@@ -217,6 +217,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         }
 
         super.initGui();
+        this.setScrollBar();
         // full size : 204
         // extra slots : 72
         // slot 18
@@ -667,6 +668,11 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     public void updateScreen() {
+        if (reInitializationRequested) {
+            reInitializationRequested = false;
+            this.buttonList.clear();
+            this.initGui();
+        }
         this.repo.setPowered(this.monitorableContainer.isPowered());
         super.updateScreen();
     }
@@ -772,15 +778,5 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     @Override
     public boolean isOverTextField(int mousex, int mousey) {
         return searchField.isMouseIn(mousex, mousey);
-    }
-
-    @Override
-    public void handleKeyboardInput() {
-        super.handleKeyboardInput();
-        hasShiftKeyDown |= isShiftKeyDown();
-        if (hasShiftKeyDown && !Keyboard.getEventKeyState()) { // keyup
-            this.repo.updateView();
-            hasShiftKeyDown = false;
-        }
     }
 }

@@ -9,12 +9,14 @@ import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketOver
 import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketRemove;
 import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketRename;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -25,6 +27,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -57,6 +60,7 @@ import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
 import appeng.api.config.Settings;
+import appeng.api.config.TerminalFontSize;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
 import appeng.api.storage.ITerminalHost;
@@ -584,7 +588,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         && relMouseY < Math.min(viewY + rowYBot, viewHeight);
                 if (stack != null) {
 
-                    AEItemStack aeItemStack = AEItemStack.create(stack);
                     NBTTagCompound data = stack.getTagCompound();
                     ItemStack itemStack = data.hasKey(TLMTags.Stack.tagName)
                             ? ItemStack.loadItemStackFromNBT(data.getCompoundTag(TLMTags.Stack.tagName))
@@ -598,9 +601,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     GL11.glTranslatef(colLeft, viewY + rowYTop + 1, ITEM_STACK_Z);
                     GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                     RenderHelper.enableGUIStandardItemLighting();
-                    itemStack.stackSize = 1;
-                    aeItemStack.setStackSize(quantity);
-                    aeRenderItem.setAeStack(aeItemStack);
+                    itemStack.stackSize = 0;
+                    aeRenderItem.setAeStack(null);
                     aeRenderItem.zLevel = ITEM_STACK_Z - MAGIC_RENDER_ITEM_Z;
                     aeRenderItem.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
                     aeRenderItem.renderItemOverlayIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
@@ -616,9 +618,9 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     int size = 4;
                     drawRect(offset, offset, offset + size, offset + size, color);
                     GL11.glTranslatef(0.0f, 0.0f, ITEM_STACK_OVERLAY_Z - ITEM_STACK_Z);
-                    this.drawReadableAmount(fontRendererObj, quantity, 16.0f, 12f, 16777215);
+                    this.drawReadableAmount(fontRendererObj, quantity, true, 16777215);
                     if (batch > 0) {
-                        this.drawReadableAmount(fontRendererObj, batch, 16.0f, 1f, 16777215);
+                        this.drawReadableAmount(fontRendererObj, batch, false, 16777215);
                     }
                     RenderHelper.disableStandardItemLighting();
 
@@ -657,13 +659,21 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         return relY + 1;
     }
 
-    public void drawReadableAmount(final FontRenderer fontRenderer, long amount, float x, float y, int color) {
-
-        final float scaleFactor = AEConfig.instance.useTerminalUseLargeFont() ? 0.85f : 0.5f;
-        final float inverseScaleFactor = 1.0f / scaleFactor;
-        final int offset = AEConfig.instance.useTerminalUseLargeFont() ? 0 : -1;
+    public void drawReadableAmount(final FontRenderer fontRenderer, long amount, boolean alignBottom, int color) {
+        final TerminalFontSize fontSize = AEConfig.instance.getTerminalFontSize();
+        final String stackSize = this.getToBeRenderedStackSize(amount, fontSize);
         final boolean unicodeFlag = fontRenderer.getUnicodeFlag();
-        final String stackSize = this.getToBeRenderedStackSize(amount);
+        float scaleFactor = 0.85f;
+        float shiftX = 0f;
+        float shiftY = 0f;
+
+        if (fontSize == TerminalFontSize.SMALL) {
+            scaleFactor = 0.5f;
+            shiftX = -2.0f;
+            shiftY = -1.0f;
+        }
+
+        final float inverseScaleFactor = 1.0f / scaleFactor;
 
         fontRenderer.setUnicodeFlag(false);
 
@@ -671,9 +681,9 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         GL11.glPushMatrix();
         GL11.glScaled(scaleFactor, scaleFactor, scaleFactor);
 
-        final int X = (int) (((float) x + offset - fontRenderer.getStringWidth(stackSize) * scaleFactor)
+        final int X = (int) ((shiftX + 16.0f + 1.0f - fontRenderer.getStringWidth(stackSize) * scaleFactor)
                 * inverseScaleFactor);
-        final int Y = (int) (((float) y + offset * scaleFactor) * inverseScaleFactor);
+        final int Y = (int) (alignBottom ? (shiftY + 16.0f - 7.0f * scaleFactor) * inverseScaleFactor : 1);
 
         fontRenderer.drawString(stackSize, X + 1, Y, 0);
         fontRenderer.drawString(stackSize, X - 1, Y, 0);
@@ -688,11 +698,11 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         fontRenderer.setUnicodeFlag(unicodeFlag);
     }
 
-    private String getToBeRenderedStackSize(final long originalSize) {
-        if (AEConfig.instance.useTerminalUseLargeFont()) {
-            return ReadableNumberConverter.INSTANCE.toSlimReadableForm(originalSize);
-        } else {
+    private String getToBeRenderedStackSize(final long originalSize, TerminalFontSize fontSize) {
+        if (fontSize == TerminalFontSize.SMALL) {
             return ReadableNumberConverter.INSTANCE.toWideReadableForm(originalSize);
+        } else {
+            return ReadableNumberConverter.INSTANCE.toSlimReadableForm(originalSize);
         }
     }
 
@@ -940,6 +950,26 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
     @Override
     public List<String> handleItemTooltip(ItemStack stack, int mouseX, int mouseY, List<String> currentToolTip) {
+
+        if (stack != null && isShiftKeyDown() && stack.hasTagCompound()) {
+            NBTTagCompound data = stack.getTagCompound();
+
+            if (data.hasKey(TLMTags.Quantity.tagName)) {
+                long quantity = data.getLong(TLMTags.Quantity.tagName);
+                long batch = data.getLong(TLMTags.Batch.tagName);
+
+                currentToolTip.add(
+                        I18n.format(NameConst.TT_LEVEL_MAINTAINER_REQUEST_SIZE, "\n", false) + ": "
+                                + NumberFormat.getNumberInstance(Locale.US).format(quantity));
+
+                if (batch > 0) {
+                    currentToolTip.add(
+                            I18n.format(NameConst.TT_LEVEL_MAINTAINER_BATCH_SIZE, "\n", false) + ": "
+                                    + NumberFormat.getNumberInstance(Locale.US).format(batch));
+                }
+            }
+        }
+
         return currentToolTip;
     }
 

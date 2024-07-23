@@ -18,6 +18,7 @@ import com.glodblock.github.common.block.BlockWalrus;
 import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
 import com.glodblock.github.common.item.ItemBasicFluidStoragePart;
 import com.glodblock.github.common.item.ItemCreativeFluidStorageCell;
+import com.glodblock.github.common.item.ItemEnergyCard;
 import com.glodblock.github.common.item.ItemFluidConversionMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
@@ -28,6 +29,7 @@ import com.glodblock.github.common.item.ItemFluidLevelEmitter;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.item.ItemFluidStorageHousing;
 import com.glodblock.github.common.item.ItemFluidStorageMonitor;
+import com.glodblock.github.common.item.ItemInfinityWaterStorageCell;
 import com.glodblock.github.common.item.ItemMultiFluidStorageCell;
 import com.glodblock.github.common.item.ItemPartFluidInterface;
 import com.glodblock.github.common.item.ItemPartFluidP2PInterface;
@@ -37,6 +39,7 @@ import com.glodblock.github.common.item.ItemPartFluidStorageBus;
 import com.glodblock.github.common.item.ItemPartFluidTerminal;
 import com.glodblock.github.common.item.ItemPartLevelTerminal;
 import com.glodblock.github.common.item.ItemPortableFluidCell;
+import com.glodblock.github.common.item.ItemQuantumBridgeCard;
 import com.glodblock.github.common.item.ItemWirelessFluidTerminal;
 import com.glodblock.github.common.item.ItemWirelessInterfaceTerminal;
 import com.glodblock.github.common.item.ItemWirelessLevelTerminal;
@@ -138,8 +141,12 @@ public class ItemAndBlockHolder {
             63,
             600000D).register();
     public static ItemCreativeFluidStorageCell CREATIVE_CELL = new ItemCreativeFluidStorageCell().register();
+    public static ItemInfinityWaterStorageCell INFINITY_WATER_CELL = new ItemInfinityWaterStorageCell().register();
     public static ItemBasicFluidStoragePart CELL_PART = new ItemBasicFluidStoragePart().register();
     public static ItemFluidStorageHousing CELL_HOUSING = new ItemFluidStorageHousing().register();
+
+    public static ItemEnergyCard ENERGY_CARD = new ItemEnergyCard().register();
+    public static ItemQuantumBridgeCard QUANTUM_BRIDGE_CARD = new ItemQuantumBridgeCard().register();
 
     public static void loadSetting() {
         if (!Config.fluidCells) return;

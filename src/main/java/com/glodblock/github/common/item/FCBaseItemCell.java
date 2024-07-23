@@ -16,8 +16,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.storage.CellType;
+import com.glodblock.github.common.storage.FluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IFluidCellInventory;
-import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
@@ -96,7 +96,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
         final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
                 .getCellInventory(stack, null, StorageChannel.FLUIDS);
 
-        if (inventory instanceof final IFluidCellInventoryHandler handler) {
+        if (inventory instanceof final FluidCellInventoryHandler handler) {
             final IFluidCellInventory cellInventory = handler.getCellInv();
 
             if (cellInventory != null) {
@@ -155,6 +155,9 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
                     } else {
                         lines.add(StatCollector.translateToLocal(NameConst.TT_SHIFT_FOR_MORE));
                     }
+                    if (handler.getSticky()) {
+                        lines.add(GuiText.Sticky.getLocal());
+                    }
                 }
             }
         }
@@ -187,7 +190,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
     @Override
     public IInventory getUpgradesInventory(ItemStack is) {
-        return new CellUpgrades(is, 0);
+        return new CellUpgrades(is, 2);
     }
 
     @Override

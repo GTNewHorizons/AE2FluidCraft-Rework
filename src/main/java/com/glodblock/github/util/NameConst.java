@@ -41,6 +41,8 @@ public class NameConst {
     public static final String ITEM_QUANTUM_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".quantum";
     public static final String ITEM_SINGULARITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".singularity";
     public static final String ITEM_ARTIFICIAL_UNIVERSE_STORAGE = ITEM_FLUID_STORAGE + ".artificial";
+    public static final String ITEM_INFINITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".infinity";
+    public static final String ITEM_INFINITY_WATER_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".water";
     public static final String ITEM_CREATIVE_FLUID_STORAGE = "creative_" + ITEM_FLUID_STORAGE;
     public static final String ITEM_FLUID_PORTABLE_CELL = "portable_fluid_cell";
     public static final String ITEM_WIRELESS_FLUID_TERMINAL = "wireless_fluid_terminal";
@@ -50,6 +52,8 @@ public class NameConst {
     public static final String ITEM_WIRELESS_FLUID_PATTERN_TERMINAL = "wireless_fluid_pattern_terminal";
     public static final String ITEM_FLUID_PART = "fluid_part";
     public static final String ITEM_FLUID_STORAGE_HOUSING = "fluid_storage_housing";
+    public static final String ITEM_QUANTUM_BRIDGE_CARD = "quantum_bridge_card";
+    public static final String ITEM_ENERGY_CARD = "energy_card";
 
     public static final String TT_KEY = FluidCraft.MODID + ".tooltip.";
     public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";
@@ -94,6 +98,11 @@ public class NameConst {
     public static final String TT_ULTRA_TERMINAL = TT_KEY + "ultra_terminal";
     public static final String TT_ULTRA_TERMINAL_TIPS = TT_ULTRA_TERMINAL + ".tips";
     public static final String TT_ULTRA_TERMINAL_TIPS_DESC = TT_ULTRA_TERMINAL_TIPS + ".desc";
+    public static final String TT_INFINITY_FLUID_STORAGE_TIPS = TT_KEY + "infinity_fluid";
+    public static final String TT_ENERGY_CARD = TT_KEY + "energy_card";
+    public static final String TT_ENERGY_CARD_DESC = TT_ENERGY_CARD + ".desc";
+    public static final String TT_QUANTUM_BRIDGE_CARD = TT_KEY + "quantum_bridge_card";
+    public static final String TT_QUANTUM_BRIDGE_CARD_DESC = TT_QUANTUM_BRIDGE_CARD + ".desc";
 
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";

@@ -1,6 +1,8 @@
 package com.glodblock.github.util;
 
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityBoosterCard;
+import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityEnergyCard;
+import static com.glodblock.github.util.Util.DimensionalCoordSide.hasEnergyCard;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -55,6 +58,7 @@ import appeng.tile.networking.TileWireless;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import baubles.api.BaublesApi;
+import codechicken.nei.recipe.StackInfo;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import io.netty.buffer.ByteBuf;
@@ -90,15 +94,19 @@ public final class Util {
             c.setValidContainer(false);
         }
         ticks++;
+
         if (ticks > 10 && wt != null) {
-            wt.extractAEPower(pm * ticks, Actionable.MODULATE, PowerMultiplier.CONFIG);
+            if (!hasEnergyCard(wt.getItemStack())) {
+                wt.extractAEPower(pm * ticks, Actionable.MODULATE, PowerMultiplier.CONFIG);
+            }
             ticks = 0;
         }
+
         return ticks;
     }
 
     public static boolean hasInfinityBoosterCard(ItemStack is) {
-        if (ModAndClassUtil.WCT && is.getItem() instanceof ItemBaseWirelessTerminal) {
+        if (is.getItem() instanceof ItemBaseWirelessTerminal) {
             NBTTagCompound data = Platform.openNbtData(is);
             return data.hasKey(infinityBoosterCard) && data.getBoolean(infinityBoosterCard);
         }
@@ -230,21 +238,10 @@ public final class Util {
 
     public static AEFluidStack getAEFluidFromItem(ItemStack stack) {
         if (stack != null) {
-            if (stack.getItem() instanceof IFluidContainerItem) {
-                FluidStack fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
-                if (fluid != null) {
-                    AEFluidStack fluid0 = AEFluidStack.create(fluid.copy());
-                    fluid0.setStackSize(fluid0.getStackSize() * stack.stackSize);
-                    return fluid0;
-                }
-            }
-            if (FluidContainerRegistry.isContainer(stack)) {
-                FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
-                if (fluid != null) {
-                    AEFluidStack fluid0 = AEFluidStack.create(fluid.copy());
-                    fluid0.setStackSize(fluid0.getStackSize() * stack.stackSize);
-                    return fluid0;
-                }
+            FluidStack fluid = getFluidFromItem(stack);
+
+            if (fluid != null) {
+                return AEFluidStack.create(fluid.copy());
             }
         }
         return null;
@@ -252,21 +249,26 @@ public final class Util {
 
     public static FluidStack getFluidFromItem(ItemStack stack) {
         if (stack != null) {
+            FluidStack fluid = null;
+
             if (stack.getItem() instanceof IFluidContainerItem) {
-                FluidStack fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
-                if (fluid != null) {
-                    FluidStack fluid0 = fluid.copy();
-                    fluid0.amount *= stack.stackSize;
-                    return fluid0;
-                }
+                fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
+            } else if (FluidContainerRegistry.isContainer(stack)) {
+                fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
+            } else if (stack.getItem() instanceof ItemFluidPacket) {
+                fluid = ItemFluidPacket.getFluidStack(stack);
+            } else if (stack.getItem() instanceof ItemFluidDrop) {
+                fluid = ItemFluidDrop.getFluidStack(Util.copyStackWithSize(stack, 1));
             }
-            if (FluidContainerRegistry.isContainer(stack)) {
-                FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
-                if (fluid != null) {
-                    FluidStack fluid0 = fluid.copy();
-                    fluid0.amount *= stack.stackSize;
-                    return fluid0;
-                }
+
+            if (fluid == null) {
+                fluid = StackInfo.getFluid(Util.copyStackWithSize(stack, 1));
+            }
+
+            if (fluid != null) {
+                FluidStack fluid0 = fluid.copy();
+                fluid0.amount *= stack.stackSize;
+                return fluid0;
             }
         }
         return null;
@@ -429,6 +431,8 @@ public final class Util {
     }
 
     public static class FluidUtil {
+
+        public static final ItemStack water_bucket = new ItemStack(Items.water_bucket, 1);
 
         public static void fluidTankInfoWriteToNBT(FluidTankInfo[] infos, NBTTagCompound data) {
             int i = 0;
@@ -635,6 +639,14 @@ public final class Util {
                     data.getInteger("dim"),
                     ForgeDirection.getOrientation(data.getInteger("side")),
                     data.getString("name"));
+        }
+
+        public static boolean hasEnergyCard(ItemStack is) {
+            if (is.getItem() instanceof ItemBaseWirelessTerminal) {
+                NBTTagCompound data = Platform.openNbtData(is);
+                return (data.hasKey(infinityEnergyCard) && data.getBoolean(infinityEnergyCard));
+            }
+            return false;
         }
 
     }

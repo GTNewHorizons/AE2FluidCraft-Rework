@@ -86,4 +86,9 @@ public interface IFluidCellInventory extends IMEInventory<IAEFluidStack> {
     long getTotalFluidTypes();
 
     List<IAEFluidStack> getContents();
+
+    /**
+     * @return access installed upgrades.
+     */
+    IInventory getUpgradesInventory();
 }

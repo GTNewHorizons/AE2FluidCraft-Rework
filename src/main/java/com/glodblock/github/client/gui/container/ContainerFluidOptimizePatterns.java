@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
@@ -13,22 +14,20 @@ import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.BlockPos;
 
-import appeng.api.networking.IGrid;
-import appeng.api.networking.crafting.ICraftingJob;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.storage.ITerminalHost;
-import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.container.implementations.ContainerOptimizePatterns;
-import appeng.crafting.v2.CraftingJobV2;
-import appeng.tile.misc.TilePatternOptimizationMatrix;
 
-public class ContainerFluidCraftConfirm extends ContainerCraftConfirm {
+public class ContainerFluidOptimizePatterns extends ContainerOptimizePatterns {
 
-    public ContainerFluidCraftConfirm(final InventoryPlayer ip, final ITerminalHost te) {
+    public ContainerFluidOptimizePatterns(InventoryPlayer ip, ITerminalHost te) {
         super(ip, te);
+    }
+
+    public World getWorld() {
+        return this.getPlayerInv().player.worldObj;
     }
 
     @Override
@@ -65,36 +64,6 @@ public class ContainerFluidCraftConfirm extends ContainerCraftConfirm {
                     new BlockPos(this.getOpenContext().getTile()),
                     Objects.requireNonNull(this.getOpenContext().getSide()),
                     originalGui);
-        }
-    }
-
-    @Override
-    public void optimizePatterns() {
-        // only V2 supported
-        IGrid grid = Ae2Reflect.getGrid(this);
-        ICraftingJob result = Ae2Reflect.getResult(this);
-        if (result instanceof CraftingJobV2 && !this.isSimulation()
-                && grid != null
-                && !grid.getMachines(TilePatternOptimizationMatrix.class).isEmpty()) {
-            final IActionHost ah = this.getActionHost();
-            if (ah instanceof IWirelessTerminal) {
-                InventoryHandler.openGui(
-                        this.getInventoryPlayer().player,
-                        getWorld(),
-                        new BlockPos(((IWirelessTerminal) ah).getInventorySlot(), 0, 0),
-                        ForgeDirection.UNKNOWN,
-                        GuiType.FLUID_OPTIMIZE_PATTERNS_ITEM);
-            } else if (this.getOpenContext() != null) {
-                InventoryHandler.openGui(
-                        this.getInventoryPlayer().player,
-                        getWorld(),
-                        new BlockPos(this.getOpenContext().getTile()),
-                        Objects.requireNonNull(this.getOpenContext().getSide()),
-                        GuiType.FLUID_OPTIMIZE_PATTERNS);
-            }
-            if (this.getPlayerInv().player.openContainer instanceof ContainerOptimizePatterns cop) {
-                cop.setResult(result);
-            }
         }
     }
 }

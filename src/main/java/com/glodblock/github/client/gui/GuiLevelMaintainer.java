@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -40,6 +41,7 @@ import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
+import com.gtnewhorizon.gtnhlib.util.parsing.MathExpressionParser;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.DimensionalCoord;
@@ -56,6 +58,7 @@ import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
 import cofh.core.render.CoFHFontRenderer;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
 @Optional.Interface(modid = "NotEnoughItems", iface = "codechicken.nei.api.INEIGuiHandler")
@@ -74,6 +77,10 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     protected GuiType originalGui;
     protected Util.DimensionalCoordSide originalBlockPos;
     protected GuiTabButton originalGuiBtn;
+
+    protected static final boolean isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
+    protected static final Pattern numberPattern = isGTNHLibLoaded ? MathExpressionParser.EXPRESSION_PATTERN
+            : Pattern.compile("^[0-9]+");
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
@@ -278,7 +285,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                 this.input.textboxKeyTyped(character, key);
             }
             super.keyTyped(character, key);
-            if (!this.input.getText().matches("^[0-9]+")) {
+            if (!numberPattern.matcher(this.input.getText()).matches()) {
                 this.input.setTextColor(0xFF0000);
             } else {
                 this.input.setTextColor(0xFFFFFF);
@@ -411,7 +418,12 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
         private boolean send(Widget widget) {
             if (((SlotFluidConvertingFake) cont.inventorySlots.get(widget.idx)).getHasStack()) {
-                if (!widget.textField.getText().isEmpty() && widget.textField.getText().matches("^[0-9]+")) {
+                if (isGTNHLibLoaded) {
+                    long value = (long) MathExpressionParser.parse(widget.textField.getText());
+                    widget.textField.setText(String.valueOf(value));
+                }
+                if (!widget.textField.getText().isEmpty()
+                        && numberPattern.matcher(widget.textField.getText()).matches()) {
                     String str = widget.textField.getText().replaceAll("^(0+)", "");
                     widget.textField.setText(str.isEmpty() ? "0" : str);
                     FluidCraft.proxy.netHandler.sendToServer(

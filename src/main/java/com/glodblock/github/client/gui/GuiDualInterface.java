@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.StatCollector;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.glodblock.github.client.gui.container.ContainerDualInterface;
@@ -24,12 +25,16 @@ import appeng.api.config.Upgrades;
 import appeng.api.config.YesNo;
 import appeng.client.gui.implementations.GuiUpgradeable;
 import appeng.client.gui.widgets.GuiImgButton;
+import appeng.client.gui.widgets.GuiSimpleImgButton;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.GuiToggleButton;
 import appeng.container.implementations.ContainerInterface;
+import appeng.core.AELog;
+import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketConfigButton;
+import appeng.core.sync.packets.PacketValueConfig;
 import appeng.helpers.IInterfaceHost;
 
 public class GuiDualInterface extends GuiUpgradeable {
@@ -40,6 +45,8 @@ public class GuiDualInterface extends GuiUpgradeable {
     private GuiToggleButton interfaceMode;
     private GuiImgButton insertionMode;
     private GuiImgButton sidelessMode;
+    private GuiSimpleImgButton doublePatterns;
+    private GuiToggleButton patternOptimization;
     private GuiImgButton advancedBlockingMode;
     private GuiImgButton lockCraftingMode;
     private final IInterfaceHost host;
@@ -70,45 +77,74 @@ public class GuiDualInterface extends GuiUpgradeable {
                 itemRender);
         this.buttonList.add(this.switcher);
 
-        this.BlockMode = new GuiImgButton(this.guiLeft - 18, this.guiTop + 8, Settings.BLOCK, YesNo.NO);
+        int offset = 8;
+
+        this.BlockMode = new GuiImgButton(this.guiLeft - 18, this.guiTop + offset, Settings.BLOCK, YesNo.NO);
         this.buttonList.add(this.BlockMode);
+
+        offset += 18;
 
         this.interfaceMode = new GuiToggleButton(
                 this.guiLeft - 18,
-                this.guiTop + 26,
+                this.guiTop + offset,
                 84,
                 85,
                 GuiText.InterfaceTerminal.getLocal(),
                 GuiText.InterfaceTerminalHint.getLocal());
         this.buttonList.add(this.interfaceMode);
 
+        offset += 18;
+
         this.insertionMode = new GuiImgButton(
                 this.guiLeft - 18,
-                this.guiTop + 44,
+                this.guiTop + offset,
                 Settings.INSERTION_MODE,
                 InsertionMode.DEFAULT);
         this.buttonList.add(this.insertionMode);
 
+        offset += 18;
+
+        this.doublePatterns = new GuiSimpleImgButton(this.guiLeft - 18, this.guiTop + offset, 71, "");
+        this.doublePatterns.enabled = false;
+        this.buttonList.add(this.doublePatterns);
+
+        offset += 18;
+
+        this.patternOptimization = new GuiToggleButton(
+                this.guiLeft - 18,
+                this.guiTop + offset,
+                178,
+                194,
+                GuiText.PatternOptimization.getLocal(),
+                GuiText.PatternOptimizationHint.getLocal());
+        this.buttonList.add(this.patternOptimization);
+
+        offset += 18;
+
         this.advancedBlockingMode = new GuiImgButton(
                 this.guiLeft - 18,
-                this.guiTop + 62,
+                this.guiTop + offset,
                 Settings.ADVANCED_BLOCKING_MODE,
                 AdvancedBlockingMode.DEFAULT);
         this.buttonList.add(this.advancedBlockingMode);
         this.advancedBlockingMode.visible = this.bc.getInstalledUpgrades(Upgrades.ADVANCED_BLOCKING) > 0;
 
+        offset += 18;
+
         if (isTile()) {
             this.sidelessMode = new GuiImgButton(
                     this.guiLeft - 18,
-                    this.guiTop + 80,
+                    this.guiTop + offset,
                     Settings.SIDELESS_MODE,
                     SidelessMode.SIDELESS);
             this.buttonList.add(this.sidelessMode);
+
+            offset += 18;
         }
 
         this.lockCraftingMode = new GuiImgButton(
                 this.guiLeft - 18,
-                this.guiTop + 98,
+                this.guiTop + offset,
                 Settings.LOCK_CRAFTING_MODE,
                 LockCraftingMode.NONE);
         this.lockCraftingMode.visible = this.bc.getInstalledUpgrades(Upgrades.LOCK_CRAFTING) > 0;
@@ -126,6 +162,16 @@ public class GuiDualInterface extends GuiUpgradeable {
         }
         if (this.insertionMode != null) {
             this.insertionMode.set(((ContainerInterface) this.cvb).getInsertionMode());
+        }
+        if (this.doublePatterns != null) {
+            this.doublePatterns.enabled = ((ContainerInterface) this.cvb).isAllowedToMultiplyPatterns;
+            if (this.doublePatterns.enabled) this.doublePatterns.setTooltip(
+                    ButtonToolTips.DoublePatterns.getLocal() + "\n" + ButtonToolTips.DoublePatternsHint.getLocal());
+            else this.doublePatterns.setTooltip(
+                    ButtonToolTips.DoublePatterns.getLocal() + "\n" + ButtonToolTips.OptimizePatternsNoReq.getLocal());
+        }
+        if (this.patternOptimization != null) {
+            this.patternOptimization.setState(((ContainerInterface) this.cvb).getPatternOptimization() == YesNo.YES);
         }
         if (this.sidelessMode != null) {
             this.sidelessMode.set(((ContainerDualInterface) this.cvb).getSidelessMode());
@@ -169,6 +215,17 @@ public class GuiDualInterface extends GuiUpgradeable {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.BlockMode.getSetting(), backwards));
         } else if (btn == this.insertionMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.insertionMode.getSetting(), backwards));
+        } else if (btn == this.doublePatterns) {
+            try {
+                int val = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 1 : 0;
+                if (backwards) val |= 0b10;
+                NetworkHandler.instance
+                        .sendToServer(new PacketValueConfig("Interface.DoublePatterns", String.valueOf(val)));
+            } catch (final Throwable e) {
+                AELog.debug(e);
+            }
+        } else if (btn == this.patternOptimization) {
+            NetworkHandler.instance.sendToServer(new PacketConfigButton(Settings.PATTERN_OPTIMIZATION, backwards));
         } else if (btn == this.sidelessMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.sidelessMode.getSetting(), backwards));
         } else if (btn == this.advancedBlockingMode) {

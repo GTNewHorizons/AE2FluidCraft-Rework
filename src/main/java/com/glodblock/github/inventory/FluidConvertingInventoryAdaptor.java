@@ -18,6 +18,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 import com.glodblock.github.common.Config;
+import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.PartFluidExportBus;
 import com.glodblock.github.common.parts.PartFluidInterface;
@@ -118,7 +119,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
             if (fluid != null) {
                 int filled = fillSideFluid(fluid, this.invFluids, this.side, true);
                 fluid.amount -= filled;
-                return ItemFluidPacket.newStack(fluid);
+                return ItemFluidDrop.newStack(fluid);
             } else {
                 ItemStack notFilled = fillSideItem(toBeAdded, this.invItems, insertionMode, true);
                 if (notFilled != null) {
@@ -338,8 +339,13 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     }
 
     private boolean isGTMachine(Object o) {
-        return ModAndClassUtil.GT5 && o instanceof TileEntity
-                && ((TileEntity) o).getBlockType().getUnlocalizedName().equals("gt.blockmachines");
+        if (!(ModAndClassUtil.GT5 || ModAndClassUtil.GT5NH)) return false;
+
+        if (o instanceof TileEntity te) {
+            return te.getBlockType().getUnlocalizedName().equals("gt.blockmachines");
+        }
+
+        return false;
     }
 
     private boolean isItemConduit(TileEntity te) {

@@ -61,6 +61,26 @@ public class CommonProxy {
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 1);
         Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 5);
         Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
+
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL64K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL256K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1024K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384K), 1);
+
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL64KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL256KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1024KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384KM), 1);
+
         if (Config.fluidIOBus) {
             Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_EXPORT_BUS), 2);
             Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_IMPORT_BUS), 2);

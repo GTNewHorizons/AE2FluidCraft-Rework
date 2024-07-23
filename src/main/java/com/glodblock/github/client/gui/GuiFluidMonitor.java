@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.client.gui.base.FCGuiMonitor;
 import com.glodblock.github.client.gui.container.ContainerFluidMonitor;
@@ -55,8 +56,9 @@ public class GuiFluidMonitor extends FCGuiMonitor<IAEFluidStack> {
 
     @Override
     public void setTextFieldValue(String displayName, int mousex, int mousey, ItemStack stack) {
-        if (Util.getFluidFromItem(stack) != null) {
-            setSearchString(Util.getFluidFromItem(stack).getLocalizedName(), true);
+        final FluidStack fluid = Util.getFluidFromItem(stack);
+        if (fluid != null) {
+            setSearchString(fluid.getLocalizedName(), true);
         }
     }
 }

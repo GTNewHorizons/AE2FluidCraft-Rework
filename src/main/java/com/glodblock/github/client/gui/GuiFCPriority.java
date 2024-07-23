@@ -11,6 +11,7 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 
 import appeng.container.implementations.ContainerPriority;
+import appeng.core.AEConfig;
 import appeng.core.AELog;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
@@ -32,6 +33,11 @@ public class GuiFCPriority extends FCGuiAmount {
         this.submit.visible = false;
         this.buttonList.remove(this.submit);
         ((ContainerPriority) this.inventorySlots).setTextField(this.amountBox);
+    }
+
+    @Override
+    protected int getIncrementQuantity(int i) {
+        return AEConfig.instance.priorityByStacksAmounts(i);
     }
 
     @Override
