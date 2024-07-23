@@ -40,6 +40,7 @@ public class NameConst {
     public static final String ITEM_MULTI_FLUID_STORAGE = "multi_fluid_storage";
     public static final String ITEM_QUANTUM_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".quantum";
     public static final String ITEM_SINGULARITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".singularity";
+    public static final String ITEM_ARTIFICIAL_UNIVERSE_STORAGE = ITEM_FLUID_STORAGE + ".artificial";
     public static final String ITEM_CREATIVE_FLUID_STORAGE = "creative_" + ITEM_FLUID_STORAGE;
     public static final String ITEM_FLUID_PORTABLE_CELL = "portable_fluid_cell";
     public static final String ITEM_WIRELESS_FLUID_TERMINAL = "wireless_fluid_terminal";

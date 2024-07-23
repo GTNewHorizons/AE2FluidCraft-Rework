@@ -131,6 +131,12 @@ public class ItemAndBlockHolder {
             8,
             1,
             5).register();
+    public static ItemFluidExtremeStorageCell ARTIFICIAL_UNIVERSE_CELL = new ItemFluidExtremeStorageCell(
+            NameConst.ITEM_ARTIFICIAL_UNIVERSE_STORAGE,
+            Long.MAX_VALUE / 2048,
+            16384,
+            63,
+            600000D).register();
     public static ItemCreativeFluidStorageCell CREATIVE_CELL = new ItemCreativeFluidStorageCell().register();
     public static ItemBasicFluidStoragePart CELL_PART = new ItemBasicFluidStoragePart().register();
     public static ItemFluidStorageHousing CELL_HOUSING = new ItemFluidStorageHousing().register();
