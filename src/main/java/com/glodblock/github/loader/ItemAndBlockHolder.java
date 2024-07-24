@@ -138,7 +138,7 @@ public class ItemAndBlockHolder {
             NameConst.ITEM_ARTIFICIAL_UNIVERSE_STORAGE,
             Long.MAX_VALUE / 2048,
             16384,
-            63,
+            5,
             600000D).register();
     public static ItemCreativeFluidStorageCell CREATIVE_CELL = new ItemCreativeFluidStorageCell().register();
     public static ItemInfinityWaterStorageCell INFINITY_WATER_CELL = new ItemInfinityWaterStorageCell().register();
