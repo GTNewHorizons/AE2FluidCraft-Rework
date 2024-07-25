@@ -184,7 +184,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         return true;
     }
 
-    public IItemList<IAEFluidStack> getAvailableItems(IItemList out) {
+    public IItemList<IAEFluidStack> getAvailableItems(IItemList out, int iteration) {
 
         for (IAEFluidStack fs : this.cache) {
             out.addStorage(fs);
@@ -194,7 +194,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     }
 
     @Override
-    public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request) {
+    public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request, int iteration) {
         return this.cache.findPrecise(request);
     }
 

@@ -380,7 +380,7 @@ public class FluidCellInventory implements IFluidCellInventory {
     }
 
     @Override
-    public IItemList<IAEFluidStack> getAvailableItems(IItemList<IAEFluidStack> out) {
+    public IItemList<IAEFluidStack> getAvailableItems(IItemList<IAEFluidStack> out, int iteration) {
         for (final IAEFluidStack i : this.getCellFluids()) {
             out.add(i);
         }
@@ -388,7 +388,7 @@ public class FluidCellInventory implements IFluidCellInventory {
     }
 
     @Override
-    public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request) {
+    public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request, int iteration) {
         return this.getCellFluids().findPrecise(request);
     }
 

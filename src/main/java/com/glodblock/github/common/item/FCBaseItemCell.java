@@ -37,6 +37,7 @@ import appeng.items.AEBaseItem;
 import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
 import appeng.util.InventoryAdaptor;
+import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.ReadableNumberConverter;
 
@@ -224,7 +225,8 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
                     .getCellInventory(stack, null, StorageChannel.FLUIDS);
             if (inv != null && playerInventory.getCurrentItem() == stack) {
                 final InventoryAdaptor ia = InventoryAdaptor.getAdaptor(player, ForgeDirection.UNKNOWN);
-                final IItemList<IAEFluidStack> list = inv.getAvailableItems(StorageChannel.FLUIDS.createList());
+                final IItemList<IAEFluidStack> list = inv
+                        .getAvailableItems(StorageChannel.FLUIDS.createList(), IterationCounter.fetchNewId());
                 if (list.isEmpty() && ia != null) {
                     playerInventory.setInventorySlotContents(playerInventory.currentItem, null);
 
