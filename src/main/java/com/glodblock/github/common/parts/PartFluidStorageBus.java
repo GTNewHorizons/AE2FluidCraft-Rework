@@ -67,6 +67,7 @@ import appeng.parts.automation.PartUpgradeable;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.tile.networking.TileCableBus;
+import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.prioitylist.PrecisePriorityList;
@@ -207,11 +208,11 @@ public class PartFluidStorageBus extends PartUpgradeable
                 if (!currentAccess.hasPermission(AccessRestriction.READ)) {
                     readOncePass = true;
                 }
-                before = in.getAvailableItems(before);
+                before = in.getAvailableItems(before, IterationCounter.fetchNewId());
                 in.setBaseAccess(currentAccess);
                 accessChanged = false;
             } else {
-                before = in.getAvailableItems(before);
+                before = in.getAvailableItems(before, IterationCounter.fetchNewId());
             }
         }
 
@@ -225,7 +226,7 @@ public class PartFluidStorageBus extends PartUpgradeable
 
         if (in != out) {
             if (out != null) {
-                after = out.getAvailableItems(after);
+                after = out.getAvailableItems(after, IterationCounter.fetchNewId());
             }
             Platform.postListChanges(before, after, this, this.source);
         }

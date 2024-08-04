@@ -23,6 +23,7 @@ import appeng.api.storage.data.IItemList;
 import appeng.container.guisync.GuiSync;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.tile.inventory.AppEngInternalAEInventory;
+import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.iterators.NullIterator;
 
@@ -156,7 +157,7 @@ public class ContainerFluidStorageBus extends FCContainerFluidConfigurable {
         Iterator<IAEFluidStack> i = new NullIterator<>();
         if (cellInv != null) {
             final IItemList<IAEFluidStack> list = cellInv
-                    .getAvailableItems(AEApi.instance().storage().createFluidList());
+                    .getAvailableItems(AEApi.instance().storage().createFluidList(), IterationCounter.fetchNewId());
             i = list.iterator();
         }
 
