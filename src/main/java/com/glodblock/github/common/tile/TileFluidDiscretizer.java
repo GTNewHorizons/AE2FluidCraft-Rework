@@ -270,6 +270,7 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
 
         FluidCraftingInventory() {
             invHandler.setPriority(Integer.MAX_VALUE);
+            invHandler.setCraftingInventory(true);
         }
 
         @Override
