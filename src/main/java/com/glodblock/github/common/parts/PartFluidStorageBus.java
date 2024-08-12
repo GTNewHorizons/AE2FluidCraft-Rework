@@ -222,6 +222,10 @@ public class PartFluidStorageBus extends PartUpgradeable
         }
 
         final MEInventoryHandler<IAEFluidStack> out = this.getInternalHandler();
+        if (this.monitor != null) {
+            this.monitor.onTick();
+        }
+
         IItemList<IAEFluidStack> after = AEApi.instance().storage().createFluidList();
 
         if (in != out) {
