@@ -264,9 +264,42 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
         }
     }
 
+    private class FluidCraftingInventoryHandler extends MEInventoryHandler<IAEFluidStack> {
+
+        public FluidCraftingInventoryHandler(IMEInventory<IAEFluidStack> i, StorageChannel channel) {
+            super(i, channel);
+        }
+
+        @Override
+        public boolean isPrioritized(IAEFluidStack input) {
+            return true;
+        }
+
+        @Override
+        public boolean canAccept(IAEFluidStack input) {
+            ICraftingGrid craftingGrid;
+            try {
+                craftingGrid = getProxy().getGrid().getCache(ICraftingGrid.class);
+            } catch (GridAccessException e) {
+                return false;
+            }
+            if (craftingGrid instanceof CraftingGridCache craftingGridCache) {
+                return craftingGridCache.canAccept(ItemFluidDrop.newAeStack(input));
+            }
+            return false;
+        }
+
+        @Override
+        public boolean isAutoCraftingInventory() {
+            return true;
+        }
+    }
+
     private class FluidCraftingInventory implements IMEInventory<IAEFluidStack> {
 
-        private final MEInventoryHandler<IAEFluidStack> invHandler = new MEInventoryHandler<>(this, getChannel());
+        private final MEInventoryHandler<IAEFluidStack> invHandler = new FluidCraftingInventoryHandler(
+                this,
+                getChannel());
 
         FluidCraftingInventory() {
             invHandler.setPriority(Integer.MAX_VALUE);
