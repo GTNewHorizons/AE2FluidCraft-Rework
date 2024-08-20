@@ -1,8 +1,11 @@
 package com.glodblock.github.common.parts;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -87,8 +90,10 @@ public class PartFluidStorageBus extends PartUpgradeable
     private int handlerHash = 0;
     private boolean wasActive = false;
     private byte resetCacheLogic = 0;
-    private boolean accessChanged;
-    private boolean readOncePass;
+    /**
+     * used when changing access settings to read the changes once
+     */
+    private boolean readOncePass = false;
 
     public PartFluidStorageBus(ItemStack is) {
         super(is);
@@ -131,8 +136,13 @@ public class PartFluidStorageBus extends PartUpgradeable
 
     @Override
     public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {
-        if (settingName.name().equals("ACCESS")) {
-            this.accessChanged = true;
+        if (settingName == Settings.ACCESS && this.handler != null) {
+            AccessRestriction currentAccess = this.handler.getAccess();
+            if (newValue != currentAccess && currentAccess.hasPermission(AccessRestriction.READ)) {
+                if (newValue == AccessRestriction.WRITE || newValue == AccessRestriction.READ) {
+                    this.readOncePass = true;
+                }
+            }
         }
         this.resetCache(true);
         this.getHost().markForSave();
@@ -149,7 +159,6 @@ public class PartFluidStorageBus extends PartUpgradeable
         super.readFromNBT(data);
         this.config.readFromNBT(data, "config");
         this.priority = data.getInteger("priority");
-        this.accessChanged = false;
     }
 
     @Override
@@ -202,18 +211,7 @@ public class PartFluidStorageBus extends PartUpgradeable
         final MEInventoryHandler<IAEFluidStack> in = this.getInternalHandler();
         IItemList<IAEFluidStack> before = AEApi.instance().storage().createFluidList();
         if (in != null) {
-            if (accessChanged) {
-                AccessRestriction currentAccess = (AccessRestriction) this.getConfigManager()
-                        .getSetting(Settings.ACCESS);
-                if (!currentAccess.hasPermission(AccessRestriction.READ)) {
-                    readOncePass = true;
-                }
-                before = in.getAvailableItems(before, IterationCounter.fetchNewId());
-                in.setBaseAccess(currentAccess);
-                accessChanged = false;
-            } else {
-                before = in.getAvailableItems(before, IterationCounter.fetchNewId());
-            }
+            before = in.getAvailableItems(before, IterationCounter.fetchNewId());
         }
 
         this.cached = false;
@@ -244,23 +242,45 @@ public class PartFluidStorageBus extends PartUpgradeable
     @Override
     public void postChange(final IBaseMonitor<IAEFluidStack> monitor, final Iterable<IAEFluidStack> change,
             final BaseActionSource source) {
-        if (this.getProxy().isActive()) {
-            AccessRestriction currentAccess = (AccessRestriction) this.getConfigManager().getSetting(Settings.ACCESS);
-            if (readOncePass) {
-                readOncePass = false;
-                try {
-                    this.getProxy().getStorage()
-                            .postAlterationOfStoredItems(StorageChannel.FLUIDS, change, this.source);
-                } catch (final GridAccessException ignore) {}
-                return;
+        try {
+            if (this.getProxy().isActive()) {
+                if (!this.readOncePass) {
+                    AccessRestriction currentAccess = (AccessRestriction) this.getConfigManager()
+                            .getSetting(Settings.ACCESS);
+                    if (!currentAccess.hasPermission(AccessRestriction.READ)) {
+                        return;
+                    }
+                }
+                Iterable<IAEFluidStack> filteredChanges = this.filterChanges(change, this.readOncePass);
+                this.readOncePass = false;
+                if (filteredChanges == null) return;
+                this.getProxy().getStorage()
+                        .postAlterationOfStoredItems(StorageChannel.FLUIDS, filteredChanges, this.source);
             }
-            if (!currentAccess.hasPermission(AccessRestriction.READ)) {
-                return;
-            }
-            try {
-                this.getProxy().getStorage().postAlterationOfStoredItems(StorageChannel.FLUIDS, change, source);
-            } catch (final GridAccessException ignore) {}
+        } catch (final GridAccessException ignore) {}
+    }
+
+    /**
+     * Filters the changes to only include fluids that pass the handlers extract filter. Will return null if none of the
+     * changes match the filter.
+     */
+    @Nullable
+    private Iterable<IAEFluidStack> filterChanges(final Iterable<IAEFluidStack> change, final boolean readOncePass) {
+        if (readOncePass) {
+            return change;
         }
+
+        if (this.handler != null && this.handler.isExtractFilterActive()
+                && !this.handler.getExtractPartitionList().isEmpty()) {
+            List<IAEFluidStack> filteredChanges = new ArrayList<>();
+            for (final IAEFluidStack changedFluid : change) {
+                if (this.handler.getExtractPartitionList().isListed(changedFluid)) {
+                    filteredChanges.add(changedFluid);
+                }
+            }
+            return filteredChanges.isEmpty() ? null : Collections.unmodifiableList(filteredChanges);
+        }
+        return change;
     }
 
     @Override
@@ -370,16 +390,21 @@ public class PartFluidStorageBus extends PartUpgradeable
                 if (inv instanceof final MEMonitorIFluidHandler h) {
                     h.setMode((StorageFilter) this.getConfigManager().getSetting(Settings.STORAGE_FILTER));
                     h.setActionSource(new MachineSource(this));
-                    this.monitor = (MEMonitorIFluidHandler) inv;
+                    this.monitor = h;
                 }
                 if (inv != null) {
                     this.handler = new MEInventoryHandler(inv, StorageChannel.FLUIDS);
-                    this.handler.setBaseAccess((AccessRestriction) this.getConfigManager().getSetting(Settings.ACCESS));
+                    AccessRestriction currentAccess = (AccessRestriction) this.getConfigManager().getSetting(Settings.ACCESS);
+                    this.handler.setBaseAccess(currentAccess);
                     this.handler.setWhitelist(
                             this.getInstalledUpgrades(Upgrades.INVERTER) > 0 ? IncludeExclude.BLACKLIST
                                     : IncludeExclude.WHITELIST);
                     this.handler.setSticky(this.getInstalledUpgrades(Upgrades.STICKY) > 0);
                     this.handler.setPriority(this.priority);
+                    // only READ since READ_WRITE would break compat of existing storage buses
+                    // could use a new setting that is applied via button or a card too
+                    this.handler.setIsExtractFilterActive(currentAccess == AccessRestriction.READ);
+
                     if (inv instanceof IMEMonitor) {
                         ((IBaseMonitor) inv).addListener(this, this.handler);
                     }
@@ -390,7 +415,9 @@ public class PartFluidStorageBus extends PartUpgradeable
                         final IAEItemStack is = this.config.getAEStackInSlot(x);
                         if (is != null) priorityList.add(AEFluidStack.create(ItemFluidPacket.getFluidStack(is)));
                     }
-                    this.handler.setPartitionList(new PrecisePriorityList(priorityList));
+                    PrecisePriorityList partitionList = new PrecisePriorityList(priorityList);
+                    this.handler.setPartitionList(partitionList);
+                    this.handler.setExtractPartitionList(partitionList);
                 }
             }
         }
