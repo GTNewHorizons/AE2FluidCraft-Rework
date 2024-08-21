@@ -35,7 +35,7 @@
  */
 dependencies {
     api('com.github.GTNewHorizons:NotEnoughItems:2.6.26-GTNH:dev')
-    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-430-GTNH:dev')
+    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-434-GTNH-pre:dev')
     api('curse.maven:cofh-core-69162:2388751')
     api('com.github.GTNewHorizons:waila:1.8.1:dev')
 
@@ -46,7 +46,7 @@ dependencies {
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.35:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ForestryMC:4.9.7:dev')
     compileOnly('com.github.GTNewHorizons:EnderIO:2.8.17:dev')
-    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.49.05:dev') {
+    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.49.18:dev') {
         exclude group: 'com.github.GTNewHorizons', module: 'AE2FluidCraft-Rework'
     }
 
@@ -54,7 +54,7 @@ dependencies {
     compileOnly('com.gregoriust.gregtech:gregtech_1.7.10:6.14.23:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:OpenComputers:1.10.20-GTNH:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.6.22-GTNH:dev') { transitive = false }
-    compileOnly("com.github.GTNewHorizons:Hodgepodge:2.5.42:dev") { transitive = false }
+    compileOnly("com.github.GTNewHorizons:Hodgepodge:2.5.48:dev") { transitive = false }
 
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:DuraDisplay:1.3.2:dev")
 	runtimeOnlyNonPublishable("com.github.GTNewHorizons:GTNHLib:0.4.3:dev")
