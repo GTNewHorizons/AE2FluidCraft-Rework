@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -91,7 +92,7 @@ public class PartFluidStorageBus extends PartUpgradeable
     private boolean wasActive = false;
     private byte resetCacheLogic = 0;
     /**
-     * used when changing access settings to read the changes once
+     * used to read changes once when the list of extractable items was changed
      */
     private boolean readOncePass = false;
 
@@ -136,14 +137,6 @@ public class PartFluidStorageBus extends PartUpgradeable
 
     @Override
     public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {
-        if (settingName == Settings.ACCESS && this.handler != null) {
-            AccessRestriction currentAccess = this.handler.getAccess();
-            if (newValue != currentAccess && currentAccess.hasPermission(AccessRestriction.READ)) {
-                if (newValue == AccessRestriction.WRITE || newValue == AccessRestriction.READ) {
-                    this.readOncePass = true;
-                }
-            }
-        }
         this.resetCache(true);
         this.getHost().markForSave();
     }
@@ -273,8 +266,9 @@ public class PartFluidStorageBus extends PartUpgradeable
         if (this.handler != null && this.handler.isExtractFilterActive()
                 && !this.handler.getExtractPartitionList().isEmpty()) {
             List<IAEFluidStack> filteredChanges = new ArrayList<>();
+            Predicate<IAEFluidStack> extractFilterCondition = this.handler.getExtractFilterCondition();
             for (final IAEFluidStack changedFluid : change) {
-                if (this.handler.getExtractPartitionList().isListed(changedFluid)) {
+                if (extractFilterCondition.test(changedFluid)) {
                     filteredChanges.add(changedFluid);
                 }
             }
@@ -381,6 +375,7 @@ public class PartFluidStorageBus extends PartUpgradeable
         this.handlerHash = newHandlerHash;
         this.handler = null;
         this.monitor = null;
+        this.readOncePass = true;
         if (target != null) {
             final IExternalStorageHandler esh = AEApi.instance().registries().externalStorage()
                     .getHandler(target, this.getSide().getOpposite(), StorageChannel.FLUIDS, this.source);
