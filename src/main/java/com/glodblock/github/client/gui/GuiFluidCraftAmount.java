@@ -3,6 +3,8 @@ package com.glodblock.github.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 
+import org.lwjgl.input.Mouse;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.base.FCGuiAmount;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
@@ -17,11 +19,17 @@ import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.CPacketCraftRequest;
 
+import appeng.api.config.CraftingMode;
+import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
+import appeng.client.gui.widgets.GuiImgButton;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.core.localization.GuiText;
+import appeng.util.Platform;
 
 public class GuiFluidCraftAmount extends FCGuiAmount {
+
+    private GuiImgButton craftingMode;
 
     public GuiFluidCraftAmount(final InventoryPlayer inventoryPlayer, final ITerminalHost te) {
         super(new ContainerCraftAmount(inventoryPlayer, te));
@@ -30,6 +38,14 @@ public class GuiFluidCraftAmount extends FCGuiAmount {
     @Override
     public void initGui() {
         super.initGui();
+
+        this.buttonList.add(
+                this.craftingMode = new GuiImgButton(
+                        this.guiLeft + 10,
+                        this.guiTop + 53,
+                        Settings.CRAFTING_MODE,
+                        CraftingMode.STANDARD));
+
         this.amountBox.setText("1");
         this.amountBox.setSelectionPos(0);
     }
@@ -55,8 +71,20 @@ public class GuiFluidCraftAmount extends FCGuiAmount {
     protected void actionPerformed(final GuiButton btn) {
         super.actionPerformed(btn);
         try {
-            if (btn == this.submit && this.submit.enabled) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketCraftRequest(getAmount(), isShiftKeyDown()));
+            if (btn == this.craftingMode) {
+                GuiImgButton iBtn = ((GuiImgButton) btn);
+
+                final Enum cv = iBtn.getCurrentValue();
+                final boolean backwards = Mouse.isButtonDown(1);
+                final Enum next = Platform.rotateEnum(cv, backwards, iBtn.getSetting().getPossibleValues());
+
+                iBtn.set(next);
+            } else if (btn == this.submit && this.submit.enabled) {
+                FluidCraft.proxy.netHandler.sendToServer(
+                        new CPacketCraftRequest(
+                                getAmount(),
+                                isShiftKeyDown(),
+                                ((CraftingMode) this.craftingMode.getCurrentValue())));
             }
         } catch (final NumberFormatException e) {
             this.amountBox.setText("1");
