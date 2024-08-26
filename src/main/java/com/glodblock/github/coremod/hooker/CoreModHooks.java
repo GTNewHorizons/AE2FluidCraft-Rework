@@ -1,7 +1,7 @@
 package com.glodblock.github.coremod.hooker;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -15,30 +15,24 @@ import net.minecraftforge.fluids.FluidStack;
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.parts.PartFluidInterface;
-import com.glodblock.github.common.tile.TileFluidInterface;
+import com.glodblock.github.inventory.CraftingGridCacheFluidInventoryProxyCell;
 import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
 import com.glodblock.github.inventory.FluidConvertingInventoryCrafting;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.Ae2Reflect;
-import com.glodblock.github.util.SetBackedMachineSet;
-import com.google.common.collect.Sets;
 
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGrid;
-import appeng.api.networking.IGridHost;
-import appeng.api.networking.IGridNode;
-import appeng.api.networking.IMachineSet;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEInventory;
+import appeng.api.storage.IMEInventoryHandler;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.IGuiTooltipHandler;
 import appeng.crafting.MECraftingInventory;
-import appeng.me.MachineSet;
+import appeng.me.cache.CraftingGridCache;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
-import appeng.parts.misc.PartInterface;
-import appeng.tile.misc.TileInterface;
 import appeng.util.InventoryAdaptor;
 
 public class CoreModHooks {
@@ -87,40 +81,6 @@ public class CoreModHooks {
         return originByte + totalBytes;
     }
 
-    public static IAEItemStack[] flattenFluidPackets(IAEItemStack[] stacks) {
-        for (int i = 0; i < stacks.length; i++) {
-            if (stacks[i].getItem() instanceof ItemFluidPacket) {
-                stacks[i] = ItemFluidDrop.newAeStack(ItemFluidPacket.getFluidStack(stacks[i]));
-            }
-        }
-        return stacks;
-    }
-
-    public static IMachineSet getMachines(IGrid grid, Class<? extends IGridHost> c) {
-        if (c == TileInterface.class) {
-            return unionMachineSets(grid.getMachines(c), grid.getMachines(TileFluidInterface.class));
-        } else if (c == PartInterface.class) {
-            return unionMachineSets(grid.getMachines(c), grid.getMachines(PartFluidInterface.class));
-        } else {
-            return grid.getMachines(c);
-        }
-    }
-
-    private static IMachineSet unionMachineSets(IMachineSet a, IMachineSet b) {
-        if (a.isEmpty()) {
-            return b;
-        } else if (b.isEmpty()) {
-            return a;
-        } else if (a instanceof MachineSet && b instanceof MachineSet) {
-            return new SetBackedMachineSet(TileInterface.class, Sets.union((MachineSet) a, (MachineSet) b));
-        } else {
-            Set<IGridNode> union = new HashSet<>();
-            a.forEach(union::add);
-            b.forEach(union::add);
-            return new SetBackedMachineSet(TileInterface.class, union);
-        }
-    }
-
     public static ItemStack displayFluid(IAEItemStack aeStack) {
         if (aeStack.getItemStack() != null && aeStack.getItemStack().getItem() instanceof ItemFluidDrop) {
             FluidStack fluid = ItemFluidDrop.getFluidStack(aeStack.getItemStack());
@@ -132,6 +92,13 @@ public class CoreModHooks {
         if (aeStack.getItemStack() != null && aeStack.getItemStack().getItem() instanceof ItemFluidDrop) {
             return (long) Math.max(aeStack.getStackSize() / 1000D, 1);
         } else return aeStack.getStackSize();
+    }
+
+    public static List<IMEInventoryHandler> craftingGridCacheGetCellArray(final CraftingGridCache instance,
+            final StorageChannel channel) {
+        // Equivalent to original function, but using the proxy for fluid channel
+        return channel == StorageChannel.ITEMS ? Arrays.asList(instance)
+                : Arrays.asList(new CraftingGridCacheFluidInventoryProxyCell(instance));
     }
 
     public static void storeFluidItem(CraftingCPUCluster instance) {
