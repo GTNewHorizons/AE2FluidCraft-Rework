@@ -12,7 +12,7 @@ import com.glodblock.github.nei.object.OrderStack;
 
 import codechicken.nei.PositionedStack;
 import gregtech.api.enums.ItemList;
-import gregtech.common.items.GT_FluidDisplayItem;
+import gregtech.common.items.ItemFluidDisplay;
 
 public class GregTech5RecipeExtractor implements IRecipeExtractor {
 
@@ -47,7 +47,7 @@ public class GregTech5RecipeExtractor implements IRecipeExtractor {
     public static Object getFluidFromDisplay(PositionedStack stack) {
         if (stack != null) {
             ItemStack item = stack.items[0].copy();
-            if (item.getItem() instanceof GT_FluidDisplayItem) {
+            if (item.getItem() instanceof ItemFluidDisplay) {
                 if (item.getTagCompound() != null) {
                     Fluid fluid = FluidRegistry.getFluid(item.getItemDamage());
                     int amt = (int) item.getTagCompound().getLong("mFluidDisplayAmount");

@@ -33,7 +33,7 @@ public class DefaultExtractorLoader implements Runnable {
 
         if (ModAndClassUtil.GT5) {
             try {
-                Class<?> recipeMapClazz = Class.forName("gregtech.api.util.GT_Recipe$GT_Recipe_Map");
+                Class<?> recipeMapClazz = Class.forName("gregtech.api.util.GTRecipe$GT_Recipe_Map");
                 Collection<?> sMappings = (Collection<?>) recipeMapClazz.getDeclaredField("sMappings").get(null);
                 for (Object tMap : sMappings) {
                     String mNEIName = (String) recipeMapClazz.getDeclaredField("mNEIName").get(tMap);
