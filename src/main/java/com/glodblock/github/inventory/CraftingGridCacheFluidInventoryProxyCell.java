@@ -77,4 +77,9 @@ public class CraftingGridCacheFluidInventoryProxyCell implements IMEInventoryHan
     public boolean validForPass(int i) {
         return inner.validForPass(i);
     }
+
+    @Override
+    public boolean isAutoCraftingInventory() {
+        return inner.isAutoCraftingInventory();
+    }
 }
