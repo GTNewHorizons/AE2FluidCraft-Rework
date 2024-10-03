@@ -15,16 +15,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
-import net.minecraftforge.fluids.IFluidHandler;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.MEMonitorIFluidHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
@@ -47,7 +44,6 @@ import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.ITickManager;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
-import appeng.api.parts.IPart;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartRenderHelper;
 import appeng.api.storage.ICellContainer;
@@ -70,14 +66,12 @@ import appeng.me.storage.MEInventoryHandler;
 import appeng.parts.automation.PartUpgradeable;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.InvOperation;
-import appeng.tile.networking.TileCableBus;
 import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.prioitylist.PrecisePriorityList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import extracells.tileentity.TileEntityFluidInterface;
 
 public class PartFluidStorageBus extends PartUpgradeable
         implements IGridTickable, ICellContainer, IMEMonitorHandlerReceiver<IAEFluidStack>, IPriorityHost {
@@ -291,38 +285,7 @@ public class PartFluidStorageBus extends PartUpgradeable
 
     @Override
     public void onNeighborChanged() {
-        TileEntity tile = this.getTile();
-        if (tile == null || this.getProxy() == null || !this.getProxy().isActive()) return;
-        BlockPos neighbor = new BlockPos(tile).getOffSet(this.getSide());
-        final TileEntity te = neighbor.getTileEntity();
-        // In case the TE was destroyed, we have to do a full reset immediately.
-        if (te instanceof TileCableBus) {
-            IPart iPart = ((TileCableBus) te).getPart(this.getSide().getOpposite());
-            if (iPart == null || iPart instanceof PartFluidInterface) {
-                this.resetCache(true);
-                this.resetCache();
-            }
-            if (ModAndClassUtil.EC2) {
-                if (iPart == null || iPart instanceof extracells.part.PartFluidInterface) {
-                    this.resetCache(true);
-                    this.resetCache();
-                }
-            }
-        } else if (te == null || te instanceof TileFluidInterface) {
-            this.resetCache(true);
-            this.resetCache();
-        } else if (ModAndClassUtil.EC2) {
-            if (te instanceof TileEntityFluidInterface) {
-                this.resetCache(true);
-                this.resetCache();
-            }
-        } else if (te instanceof IFluidHandler) {
-            this.resetCache(true);
-            this.resetCache();
-        } else {
-            this.resetCache(false);
-        }
-
+        this.resetCache(false);
     }
 
     @Override
