@@ -23,6 +23,7 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.PartFluidExportBus;
 import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.common.parts.PartFluidP2PInterface;
+import com.glodblock.github.common.tile.TileCertusQuartzTank;
 import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.BlockPos;
@@ -99,7 +100,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidExportBus
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidP2PInterface))
             return InventoryAdaptor.getAdaptor(capProvider, face);
-        if (getInterfaceTE(capProvider, face) == null) return null;
+        if (InventoryAdaptor.getAdaptor(capProvider, face) == null && !(capProvider instanceof TileCertusQuartzTank))
+            return null;
         InventoryAdaptor item = InventoryAdaptor.getAdaptor(capProvider, face);
         IFluidHandler fluid = capProvider instanceof IFluidHandler ? (IFluidHandler) capProvider : null;
         boolean onmi = false;
