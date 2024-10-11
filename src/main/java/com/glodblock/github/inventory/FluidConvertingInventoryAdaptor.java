@@ -55,13 +55,13 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     // |T|-facing->|I|
     public FluidConvertingInventoryAdaptor(TileEntity te, @Nullable InventoryAdaptor invItems,
             @Nullable IFluidHandler invFluids, ForgeDirection facing, BlockPos pos, boolean isOnmi) {
-        this.targetInterface = getInterfaceTE(te, facing);
         this.invItems = invItems;
         this.invFluids = invFluids;
-        this.selfInterface = getInterfaceTE(pos.getTileEntity(), facing.getOpposite());
         this.side = facing;
         this.posInterface = pos;
         this.onmi = isOnmi;
+        this.selfInterface = getInterfaceTE(pos.getTileEntity(), facing.getOpposite());
+        this.targetInterface = getInterfaceTE(te, facing);
     }
 
     private final InventoryAdaptor invItems;
