@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import appeng.util.inv.AdaptorDualityInterface;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -100,8 +101,13 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidExportBus
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidP2PInterface))
             return InventoryAdaptor.getAdaptor(capProvider, face);
-        if (InventoryAdaptor.getAdaptor(capProvider, face) == null && !(capProvider instanceof TileCertusQuartzTank))
-            return null;
+        if (InventoryAdaptor.getAdaptor(capProvider, face) == null){
+            if (capProvider instanceof IFluidHandler tank) {
+                if (!(tank.getTankInfo(face).length > 0)) return null;
+            } else {
+                return null;
+            }
+        }
         InventoryAdaptor item = InventoryAdaptor.getAdaptor(capProvider, face);
         IFluidHandler fluid = capProvider instanceof IFluidHandler ? (IFluidHandler) capProvider : null;
         boolean onmi = false;
