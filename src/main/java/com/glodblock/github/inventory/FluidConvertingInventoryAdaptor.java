@@ -10,7 +10,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import appeng.util.inv.AdaptorDualityInterface;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -24,7 +23,6 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.PartFluidExportBus;
 import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.common.parts.PartFluidP2PInterface;
-import com.glodblock.github.common.tile.TileCertusQuartzTank;
 import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.BlockPos;
@@ -101,7 +99,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidExportBus
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidP2PInterface))
             return InventoryAdaptor.getAdaptor(capProvider, face);
-        if (InventoryAdaptor.getAdaptor(capProvider, face) == null){
+        if (InventoryAdaptor.getAdaptor(capProvider, face) == null) {
             if (capProvider instanceof IFluidHandler tank) {
                 if (!(tank.getTankInfo(face).length > 0)) return null;
             } else {
