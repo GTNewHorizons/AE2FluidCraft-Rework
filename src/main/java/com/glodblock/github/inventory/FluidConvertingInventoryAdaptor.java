@@ -31,7 +31,9 @@ import com.glodblock.github.util.Util;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.InsertionMode;
+import appeng.api.config.Settings;
 import appeng.api.config.Upgrades;
+import appeng.api.config.YesNo;
 import appeng.api.parts.IPart;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
@@ -109,8 +111,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         InventoryAdaptor item = InventoryAdaptor.getAdaptor(capProvider, face);
         IFluidHandler fluid = capProvider instanceof IFluidHandler ? (IFluidHandler) capProvider : null;
         boolean onmi = false;
-        if (inter instanceof TileInterface) {
-            onmi = ((TileInterface) inter).getTargets().size() > 1;
+        if (inter instanceof TileInterface in) {
+            if (in.getConfigManager().getSetting(Settings.BLOCK) == YesNo.NO) onmi = in.getTargets().size() > 1;
         }
         return new FluidConvertingInventoryAdaptor(capProvider, item, fluid, face, new BlockPos(inter), onmi);
     }
