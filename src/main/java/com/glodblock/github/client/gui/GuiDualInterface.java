@@ -42,6 +42,7 @@ public class GuiDualInterface extends GuiUpgradeable {
     private GuiTabButton priority;
     private GuiTabButton switcher;
     private GuiImgButton BlockMode;
+    private GuiImgButton SmartBlockMode;
     private GuiToggleButton interfaceMode;
     private GuiImgButton insertionMode;
     private GuiImgButton sidelessMode;
@@ -81,6 +82,9 @@ public class GuiDualInterface extends GuiUpgradeable {
 
         this.BlockMode = new GuiImgButton(this.guiLeft - 18, this.guiTop + offset, Settings.BLOCK, YesNo.NO);
         this.buttonList.add(this.BlockMode);
+
+        this.SmartBlockMode = new GuiImgButton(this.guiLeft - 36, this.guiTop + offset, Settings.SMART_BLOCK, YesNo.NO);
+        this.buttonList.add(this.SmartBlockMode);
 
         offset += 18;
 
@@ -156,7 +160,9 @@ public class GuiDualInterface extends GuiUpgradeable {
         if (this.BlockMode != null) {
             this.BlockMode.set(((ContainerInterface) this.cvb).getBlockingMode());
         }
-
+        if (this.SmartBlockMode != null) {
+            this.SmartBlockMode.set(((ContainerInterface) this.cvb).getSmartBlockingMode());
+        }
         if (this.interfaceMode != null) {
             this.interfaceMode.setState(((ContainerInterface) this.cvb).getInterfaceTerminalMode() == YesNo.YES);
         }
@@ -213,6 +219,8 @@ public class GuiDualInterface extends GuiUpgradeable {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(Settings.INTERFACE_TERMINAL, backwards));
         } else if (btn == this.BlockMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.BlockMode.getSetting(), backwards));
+        } else if (btn == this.SmartBlockMode) {
+            NetworkHandler.instance.sendToServer(new PacketConfigButton(this.SmartBlockMode.getSetting(), backwards));
         } else if (btn == this.insertionMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.insertionMode.getSetting(), backwards));
         } else if (btn == this.doublePatterns) {
