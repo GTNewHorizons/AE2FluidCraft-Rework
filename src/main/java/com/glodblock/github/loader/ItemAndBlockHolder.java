@@ -141,7 +141,8 @@ public class ItemAndBlockHolder {
             16384,
             5,
             600000D).register();
-    public static ItemDefectiveSingularityFluidStorageCell FLUID_VOID_CELL = new ItemDefectiveSingularityFluidStorageCell().register();
+    public static ItemDefectiveSingularityFluidStorageCell FLUID_VOID_CELL = new ItemDefectiveSingularityFluidStorageCell()
+            .register();
     public static ItemCreativeFluidStorageCell CREATIVE_CELL = new ItemCreativeFluidStorageCell().register();
     public static ItemInfinityWaterStorageCell INFINITY_WATER_CELL = new ItemInfinityWaterStorageCell().register();
     public static ItemBasicFluidStoragePart CELL_PART = new ItemBasicFluidStoragePart().register();

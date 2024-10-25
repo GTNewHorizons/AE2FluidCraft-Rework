@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.glodblock.github.common.item.ItemDefectiveSingularityFluidStorageCell;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.common.item.ItemBaseInfinityStorageCell;
+import com.glodblock.github.common.item.ItemDefectiveSingularityFluidStorageCell;
 import com.glodblock.github.crossmod.extracells.storage.ProxyFluidCellInventory;
 import com.glodblock.github.crossmod.extracells.storage.ProxyFluidStorageCell;
 
@@ -89,7 +89,7 @@ public class FluidCellInventory implements IFluidCellInventory {
                 return new FluidCellInventoryHandler(new ProxyFluidCellInventory(o, container2));
             } else if (o.getItem() instanceof ItemDefectiveSingularityFluidStorageCell) {
                 return new FluidCellInventoryHandler(new DefectiveSingularityCellInventory(o, container2));
-            } else{
+            } else {
                 return new FluidCellInventoryHandler(new FluidCellInventory(o, container2));
             }
         } catch (final AppEngException e) {

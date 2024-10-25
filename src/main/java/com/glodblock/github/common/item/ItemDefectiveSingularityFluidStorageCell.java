@@ -3,13 +3,10 @@ package com.glodblock.github.common.item;
 import java.util.EnumSet;
 import java.util.List;
 
-import appeng.api.config.IncludeExclude;
-import appeng.core.localization.GuiText;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.api.FluidCraftAPI;
@@ -26,6 +23,7 @@ import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.core.features.AEFeature;
+import appeng.core.localization.GuiText;
 import appeng.items.AEBaseItem;
 import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
@@ -33,7 +31,7 @@ import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemDefectiveSingularityFluidStorageCell extends AEBaseItem
-    implements IStorageFluidCell, IRegister<ItemDefectiveSingularityFluidStorageCell> {
+        implements IStorageFluidCell, IRegister<ItemDefectiveSingularityFluidStorageCell> {
 
     public ItemDefectiveSingularityFluidStorageCell() {
         super();
@@ -82,7 +80,7 @@ public class ItemDefectiveSingularityFluidStorageCell extends AEBaseItem
     @Override
     public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
         return requestedAddition == null || requestedAddition.getFluid() == null
-            || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
+                || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }
 
     @Override

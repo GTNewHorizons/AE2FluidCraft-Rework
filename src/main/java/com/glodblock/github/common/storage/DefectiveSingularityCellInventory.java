@@ -1,22 +1,17 @@
 package com.glodblock.github.common.storage;
 
-import appeng.api.storage.data.IItemList;
-import net.minecraft.inventory.IInventory;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 
-import com.glodblock.github.util.Util;
-
-import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.exceptions.AppEngException;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.ISaveProvider;
 import appeng.api.storage.data.IAEFluidStack;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
+import appeng.api.storage.data.IItemList;
 
 public class DefectiveSingularityCellInventory extends FluidCellInventory {
 
@@ -25,7 +20,9 @@ public class DefectiveSingularityCellInventory extends FluidCellInventory {
     }
 
     @Override
-    public boolean canHoldNewFluid() { return true; }
+    public boolean canHoldNewFluid() {
+        return true;
+    }
 
     @Override
     public long getTotalBytes() {
