@@ -1,7 +1,60 @@
 package com.glodblock.github.loader;
 
 import static com.glodblock.github.common.storage.CellType.Cell16384kPart;
-import static com.glodblock.github.loader.ItemAndBlockHolder.*;
+import static com.glodblock.github.loader.ItemAndBlockHolder.BUFFER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL1024K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL1024KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL16384K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL16384KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL16K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL16KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL1K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL1KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL256K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL256KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL4096K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL4096KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL4K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL4KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL64K;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL64KM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CELL_HOUSING;
+import static com.glodblock.github.loader.ItemAndBlockHolder.CERTUS_QUARTZ_TANK;
+import static com.glodblock.github.loader.ItemAndBlockHolder.DECODER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.DEFECTIVE_SINGULARITY_CELL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.DISCRETIZER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.ENCODER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.ENERGY_CARD;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_AUTO_FILLER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_BUFFER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_CONVERSION_MONITOR;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_EXPORT_BUS;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_IMPORT_BUS;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_INTERFACE;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_INTERFACE_P2P;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_LEVEL_EMITTER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_BUS;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_MONITOR;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL_EX;
+import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.INTERFACE;
+import static com.glodblock.github.loader.ItemAndBlockHolder.LARGE_BUFFER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.LEVEL_MAINTAINER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.LEVEL_TERMINAL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.OC_EDITOR;
+import static com.glodblock.github.loader.ItemAndBlockHolder.PATTERN;
+import static com.glodblock.github.loader.ItemAndBlockHolder.PORTABLE_FLUID_CELL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_BRIDGE_CARD;
+import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_CELL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.SINGULARITY_CELL;
+import static com.glodblock.github.loader.ItemAndBlockHolder.WALRUS;
+import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_FLUID_TERM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_INTERFACE_TERM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_LEVEL_TERM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_PATTERN_TERM;
+import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_ULTRA_TERM;
 import static net.minecraft.init.Blocks.redstone_torch;
 import static net.minecraft.init.Items.fish;
 
@@ -454,19 +507,19 @@ public class RecipeLoader implements Runnable {
                             'M',
                             AE2_MATTER_CONDENSER));
             GameRegistry.addRecipe(
-                    new ShapedOreRecipe(
-                            DEFECTIVE_SINGULARITY_CELL,
-                            "ABA",
-                            "BDB",
-                            "CCC",
-                            'A',
-                            AE2_QUARTZ_GLASS,
-                            'B',
-                            "dustGlowstone",
-                            'C',
-                            "gemDiamond",
-                            'D',
-                            AE2_SINGULARITY));
+                new ShapedOreRecipe(
+                    DEFECTIVE_SINGULARITY_CELL,
+                    "ABA",
+                    "BDB",
+                    "CCC",
+                    'A',
+                    AE2_QUARTZ_GLASS,
+                    'B',
+                    "dustGlowstone",
+                    'C',
+                    "gemDiamond",
+                    'D',
+                    AE2_SINGULARITY));
             for (FCBaseItemCell cell : cells) {
                 if (cell.getHousing().getItemDamage() == 0) {
                     GameRegistry.addRecipe(
