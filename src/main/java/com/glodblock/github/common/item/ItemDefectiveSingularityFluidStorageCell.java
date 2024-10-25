@@ -54,6 +54,7 @@ public class ItemDefectiveSingularityFluidStorageCell extends AEBaseItem
         final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
             .getCellInventory(stack, null, StorageChannel.FLUIDS);
         if (inventory instanceof final IFluidCellInventoryHandler handler) {
+            lines.add(NameConst.i18n(NameConst.TT_DEFECTIVE_SINGULARITY_CELL));
             lines.add(GuiText.VoidCellTooltip.getLocal());
             lines.add(0 + " " + GuiText.Of.getLocal() + " \u00A7k9999\u00A77 " + GuiText.BytesUsed.getLocal());
             final IFluidCellInventory inv = handler.getCellInv();

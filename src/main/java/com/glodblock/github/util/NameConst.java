@@ -104,6 +104,7 @@ public class NameConst {
     public static final String TT_ENERGY_CARD_DESC = TT_ENERGY_CARD + ".desc";
     public static final String TT_QUANTUM_BRIDGE_CARD = TT_KEY + "quantum_bridge_card";
     public static final String TT_QUANTUM_BRIDGE_CARD_DESC = TT_QUANTUM_BRIDGE_CARD + ".desc";
+    public static final String TT_DEFECTIVE_SINGULARITY_CELL = TT_KEY + ITEM_DEFECTIVE_SINGULARITY_FLUID_STORAGE;
 
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
