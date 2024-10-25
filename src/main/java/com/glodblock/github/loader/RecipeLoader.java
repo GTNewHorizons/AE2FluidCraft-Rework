@@ -507,19 +507,19 @@ public class RecipeLoader implements Runnable {
                             'M',
                             AE2_MATTER_CONDENSER));
             GameRegistry.addRecipe(
-                new ShapedOreRecipe(
-                    DEFECTIVE_SINGULARITY_CELL,
-                    "ABA",
-                    "BDB",
-                    "CCC",
-                    'A',
-                    AE2_QUARTZ_GLASS,
-                    'B',
-                    "dustGlowstone",
-                    'C',
-                    "gemDiamond",
-                    'D',
-                    AE2_SINGULARITY));
+                    new ShapedOreRecipe(
+                            DEFECTIVE_SINGULARITY_CELL,
+                            "ABA",
+                            "BDB",
+                            "CCC",
+                            'A',
+                            AE2_QUARTZ_GLASS,
+                            'B',
+                            "dustGlowstone",
+                            'C',
+                            "gemDiamond",
+                            'D',
+                            AE2_SINGULARITY));
             for (FCBaseItemCell cell : cells) {
                 if (cell.getHousing().getItemDamage() == 0) {
                     GameRegistry.addRecipe(
