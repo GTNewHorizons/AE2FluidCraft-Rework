@@ -99,7 +99,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidExportBus
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidP2PInterface))
             return InventoryAdaptor.getAdaptor(capProvider, face);
-        if (InventoryAdaptor.getAdaptor(capProvider, face) == null) {
+        if (InventoryAdaptor.getAdaptor(capProvider, face) == null
+                && !(ModAndClassUtil.EIO && capProvider instanceof IItemDuct)) {
             if (capProvider instanceof IFluidHandler tank) {
                 if (tank.getTankInfo(face) == null || !(tank.getTankInfo(face).length > 0)) return null;
             } else {
