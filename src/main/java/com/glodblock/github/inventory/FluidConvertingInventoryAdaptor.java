@@ -31,9 +31,7 @@ import com.glodblock.github.util.Util;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.InsertionMode;
-import appeng.api.config.Settings;
 import appeng.api.config.Upgrades;
-import appeng.api.config.YesNo;
 import appeng.api.parts.IPart;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
@@ -101,9 +99,10 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidExportBus
                 || Util.getPart(inter, face.getOpposite()) instanceof PartFluidP2PInterface))
             return InventoryAdaptor.getAdaptor(capProvider, face);
-        if (InventoryAdaptor.getAdaptor(capProvider, face) == null) {
+        if (InventoryAdaptor.getAdaptor(capProvider, face) == null
+                && !(ModAndClassUtil.EIO && capProvider instanceof IItemDuct)) {
             if (capProvider instanceof IFluidHandler tank) {
-                if (!(tank.getTankInfo(face).length > 0)) return null;
+                if (tank.getTankInfo(face) == null || !(tank.getTankInfo(face).length > 0)) return null;
             } else {
                 return null;
             }
@@ -112,7 +111,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         IFluidHandler fluid = capProvider instanceof IFluidHandler ? (IFluidHandler) capProvider : null;
         boolean onmi = false;
         if (inter instanceof TileInterface in) {
-            if (in.getConfigManager().getSetting(Settings.BLOCK) == YesNo.NO) onmi = in.getTargets().size() > 1;
+            onmi = in.getTargets().size() > 1;
         }
         return new FluidConvertingInventoryAdaptor(capProvider, item, fluid, face, new BlockPos(inter), onmi);
     }
