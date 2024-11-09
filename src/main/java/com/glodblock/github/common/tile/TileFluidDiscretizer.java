@@ -56,10 +56,8 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
     @Override
     @SuppressWarnings("rawtypes")
     public List<IMEInventoryHandler> getCellArray(StorageChannel channel) {
-        if (getProxy().isActive()) {
-            if (channel == StorageChannel.ITEMS) {
-                return Collections.singletonList(fluidDropInv.invHandler);
-            }
+        if (channel == StorageChannel.ITEMS && getProxy().isActive()) {
+            return Collections.singletonList(fluidDropInv.invHandler);
         }
         return Collections.emptyList();
     }
