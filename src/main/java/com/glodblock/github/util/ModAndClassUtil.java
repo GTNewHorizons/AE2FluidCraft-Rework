@@ -129,10 +129,9 @@ public final class ModAndClassUtil {
         }
 
         if (Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi")) {
-            try {
-                Class.forName("gregtech.api.recipe.RecipeMap");
+            if (Loader.isModLoaded("dreamcraft")) {
                 GT5NH = true;
-            } catch (ClassNotFoundException e) {
+            } else {
                 GT5 = true;
             }
         }
