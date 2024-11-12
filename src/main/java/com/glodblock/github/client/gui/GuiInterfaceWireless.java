@@ -71,6 +71,7 @@ import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.Loader;
 
+// TODO why is this copy pasting all the UI code from AE2 instead of reusing it ???
 public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillTextField, IInterfaceTerminalPostUpdate {
 
     public static final int HEADER_HEIGHT = 52;
