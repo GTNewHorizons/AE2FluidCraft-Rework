@@ -839,7 +839,8 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
                     addCmd.name,
                     addCmd.rows,
                     addCmd.rowSize,
-                    addCmd.online).setLocation(addCmd.x, addCmd.y, addCmd.z, addCmd.dim, addCmd.side)
+                    addCmd.online,
+                    addCmd.p2pOutput).setLocation(addCmd.x, addCmd.y, addCmd.z, addCmd.dim, addCmd.side)
                             .setIcons(addCmd.selfRep, addCmd.dispRep).setItems(addCmd.items);
             masterList.addEntry(entry);
         } else if (cmd instanceof PacketInterfaceTerminalUpdate.PacketRemove) {
@@ -1141,6 +1142,8 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
             String output = GuiInterfaceWireless.this.searchFieldOutputs.getText().toLowerCase();
 
             for (InterfaceWirelessEntry entry : entries) {
+                if (!entry.online || entry.p2pOutput) continue;
+
                 var moleAss = AEApi.instance().definitions().blocks().molecularAssembler().maybeStack(1);
                 entry.dispY = -9999;
                 if (onlyMolecularAssemblers
@@ -1231,13 +1234,14 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         int guiHeight;
         int dispY = -9999;
         boolean online;
+        boolean p2pOutput;
         private Boolean[] brokenRecipes;
         int numItems = 0;
         /** Should recipe be filtered out/grayed out? */
         boolean[] filteredRecipes;
         private int hoveredSlotIdx = -1;
 
-        InterfaceWirelessEntry(long id, String name, int rows, int rowSize, boolean online) {
+        InterfaceWirelessEntry(long id, String name, int rows, int rowSize, boolean online, boolean p2pOutput) {
             this.id = id;
             if (StatCollector.canTranslate(name)) {
                 this.dispName = StatCollector.translateToLocal(name);
@@ -1253,6 +1257,7 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
             this.rows = rows;
             this.rowSize = rowSize;
             this.online = online;
+            this.p2pOutput = p2pOutput;
             this.optionsButton = new GuiFCImgButton(2, 0, "HIGHLIGHT", "YES");
             this.optionsButton.setHalfSize(true);
             this.renameButton = new GuiFCImgButton(2, 0, "EDIT", "YES");
