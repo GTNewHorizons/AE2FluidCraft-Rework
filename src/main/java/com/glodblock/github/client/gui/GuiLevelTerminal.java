@@ -12,6 +12,7 @@ import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketRena
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +35,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -65,7 +65,6 @@ import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.api.util.WorldCoord;
 import appeng.client.gui.IGuiTooltipHandler;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -1327,8 +1326,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
 
         public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-            final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-
             if (!section.visible || mouseButton < 0 || mouseButton > 2) {
                 return false;
             }
@@ -1343,7 +1340,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         dim,
                         ForgeDirection.getOrientation(side),
                         "");
-                if (isCtrlKeyDown() && isShiftKeyDown() && hasInfinityBoosterCard(player)) {
+                if (isCtrlKeyDown() && isShiftKeyDown() && hasInfinityBoosterCard(mc.thePlayer)) {
                     FluidCraft.proxy.netHandler.sendToServer(
                             new CPacketLevelTerminalCommands(
                                     Action.EDIT,
@@ -1361,23 +1358,12 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                                     blockPos.getDimension(),
                                     blockPos.getSide()));
                 } else {
-                    /* View in world */
-                    WorldCoord blockPos2 = new WorldCoord((int) player.posX, (int) player.posY, (int) player.posZ);
-                    if (mc.theWorld.provider.dimensionId != dim) {
-                        player.addChatMessage(
-                                new ChatComponentTranslation(PlayerMessages.InterfaceInOtherDim.getName(), dim));
-                    } else {
-                        BlockPosHighlighter.highlightBlock(
-                                blockPos,
-                                System.currentTimeMillis() + 500 * WorldCoord.getTaxicabDistance(blockPos, blockPos2));
-                        player.addChatMessage(
-                                new ChatComponentTranslation(
-                                        PlayerMessages.InterfaceHighlighted.getName(),
-                                        blockPos.x,
-                                        blockPos.y,
-                                        blockPos.z));
-                    }
-                    player.closeScreen();
+                    BlockPosHighlighter.highlightBlocks(
+                            mc.thePlayer,
+                            Collections.singletonList(blockPos),
+                            PlayerMessages.LevelEmitterHighlighted.getName(),
+                            PlayerMessages.LevelEmitterInAnotherDim.getName());
+                    mc.thePlayer.closeScreen();
                 }
                 return true;
             }
@@ -1393,25 +1379,17 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
                 // send packet to server, request an update
                 InventoryAction action = switch (mouseButton) {
-                    case 0 -> {
-                        // pickup / set-down.
-                        yield null;
-                    }
-                    case 1 -> {
-                        yield null;
-                    }
+                    case 0 -> null; // pickup / set-down.
+                    case 1 -> null;
                     case 2 -> {
                         // creative dupe:
-                        if (player.capabilities.isCreativeMode) {
+                        if (mc.thePlayer.capabilities.isCreativeMode) {
                             yield InventoryAction.CREATIVE_DUPLICATE;
                         } else {
                             yield InventoryAction.AUTO_CRAFT;
                         }
                     }
-                    default -> {
-                        // drop item:
-                        yield null;
-                    }
+                    default -> null;// drop item:
                 };
 
                 if (action != null) {

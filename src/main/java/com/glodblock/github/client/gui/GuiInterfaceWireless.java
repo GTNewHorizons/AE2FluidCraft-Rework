@@ -2,6 +2,7 @@ package com.glodblock.github.client.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,7 +20,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -43,7 +43,6 @@ import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
 import appeng.api.util.DimensionalCoord;
-import appeng.api.util.WorldCoord;
 import appeng.client.gui.IInterfaceTerminalPostUpdate;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -1372,25 +1371,11 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
                                     blockPos.getDimension(),
                                     ForgeDirection.getOrientation(side)));
                 } else {
-                    /* View in world */
-                    WorldCoord blockPos2 = new WorldCoord(
-                            (int) mc.thePlayer.posX,
-                            (int) mc.thePlayer.posY,
-                            (int) mc.thePlayer.posZ);
-                    if (mc.theWorld.provider.dimensionId != dim) {
-                        mc.thePlayer.addChatMessage(
-                                new ChatComponentTranslation(PlayerMessages.InterfaceInOtherDim.getName(), dim));
-                    } else {
-                        BlockPosHighlighter.highlightBlock(
-                                blockPos,
-                                System.currentTimeMillis() + 500 * WorldCoord.getTaxicabDistance(blockPos, blockPos2));
-                        mc.thePlayer.addChatMessage(
-                                new ChatComponentTranslation(
-                                        PlayerMessages.InterfaceHighlighted.getName(),
-                                        blockPos.x,
-                                        blockPos.y,
-                                        blockPos.z));
-                    }
+                    BlockPosHighlighter.highlightBlocks(
+                            mc.thePlayer,
+                            Collections.singletonList(blockPos),
+                            PlayerMessages.InterfaceHighlighted.getName(),
+                            PlayerMessages.InterfaceInOtherDim.getName());
                     mc.thePlayer.closeScreen();
                 }
                 return true;
