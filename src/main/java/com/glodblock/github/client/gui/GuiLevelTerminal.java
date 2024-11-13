@@ -349,19 +349,13 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
                 if (btn == terminalStyleBox) {
                     AEConfig.instance.settings.putSetting(iBtn.getSetting(), next);
-
-                    reinitialize();
+                    super.scheduleGuiResize();
                 }
 
                 iBtn.set(next);
             }
         }
         super.actionPerformed(btn);
-    }
-
-    private void reinitialize() {
-        buttonList.clear();
-        initGui();
     }
 
     @Override

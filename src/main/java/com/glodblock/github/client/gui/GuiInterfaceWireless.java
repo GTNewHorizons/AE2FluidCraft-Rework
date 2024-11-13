@@ -323,7 +323,7 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
 
                 if (btn == this.terminalStyleBox) {
                     AEConfig.instance.settings.putSetting(iBtn.getSetting(), next);
-                    initGui();
+                    super.scheduleGuiResize();
                 } else if (btn == searchStringSave) {
                     AEConfig.instance.preserveSearchBar = next == YesNo.YES;
                 }
