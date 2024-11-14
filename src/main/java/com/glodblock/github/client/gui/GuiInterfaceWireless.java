@@ -220,9 +220,7 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
 
         offsetY = guiButtonAssemblersOnly.yPosition + 18;
 
-        if (AEConfig.instance.preserveSearchBar || isSubGui()) {
-            setSearchString();
-        }
+        setSearchString();
 
         this.setScrollBar();
         this.repositionSlots();
@@ -344,9 +342,16 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
     }
 
     public void setSearchString() {
-        searchFieldInputs.setText(searchFieldInputsText);
-        searchFieldOutputs.setText(searchFieldOutputsText);
-        searchFieldNames.setText(searchFieldNamesText);
+        boolean setString = AEConfig.instance.preserveSearchBar || isSubGui();
+        if (searchFieldInputs.getText().isEmpty() && setString) {
+            searchFieldInputs.setText(searchFieldInputsText);
+        }
+        if (searchFieldOutputs.getText().isEmpty() && setString) {
+            searchFieldOutputs.setText(searchFieldOutputsText);
+        }
+        if (searchFieldNames.getText().isEmpty() && setString) {
+            searchFieldNames.setText(searchFieldNamesText);
+        }
     }
 
     @Override
