@@ -70,6 +70,7 @@ import appeng.util.item.AEItemStack;
 import codechicken.nei.LayoutManager;
 import codechicken.nei.util.TextHistory;
 
+// TODO why is this copy pasting all the UI code from AE2 instead of reusing it ???
 public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         implements ISortSource, IConfigManagerHost, IDropToFillTextField {
 
@@ -161,6 +162,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                 }
                 iBtn.set(next);
                 if (next.getClass() == SearchBoxMode.class || next.getClass() == TerminalStyle.class) {
+                    memoryText = this.searchField.getText();
                     this.reInitalize();
                 }
             }
