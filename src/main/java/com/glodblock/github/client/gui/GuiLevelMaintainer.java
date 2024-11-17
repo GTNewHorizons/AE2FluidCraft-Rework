@@ -2,7 +2,6 @@ package com.glodblock.github.client.gui;
 
 import static com.glodblock.github.client.gui.container.ContainerLevelMaintainer.createLevelValues;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -354,18 +353,21 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         return null;
     }
 
-    private Rectangle getSlotArea(SlotFake slot) {
-        return new Rectangle(guiLeft + slot.getX(), guiTop + slot.getY(), 16, 16);
-    }
-
     @Override
     public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
-        if (draggedStack != null) {
-            draggedStack.stackSize = 0;
+        if (draggedStack == null) {
+            return false;
         }
+
+        draggedStack.stackSize = 0;
+        Slot slotAtPosition = this.getSlotAtPosition(mouseX, mouseY);
+        if (slotAtPosition == null) {
+            return false;
+        }
+
         for (int i = 0; i < this.cont.getRequestSlots().length; i++) {
             SlotFluidConvertingFake slot = this.cont.getRequestSlots()[i];
-            if (getSlotArea(slot).contains(mouseX, mouseY) && draggedStack != null) {
+            if (slotAtPosition.equals(slot)) {
                 ItemStack itemStack = createLevelValues(draggedStack.copy());
                 itemStack.getTagCompound().setInteger(TLMTags.Index.tagName, i);
                 slot.putStack(itemStack);

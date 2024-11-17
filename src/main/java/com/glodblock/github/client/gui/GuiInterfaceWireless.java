@@ -2,6 +2,7 @@ package com.glodblock.github.client.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,7 +20,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -43,7 +43,6 @@ import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
 import appeng.api.util.DimensionalCoord;
-import appeng.api.util.WorldCoord;
 import appeng.client.gui.IInterfaceTerminalPostUpdate;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -71,6 +70,7 @@ import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.Loader;
 
+// TODO why is this copy pasting all the UI code from AE2 instead of reusing it ???
 public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillTextField, IInterfaceTerminalPostUpdate {
 
     public static final int HEADER_HEIGHT = 52;
@@ -220,9 +220,7 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
 
         offsetY = guiButtonAssemblersOnly.yPosition + 18;
 
-        if (AEConfig.instance.preserveSearchBar || isSubGui()) {
-            setSearchString();
-        }
+        setSearchString();
 
         this.setScrollBar();
         this.repositionSlots();
@@ -344,9 +342,16 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
     }
 
     public void setSearchString() {
-        searchFieldInputs.setText(searchFieldInputsText);
-        searchFieldOutputs.setText(searchFieldOutputsText);
-        searchFieldNames.setText(searchFieldNamesText);
+        boolean setString = AEConfig.instance.preserveSearchBar || isSubGui();
+        if (searchFieldInputs.getText().isEmpty() && setString) {
+            searchFieldInputs.setText(searchFieldInputsText);
+        }
+        if (searchFieldOutputs.getText().isEmpty() && setString) {
+            searchFieldOutputs.setText(searchFieldOutputsText);
+        }
+        if (searchFieldNames.getText().isEmpty() && setString) {
+            searchFieldNames.setText(searchFieldNamesText);
+        }
     }
 
     @Override
@@ -840,7 +845,8 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
                     addCmd.name,
                     addCmd.rows,
                     addCmd.rowSize,
-                    addCmd.online).setLocation(addCmd.x, addCmd.y, addCmd.z, addCmd.dim, addCmd.side)
+                    addCmd.online,
+                    addCmd.p2pOutput).setLocation(addCmd.x, addCmd.y, addCmd.z, addCmd.dim, addCmd.side)
                             .setIcons(addCmd.selfRep, addCmd.dispRep).setItems(addCmd.items);
             masterList.addEntry(entry);
         } else if (cmd instanceof PacketInterfaceTerminalUpdate.PacketRemove) {
@@ -1142,6 +1148,8 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
             String output = GuiInterfaceWireless.this.searchFieldOutputs.getText().toLowerCase();
 
             for (InterfaceWirelessEntry entry : entries) {
+                if (!entry.online || entry.p2pOutput) continue;
+
                 var moleAss = AEApi.instance().definitions().blocks().molecularAssembler().maybeStack(1);
                 entry.dispY = -9999;
                 if (onlyMolecularAssemblers
@@ -1232,13 +1240,14 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         int guiHeight;
         int dispY = -9999;
         boolean online;
+        boolean p2pOutput;
         private Boolean[] brokenRecipes;
         int numItems = 0;
         /** Should recipe be filtered out/grayed out? */
         boolean[] filteredRecipes;
         private int hoveredSlotIdx = -1;
 
-        InterfaceWirelessEntry(long id, String name, int rows, int rowSize, boolean online) {
+        InterfaceWirelessEntry(long id, String name, int rows, int rowSize, boolean online, boolean p2pOutput) {
             this.id = id;
             if (StatCollector.canTranslate(name)) {
                 this.dispName = StatCollector.translateToLocal(name);
@@ -1254,6 +1263,7 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
             this.rows = rows;
             this.rowSize = rowSize;
             this.online = online;
+            this.p2pOutput = p2pOutput;
             this.optionsButton = new GuiFCImgButton(2, 0, "HIGHLIGHT", "YES");
             this.optionsButton.setHalfSize(true);
             this.renameButton = new GuiFCImgButton(2, 0, "EDIT", "YES");
@@ -1372,25 +1382,11 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
                                     blockPos.getDimension(),
                                     ForgeDirection.getOrientation(side)));
                 } else {
-                    /* View in world */
-                    WorldCoord blockPos2 = new WorldCoord(
-                            (int) mc.thePlayer.posX,
-                            (int) mc.thePlayer.posY,
-                            (int) mc.thePlayer.posZ);
-                    if (mc.theWorld.provider.dimensionId != dim) {
-                        mc.thePlayer.addChatMessage(
-                                new ChatComponentTranslation(PlayerMessages.InterfaceInOtherDim.getName(), dim));
-                    } else {
-                        BlockPosHighlighter.highlightBlock(
-                                blockPos,
-                                System.currentTimeMillis() + 500 * WorldCoord.getTaxicabDistance(blockPos, blockPos2));
-                        mc.thePlayer.addChatMessage(
-                                new ChatComponentTranslation(
-                                        PlayerMessages.InterfaceHighlighted.getName(),
-                                        blockPos.x,
-                                        blockPos.y,
-                                        blockPos.z));
-                    }
+                    BlockPosHighlighter.highlightBlocks(
+                            mc.thePlayer,
+                            Collections.singletonList(blockPos),
+                            PlayerMessages.InterfaceHighlighted.getName(),
+                            PlayerMessages.InterfaceInOtherDim.getName());
                     mc.thePlayer.closeScreen();
                 }
                 return true;
