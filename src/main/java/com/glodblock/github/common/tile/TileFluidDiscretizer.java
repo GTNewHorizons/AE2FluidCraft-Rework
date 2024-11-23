@@ -12,7 +12,6 @@ import com.glodblock.github.common.item.ItemFluidDrop;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.GridFlags;
-import appeng.api.networking.crafting.ICraftingGrid;
 import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.networking.events.MENetworkCellArrayUpdate;
 import appeng.api.networking.events.MENetworkChannelsChanged;
@@ -31,11 +30,9 @@ import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.helpers.IPriorityHost;
 import appeng.me.GridAccessException;
-import appeng.me.cache.CraftingGridCache;
 import appeng.me.storage.MEInventoryHandler;
 import appeng.tile.grid.AENetworkTile;
 
@@ -43,7 +40,6 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
 
     private final BaseActionSource ownActionSource = new MachineSource(this);
     private final FluidDiscretizingInventory fluidDropInv = new FluidDiscretizingInventory();
-    private final FluidCraftingInventory fluidCraftInv = new FluidCraftingInventory();
     private boolean prevActiveState = false;
 
     public TileFluidDiscretizer() {
@@ -60,12 +56,8 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
     @Override
     @SuppressWarnings("rawtypes")
     public List<IMEInventoryHandler> getCellArray(StorageChannel channel) {
-        if (getProxy().isActive()) {
-            if (channel == StorageChannel.ITEMS) {
-                return Collections.singletonList(fluidDropInv.invHandler);
-            } else if (channel == StorageChannel.FLUIDS) {
-                return Collections.singletonList(fluidCraftInv.invHandler);
-            }
+        if (channel == StorageChannel.ITEMS && getProxy().isActive()) {
+            return Collections.singletonList(fluidDropInv.invHandler);
         }
         return Collections.emptyList();
     }
@@ -261,87 +253,6 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
         @Override
         public void onListUpdate() {
             // NO-OP
-        }
-    }
-
-    private class FluidCraftingInventoryHandler extends MEInventoryHandler<IAEFluidStack> {
-
-        public FluidCraftingInventoryHandler(IMEInventory<IAEFluidStack> i, StorageChannel channel) {
-            super(i, channel);
-        }
-
-        @Override
-        public boolean isPrioritized(IAEFluidStack input) {
-            return true;
-        }
-
-        @Override
-        public boolean canAccept(IAEFluidStack input) {
-            ICraftingGrid craftingGrid;
-            try {
-                craftingGrid = getProxy().getGrid().getCache(ICraftingGrid.class);
-            } catch (GridAccessException e) {
-                return false;
-            }
-            if (craftingGrid instanceof CraftingGridCache craftingGridCache) {
-                return craftingGridCache.canAccept(ItemFluidDrop.newAeStack(input));
-            }
-            return false;
-        }
-
-        @Override
-        public boolean isAutoCraftingInventory() {
-            return true;
-        }
-    }
-
-    private class FluidCraftingInventory implements IMEInventory<IAEFluidStack> {
-
-        private final MEInventoryHandler<IAEFluidStack> invHandler = new FluidCraftingInventoryHandler(
-                this,
-                getChannel());
-
-        FluidCraftingInventory() {
-            invHandler.setPriority(Integer.MAX_VALUE);
-        }
-
-        @Override
-        @SuppressWarnings("rawtypes")
-        public IAEFluidStack injectItems(IAEFluidStack input, Actionable type, BaseActionSource src) {
-            ICraftingGrid craftingGrid;
-            try {
-                craftingGrid = getProxy().getGrid().getCache(ICraftingGrid.class);
-            } catch (GridAccessException e) {
-                return null;
-            }
-            if (craftingGrid instanceof CraftingGridCache) {
-                IAEStack remaining = ((CraftingGridCache) craftingGrid)
-                        .injectItems(ItemFluidDrop.newAeStack(input), type, ownActionSource);
-                if (remaining instanceof IAEItemStack) {
-                    return ItemFluidDrop.getAeFluidStack((IAEItemStack) remaining);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public IAEFluidStack extractItems(IAEFluidStack request, Actionable mode, BaseActionSource src) {
-            return null;
-        }
-
-        @Override
-        public IItemList<IAEFluidStack> getAvailableItems(IItemList<IAEFluidStack> out, int iteration) {
-            return out;
-        }
-
-        @Override
-        public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request, int iteration) {
-            return null;
-        }
-
-        @Override
-        public StorageChannel getChannel() {
-            return StorageChannel.FLUIDS;
         }
     }
 }
