@@ -46,6 +46,7 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartRenderHelper;
+import appeng.api.parts.PartItemStack;
 import appeng.api.storage.ICellContainer;
 import appeng.api.storage.IExternalStorageHandler;
 import appeng.api.storage.IMEInventory;
@@ -97,6 +98,27 @@ public class PartFluidStorageBus extends PartUpgradeable
         this.getConfigManager().registerSetting(Settings.STORAGE_FILTER, StorageFilter.EXTRACTABLE_ONLY);
         this.getConfigManager().registerSetting(Settings.STICKY_MODE, YesNo.NO);
         this.source = new MachineSource(this);
+        if (is.getTagCompound() != null) {
+            NBTTagCompound tag = is.getTagCompound();
+            if (tag.hasKey("priority")) {
+                priority = tag.getInteger("priority");
+                // if we don't do this, the tag will stick forever to the storage bus, as it's never cleaned up,
+                // even when the item is broken with a pickaxe
+                this.is.setTagCompound(null);
+            }
+        }
+    }
+
+    @Override
+    public ItemStack getItemStack(final PartItemStack type) {
+        if (type == PartItemStack.Wrench) {
+            final NBTTagCompound tag = new NBTTagCompound();
+            tag.setInteger("priority", priority);
+            final ItemStack copy = this.is.copy();
+            copy.setTagCompound(tag);
+            return copy;
+        }
+        return super.getItemStack(type);
     }
 
     @Override
