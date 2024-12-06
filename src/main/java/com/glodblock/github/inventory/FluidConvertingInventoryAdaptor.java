@@ -277,15 +277,16 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
             // Avoid sending stuff into itself me network
             TileEntity te = this.posInterface.getOffSet(dir).getTileEntity();
-            if (te == null || !checkValidSide(te, dir)
-                    || (isConduit(te) && (isItemConduit(te) || !isFluidConduitConnected(te, dir))))
-                continue;
-            final int result = checkItemFluids(this.getSideFluid(dir), this.getSideItem(dir), dir.getOpposite());
-            if (result == 1) {
-                return true;
-            }
-            if (result != 2) {
-                anyValid = true;
+            if (te != null && checkValidSide(te, dir)) {
+                if (!isConduit(te) || (!isItemConduit(te) && isFluidConduitConnected(te, dir))) {
+                    final int result = checkItemFluids(this.getSideFluid(dir), this.getSideItem(dir), dir.getOpposite());
+                    if (result == 1) {
+                        return true;
+                    }
+                    if (result != 2) {
+                        anyValid = true;
+                    }
+                }
             }
         }
         // Same here. if there is no fluid tank or item inventory existed, it shouldn't send stuff here.
