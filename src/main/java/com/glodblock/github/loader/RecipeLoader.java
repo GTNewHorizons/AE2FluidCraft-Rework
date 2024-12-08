@@ -21,6 +21,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.CELL64KM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CELL_HOUSING;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CERTUS_QUARTZ_TANK;
 import static com.glodblock.github.loader.ItemAndBlockHolder.DECODER;
+import static com.glodblock.github.loader.ItemAndBlockHolder.DEFECTIVE_SINGULARITY_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.DISCRETIZER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENCODER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENERGY_CARD;
@@ -505,6 +506,20 @@ public class RecipeLoader implements Runnable {
                             QUANTUM_CELL,
                             'M',
                             AE2_MATTER_CONDENSER));
+            GameRegistry.addRecipe(
+                    new ShapedOreRecipe(
+                            DEFECTIVE_SINGULARITY_CELL,
+                            "ABA",
+                            "BDB",
+                            "CCC",
+                            'A',
+                            AE2_QUARTZ_GLASS,
+                            'B',
+                            "dustGlowstone",
+                            'C',
+                            "gemDiamond",
+                            'D',
+                            AE2_SINGULARITY));
             for (FCBaseItemCell cell : cells) {
                 if (cell.getHousing().getItemDamage() == 0) {
                     GameRegistry.addRecipe(
