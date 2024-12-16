@@ -43,6 +43,7 @@ public class NameConst {
     public static final String ITEM_ARTIFICIAL_UNIVERSE_STORAGE = ITEM_FLUID_STORAGE + ".Universe";
     public static final String ITEM_INFINITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".infinity";
     public static final String ITEM_INFINITY_WATER_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".water";
+    public static final String ITEM_INFINITY_LAVA_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".lava";
     public static final String ITEM_CREATIVE_FLUID_STORAGE = "creative_" + ITEM_FLUID_STORAGE;
     public static final String ITEM_FLUID_PORTABLE_CELL = "portable_fluid_cell";
     public static final String ITEM_WIRELESS_FLUID_TERMINAL = "wireless_fluid_terminal";

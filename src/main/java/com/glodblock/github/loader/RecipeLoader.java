@@ -37,6 +37,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_MONIT
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL_EX;
+import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_LAVA_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INTERFACE;
 import static com.glodblock.github.loader.ItemAndBlockHolder.LARGE_BUFFER;
@@ -199,6 +200,7 @@ public class RecipeLoader implements Runnable {
             47);
     public static final ItemStack NETHER_STAR = new ItemStack(Items.nether_star, 1);
     public static final ItemStack WATER_BUCKET = new ItemStack(Items.water_bucket, 1);
+    public static final ItemStack LAVA_BUCKET = new ItemStack(Items.lava_bucket, 1);
 
     @Override
     public void run() {
@@ -709,6 +711,27 @@ public class RecipeLoader implements Runnable {
                         "BMB",
                         'B',
                         WATER_BUCKET,
+                        'K',
+                        CellType.Cell64kPart.stack(1),
+                        'A',
+                        AE2_ANNIHILATION_CORE,
+                        'C',
+                        CELL_HOUSING.stack(1, 1),
+                        'F',
+                        AE2_FORMATION_CORE,
+                        'M',
+                        AE2_MATTER_CONDENSER));
+    }
+
+    public static void addInfiniteLavaCell() {
+        GameRegistry.addRecipe(
+                new ShapedOreRecipe(
+                        INFINITY_LAVA_CELL,
+                        "BKB",
+                        "ACF",
+                        "BMB",
+                        'B',
+                        LAVA_BUCKET,
                         'K',
                         CellType.Cell64kPart.stack(1),
                         'A',

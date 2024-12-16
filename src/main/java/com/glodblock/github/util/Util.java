@@ -433,6 +433,7 @@ public final class Util {
     public static class FluidUtil {
 
         public static final ItemStack water_bucket = new ItemStack(Items.water_bucket, 1);
+        public static final ItemStack lava_bucket = new ItemStack(Items.lava_bucket, 1);
 
         public static void fluidTankInfoWriteToNBT(FluidTankInfo[] infos, NBTTagCompound data) {
             int i = 0;
