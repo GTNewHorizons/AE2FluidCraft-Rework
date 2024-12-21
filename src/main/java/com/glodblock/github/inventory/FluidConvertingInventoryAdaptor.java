@@ -279,7 +279,10 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
             TileEntity te = this.posInterface.getOffSet(dir).getTileEntity();
             if (te != null && checkValidSide(te, dir)) {
                 if (!isConduit(te) || (!isItemConduit(te) && isFluidConduitConnected(te, dir))) {
-                    final int result = checkItemFluids(this.getSideFluid(dir), this.getSideItem(dir), dir.getOpposite());
+                    final int result = checkItemFluids(
+                            this.getSideFluid(dir),
+                            this.getSideItem(dir),
+                            dir.getOpposite());
                     if (result == 1) {
                         return true;
                     }
