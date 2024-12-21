@@ -2,6 +2,8 @@ package com.glodblock.github.coremod;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -13,12 +15,15 @@ import com.glodblock.github.coremod.transform.DualityInterfaceTransformer;
 import com.glodblock.github.coremod.transform.ExternalStorageRegistryTransformer;
 import com.glodblock.github.coremod.transform.GuiCraftingTransformer;
 import com.glodblock.github.coremod.transform.NEITransformer;
+import com.gtnewhorizon.gtnhlib.asm.ASMUtil;
 
 public class FCClassTransformer implements IClassTransformer {
 
+    private static final Logger logger = LogManager.getLogger("ASM AE2FC");
+
     @Override
-    public byte[] transform(String name, String transformedName, byte[] code) {
-        Transform tform;
+    public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        ClassMapper tform;
         switch (transformedName) {
             case "appeng.crafting.CraftingTreeNode" -> tform = CraftingTreeNodeTransformer.INSTANCE;
             case "appeng.me.cache.CraftingGridCache" -> tform = CraftingGridCacheTransformer.INSTANCE;
@@ -28,22 +33,21 @@ public class FCClassTransformer implements IClassTransformer {
             case "appeng.integration.modules.NEI" -> tform = NEITransformer.INSTANCE;
             case "appeng.core.features.registries.ExternalStorageRegistry" -> tform = ExternalStorageRegistryTransformer.INSTANCE;
             default -> {
-                return code;
+                return basicClass;
             }
         }
-        System.out.println("[AE2FC] Transforming class: " + transformedName);
-        return tform.transformClass(code);
+        logger.debug("Transforming class: " + transformedName);
+        final byte[] bytes = tform.transformClass(basicClass);
+        if (FluidCraftCore.DUMP_CLASSES()) {
+            ASMUtil.saveAsRawClassFile(basicClass, transformedName + "_PRE", this);
+            ASMUtil.saveAsRawClassFile(bytes, transformedName + "_POST", this);
+        }
+        return bytes;
     }
 
-    public interface Transform {
+    public abstract static class ClassMapper {
 
-        byte[] transformClass(byte[] code);
-    }
-
-    public abstract static class ClassMapper implements Transform {
-
-        @Override
-        public byte[] transformClass(byte[] code) {
+        public final byte[] transformClass(byte[] code) {
             ClassReader reader = new ClassReader(code);
             ClassWriter writer = new ClassWriter(reader, getWriteFlags());
             reader.accept(getClassMapper(writer), ClassReader.EXPAND_FRAMES);

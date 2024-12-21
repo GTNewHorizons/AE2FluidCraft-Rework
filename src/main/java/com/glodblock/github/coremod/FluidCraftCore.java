@@ -11,9 +11,12 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 @IFMLLoadingPlugin.TransformerExclusions("com.glodblock.github.coremod")
 public class FluidCraftCore implements IFMLLoadingPlugin {
 
+    private static final boolean DUMP_CLASSES = Boolean.parseBoolean(System.getProperty("ae2fc.dumpClass", "false"));
+    private static boolean OBF_ENV;
+
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] { FluidCraftCore.class.getPackage().getName() + ".FCClassTransformer" };
+        return new String[] { FCClassTransformer.class.getName() };
     }
 
     @Nullable
@@ -30,12 +33,16 @@ public class FluidCraftCore implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        // NO-OP
+        OBF_ENV = (boolean) data.get("runtimeDeobfuscationEnabled");
     }
 
     @Nullable
     @Override
     public String getAccessTransformerClass() {
         return null;
+    }
+
+    public static boolean DUMP_CLASSES() {
+        return DUMP_CLASSES || !OBF_ENV;
     }
 }
