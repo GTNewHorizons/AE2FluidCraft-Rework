@@ -5,6 +5,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
@@ -116,10 +117,11 @@ public abstract class FCGuiEncodeTerminal extends GuiItemMonitor {
                             "PatternTerminal.Combine",
                             this.combineDisableBtn == btn ? "1" : "0"));
         } else if (ModAndClassUtil.isDoubleButton && doubleBtn == btn) {
+            final int eventButton = Mouse.getEventButton();
             FluidCraft.proxy.netHandler.sendToServer(
                     new CPacketFluidPatternTermBtns(
                             "PatternTerminal.Double",
-                            Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? "1" : "0"));
+                            (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? "1" : "0") + (eventButton == 1 ? "1" : "0")));
         } else if (ModAndClassUtil.isBeSubstitutionsButton && beSubstitutionsDisabledBtn == btn) {
             FluidCraft.proxy.netHandler
                     .sendToServer(new CPacketFluidPatternTermBtns("PatternTerminal.beSubstitute", "1"));
