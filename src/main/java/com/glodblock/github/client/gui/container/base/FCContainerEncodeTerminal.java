@@ -537,54 +537,79 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return false;
     }
 
-    static boolean canDouble(SlotFake[] slots, int mult) {
-        for (Slot s : slots) {
-            ItemStack st = s.getStack();
-            if (st != null) {
-                if (st.getItem() instanceof ItemFluidPacket) {
-                    long result = (long) ItemFluidPacket.getFluidAmount(st) * mult;
-                    if (result > Integer.MAX_VALUE) {
-                        return false;
-                    }
-                } else {
-                    long result = (long) s.getStack().stackSize * mult;
-                    if (result > Integer.MAX_VALUE) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    static void doubleStacksInternal(SlotFake[] slots, int mult) {
-        List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
-        for (final Slot s : enabledSlots) {
-            ItemStack st = s.getStack();
-            if (st != null) {
-                if (st.getItem() instanceof ItemFluidPacket) {
-                    ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
-                } else {
-                    st.stackSize *= mult;
-                }
-            }
-        }
-    }
-
-    public void doubleStacks(boolean isShift) {
+    public void doubleStacks(boolean isShift, boolean divide) {
         if (!isCraftingMode()) {
-            if (isShift) {
-                if (canDouble(this.craftingSlots, 8) && canDouble(this.outputSlots, 8)) {
-                    doubleStacksInternal(this.craftingSlots, 8);
-                    doubleStacksInternal(this.outputSlots, 8);
-                }
-            } else {
-                if (canDouble(this.craftingSlots, 2) && canDouble(this.outputSlots, 2)) {
-                    doubleStacksInternal(this.craftingSlots, 2);
-                    doubleStacksInternal(this.outputSlots, 2);
-                }
+            final int mult = (isShift ? 8 : 2) * (divide ? -1 : 1);
+            if (canMultiplyOrDivide(this.craftingSlots, mult) && canMultiplyOrDivide(this.outputSlots, mult)) {
+                multiplyOrDivideStacksInternal(this.craftingSlots, mult);
+                multiplyOrDivideStacksInternal(this.outputSlots, mult);
             }
             this.detectAndSendChanges();
+        }
+    }
+
+    static boolean canMultiplyOrDivide(SlotFake[] slots, int mult) {
+        if (mult > 0) {
+            for (Slot s : slots) {
+                ItemStack st = s.getStack();
+                if (st == null) continue;
+                final long count;
+                if (st.getItem() instanceof ItemFluidPacket) {
+                    count = ItemFluidPacket.getFluidAmount(st);
+                } else {
+                    count = s.getStack().stackSize;
+                }
+                long result = count * mult;
+                if (result > Integer.MAX_VALUE) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (mult < 0) {
+            mult = Math.abs(mult);
+            for (Slot s : slots) {
+                ItemStack st = s.getStack();
+                if (st == null) continue;
+                final int count;
+                if (st.getItem() instanceof ItemFluidPacket) {
+                    count = ItemFluidPacket.getFluidAmount(st);
+                } else {
+                    count = s.getStack().stackSize;
+                }
+                if (count % mult != 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    static void multiplyOrDivideStacksInternal(SlotFake[] slots, int mult) {
+        List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
+        if (mult > 0) {
+            for (final Slot s : enabledSlots) {
+                ItemStack st = s.getStack();
+                if (st != null) {
+                    if (st.getItem() instanceof ItemFluidPacket) {
+                        ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
+                    } else {
+                        st.stackSize *= mult;
+                    }
+                }
+            }
+        } else if (mult < 0) {
+            mult = Math.abs(mult);
+            for (final Slot s : enabledSlots) {
+                ItemStack st = s.getStack();
+                if (st != null) {
+                    if (st.getItem() instanceof ItemFluidPacket) {
+                        ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) / mult);
+                    } else {
+                        st.stackSize /= mult;
+                    }
+                }
+            }
         }
     }
 
