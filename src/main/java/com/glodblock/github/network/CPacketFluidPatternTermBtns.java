@@ -77,23 +77,22 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                     case "PatternTerminal.Clear" -> cpt.clear();
                     case "PatternTerminal.Substitute" -> cpt.getPatternTerminal().setSubstitution(Value.equals("1"));
                     case "PatternTerminal.Invert" -> cpt.getPatternTerminal().setInverted(Value.equals("1"));
-                    case "PatternTerminal.Double" -> cpt.doubleStacks(Value.equals("1"));
+                    case "PatternTerminal.Double" -> cpt.doubleStacks(Value.charAt(0) == '1', Value.charAt(1) == '1');
                     case "PatternTerminal.Combine" -> cpt.getPatternTerminal().setCombineMode(Value.equals("1"));
                     case "PatternTerminal.beSubstitute" -> cpt.getPatternTerminal().setBeSubstitute(Value.equals("1"));
-                    case "PatternTerminal.ActivePage" -> cpt.getPatternTerminal()
-                            .setActivePage(Integer.parseInt(Value));
+                    case "PatternTerminal.ActivePage" ->
+                        cpt.getPatternTerminal().setActivePage(Integer.parseInt(Value));
                     case "PatternTerminal.Prioritize" -> {
                         switch (Value) {
                             case "0", "1" -> cpt.getPatternTerminal().setPrioritization(Value.equals("1"));
                             case "2" -> cpt.getPatternTerminal().sortCraftingItems();
                         }
                     }
-                    case "PatternTerminal.AutoFillerPattern" -> cpt.getPatternTerminal()
-                            .setAutoFillPattern(Value.equals("1"));
+                    case "PatternTerminal.AutoFillerPattern" ->
+                        cpt.getPatternTerminal().setAutoFillPattern(Value.equals("1"));
                 }
                 cpt.getPatternTerminal().saveSettings();
-            } else if (Name.startsWith("StorageBus.") && c instanceof ContainerFluidStorageBus) {
-                final ContainerFluidStorageBus ccw = (ContainerFluidStorageBus) c;
+            } else if (Name.startsWith("StorageBus.") && c instanceof ContainerFluidStorageBus ccw) {
                 if (Name.equals("StorageBus.Action")) {
                     if (Value.equals("Partition")) {
                         ccw.partition();
