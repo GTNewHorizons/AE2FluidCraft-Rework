@@ -21,7 +21,6 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.CELL64KM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CELL_HOUSING;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CERTUS_QUARTZ_TANK;
 import static com.glodblock.github.loader.ItemAndBlockHolder.DECODER;
-import static com.glodblock.github.loader.ItemAndBlockHolder.DEFECTIVE_SINGULARITY_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.DISCRETIZER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENCODER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENERGY_CARD;
@@ -38,6 +37,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_MONIT
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL_EX;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_VOID_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INTERFACE;
 import static com.glodblock.github.loader.ItemAndBlockHolder.LARGE_BUFFER;
@@ -508,7 +508,7 @@ public class RecipeLoader implements Runnable {
                             AE2_MATTER_CONDENSER));
             GameRegistry.addRecipe(
                     new ShapedOreRecipe(
-                            DEFECTIVE_SINGULARITY_CELL,
+                            FLUID_VOID_CELL,
                             "ABA",
                             "BDB",
                             "CCC",

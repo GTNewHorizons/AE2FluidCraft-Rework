@@ -13,9 +13,9 @@ import appeng.api.storage.ISaveProvider;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 
-public class DefectiveSingularityCellInventory extends FluidCellInventory {
+public class FluidVoidStorageCellInventory extends FluidCellInventory {
 
-    public DefectiveSingularityCellInventory(ItemStack o, ISaveProvider container) throws AppEngException {
+    public FluidVoidStorageCellInventory(ItemStack o, ISaveProvider container) throws AppEngException {
         super(o, container);
     }
 

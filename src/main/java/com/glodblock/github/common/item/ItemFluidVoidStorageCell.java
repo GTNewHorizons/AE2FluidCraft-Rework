@@ -30,20 +30,20 @@ import appeng.items.contents.CellUpgrades;
 import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ItemDefectiveSingularityFluidStorageCell extends AEBaseItem
-        implements IStorageFluidCell, IRegister<ItemDefectiveSingularityFluidStorageCell> {
+public class ItemFluidVoidStorageCell extends AEBaseItem
+        implements IStorageFluidCell, IRegister<ItemFluidVoidStorageCell> {
 
-    public ItemDefectiveSingularityFluidStorageCell() {
+    public ItemFluidVoidStorageCell() {
         super();
-        setUnlocalizedName(NameConst.ITEM_DEFECTIVE_SINGULARITY_FLUID_STORAGE);
-        setTextureName(FluidCraft.resource(NameConst.ITEM_DEFECTIVE_SINGULARITY_FLUID_STORAGE).toString());
+        setUnlocalizedName(NameConst.ITEM_FLUID_VOID_CELL);
+        setTextureName(FluidCraft.resource(NameConst.ITEM_FLUID_VOID_CELL).toString());
         this.setFeature(EnumSet.of(AEFeature.StorageCells));
         this.setMaxStackSize(1);
     }
 
     @Override
-    public ItemDefectiveSingularityFluidStorageCell register() {
-        GameRegistry.registerItem(this, NameConst.ITEM_DEFECTIVE_SINGULARITY_FLUID_STORAGE, FluidCraft.MODID);
+    public ItemFluidVoidStorageCell register() {
+        GameRegistry.registerItem(this, NameConst.ITEM_FLUID_VOID_CELL, FluidCraft.MODID);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
     }
@@ -54,7 +54,7 @@ public class ItemDefectiveSingularityFluidStorageCell extends AEBaseItem
         final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
             .getCellInventory(stack, null, StorageChannel.FLUIDS);
         if (inventory instanceof final IFluidCellInventoryHandler handler) {
-            lines.add(NameConst.i18n(NameConst.TT_DEFECTIVE_SINGULARITY_CELL));
+            lines.add(NameConst.i18n(NameConst.TT_ITEM_FLUID_VOID_CELL));
             lines.add(GuiText.VoidCellTooltip.getLocal());
             lines.add(0 + " " + GuiText.Of.getLocal() + " \u00A7k9999\u00A77 " + GuiText.BytesUsed.getLocal());
             final IFluidCellInventory inv = handler.getCellInv();
