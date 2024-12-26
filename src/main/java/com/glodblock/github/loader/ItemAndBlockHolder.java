@@ -29,6 +29,7 @@ import com.glodblock.github.common.item.ItemFluidLevelEmitter;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.item.ItemFluidStorageHousing;
 import com.glodblock.github.common.item.ItemFluidStorageMonitor;
+import com.glodblock.github.common.item.ItemFluidVoidStorageCell;
 import com.glodblock.github.common.item.ItemInfinityWaterStorageCell;
 import com.glodblock.github.common.item.ItemMultiFluidStorageCell;
 import com.glodblock.github.common.item.ItemPartFluidInterface;
@@ -140,6 +141,7 @@ public class ItemAndBlockHolder {
             16384,
             5,
             600000D).register();
+    public static ItemFluidVoidStorageCell FLUID_VOID_CELL = new ItemFluidVoidStorageCell().register();
     public static ItemCreativeFluidStorageCell CREATIVE_CELL = new ItemCreativeFluidStorageCell().register();
     public static ItemInfinityWaterStorageCell INFINITY_WATER_CELL = new ItemInfinityWaterStorageCell().register();
     public static ItemBasicFluidStoragePart CELL_PART = new ItemBasicFluidStoragePart().register();
