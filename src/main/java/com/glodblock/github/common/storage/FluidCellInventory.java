@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.common.item.ItemBaseInfinityStorageCell;
+import com.glodblock.github.common.item.ItemFluidVoidStorageCell;
 import com.glodblock.github.crossmod.extracells.storage.ProxyFluidCellInventory;
 import com.glodblock.github.crossmod.extracells.storage.ProxyFluidStorageCell;
 
@@ -86,6 +87,8 @@ public class FluidCellInventory implements IFluidCellInventory {
                 return new FluidCellInventoryHandler(new CreativeFluidCellInventory(o, container2));
             } else if (o.getItem() instanceof ProxyFluidStorageCell) {
                 return new FluidCellInventoryHandler(new ProxyFluidCellInventory(o, container2));
+            } else if (o.getItem() instanceof ItemFluidVoidStorageCell) {
+                return new FluidCellInventoryHandler(new FluidVoidStorageCellInventory(o, container2));
             } else {
                 return new FluidCellInventoryHandler(new FluidCellInventory(o, container2));
             }
