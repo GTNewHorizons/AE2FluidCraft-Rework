@@ -26,10 +26,6 @@ public class CPacketPatternMultiSet implements IMessage {
     private static GuiType guiType;
     private static int multi;
 
-    public CPacketPatternMultiSet(GuiType guiType) {
-        this(guiType, 0);
-    }
-
     public CPacketPatternMultiSet(GuiType guiType, int multi) {
         CPacketPatternMultiSet.guiType = guiType;
         CPacketPatternMultiSet.multi = multi;
