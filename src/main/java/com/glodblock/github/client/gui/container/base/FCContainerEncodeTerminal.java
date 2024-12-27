@@ -605,9 +605,27 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                     }
                 }
             }
+            return true;
+        } else if (mult < 0) {
+            mult = Math.abs(mult);
+            for (Slot s : slots) {
+                ItemStack st = s.getStack();
+                if (st == null) continue;
+                final int count;
+                if (st.getItem() instanceof ItemFluidPacket) {
+                    count = ItemFluidPacket.getFluidAmount(st);
+                } else {
+                    count = s.getStack().stackSize;
+                }
+                if (count % mult != 0) {
+                    return false;
+                }
+            }
+            return true;
         }
+        return false;
     }
-
+    
     /**
      * Multiply or divide a number
      *
@@ -619,7 +637,6 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                 multiplyOrDivideStacksInternal(this.craftingSlots, multi);
                 multiplyOrDivideStacksInternal(this.outputSlots, multi);
             }
-            this.detectAndSendChanges();
         }
     }
 
