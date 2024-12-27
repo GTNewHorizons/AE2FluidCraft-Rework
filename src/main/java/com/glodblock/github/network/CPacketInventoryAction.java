@@ -11,6 +11,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.ContainerPatternMulti;
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -105,12 +106,12 @@ public class CPacketInventoryAction implements IMessage {
                                     new BlockPos(te),
                                     Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
                                     GuiType.FLUID_CRAFTING_AMOUNT);
-                        } else if (target instanceof IWirelessTerminal) {
+                        } else if (target instanceof IWirelessTerminal wt) {
                             InventoryHandler.openGui(
                                     sender,
                                     sender.worldObj,
                                     new BlockPos(
-                                            ((IWirelessTerminal) target).getInventorySlot(),
+                                            wt.getInventorySlot(),
                                             Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
                                             0),
                                     ForgeDirection.UNKNOWN,
@@ -135,12 +136,12 @@ public class CPacketInventoryAction implements IMessage {
                                     new BlockPos(te),
                                     Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
                                     GuiType.PATTERN_VALUE_SET);
-                        } else if (target instanceof IWirelessTerminal) {
+                        } else if (target instanceof IWirelessTerminal wt) {
                             InventoryHandler.openGui(
                                     sender,
                                     sender.worldObj,
                                     new BlockPos(
-                                            ((IWirelessTerminal) target).getInventorySlot(),
+                                            wt.getInventorySlot(),
                                             Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
                                             0),
                                     ForgeDirection.UNKNOWN,
@@ -158,6 +159,32 @@ public class CPacketInventoryAction implements IMessage {
                                 cpv.getPatternValue().putStack(baseContainer.getTargetStack().getItemStack());
                             }
                             cpv.detectAndSendChanges();
+                        }
+                    }
+                } else if (message.action == InventoryAction.SET_PATTERN_MULTI) {
+                    final ContainerOpenContext context = baseContainer.getOpenContext();
+                    if (context != null) {
+                        final TileEntity te = context.getTile();
+                        if (te != null) {
+                            InventoryHandler.openGui(
+                                sender,
+                                te.getWorldObj(),
+                                new BlockPos(te),
+                                Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
+                                GuiType.GUI_PATTERN_MULTI);
+                        } else if (target instanceof IWirelessTerminal wt) {
+                            InventoryHandler.openGui(
+                                sender,
+                                sender.worldObj,
+                                new BlockPos(
+                                    wt.getInventorySlot(),
+                                    Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
+                                    0),
+                                ForgeDirection.UNKNOWN,
+                                GuiType.GUI_PATTERN_MULTI);
+                        }
+                        if (sender.openContainer instanceof ContainerPatternMulti cpm) {
+                            cpm.detectAndSendChanges();
                         }
                     }
                 } else {

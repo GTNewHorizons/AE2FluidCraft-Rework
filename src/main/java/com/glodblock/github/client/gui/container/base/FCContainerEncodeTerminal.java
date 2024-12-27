@@ -53,6 +53,8 @@ import appeng.util.item.AEItemStack;
 public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket, IPatternConsumer {
 
+    public static final int MULTIPLE_OF_BUTTON_CLICK = 2;
+    public static final int MULTIPLE_OF_BUTTON_CLICK_ON_SHIFT = 8;
     protected final IItemPatternTerminal patternTerminal;
     protected final AppEngInternalInventory cOut = new AppEngInternalInventory(null, 1);
     protected final IInventory crafting;
@@ -537,47 +539,38 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return false;
     }
 
-    public void doubleStacks(boolean isShift, boolean divide) {
-        if (!isCraftingMode()) {
-            final int mult = (isShift ? 8 : 2) * (divide ? -1 : 1);
-            if (canMultiplyOrDivide(this.craftingSlots, mult) && canMultiplyOrDivide(this.outputSlots, mult)) {
-                multiplyOrDivideStacksInternal(this.craftingSlots, mult);
-                multiplyOrDivideStacksInternal(this.outputSlots, mult);
-            }
-            this.detectAndSendChanges();
-        }
+    public void doubleStacks(int val) {
+        multiplyOrDivideStacks(
+                ((val & 1) != 0 ? MULTIPLE_OF_BUTTON_CLICK_ON_SHIFT : MULTIPLE_OF_BUTTON_CLICK)
+                        * ((val & 2) != 0 ? -1 : 1));
     }
 
     static boolean canMultiplyOrDivide(SlotFake[] slots, int mult) {
         if (mult > 0) {
             for (Slot s : slots) {
-                ItemStack st = s.getStack();
-                if (st == null) continue;
-                final long count;
-                if (st.getItem() instanceof ItemFluidPacket) {
-                    count = ItemFluidPacket.getFluidAmount(st);
-                } else {
-                    count = s.getStack().stackSize;
-                }
-                long result = count * mult;
-                if (result > Integer.MAX_VALUE) {
-                    return false;
+                if (s.getStack() != null) {
+                    if (s.getStack().getItem() instanceof ItemFluidPacket) {
+                        long result = (long) ItemFluidPacket.getFluidAmount(s.getStack()) * mult;
+                        if (result > Integer.MAX_VALUE) {
+                            return false;
+                        }
+                    } else {
+                        long val = (long) s.getStack().stackSize * mult;
+                        if (val > Integer.MAX_VALUE) return false;
+                    }
                 }
             }
             return true;
         } else if (mult < 0) {
-            mult = Math.abs(mult);
+            mult = -mult;
             for (Slot s : slots) {
-                ItemStack st = s.getStack();
-                if (st == null) continue;
-                final int count;
-                if (st.getItem() instanceof ItemFluidPacket) {
-                    count = ItemFluidPacket.getFluidAmount(st);
-                } else {
-                    count = s.getStack().stackSize;
-                }
-                if (count % mult != 0) {
-                    return false;
+                if (s.getStack() != null) { // Although % is a very inefficient algorithm, it is not a performance issue
+                    // here. :>
+                    if (s.getStack().getItem() instanceof ItemFluidPacket) {
+                        if (ItemFluidPacket.getFluidAmount(s.getStack()) % mult != 0) return false;
+                    } else {
+                        if (s.getStack().stackSize % mult != 0) return false;
+                    }
                 }
             }
             return true;
@@ -595,11 +588,12 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
                     } else {
                         st.stackSize *= mult;
+                        s.putStack(st);
                     }
                 }
             }
         } else if (mult < 0) {
-            mult = Math.abs(mult);
+            mult = -mult;
             for (final Slot s : enabledSlots) {
                 ItemStack st = s.getStack();
                 if (st != null) {
@@ -607,9 +601,25 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) / mult);
                     } else {
                         st.stackSize /= mult;
+                        s.putStack(st);
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Multiply or divide a number
+     *
+     * @param multi Positive numbers are multiplied and negative numbers are divided
+     */
+    public void multiplyOrDivideStacks(int multi) {
+        if (!isCraftingMode()) {
+            if (canMultiplyOrDivide(this.craftingSlots, multi) && canMultiplyOrDivide(this.outputSlots, multi)) {
+                multiplyOrDivideStacksInternal(this.craftingSlots, multi);
+                multiplyOrDivideStacksInternal(this.outputSlots, multi);
+            }
+            this.detectAndSendChanges();
         }
     }
 
