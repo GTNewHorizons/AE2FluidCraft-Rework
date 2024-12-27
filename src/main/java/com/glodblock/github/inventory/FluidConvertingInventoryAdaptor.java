@@ -44,7 +44,9 @@ import appeng.util.InventoryAdaptor;
 import appeng.util.inv.IInventoryDestination;
 import appeng.util.inv.ItemSlot;
 import cofh.api.transport.IItemDuct;
+import crazypants.enderio.conduit.ConnectionMode;
 import crazypants.enderio.conduit.item.IItemConduit;
+import crazypants.enderio.conduit.liquid.ILiquidConduit;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaPipeEntity;
@@ -274,14 +276,19 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         boolean anyValid = false;
         for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
             // Avoid sending stuff into itself me network
-            if (checkValidSide(this.posInterface.getOffSet(dir).getTileEntity(), dir)
-                    && !isItemConduit(this.posInterface.getOffSet(dir).getTileEntity())) {
-                final int result = checkItemFluids(this.getSideFluid(dir), this.getSideItem(dir), dir.getOpposite());
-                if (result == 1) {
-                    return true;
-                }
-                if (result != 2) {
-                    anyValid = true;
+            TileEntity te = this.posInterface.getOffSet(dir).getTileEntity();
+            if (te != null && checkValidSide(te, dir)) {
+                if (!isConduit(te) || (!isItemConduit(te) && isFluidConduitConnected(te, dir))) {
+                    final int result = checkItemFluids(
+                            this.getSideFluid(dir),
+                            this.getSideItem(dir),
+                            dir.getOpposite());
+                    if (result == 1) {
+                        return true;
+                    }
+                    if (result != 2) {
+                        anyValid = true;
+                    }
                 }
             }
         }
@@ -354,6 +361,15 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         }
 
         return false;
+    }
+
+    private boolean isFluidConduitConnected(TileEntity te, ForgeDirection dir) {
+        try {
+            ILiquidConduit liquidConduit = (ILiquidConduit) eioTypeCheck.invoke(te, ILiquidConduit.class);
+            return liquidConduit.getConnectionMode(dir.getOpposite()) != ConnectionMode.DISABLED;
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            return false;
+        }
     }
 
     private boolean isItemConduit(TileEntity te) {
