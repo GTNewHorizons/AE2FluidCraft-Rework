@@ -53,6 +53,8 @@ import appeng.util.item.AEItemStack;
 public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket, IPatternConsumer {
 
+    public static final int MULTIPLE_OF_BUTTON_CLICK = 2;
+    public static final int MULTIPLE_OF_BUTTON_CLICK_ON_SHIFT = 8;
     protected final IItemPatternTerminal patternTerminal;
     protected final AppEngInternalInventory cOut = new AppEngInternalInventory(null, 1);
     protected final IInventory crafting;
@@ -537,52 +539,85 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return false;
     }
 
-    static boolean canDouble(SlotFake[] slots, int mult) {
-        for (Slot s : slots) {
-            ItemStack st = s.getStack();
-            if (st != null) {
-                if (st.getItem() instanceof ItemFluidPacket) {
-                    long result = (long) ItemFluidPacket.getFluidAmount(st) * mult;
-                    if (result > Integer.MAX_VALUE) {
-                        return false;
-                    }
-                } else {
-                    long result = (long) s.getStack().stackSize * mult;
-                    if (result > Integer.MAX_VALUE) {
-                        return false;
+    public void doubleStacks(int val) {
+        multiplyOrDivideStacks(
+                ((val & 1) != 0 ? MULTIPLE_OF_BUTTON_CLICK_ON_SHIFT : MULTIPLE_OF_BUTTON_CLICK)
+                        * ((val & 2) != 0 ? -1 : 1));
+    }
+
+    static boolean canMultiplyOrDivide(SlotFake[] slots, int mult) {
+        if (mult > 0) {
+            for (Slot s : slots) {
+                if (s.getStack() != null) {
+                    if (s.getStack().getItem() instanceof ItemFluidPacket) {
+                        long result = (long) ItemFluidPacket.getFluidAmount(s.getStack()) * mult;
+                        if (result > Integer.MAX_VALUE) {
+                            return false;
+                        }
+                    } else {
+                        long val = (long) s.getStack().stackSize * mult;
+                        if (val > Integer.MAX_VALUE) return false;
                     }
                 }
             }
+            return true;
+        } else if (mult < 0) {
+            mult = -mult;
+            for (Slot s : slots) {
+                if (s.getStack() != null) { // Although % is a very inefficient algorithm, it is not a performance issue
+                    // here. :>
+                    if (s.getStack().getItem() instanceof ItemFluidPacket) {
+                        if (ItemFluidPacket.getFluidAmount(s.getStack()) % mult != 0) return false;
+                    } else {
+                        if (s.getStack().stackSize % mult != 0) return false;
+                    }
+                }
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
-    static void doubleStacksInternal(SlotFake[] slots, int mult) {
+    static void multiplyOrDivideStacksInternal(SlotFake[] slots, int mult) {
         List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
-        for (final Slot s : enabledSlots) {
-            ItemStack st = s.getStack();
-            if (st != null) {
-                if (st.getItem() instanceof ItemFluidPacket) {
-                    ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
-                } else {
-                    st.stackSize *= mult;
+        if (mult > 0) {
+            for (final Slot s : enabledSlots) {
+                ItemStack st = s.getStack();
+                if (st != null) {
+                    if (st.getItem() instanceof ItemFluidPacket) {
+                        ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
+                    } else {
+                        st.stackSize *= mult;
+                        s.putStack(st);
+                    }
+                }
+            }
+        } else if (mult < 0) {
+            mult = -mult;
+            for (final Slot s : enabledSlots) {
+                ItemStack st = s.getStack();
+                if (st != null) {
+                    if (st.getItem() instanceof ItemFluidPacket) {
+                        ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) / mult);
+                    } else {
+                        st.stackSize /= mult;
+                        s.putStack(st);
+                    }
                 }
             }
         }
     }
 
-    public void doubleStacks(boolean isShift) {
+    /**
+     * Multiply or divide a number
+     *
+     * @param multi Positive numbers are multiplied and negative numbers are divided
+     */
+    public void multiplyOrDivideStacks(int multi) {
         if (!isCraftingMode()) {
-            if (isShift) {
-                if (canDouble(this.craftingSlots, 8) && canDouble(this.outputSlots, 8)) {
-                    doubleStacksInternal(this.craftingSlots, 8);
-                    doubleStacksInternal(this.outputSlots, 8);
-                }
-            } else {
-                if (canDouble(this.craftingSlots, 2) && canDouble(this.outputSlots, 2)) {
-                    doubleStacksInternal(this.craftingSlots, 2);
-                    doubleStacksInternal(this.outputSlots, 2);
-                }
+            if (canMultiplyOrDivide(this.craftingSlots, multi) && canMultiplyOrDivide(this.outputSlots, multi)) {
+                multiplyOrDivideStacksInternal(this.craftingSlots, multi);
+                multiplyOrDivideStacksInternal(this.outputSlots, multi);
             }
             this.detectAndSendChanges();
         }
