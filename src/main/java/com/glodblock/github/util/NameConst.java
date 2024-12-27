@@ -40,6 +40,7 @@ public class NameConst {
     public static final String ITEM_MULTI_FLUID_STORAGE = "multi_fluid_storage";
     public static final String ITEM_QUANTUM_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".quantum";
     public static final String ITEM_SINGULARITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".singularity";
+    public static final String ITEM_FLUID_VOID_CELL = ITEM_FLUID_STORAGE + ".void";
     public static final String ITEM_ARTIFICIAL_UNIVERSE_STORAGE = ITEM_FLUID_STORAGE + ".Universe";
     public static final String ITEM_INFINITY_FLUID_STORAGE = ITEM_FLUID_STORAGE + ".infinity";
     public static final String ITEM_INFINITY_WATER_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".water";
@@ -103,6 +104,7 @@ public class NameConst {
     public static final String TT_ENERGY_CARD_DESC = TT_ENERGY_CARD + ".desc";
     public static final String TT_QUANTUM_BRIDGE_CARD = TT_KEY + "quantum_bridge_card";
     public static final String TT_QUANTUM_BRIDGE_CARD_DESC = TT_QUANTUM_BRIDGE_CARD + ".desc";
+    public static final String TT_ITEM_FLUID_VOID_CELL = TT_KEY + ITEM_FLUID_VOID_CELL;
 
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
