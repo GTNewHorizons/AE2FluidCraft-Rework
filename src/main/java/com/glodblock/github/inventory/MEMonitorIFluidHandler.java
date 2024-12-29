@@ -202,10 +202,6 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         return this.cache;
     }
 
-    private StorageFilter getMode() {
-        return this.mode;
-    }
-
     public void setMode(StorageFilter mode) {
         this.mode = mode;
     }

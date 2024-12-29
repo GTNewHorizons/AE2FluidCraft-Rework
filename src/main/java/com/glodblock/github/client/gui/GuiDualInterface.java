@@ -243,10 +243,6 @@ public class GuiDualInterface extends GuiUpgradeable {
         }
     }
 
-    private boolean isPart() {
-        return this.host instanceof PartFluidInterface;
-    }
-
     private boolean isTile() {
         return this.host instanceof TileFluidInterface;
     }
