@@ -24,6 +24,7 @@ public class FluidFilter {
                     case FLUIDS -> {
                         return item instanceof ItemFluidDrop;
                     }
+                    default -> {}
                 }
             }
         }
