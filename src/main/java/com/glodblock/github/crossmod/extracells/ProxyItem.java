@@ -63,7 +63,7 @@ public class ProxyItem extends FCBaseItem {
             info.add(EnumChatFormatting.AQUA + itemRepl.replacement.getUnlocalizedName());
             info.add(EnumChatFormatting.GOLD + "Put in your inventory to get a replacement.");
             info.add(EnumChatFormatting.GOLD + "It will disappear if no replacement was found.");
-            info.add(EnumChatFormatting.RED + "Report missing conversions on the Github.");
+            info.add(EnumChatFormatting.RED + "Report missing conversions on the GitHub.");
         }
     }
 
