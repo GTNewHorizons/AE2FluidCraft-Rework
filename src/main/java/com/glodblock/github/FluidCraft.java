@@ -36,9 +36,9 @@ import cpw.mods.fml.common.network.NetworkRegistry;
         dependencies = "required-after:appliedenergistics2@[rv3-beta-238,);required-after:CoFHCore;required-after:Baubles;after:waila;after:thaumicenergistics;after:ae2wct")
 public class FluidCraft {
 
-    public static final String MODID = "GRADLETOKEN_MODID";
-    public static final String VERSION = "GRADLETOKEN_VERSION";
-    public static final String MODNAME = "GRADLETOKEN_MODNAME";
+    public static final String MODID = "ae2fc";
+    public static final String VERSION = FCTags.VERSION;
+    public static final String MODNAME = "Fluid Craft For AE2";
 
     @Mod.Instance(MODID)
     public static FluidCraft INSTANCE;
