@@ -38,7 +38,7 @@ public class FluidCraft {
 
     public static final String MODID = "ae2fc";
     public static final String VERSION = FCTags.VERSION;
-    public static final String MODNAME = "Fluid Craft For AE2";
+    public static final String MODNAME = "AE2 Fluid Crafting";
 
     @Mod.Instance(MODID)
     public static FluidCraft INSTANCE;
