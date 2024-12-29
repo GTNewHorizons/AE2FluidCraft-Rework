@@ -55,7 +55,7 @@ public class ProxyItem extends FCBaseItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean p_77624_4_) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> info, boolean p_77624_4_) {
         int meta = stack.getItemDamage();
         ProxyItemEntry itemRepl = replacements.get(meta);
         if (itemRepl != null) {

@@ -23,8 +23,7 @@ public class BaseItemBlockContainer extends ItemBlock {
 
     @Override
     @SideOnly(Side.CLIENT)
-    @SuppressWarnings("unchecked")
-    public void addInformation(final ItemStack itemStack, final EntityPlayer player, final List toolTip,
+    public void addInformation(final ItemStack itemStack, final EntityPlayer player, final List<String> toolTip,
             final boolean advancedToolTips) {
         blockType.addInformation(itemStack, player, toolTip, advancedToolTips);
     }

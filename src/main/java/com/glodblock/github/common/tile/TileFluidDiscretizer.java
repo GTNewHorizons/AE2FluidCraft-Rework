@@ -81,7 +81,7 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
     }
 
     @Override
-    public void saveChanges(IMEInventory cellInventory) {
+    public void saveChanges(@SuppressWarnings("rawtypes") IMEInventory cellInventory) {
         markDirty();
     }
 

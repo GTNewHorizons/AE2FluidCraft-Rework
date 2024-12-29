@@ -39,7 +39,6 @@ public abstract class FCGuiAmount extends AEBaseGui {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
 

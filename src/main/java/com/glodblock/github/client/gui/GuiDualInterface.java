@@ -59,7 +59,6 @@ public class GuiDualInterface extends GuiUpgradeable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void addButtons() {
         this.priority = new GuiTabButton(
                 this.guiLeft + 154,

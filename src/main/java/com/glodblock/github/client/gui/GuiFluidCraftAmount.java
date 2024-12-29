@@ -74,9 +74,9 @@ public class GuiFluidCraftAmount extends FCGuiAmount {
             if (btn == this.craftingMode) {
                 GuiImgButton iBtn = ((GuiImgButton) btn);
 
-                final Enum cv = iBtn.getCurrentValue();
+                final Enum<?> cv = iBtn.getCurrentValue();
                 final boolean backwards = Mouse.isButtonDown(1);
-                final Enum next = Platform.rotateEnum(cv, backwards, iBtn.getSetting().getPossibleValues());
+                final Enum<?> next = Platform.rotateEnum(cv, backwards, iBtn.getSetting().getPossibleValues());
 
                 iBtn.set(next);
             } else if (btn == this.submit && this.submit.enabled) {

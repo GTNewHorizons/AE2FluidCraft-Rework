@@ -157,7 +157,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
         this.lastWorkingTick = this.refreshTick;
@@ -395,9 +394,8 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         private final FCGuiLineField line;
         private State state;
 
-        @SuppressWarnings("unchecked")
         public Component(Widget qtyInput, Widget batchInput, GuiFCImgButton submitBtn, GuiFCImgButton enableBtn,
-                GuiFCImgButton disableBtn, FCGuiLineField line, List buttonList) {
+                GuiFCImgButton disableBtn, FCGuiLineField line, List<GuiButton> buttonList) {
             this.qty = qtyInput;
             this.batch = batchInput;
             this.enable = enableBtn;

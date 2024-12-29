@@ -182,7 +182,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void initGui() {
         super.initGui();
@@ -659,9 +658,8 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
     /**
      * A copy of super method, but modified to allow for depth testing.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public void drawHoveringText(List textLines, int x, int y, FontRenderer font) {
+    public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
         if (!textLines.isEmpty()) {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();

@@ -175,7 +175,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void initGui() {
         super.initGui();
@@ -282,7 +281,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float btn) {
         terminalStyleBox.set(AEConfig.instance.settings.getSetting(Settings.TERMINAL_STYLE));
@@ -699,9 +697,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void drawHoveringText(List textLines, int x, int y, FontRenderer font) {
+    public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
         if (!textLines.isEmpty()) {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
