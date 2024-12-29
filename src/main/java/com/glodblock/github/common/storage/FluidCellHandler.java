@@ -51,7 +51,8 @@ public class FluidCellHandler implements ICellHandler {
 
     @Override
     public void openChestGui(final EntityPlayer player, final IChestOrDrive chest, final ICellHandler cellHandler,
-            @SuppressWarnings("rawtypes") final IMEInventoryHandler inv, final ItemStack is, final StorageChannel chan) {
+            @SuppressWarnings("rawtypes") final IMEInventoryHandler inv, final ItemStack is,
+            final StorageChannel chan) {
         if (chan == StorageChannel.FLUIDS) {
             if (chest instanceof TileEntity te) {
                 InventoryHandler

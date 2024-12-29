@@ -26,8 +26,10 @@ public class FluidSorters {
             final Fluid f1 = fs1.getFluid();
             final Fluid f2 = fs2.getFluid();
             if (getDirection() == SortDir.ASCENDING) {
-                return this
-                        .secondarySort(Util.getFluidModName(f2).compareToIgnoreCase(Util.getFluidModName(f1)), fs1, fs2);
+                return this.secondarySort(
+                        Util.getFluidModName(f2).compareToIgnoreCase(Util.getFluidModName(f1)),
+                        fs1,
+                        fs2);
             }
             return this.secondarySort(Util.getFluidModName(f1).compareToIgnoreCase(Util.getFluidModName(f2)), fs2, fs1);
         }

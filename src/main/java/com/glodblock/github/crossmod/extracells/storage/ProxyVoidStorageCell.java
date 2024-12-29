@@ -15,8 +15,7 @@ public class ProxyVoidStorageCell extends ItemVoidStorageCell {
 
     private final String name = AEApi.instance().definitions().items().cellVoid().maybeStack(1).get()
             .getUnlocalizedName();
-    
-    
+
     public ProxyVoidStorageCell() {
         this.setUnlocalizedName("ec2placeholder.storage.physical.void");
     }

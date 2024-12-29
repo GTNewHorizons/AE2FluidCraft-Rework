@@ -146,7 +146,8 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
 
     private void postDifference(Iterable<IAEFluidStack> a) {
         if (a != null) {
-            Iterator<Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object>> i = this.listeners.entrySet().iterator();
+            Iterator<Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object>> i = this.listeners.entrySet()
+                    .iterator();
 
             while (i.hasNext()) {
                 Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> l = i.next();
