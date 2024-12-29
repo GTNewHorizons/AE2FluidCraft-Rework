@@ -48,11 +48,11 @@ public class Tooltip {
     public static String partFluidTerminalFluidFormat(FluidStack fs) {
         int fid = Util.getFluidID(fs.getFluid());
         if (fid == -1) {
-            return fs.getFluid().getLocalizedName();
+            return fs.getLocalizedName();
         } else if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips) {
-            return String.format("%s (#%s) %s", fs.getFluid().getLocalizedName(), fid, fid);
+            return String.format("%s (#%s) %s", fs.getLocalizedName(), fid, fid);
         } else {
-            return String.format("%s %s", fs.getFluid().getLocalizedName(), fid);
+            return String.format("%s %s", fs.getLocalizedName(), fid);
         }
     }
 }
