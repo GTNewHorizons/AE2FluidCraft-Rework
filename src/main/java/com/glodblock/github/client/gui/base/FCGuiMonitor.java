@@ -170,7 +170,6 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         Keyboard.enableRepeatEvents(true);
 
@@ -685,12 +684,13 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     }
 
     @Override
-    public Enum getTypeFilter() {
+    public Enum<?> getTypeFilter() {
         return this.configSrc.getSetting(Settings.TYPE_FILTER);
     }
 
     @Override
-    public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {
+    public void updateSetting(final IConfigManager manager, @SuppressWarnings("rawtypes") final Enum settingName,
+            @SuppressWarnings("rawtypes") final Enum newValue) {
         if (this.SortByBox != null) {
             this.SortByBox.set(this.configSrc.getSetting(Settings.SORT_BY));
         }

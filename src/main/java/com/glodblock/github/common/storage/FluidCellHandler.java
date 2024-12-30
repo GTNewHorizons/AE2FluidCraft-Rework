@@ -51,7 +51,8 @@ public class FluidCellHandler implements ICellHandler {
 
     @Override
     public void openChestGui(final EntityPlayer player, final IChestOrDrive chest, final ICellHandler cellHandler,
-            final IMEInventoryHandler inv, final ItemStack is, final StorageChannel chan) {
+            @SuppressWarnings("rawtypes") final IMEInventoryHandler inv, final ItemStack is,
+            final StorageChannel chan) {
         if (chan == StorageChannel.FLUIDS) {
             if (chest instanceof TileEntity te) {
                 InventoryHandler
@@ -61,7 +62,7 @@ public class FluidCellHandler implements ICellHandler {
     }
 
     @Override
-    public int getStatusForCell(final ItemStack is, final IMEInventory handler) {
+    public int getStatusForCell(final ItemStack is, @SuppressWarnings("rawtypes") final IMEInventory handler) {
         if (handler instanceof final FluidCellInventoryHandler ci) {
             return ci.getStatusForCell();
         }
@@ -69,7 +70,7 @@ public class FluidCellHandler implements ICellHandler {
     }
 
     @Override
-    public double cellIdleDrain(final ItemStack is, final IMEInventory handler) {
+    public double cellIdleDrain(final ItemStack is, @SuppressWarnings("rawtypes") final IMEInventory handler) {
         final IFluidCellInventory inv = ((IFluidCellInventoryHandler) handler).getCellInv();
         return inv.getIdleDrain(is);
     }

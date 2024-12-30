@@ -224,7 +224,8 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
     }
 
     @Override
-    public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {
+    public void updateSetting(final IConfigManager manager, @SuppressWarnings("rawtypes") final Enum settingName,
+            @SuppressWarnings("rawtypes") final Enum newValue) {
         if (this.getGui() != null) {
             this.getGui().updateSetting(manager, settingName, newValue);
         }

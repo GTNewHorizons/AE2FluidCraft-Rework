@@ -3,6 +3,7 @@ package com.glodblock.github.util;
 import java.util.Comparator;
 
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
 
@@ -20,16 +21,20 @@ public class FluidSorters {
 
         @Override
         public int compare(final IAEItemStack o1, final IAEItemStack o2) {
-            final Fluid f1 = ItemFluidDrop.getAeFluidStack(o1).getFluid();
-            final Fluid f2 = ItemFluidDrop.getAeFluidStack(o2).getFluid();
+            final FluidStack fs1 = ItemFluidDrop.getAeFluidStack(o1).getFluidStack();
+            final FluidStack fs2 = ItemFluidDrop.getAeFluidStack(o2).getFluidStack();
+            final Fluid f1 = fs1.getFluid();
+            final Fluid f2 = fs2.getFluid();
             if (getDirection() == SortDir.ASCENDING) {
-                return this
-                        .secondarySort(Util.getFluidModName(f2).compareToIgnoreCase(Util.getFluidModName(f1)), f1, f2);
+                return this.secondarySort(
+                        Util.getFluidModName(f2).compareToIgnoreCase(Util.getFluidModName(f1)),
+                        fs1,
+                        fs2);
             }
-            return this.secondarySort(Util.getFluidModName(f1).compareToIgnoreCase(Util.getFluidModName(f2)), f2, f1);
+            return this.secondarySort(Util.getFluidModName(f1).compareToIgnoreCase(Util.getFluidModName(f2)), fs2, fs1);
         }
 
-        private int secondarySort(final int compareToIgnoreCase, final Fluid f1, final Fluid f2) {
+        private int secondarySort(final int compareToIgnoreCase, final FluidStack f1, final FluidStack f2) {
             if (compareToIgnoreCase == 0) {
                 return f2.getLocalizedName().compareToIgnoreCase(f1.getLocalizedName());
             }

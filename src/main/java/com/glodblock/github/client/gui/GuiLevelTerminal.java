@@ -119,7 +119,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     private final LevelTerminalList masterList = new LevelTerminalList();
     private final List<String> extraOptionsText = new ArrayList<>(2);
     private static final float ITEM_STACK_Z = 100.0f;
-    private static final float SLOT_Z = 0.5f;
     private static final float ITEM_STACK_OVERLAY_Z = 200.0f;
     private static final float SLOT_HOVER_Z = 310.0f;
     private static final float TOOLTIP_Z = 410.0f;
@@ -175,7 +174,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void initGui() {
         super.initGui();
@@ -282,7 +280,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float btn) {
         terminalStyleBox.set(AEConfig.instance.settings.getSetting(Settings.TERMINAL_STYLE));
@@ -385,7 +382,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             GL11.glPushMatrix();
             GL11.glTranslatef(offsetX + VIEW_LEFT, offsetY + HEADER_HEIGHT, 0);
             tooltipStack = null;
-            masterList.hoveredEntry = null;
             drawViewport(mouseX - offsetX - VIEW_LEFT, mouseY - offsetY - HEADER_HEIGHT - 1);
             GL11.glPopMatrix();
             GL11.glPopAttrib();
@@ -588,7 +584,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     long quantity = data.getLong(TLMTags.Quantity.tagName);
                     long batch = data.getLong(TLMTags.Batch.tagName);
                     State state = State.values()[data.getInteger(TLMTags.State.tagName)];
-                    NBTTagCompound linkTag = data.getCompoundTag(TLMTags.Link.tagName);
 
                     GL11.glPushMatrix();
                     GL11.glTranslatef(colLeft, viewY + rowYTop + 1, ITEM_STACK_Z);
@@ -641,8 +636,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     GL11.glTranslatef(0.0f, 0.0f, SLOT_HOVER_Z);
                     drawRect(colLeft, viewY + 1 + rowYTop, -2 + colRight, viewY - 1 + rowYBot, 0x77FFFFFF);
                     GL11.glTranslatef(0.0f, 0.0f, -SLOT_HOVER_Z);
-                    masterList.hoveredEntry = entry;
-                    entry.hoveredSlotIdx = slotIdx;
                 }
                 GL11.glDisable(GL11.GL_LIGHTING);
             }
@@ -699,9 +692,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void drawHoveringText(List textLines, int x, int y, FontRenderer font) {
+    public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
         if (!textLines.isEmpty()) {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
@@ -887,10 +879,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 return;
             }
 
-            if (owCmd.onlineValid) {
-                entry.online = owCmd.online;
-            }
-
             if (owCmd.itemsValid) {
                 if (owCmd.allItemUpdate) {
                     entry.fullItemUpdate(owCmd.items, owCmd.validIndices.length);
@@ -981,7 +969,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         private final List<LevelTerminalSection> visibleSections = new ArrayList<>();
         private boolean isDirty;
         private int height;
-        private LevelTerminalEntry hoveredEntry;
 
         LevelTerminalList() {
             isDirty = true;
@@ -1223,8 +1210,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         GuiFCImgButton highlightButton;
         GuiFCImgButton renameButton;
         GuiFCImgButton configButton;
-        /** Nullable - icon that represents the interface */
-        ItemStack selfItemStack;
         /** Nullable - icon that represents the interface's "target" */
         ItemStack displayItemStack;
         LevelTerminalSection section;
@@ -1233,16 +1218,13 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         int rows, rowSize;
         int guiHeight;
         int dispY = -9999;
-        boolean online;
         boolean[] filteredRecipes;
         int numItems = 0;
-        private int hoveredSlotIdx = -1;
 
         LevelTerminalEntry(long id, String name, int rows, int rowSize, boolean online) {
             this.id = id;
             this.rows = rows;
             this.rowSize = rowSize;
-            this.online = online;
             if (StatCollector.canTranslate(name)) {
                 customName = StatCollector.translateToLocal(name);
             } else {
@@ -1272,7 +1254,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
 
         LevelTerminalEntry setIcons(ItemStack selfItemStack, ItemStack displayItemStack) {
-            this.selfItemStack = selfItemStack;
             this.displayItemStack = displayItemStack;
 
             return this;

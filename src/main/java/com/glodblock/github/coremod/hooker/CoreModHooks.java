@@ -94,7 +94,7 @@ public class CoreModHooks {
         } else return aeStack.getStackSize();
     }
 
-    public static List<IMEInventoryHandler> craftingGridCacheGetCellArray(final CraftingGridCache instance,
+    public static List<IMEInventoryHandler<?>> craftingGridCacheGetCellArray(final CraftingGridCache instance,
             final StorageChannel channel) {
         // Equivalent to original function, but using the proxy for fluid channel
         return channel == StorageChannel.ITEMS ? Arrays.asList(instance)
