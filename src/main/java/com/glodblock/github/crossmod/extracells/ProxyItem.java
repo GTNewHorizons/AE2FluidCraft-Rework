@@ -55,7 +55,7 @@ public class ProxyItem extends FCBaseItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean p_77624_4_) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> info, boolean p_77624_4_) {
         int meta = stack.getItemDamage();
         ProxyItemEntry itemRepl = replacements.get(meta);
         if (itemRepl != null) {
@@ -63,7 +63,7 @@ public class ProxyItem extends FCBaseItem {
             info.add(EnumChatFormatting.AQUA + itemRepl.replacement.getUnlocalizedName());
             info.add(EnumChatFormatting.GOLD + "Put in your inventory to get a replacement.");
             info.add(EnumChatFormatting.GOLD + "It will disappear if no replacement was found.");
-            info.add(EnumChatFormatting.RED + "Report missing conversions on the Github.");
+            info.add(EnumChatFormatting.RED + "Report missing conversions on the GitHub.");
         }
     }
 

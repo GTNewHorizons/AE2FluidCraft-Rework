@@ -16,6 +16,10 @@ public class ProxyVoidStorageCell extends ItemVoidStorageCell {
     private final String name = AEApi.instance().definitions().items().cellVoid().maybeStack(1).get()
             .getUnlocalizedName();
 
+    public ProxyVoidStorageCell() {
+        this.setUnlocalizedName("ec2placeholder.storage.physical.void");
+    }
+
     @Override
     public void addCheckedInformation(ItemStack stack, EntityPlayer player, List<String> info,
             boolean displayMoreInfo) {
@@ -23,7 +27,7 @@ public class ProxyVoidStorageCell extends ItemVoidStorageCell {
         info.add(EnumChatFormatting.AQUA + name);
         info.add(EnumChatFormatting.GOLD + "Put in your inventory to get a replacement.");
         info.add(EnumChatFormatting.GOLD + "It will disappear if no replacement was found.");
-        info.add(EnumChatFormatting.RED + "Report missing conversions on the Github.");
+        info.add(EnumChatFormatting.RED + "Report missing conversions on the GitHub.");
     }
 
     @Override

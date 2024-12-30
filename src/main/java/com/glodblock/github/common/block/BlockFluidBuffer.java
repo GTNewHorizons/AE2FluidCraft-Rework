@@ -48,7 +48,7 @@ public class BlockFluidBuffer extends FCBaseBlock {
             if (fs == null && ias != null) {
                 player.addChatMessage(
                         new ChatComponentText(
-                                Tooltip.fluidFormat(ias.getFluid().getLocalizedName(), ias.getStackSize())));
+                                Tooltip.fluidFormat(ias.getFluidStack().getLocalizedName(), ias.getStackSize())));
                 return false;
             } else {
                 tile.setFluid(fs);

@@ -294,7 +294,6 @@ public class ItemReplacements {
             double idleDrain, int types) {
         if (replacement.isEnabled()) {
             ProxyItemStorageCell item = getOrBuildItemStorage();
-            int meta = replacement.maybeStack(1).get().getItemDamage();
             ProxyItem.ProxyItemEntry storage = new ProxyItem.ProxyStorageEntry(
                     replacement.maybeItem().get(),
                     kilobytes,

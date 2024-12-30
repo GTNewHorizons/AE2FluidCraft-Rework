@@ -41,9 +41,8 @@ public class ItemFluidDrop extends FCBaseItem {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, List list) {
+    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> list) {
         if (CreativeTabs.tabMisc.equals(tab)) {
             list.add(newStack(new FluidStack(FluidRegistry.WATER, 1)));
             list.add(newStack(new FluidStack(FluidRegistry.LAVA, 1)));
@@ -67,9 +66,8 @@ public class ItemFluidDrop extends FCBaseItem {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean flag) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean flag) {
         FluidStack fluid = getFluidStack(stack);
         if (ItemFluidPacket.isDisplay(stack)) return;
         if (fluid != null) {

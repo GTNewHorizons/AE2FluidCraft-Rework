@@ -124,7 +124,8 @@ public class CPacketTransferRecipe implements IMessage {
                     }
                     // using exists item to fill slot
                     if (message.shift && !storageList.isEmpty()) {
-                        for (OrderStack stack : message.inputs) {
+                        for (@SuppressWarnings("rawtypes")
+                        OrderStack stack : message.inputs) {
                             if (stack.getStack() instanceof FluidStack || stack.getItems() == null) continue;
                             IAEItemStack iaeItemStack = AEApi.instance().storage()
                                     .createItemStack((ItemStack) stack.getStack());

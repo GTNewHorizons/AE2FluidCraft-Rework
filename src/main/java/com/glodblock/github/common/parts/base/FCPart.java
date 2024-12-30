@@ -284,7 +284,8 @@ public abstract class FCPart extends AEBasePart
     }
 
     @Override
-    public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {}
+    public void updateSetting(final IConfigManager manager, @SuppressWarnings("rawtypes") final Enum settingName,
+            @SuppressWarnings("rawtypes") final Enum newValue) {}
 
     @Override
     public IInventory getViewCellStorage() {
