@@ -66,7 +66,6 @@ public class GuiFluidInterface extends AEBaseGui {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
         this.switcher = new GuiTabButton(

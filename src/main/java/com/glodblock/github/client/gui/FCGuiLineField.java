@@ -6,8 +6,6 @@ public class FCGuiLineField extends FCGuiTextField {
 
     private final int _xPos;
     private final int _yPos;
-    private final int _width;
-    private final FontRenderer _fontRender;
 
     public FCGuiLineField(FontRenderer fontRenderer, int xPos, int yPos, int width) {
         this(fontRenderer, xPos, yPos, width, 5);
@@ -17,8 +15,6 @@ public class FCGuiLineField extends FCGuiTextField {
         super(fontRenderer, xPos, yPos, width, height);
         this._xPos = xPos;
         this._yPos = yPos;
-        this._width = width;
-        this._fontRender = fontRenderer;
     }
 
     @Override

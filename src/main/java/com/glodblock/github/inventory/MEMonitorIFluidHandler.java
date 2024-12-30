@@ -146,11 +146,12 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
 
     private void postDifference(Iterable<IAEFluidStack> a) {
         if (a != null) {
-            Iterator<?> i = this.listeners.entrySet().iterator();
+            Iterator<Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object>> i = this.listeners.entrySet()
+                    .iterator();
 
             while (i.hasNext()) {
-                Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> l = (Map.Entry) i.next();
-                IMEMonitorHandlerReceiver key = l.getKey();
+                Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> l = i.next();
+                IMEMonitorHandlerReceiver<IAEFluidStack> key = l.getKey();
                 if (key.isValid(l.getValue())) {
                     key.postChange(this, a, this.getActionSource());
                 } else {
@@ -184,7 +185,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         return true;
     }
 
-    public IItemList<IAEFluidStack> getAvailableItems(IItemList out, int iteration) {
+    public IItemList<IAEFluidStack> getAvailableItems(IItemList<IAEFluidStack> out, int iteration) {
 
         for (IAEFluidStack fs : this.cache) {
             out.addStorage(fs);
@@ -200,10 +201,6 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
 
     public IItemList<IAEFluidStack> getStorageList() {
         return this.cache;
-    }
-
-    private StorageFilter getMode() {
-        return this.mode;
     }
 
     public void setMode(StorageFilter mode) {

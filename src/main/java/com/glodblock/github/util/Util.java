@@ -287,8 +287,9 @@ public final class Util {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static ModContainer getFluidMod(Fluid fluid) {
-        return GameData.findModOwner(String.format("%s:%s", getFluidModID(fluid), fluid.getName()));
+        return GameData.findModOwner(FluidRegistry.getDefaultFluidName(fluid));
     }
 
     public static int getFluidID(Fluid fluid) {

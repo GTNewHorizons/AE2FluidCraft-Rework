@@ -39,7 +39,6 @@ public class GuiFluidStorageBus extends GuiUpgradeable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void addButtons() {
         this.clear = new GuiImgButton(this.guiLeft - 18, this.guiTop + 8, Settings.ACTIONS, ActionItems.CLOSE);
         this.partition = new GuiImgButton(this.guiLeft - 18, this.guiTop + 28, Settings.ACTIONS, ActionItems.WRENCH);

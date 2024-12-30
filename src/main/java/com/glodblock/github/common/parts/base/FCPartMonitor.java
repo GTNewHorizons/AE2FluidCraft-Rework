@@ -323,8 +323,10 @@ public abstract class FCPartMonitor extends AbstractPartDisplay implements IPart
     }
 
     @Override
-    public void onStackChange(final IItemList o, final IAEStack fullStack, final IAEStack diffStack,
-            final BaseActionSource src, final StorageChannel chan) {
+    public void onStackChange(@SuppressWarnings("rawtypes") final IItemList o,
+            @SuppressWarnings("rawtypes") final IAEStack fullStack,
+            @SuppressWarnings("rawtypes") final IAEStack diffStack, final BaseActionSource src,
+            final StorageChannel chan) {
         if (this.configuredFluid != null) {
             if (fullStack == null) {
                 this.configuredFluid.setStackSize(0);

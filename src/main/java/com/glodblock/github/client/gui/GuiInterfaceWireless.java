@@ -182,7 +182,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void initGui() {
         super.initGui();
@@ -382,7 +381,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
             GL11.glPushMatrix();
             GL11.glTranslatef(offsetX + VIEW_LEFT, offsetY + HEADER_HEIGHT, 0);
             tooltipStack = null;
-            masterList.hoveredEntry = null;
             drawViewport(mouseX - offsetX - VIEW_LEFT, mouseY - offsetY - HEADER_HEIGHT - 1);
             GL11.glPopMatrix();
             GL11.glPopAttrib();
@@ -636,8 +634,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
                     GL11.glTranslatef(0.0f, 0.0f, SLOT_HOVER_Z);
                     drawRect(colLeft, viewY + 1 + rowYTop, -2 + colRight, viewY - 1 + rowYBot, 0x77FFFFFF);
                     GL11.glTranslatef(0.0f, 0.0f, -SLOT_HOVER_Z);
-                    masterList.hoveredEntry = entry;
-                    entry.hoveredSlotIdx = slotIdx;
                 }
                 GL11.glDisable(GL11.GL_LIGHTING);
             }
@@ -659,9 +655,8 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
     /**
      * A copy of super method, but modified to allow for depth testing.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public void drawHoveringText(List textLines, int x, int y, FontRenderer font) {
+    public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
         if (!textLines.isEmpty()) {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
@@ -971,7 +966,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         private final List<InterfaceWirelessSection> visibleSections = new ArrayList<>();
         private boolean isDirty;
         private int height;
-        private InterfaceWirelessEntry hoveredEntry;
 
         InterfaceWirelessList() {
             this.isDirty = true;
@@ -1229,8 +1223,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         GuiFCImgButton optionsButton;
         GuiFCImgButton renameButton;
 
-        /** Nullable - icon that represents the interface */
-        ItemStack selfRep;
         /** Nullable - icon that represents the interface's "target" */
         ItemStack dispRep;
         InterfaceWirelessSection section;
@@ -1245,7 +1237,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         int numItems = 0;
         /** Should recipe be filtered out/grayed out? */
         boolean[] filteredRecipes;
-        private int hoveredSlotIdx = -1;
 
         InterfaceWirelessEntry(long id, String name, int rows, int rowSize, boolean online, boolean p2pOutput) {
             this.id = id;
@@ -1284,8 +1275,6 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
         }
 
         InterfaceWirelessEntry setIcons(ItemStack selfRep, ItemStack dispRep) {
-            // Kotlin would make this pretty easy :(
-            this.selfRep = selfRep;
             this.dispRep = dispRep;
 
             return this;
