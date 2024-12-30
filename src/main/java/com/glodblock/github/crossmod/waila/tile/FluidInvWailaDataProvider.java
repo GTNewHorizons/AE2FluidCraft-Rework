@@ -41,7 +41,7 @@ public class FluidInvWailaDataProvider extends BaseWailaDataProvider {
                 ItemStack is = inv.getStackInSlot(i);
                 if (is != null && is.getItem() instanceof ItemFluidPacket) {
                     FluidStack fs = ItemFluidPacket.getFluidStack(is);
-                    currentToolTip.add(Tooltip.fluidFormat(fs.getFluid().getLocalizedName(), fs.amount));
+                    currentToolTip.add(Tooltip.fluidFormat(fs.getLocalizedName(), fs.amount));
                 }
             }
         }
@@ -53,9 +53,9 @@ public class FluidInvWailaDataProvider extends BaseWailaDataProvider {
             if (ft.getFluidInSlot(i) == null) continue;
             FluidStack fs = ft.getFluidInSlot(i).getFluidStack();
             if (prefix) {
-                currentToolTip.add(Tooltip.tileFluidInterfaceFormat(fs.getFluid().getLocalizedName(), fs.amount, i));
+                currentToolTip.add(Tooltip.tileFluidInterfaceFormat(fs.getLocalizedName(), fs.amount, i));
             } else {
-                currentToolTip.add(Tooltip.fluidFormat(fs.getFluid().getLocalizedName(), fs.amount));
+                currentToolTip.add(Tooltip.fluidFormat(fs.getLocalizedName(), fs.amount));
             }
         }
     }

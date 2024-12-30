@@ -7,11 +7,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.inventory.item.IClickableInTerminal;
 import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.Util;
 
-import appeng.container.AEBaseContainer;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -109,7 +106,6 @@ public class CPacketLevelTerminalCommands implements IMessage {
         @Override
         public IMessage onMessage(CPacketLevelTerminalCommands message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            AEBaseContainer con = (AEBaseContainer) player.openContainer;
             switch (message.action) {
                 case EDIT -> {
                     TileEntity tile = DimensionManager.getWorld(message.dim)
@@ -134,34 +130,7 @@ public class CPacketLevelTerminalCommands implements IMessage {
                             message.side,
                             originalGui);
                 }
-                case ENABLE -> {
-                    if (con.getTarget() instanceof IClickableInTerminal clickableInterface) {
-                        Util.DimensionalCoordSide intMsg = clickableInterface.getClickedInterface();
-                        TileEntity tile = DimensionManager.getWorld(intMsg.getDimension())
-                                .getTileEntity(intMsg.x, intMsg.y, intMsg.z);
-                    }
-                }
-                case DISABLE -> {
-                    if (con.getTarget() instanceof IClickableInTerminal clickableInterface) {
-                        Util.DimensionalCoordSide intMsg = clickableInterface.getClickedInterface();
-                        TileEntity tile = DimensionManager.getWorld(intMsg.getDimension())
-                                .getTileEntity(intMsg.x, intMsg.y, intMsg.z);
-                    }
-                }
-                case ENABLE_ALL -> {
-                    if (con.getTarget() instanceof IClickableInTerminal clickableInterface) {
-                        Util.DimensionalCoordSide intMsg = clickableInterface.getClickedInterface();
-                        TileEntity tile = DimensionManager.getWorld(intMsg.getDimension())
-                                .getTileEntity(intMsg.x, intMsg.y, intMsg.z);
-                    }
-                }
-                case DISABLE_ALL -> {
-                    if (con.getTarget() instanceof IClickableInTerminal clickableInterface) {
-                        Util.DimensionalCoordSide intMsg = clickableInterface.getClickedInterface();
-                        TileEntity tile = DimensionManager.getWorld(intMsg.getDimension())
-                                .getTileEntity(intMsg.x, intMsg.y, intMsg.z);
-                    }
-                }
+                default -> {}
             }
             return null;
         }

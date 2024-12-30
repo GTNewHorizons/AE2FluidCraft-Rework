@@ -44,7 +44,7 @@ public class MouseRegionManager {
             if (region.containsMouse(mX, mY)) {
                 List<String> tooltip = region.handler.getTooltip();
                 if (tooltip != null) {
-                    ((AEBaseGui) gui).drawTooltip(mX, mY, 0, String.join("\n", tooltip));
+                    ((AEBaseGui) gui).drawTooltip(mX, mY, String.join("\n", tooltip));
                     return;
                 }
             }

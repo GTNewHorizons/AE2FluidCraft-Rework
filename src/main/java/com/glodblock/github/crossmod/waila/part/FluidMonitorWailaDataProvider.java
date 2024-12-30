@@ -27,7 +27,9 @@ public class FluidMonitorWailaDataProvider extends BasePartWailaDataProvider {
         if (part instanceof FCPartMonitor && accessor.getNBTData().hasKey(key)) {
             IAEFluidStack iaeFluidStack = Util.loadFluidStackFromNBT(accessor.getNBTData().getCompoundTag(key));
             if (iaeFluidStack != null) currentToolTip.add(
-                    Tooltip.fluidFormat(iaeFluidStack.getFluid().getLocalizedName(), iaeFluidStack.getStackSize()));
+                    Tooltip.fluidFormat(
+                            iaeFluidStack.getFluidStack().getLocalizedName(),
+                            iaeFluidStack.getStackSize()));
         }
         return currentToolTip;
     }

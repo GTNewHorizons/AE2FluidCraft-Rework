@@ -55,7 +55,6 @@ public class GuiFluidCraftingWireless extends GuiItemMonitor {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
         this.buttonList.add(

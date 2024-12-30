@@ -27,6 +27,7 @@ public class EssentiaRepo extends FluidRepo {
         super(src, sortSrc);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void updateView() {
         this.view.clear();

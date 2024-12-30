@@ -93,6 +93,7 @@ public class ContainerLevelMaintainer extends AEBaseContainer {
                                 createLevelValues(Objects.requireNonNull(Util.copyStackWithSize(stack, 1))));
                     }
                 }
+                default -> {}
             }
         } else {
             super.doAction(player, action, slotId, id);

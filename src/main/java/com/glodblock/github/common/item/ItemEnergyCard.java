@@ -33,9 +33,8 @@ public class ItemEnergyCard extends FCBaseItem {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List toolTip, boolean flag) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> toolTip, boolean flag) {
         if (isShiftKeyDown()) {
             toolTip.addAll(RenderUtil.listFormattedStringToWidth(NameConst.i18n(NameConst.TT_ENERGY_CARD_DESC)));
         } else {
