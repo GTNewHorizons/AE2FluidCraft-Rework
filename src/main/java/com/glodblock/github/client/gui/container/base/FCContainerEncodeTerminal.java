@@ -549,29 +549,33 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     static boolean canMultiplyOrDivide(SlotFake[] slots, int mult) {
         if (mult > 0) {
             for (Slot s : slots) {
-                if (s.getStack() != null) {
-                    if (s.getStack().getItem() instanceof ItemFluidPacket) {
-                        long result = (long) ItemFluidPacket.getFluidAmount(s.getStack()) * mult;
-                        if (result > Integer.MAX_VALUE) {
-                            return false;
-                        }
-                    } else {
-                        long val = (long) s.getStack().stackSize * mult;
-                        if (val > Integer.MAX_VALUE) return false;
-                    }
+                ItemStack st = s.getStack();
+                if (st == null) continue;
+                final long count;
+                if (st.getItem() instanceof ItemFluidPacket) {
+                    count = ItemFluidPacket.getFluidAmount(st);
+                } else {
+                    count = s.getStack().stackSize;
+                }
+                long result = count * mult;
+                if (result > Integer.MAX_VALUE) {
+                    return false;
                 }
             }
             return true;
         } else if (mult < 0) {
-            mult = -mult;
+            mult = Math.abs(mult);
             for (Slot s : slots) {
-                if (s.getStack() != null) { // Although % is a very inefficient algorithm, it is not a performance issue
-                    // here. :>
-                    if (s.getStack().getItem() instanceof ItemFluidPacket) {
-                        if (ItemFluidPacket.getFluidAmount(s.getStack()) % mult != 0) return false;
-                    } else {
-                        if (s.getStack().stackSize % mult != 0) return false;
-                    }
+                ItemStack st = s.getStack();
+                if (st == null) continue;
+                final int count;
+                if (st.getItem() instanceof ItemFluidPacket) {
+                    count = ItemFluidPacket.getFluidAmount(st);
+                } else {
+                    count = s.getStack().stackSize;
+                }
+                if (count % mult != 0) {
+                    return false;
                 }
             }
             return true;
@@ -594,7 +598,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                 }
             }
         } else if (mult < 0) {
-            mult = -mult;
+            mult = Math.abs(mult);
             for (final Slot s : enabledSlots) {
                 ItemStack st = s.getStack();
                 if (st != null) {

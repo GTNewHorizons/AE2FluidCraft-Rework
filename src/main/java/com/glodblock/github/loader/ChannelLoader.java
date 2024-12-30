@@ -81,8 +81,6 @@ public class ChannelLoader implements Runnable {
                 Side.SERVER);
         netHandler
                 .registerMessage(new CPacketPatternMultiSet.Handler(), CPacketPatternMultiSet.class, id++, Side.SERVER);
-        netHandler
-                .registerMessage(new CPacketPatternMultiSet.Handler(), CPacketPatternMultiSet.class, id++, Side.CLIENT);
     }
 
     public static void sendPacketToAllPlayers(Packet packet, World world) {
