@@ -44,7 +44,7 @@ public class ItemMultiFluidStorageCell extends FCBaseItemCell
         this.component = whichCell;
         this.housingValue = housingValue;
         this.maxType = 5;
-        setUnlocalizedName(NameConst.ITEM_MULTI_FLUID_STORAGE + kilobytes);
+        setUnlocalizedName(NameConst.ITEM_MULTI_FLUID_STORAGE + "." + kilobytes);
 
         switch (this.component) {
             case Cell1kPart -> {

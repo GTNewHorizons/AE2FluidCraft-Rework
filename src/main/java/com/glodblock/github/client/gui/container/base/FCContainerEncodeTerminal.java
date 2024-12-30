@@ -157,6 +157,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                     slot.putStack(ItemFluidPacket.newStack(fluid));
                     return;
                 }
+                default -> {}
             }
 
         }

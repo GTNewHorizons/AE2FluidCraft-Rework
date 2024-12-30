@@ -39,7 +39,6 @@ public class GuiFluidPatternTerminalEx extends FCGuiEncodeTerminal {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
 

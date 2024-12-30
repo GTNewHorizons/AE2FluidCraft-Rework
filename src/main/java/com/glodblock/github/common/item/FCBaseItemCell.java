@@ -62,7 +62,6 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
         this.component = null;
     }
 
-    @SuppressWarnings("all")
     public FCBaseItemCell(final Optional<String> subName) {
         super(subName);
     }

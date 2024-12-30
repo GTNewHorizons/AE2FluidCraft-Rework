@@ -39,7 +39,6 @@ public class GuiFluidPatternTerminal extends FCGuiEncodeTerminal {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
         this.tabCraftButton = new GuiTabButton(

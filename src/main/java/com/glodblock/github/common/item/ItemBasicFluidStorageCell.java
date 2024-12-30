@@ -43,7 +43,7 @@ public class ItemBasicFluidStorageCell extends FCBaseItemCell
         this.totalBytes = kilobytes * 1024;
         this.component = whichCell;
         this.housingValue = housingValue;
-        setUnlocalizedName(NameConst.ITEM_FLUID_STORAGE + kilobytes);
+        setUnlocalizedName(NameConst.ITEM_FLUID_STORAGE + "." + kilobytes);
 
         switch (this.component) {
             case Cell1kPart -> {
