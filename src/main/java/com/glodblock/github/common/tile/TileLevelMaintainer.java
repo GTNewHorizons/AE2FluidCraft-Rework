@@ -295,22 +295,6 @@ public class TileLevelMaintainer extends AENetworkTile
         requests.updateStatus(idx, enable);
     }
 
-    private void readLinkFromNBT(NBTTagCompound data) {
-        for (int i = 0; i < REQ_COUNT; i++) {
-            final NBTTagCompound stackData = requests.getItemStack(i).getTagCompound();
-            if (stackData != null && stackData.hasNoTags()
-                    && !stackData.hasKey(TLMTags.Link.tagName)
-                    && stackData.getCompoundTag(TLMTags.Link.tagName).hasNoTags()) {
-                requests.updateLink(i, null);
-                requests.updateState(i, State.Idle);
-            } else {
-                NBTTagCompound linkData = stackData.getCompoundTag(TLMTags.Link.tagName);
-                requests.updateLink(i, AEApi.instance().storage().loadCraftingLink(linkData, this));
-                if (!requests.isDone(i)) requests.updateState(i, State.Craft);
-            }
-        }
-    }
-
     /**
      * @deprecated
      */

@@ -218,7 +218,8 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     }
 
     @Override
-    public void updateSetting(IConfigManager manager, Enum settingName, Enum newValue) {}
+    public void updateSetting(IConfigManager manager, @SuppressWarnings("rawtypes") Enum settingName,
+            @SuppressWarnings("rawtypes") Enum newValue) {}
 
     @Override
     public void onFluidInventoryChanged(IAEFluidTank inventory, int slot) {

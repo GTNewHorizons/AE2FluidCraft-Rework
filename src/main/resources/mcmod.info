@@ -1,7 +1,7 @@
 [
   {
-    "modid": "ae2fc",
-    "name": "AE2 Fluid Crafting",
+    "modid": "${modId}",
+    "name": "${modName}",
     "description": "Lets you do Crafting... with Fluids!",
     "version": "${modVersion}",
     "mcversion": "${minecraftVersion}",

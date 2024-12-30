@@ -97,6 +97,7 @@ public class FluidRepo implements IDisplayRepo {
         this.updateView();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void updateView() {
         this.view.clear();

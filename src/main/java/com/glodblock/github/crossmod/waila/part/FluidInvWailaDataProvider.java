@@ -28,7 +28,7 @@ public class FluidInvWailaDataProvider extends BasePartWailaDataProvider {
             for (int i = 0; i < fluidInventory.getSlots(); i++) {
                 FluidStack fs = fluidInventory.getFluidStackInSlot(i);
                 if (fs == null) continue;
-                currentToolTip.add(Tooltip.fluidFormat(fs.getFluid().getLocalizedName(), fs.amount));
+                currentToolTip.add(Tooltip.fluidFormat(fs.getLocalizedName(), fs.amount));
             }
         }
         return currentToolTip;

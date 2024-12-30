@@ -71,9 +71,9 @@ public class FCGuiTextField extends GuiTextField {
                 mouseY = 15;
             }
             if (mouseX + length + 20 >= gui.width) {
-                gui.drawTooltip(mouseX - length - 20, mouseY + 4 + offsetY, 0, this.getMessage());
+                gui.drawTooltip(mouseX - length - 20, mouseY + 4 + offsetY, this.getMessage());
             } else {
-                gui.drawTooltip(mouseX, mouseY + 4 + offsetY, 0, this.getMessage());
+                gui.drawTooltip(mouseX, mouseY + 4 + offsetY, this.getMessage());
             }
         }
     }

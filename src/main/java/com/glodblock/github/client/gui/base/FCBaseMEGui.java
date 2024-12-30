@@ -61,7 +61,6 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
 
     public abstract void setOffsetY(int y);
 
-    @SuppressWarnings("unchecked")
     protected void drawSwitchGuiBtns() {
         if (!drawSwitchGuiBtn) return;
         if (!termBtns.isEmpty()) {
@@ -131,7 +130,6 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void addSwitchGuiBtns() {
         if (!drawSwitchGuiBtn) return;
         this.buttonList.addAll(termBtns);
