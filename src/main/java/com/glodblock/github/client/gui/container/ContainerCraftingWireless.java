@@ -6,6 +6,7 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 
+import com.glodblock.github.inventory.ItemBiggerAppEngInventory;
 import com.glodblock.github.inventory.item.IWirelessCraftTerminal;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 
@@ -36,7 +37,16 @@ public class ContainerCraftingWireless extends ContainerItemMonitor
                                 crafting,
                                 x + y * 3,
                                 37 + x * 18,
-                                -72 + y * 18));
+                                -72 + y * 18) {
+
+                            @Override
+                            public void onSlotChanged() {
+                                if (this.inventory instanceof ItemBiggerAppEngInventory i) {
+                                    i.markDirty();
+                                }
+                                super.onSlotChanged();
+                            }
+                        });
             }
         }
         AppEngInternalInventory output = new AppEngInternalInventory(this, 1);
