@@ -226,8 +226,10 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     }
 
     @Override
-    public void onStackChange(final IItemList o, final IAEStack fullStack, final IAEStack diffStack,
-            final BaseActionSource src, final StorageChannel chan) {
+    public void onStackChange(@SuppressWarnings("rawtypes") final IItemList o,
+            @SuppressWarnings("rawtypes") final IAEStack fullStack,
+            @SuppressWarnings("rawtypes") final IAEStack diffStack, final BaseActionSource src,
+            final StorageChannel chan) {
         if (chan == StorageChannel.FLUIDS && fullStack.equals(this.getIAEFluidStack())) {
             this.lastReportedValue = fullStack.getStackSize();
             this.updateState();
@@ -529,7 +531,8 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     }
 
     @Override
-    public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {
+    public void updateSetting(final IConfigManager manager, @SuppressWarnings("rawtypes") final Enum settingName,
+            @SuppressWarnings("rawtypes") final Enum newValue) {
         this.configureWatchers();
     }
 

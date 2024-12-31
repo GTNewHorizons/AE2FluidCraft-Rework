@@ -73,7 +73,6 @@ public final class RenderUtil {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static List<String> listFormattedStringToWidth(String str) {
         return Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(str, 150);
     }

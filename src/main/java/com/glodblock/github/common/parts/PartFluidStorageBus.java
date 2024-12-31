@@ -152,7 +152,8 @@ public class PartFluidStorageBus extends PartUpgradeable
     }
 
     @Override
-    public void updateSetting(final IConfigManager manager, final Enum settingName, final Enum newValue) {
+    public void updateSetting(final IConfigManager manager, @SuppressWarnings("rawtypes") final Enum settingName,
+            @SuppressWarnings("rawtypes") final Enum newValue) {
         this.resetCache(true);
         this.getHost().markForSave();
     }
@@ -447,7 +448,7 @@ public class PartFluidStorageBus extends PartUpgradeable
     }
 
     @Override
-    public void saveChanges(final IMEInventory cellInventory) {
+    public void saveChanges(@SuppressWarnings("rawtypes") final IMEInventory cellInventory) {
         // NO-OP
     }
 

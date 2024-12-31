@@ -37,6 +37,7 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_MONIT
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL_EX;
+import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_VOID_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INTERFACE;
 import static com.glodblock.github.loader.ItemAndBlockHolder.LARGE_BUFFER;
@@ -505,6 +506,20 @@ public class RecipeLoader implements Runnable {
                             QUANTUM_CELL,
                             'M',
                             AE2_MATTER_CONDENSER));
+            GameRegistry.addRecipe(
+                    new ShapedOreRecipe(
+                            FLUID_VOID_CELL,
+                            "ABA",
+                            "BDB",
+                            "CCC",
+                            'A',
+                            AE2_QUARTZ_GLASS,
+                            'B',
+                            "dustGlowstone",
+                            'C',
+                            "gemDiamond",
+                            'D',
+                            AE2_SINGULARITY));
             for (FCBaseItemCell cell : cells) {
                 if (cell.getHousing().getItemDamage() == 0) {
                     GameRegistry.addRecipe(

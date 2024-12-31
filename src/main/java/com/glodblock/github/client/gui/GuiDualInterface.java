@@ -59,7 +59,6 @@ public class GuiDualInterface extends GuiUpgradeable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void addButtons() {
         this.priority = new GuiTabButton(
                 this.guiLeft + 154,
@@ -242,10 +241,6 @@ public class GuiDualInterface extends GuiUpgradeable {
         } else if (btn == this.lockCraftingMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.lockCraftingMode.getSetting(), backwards));
         }
-    }
-
-    private boolean isPart() {
-        return this.host instanceof PartFluidInterface;
     }
 
     private boolean isTile() {

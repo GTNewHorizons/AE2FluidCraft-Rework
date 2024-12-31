@@ -70,8 +70,7 @@ public class ItemFluidPacket extends FCBaseItem {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean flags) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean flags) {
         FluidStack fluid = getFluidStack(stack);
         boolean display = isDisplay(stack);
         if (display) return;
