@@ -13,6 +13,7 @@ import com.glodblock.github.network.CPacketFluidUpdate;
 import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.network.CPacketLevelMaintainer;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
+import com.glodblock.github.network.CPacketPatternMultiSet;
 import com.glodblock.github.network.CPacketPatternValueSet;
 import com.glodblock.github.network.CPacketRenamer;
 import com.glodblock.github.network.CPacketSwitchGuis;
@@ -78,6 +79,8 @@ public class ChannelLoader implements Runnable {
                 CPacketLevelTerminalCommands.class,
                 id++,
                 Side.SERVER);
+        netHandler
+                .registerMessage(new CPacketPatternMultiSet.Handler(), CPacketPatternMultiSet.class, id++, Side.SERVER);
     }
 
     public static void sendPacketToAllPlayers(Packet packet, World world) {

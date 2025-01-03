@@ -32,7 +32,8 @@ public class CPacketTransferRecipe implements IMessage {
     private List<OrderStack<?>> inputs;
     private List<OrderStack<?>> outputs;
     private boolean isCraft;
-    private static final int MAX_INDEX = 32;
+    private static final int MAX_INDEX = 81;
+    private static final int MAX_SLOTS_INDEX = 32;
     private boolean shift;
 
     public CPacketTransferRecipe() {}
@@ -79,11 +80,11 @@ public class CPacketTransferRecipe implements IMessage {
         NBTTagCompound nbt_o = nbt_m.getCompoundTag("o");
         for (int i = 0; i < MAX_INDEX; i++) {
             OrderStack<?> tmp = OrderStack.readFromNBT(nbt_i, null, i);
-            if (tmp != null) inputs.add(tmp);
+            if (tmp != null && inputs.size() < MAX_SLOTS_INDEX) inputs.add(tmp);
         }
         for (int i = 0; i < MAX_INDEX; i++) {
             OrderStack<?> tmp = OrderStack.readFromNBT(nbt_o, null, i);
-            if (tmp != null) outputs.add(tmp);
+            if (tmp != null && inputs.size() < MAX_SLOTS_INDEX) outputs.add(tmp);
         }
     }
 

@@ -32,7 +32,9 @@ public class ItemBiggerAppEngInventory extends BiggerAppEngInventory {
         boolean isCraft = Platform.openNbtData(is).getBoolean("craftingMode");
         boolean isCraftingTerm = Platform.openNbtData(is).getString("mode_main")
                 .equals(GuiType.WIRELESS_CRAFTING_TERMINAL.toString());
-        if (!isCraftingTerm && isCraft) {
+        boolean isExPattern = Platform.openNbtData(is).getString("mode_main")
+                .equals(GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX.toString());
+        if (!isCraftingTerm && !isExPattern && isCraft) {
             for (int x = 0; x < this.getSizeInventory(); x++) {
                 final ItemStack is = this.getStackInSlot(x);
                 if (is != null) {

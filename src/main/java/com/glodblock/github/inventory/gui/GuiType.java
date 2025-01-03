@@ -34,6 +34,7 @@ import com.glodblock.github.client.gui.GuiLevelMaintainer;
 import com.glodblock.github.client.gui.GuiLevelTerminal;
 import com.glodblock.github.client.gui.GuiLevelWireless;
 import com.glodblock.github.client.gui.GuiOCPatternEditor;
+import com.glodblock.github.client.gui.GuiPatternMulti;
 import com.glodblock.github.client.gui.GuiPatternValueAmount;
 import com.glodblock.github.client.gui.GuiRenamer;
 import com.glodblock.github.client.gui.container.ContainerCraftingWireless;
@@ -61,6 +62,7 @@ import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
 import com.glodblock.github.client.gui.container.ContainerLevelWireless;
 import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
+import com.glodblock.github.client.gui.container.ContainerPatternMulti;
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.client.gui.container.ContainerRenamer;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
@@ -511,6 +513,19 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
             return new GuiPatternValueAmount(player.inventory, inv);
+        }
+    }),
+
+    GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
+            return new ContainerPatternMulti(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
+            return new GuiPatternMulti(player.inventory, inv);
         }
     });
 
