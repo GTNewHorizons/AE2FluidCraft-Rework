@@ -11,6 +11,7 @@ import com.glodblock.github.client.gui.container.ContainerFluidPatternExWireless
 import com.glodblock.github.client.gui.container.ContainerFluidPatternTerminalEx;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 
@@ -21,6 +22,7 @@ import appeng.api.config.PatternSlotConfig;
 import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
 import appeng.client.gui.widgets.GuiImgButton;
+import appeng.helpers.InventoryAction;
 
 public class GuiFluidPatternTerminalEx extends FCGuiEncodeTerminal {
 
@@ -178,7 +180,12 @@ public class GuiFluidPatternTerminalEx extends FCGuiEncodeTerminal {
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
         final int currentScroll = this.processingScrollBar.getCurrentScroll();
         this.processingScrollBar.click(this, xCoord - this.guiLeft, yCoord - this.guiTop);
-        super.mouseClicked(xCoord, yCoord, btn);
+        if (btn == 2 && doubleBtn.mousePressed(this.mc, xCoord, yCoord)) { //
+            InventoryAction action = InventoryAction.SET_PATTERN_MULTI;
+
+            final CPacketInventoryAction p = new CPacketInventoryAction(action, 0, 0);
+            FluidCraft.proxy.netHandler.sendToServer(p);
+        } else super.mouseClicked(xCoord, yCoord, btn);
 
         if (currentScroll != this.processingScrollBar.getCurrentScroll()) {
             changeActivePage();
