@@ -366,7 +366,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     private boolean isFluidConduitConnected(TileEntity te, ForgeDirection dir) {
         try {
             ILiquidConduit liquidConduit = (ILiquidConduit) eioTypeCheck.invoke(te, ILiquidConduit.class);
-            return liquidConduit.getConnectionMode(dir.getOpposite()) != ConnectionMode.DISABLED;
+            return liquidConduit != null
+                    && liquidConduit.getConnectionMode(dir.getOpposite()) != ConnectionMode.DISABLED;
         } catch (IllegalAccessException | InvocationTargetException e) {
             return false;
         }
