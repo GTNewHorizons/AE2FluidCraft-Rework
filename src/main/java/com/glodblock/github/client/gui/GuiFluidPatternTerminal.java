@@ -6,10 +6,12 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.base.FCGuiEncodeTerminal;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternTerminal;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternWireless;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 
@@ -24,6 +26,7 @@ import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternTerm;
 import appeng.core.localization.GuiText;
+import appeng.helpers.InventoryAction;
 
 public class GuiFluidPatternTerminal extends FCGuiEncodeTerminal {
 
@@ -141,6 +144,18 @@ public class GuiFluidPatternTerminal extends FCGuiEncodeTerminal {
                 8,
                 this.ySize - 96 + 2 - getReservedSpace(),
                 4210752);
+    }
+
+    @Override
+    protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
+
+        if (btn == 2 && doubleBtn.mousePressed(this.mc, xCoord, yCoord)) { //
+            InventoryAction action = InventoryAction.SET_PATTERN_MULTI;
+
+            final CPacketInventoryAction p = new CPacketInventoryAction(action, 0, 0);
+            FluidCraft.proxy.netHandler.sendToServer(p);
+        } else super.mouseClicked(xCoord, yCoord, btn);
+
     }
 
     @Override

@@ -77,7 +77,7 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                     case "PatternTerminal.Clear" -> cpt.clear();
                     case "PatternTerminal.Substitute" -> cpt.getPatternTerminal().setSubstitution(Value.equals("1"));
                     case "PatternTerminal.Invert" -> cpt.getPatternTerminal().setInverted(Value.equals("1"));
-                    case "PatternTerminal.Double" -> cpt.doubleStacks(Value.charAt(0) == '1', Value.charAt(1) == '1');
+                    case "PatternTerminal.Double" -> cpt.doubleStacks(Integer.parseInt(message.Value));
                     case "PatternTerminal.Combine" -> cpt.getPatternTerminal().setCombineMode(Value.equals("1"));
                     case "PatternTerminal.beSubstitute" -> cpt.getPatternTerminal().setBeSubstitute(Value.equals("1"));
                     case "PatternTerminal.ActivePage" ->
