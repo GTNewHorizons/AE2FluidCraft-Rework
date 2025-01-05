@@ -53,6 +53,8 @@ import appeng.util.item.AEItemStack;
 public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket, IPatternConsumer {
 
+    public static final int MULTIPLE_OF_BUTTON_CLICK = 2;
+    public static final int MULTIPLE_OF_BUTTON_CLICK_ON_SHIFT = 8;
     protected final IItemPatternTerminal patternTerminal;
     protected final AppEngInternalInventory cOut = new AppEngInternalInventory(null, 1);
     protected final IInventory crafting;
@@ -538,15 +540,10 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return false;
     }
 
-    public void doubleStacks(boolean isShift, boolean divide) {
-        if (!isCraftingMode()) {
-            final int mult = (isShift ? 8 : 2) * (divide ? -1 : 1);
-            if (canMultiplyOrDivide(this.craftingSlots, mult) && canMultiplyOrDivide(this.outputSlots, mult)) {
-                multiplyOrDivideStacksInternal(this.craftingSlots, mult);
-                multiplyOrDivideStacksInternal(this.outputSlots, mult);
-            }
-            this.detectAndSendChanges();
-        }
+    public void doubleStacks(int val) {
+        multiplyOrDivideStacks(
+                ((val & 1) != 0 ? MULTIPLE_OF_BUTTON_CLICK_ON_SHIFT : MULTIPLE_OF_BUTTON_CLICK)
+                        * ((val & 2) != 0 ? -1 : 1));
     }
 
     static boolean canMultiplyOrDivide(SlotFake[] slots, int mult) {
@@ -596,6 +593,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
                     } else {
                         st.stackSize *= mult;
+                        s.putStack(st);
                     }
                 }
             }
@@ -608,9 +606,25 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) / mult);
                     } else {
                         st.stackSize /= mult;
+                        s.putStack(st);
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Multiply or divide a number
+     *
+     * @param multi Positive numbers are multiplied and negative numbers are divided
+     */
+    public void multiplyOrDivideStacks(int multi) {
+        if (!isCraftingMode()) {
+            if (canMultiplyOrDivide(this.craftingSlots, multi) && canMultiplyOrDivide(this.outputSlots, multi)) {
+                multiplyOrDivideStacksInternal(this.craftingSlots, multi);
+                multiplyOrDivideStacksInternal(this.outputSlots, multi);
+            }
+            this.detectAndSendChanges();
         }
     }
 

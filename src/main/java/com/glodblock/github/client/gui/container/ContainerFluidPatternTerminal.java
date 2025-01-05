@@ -153,9 +153,9 @@ public class ContainerFluidPatternTerminal extends FCContainerEncodeTerminal {
     }
 
     @Override
-    public void doubleStacks(boolean isShift, boolean divide) {
+    public void doubleStacks(int val) {
         if (!isCraftingMode()) {
-            super.doubleStacks(isShift, divide);
+            super.doubleStacks(val);
         }
     }
 }
