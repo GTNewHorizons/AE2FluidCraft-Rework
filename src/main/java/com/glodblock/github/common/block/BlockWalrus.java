@@ -52,19 +52,19 @@ public class BlockWalrus extends BaseBlockContainer {
         int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 
         if (l == 0) {
-            world.setBlockMetadataWithNotify(x, y, z, 2, 2);
-        }
-
-        if (l == 1) {
-            world.setBlockMetadataWithNotify(x, y, z, 5, 2);
-        }
-
-        if (l == 2) {
             world.setBlockMetadataWithNotify(x, y, z, 3, 2);
         }
 
-        if (l == 3) {
+        if (l == 1) {
             world.setBlockMetadataWithNotify(x, y, z, 4, 2);
+        }
+
+        if (l == 2) {
+            world.setBlockMetadataWithNotify(x, y, z, 2, 2);
+        }
+
+        if (l == 3) {
+            world.setBlockMetadataWithNotify(x, y, z, 5, 2);
         }
     }
 
@@ -75,12 +75,28 @@ public class BlockWalrus extends BaseBlockContainer {
 
     @Override
     public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
-        switch (ForgeDirection.getOrientation(blockAccess.getBlockMetadata(x, y, z))) {
-            case NORTH -> setBlockBounds(0.0F, 0.0F, -1.0F, 1.0F, 1.0F, 1.0F);
-            case EAST -> setBlockBounds(0.0F, 0.0F, 0.0F, 2.0F, 1.0F, 1.0F);
-            case SOUTH -> setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 2.0F);
-            case WEST -> setBlockBounds(-1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-            default -> setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+        TileEntity tileentity = blockAccess.getTileEntity(x, y, z);
+        if (tileentity instanceof TileWalrus Tile) {
+            float scale = Tile.getWalrusScale();
+            switch (ForgeDirection.getOrientation(blockAccess.getBlockMetadata(x, y, z))) {
+                case NORTH -> setBlockBounds(
+                        -(scale / 2 - 0.5F),
+                        0.0F,
+                        -scale * 2F + 1.0F,
+                        (scale / 2 + 0.5f),
+                        scale,
+                        1.0F);
+                case EAST -> setBlockBounds(0.0F, 0.0F, -(scale / 2 - 0.5F), 2.0F * scale, scale, (scale / 2 + 0.5f));
+                case SOUTH -> setBlockBounds(-(scale / 2 - 0.5F), 0.F, 0.F, (scale / 2 + 0.5f), scale, 2.0F * scale);
+                case WEST -> setBlockBounds(
+                        -scale * 2F + 1.0F,
+                        0.0F,
+                        -(scale / 2 - 0.5F),
+                        1.0F,
+                        scale,
+                        (scale / 2 + 0.5f));
+                default -> setBlockBounds(0.0F, 0.0F, 0.0F, scale, scale, scale);
+            }
         }
     }
 
@@ -101,5 +117,18 @@ public class BlockWalrus extends BaseBlockContainer {
         } else {
             toolTip.add(NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE));
         }
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldObj, int x, int y, int z, EntityPlayer entityplayer, int blockID,
+            float offsetX, float offsetY, float offsetZ) {
+        TileEntity tileentity = worldObj.getTileEntity(x, y, z);
+        if (!(tileentity instanceof TileWalrus Tile)) return false;
+        if (entityplayer.isSneaking()) {
+            Tile.setWalrusScale(Tile.getWalrusScale() / 2);
+        } else {
+            Tile.setWalrusScale(Tile.getWalrusScale() * 2);
+        }
+        return true;
     }
 }
