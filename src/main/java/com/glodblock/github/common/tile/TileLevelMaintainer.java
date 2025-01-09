@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import com.glodblock.github.api.registries.ILevelViewable;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.item.ItemFluidDrop;
+import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.AeStackInventory;
 import com.glodblock.github.inventory.AeStackInventoryImpl;
@@ -169,19 +170,41 @@ public class TileLevelMaintainer extends AENetworkTile
                 if (!isEnable || batchSize == 0) requests.updateState(i, State.None);
                 if (batchSize > 0) {
                     IAEItemStack craftItem = requests.getCraftItem(i);
+
+                    if (ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
+                        craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
+                    }
+
                     IAEItemStack aeItem = inv.findPrecise(craftItem);
+
+                    long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
+
+                    if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
+                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(aeItem, grid);
+                    }
+
                     boolean isDone = requests.isDone(i);
                     boolean isCraftable = aeItem != null && aeItem.isCraftable();
-                    boolean shouldCraft = isCraftable && aeItem.getStackSize() < quantity;
+                    boolean shouldCraft = isCraftable && stackSize < quantity;
+
                     if (isDone) requests.updateState(i, State.Idle);
                     if (!isCraftable) requests.updateState(i, State.Error);
-                    if (allBusy || !isDone
-                            || !shouldCraft
-                            || craftingGrid.canEmitFor(craftItem)
-                            || craftingGrid.isRequesting(craftItem))
+
+                    if (allBusy || !isDone || !shouldCraft) {
                         continue;
+                    }
+
+                    if (craftingGrid.canEmitFor(craftItem)) {
+                        continue;
+                    }
+
+                    if (craftingGrid.isRequesting(craftItem)) {
+                        continue;
+                    }
+
                     // do crafting
                     Future<ICraftingJob> jobTask = requests.getJob(i);
+
                     if (jobTask == null) {
                         if (itemToBegin == null) {
                             itemToBegin = craftItem;
