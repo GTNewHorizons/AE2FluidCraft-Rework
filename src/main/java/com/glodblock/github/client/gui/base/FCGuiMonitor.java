@@ -587,6 +587,18 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         memoryText = this.searchField.getText();
     }
 
+    @Override
+    public void handleKeyboardInput() {
+        super.handleKeyboardInput();
+
+        // Pause the terminal when holding shift
+        this.repo.setPaused(hasShiftDown());
+    }
+
+    private boolean hasShiftDown() {
+        return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+    }
+
     public void bindTextureBack(final String file) {
         final ResourceLocation loc = new ResourceLocation(FluidCraft.MODID, "textures/" + file);
         this.mc.getTextureManager().bindTexture(loc);
