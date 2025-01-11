@@ -171,7 +171,7 @@ public class TileLevelMaintainer extends AENetworkTile
                 if (batchSize > 0) {
                     IAEItemStack craftItem = requests.getCraftItem(i);
 
-                    if (ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
+                    if (craftItem != null && ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
                         craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
                     }
 
