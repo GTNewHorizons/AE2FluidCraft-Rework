@@ -81,6 +81,7 @@ public class FluidCraft {
             RecipeLoader.addInfiniteWaterCell();
         }
         RecipeLoader.runTerminalRecipe();
+        RecipeLoader.addDisassembleRecipe();
 
         if (ModAndClassUtil.isV2) {
             CalculatorV2PluginLoader.installCalculatorV2Plugins();

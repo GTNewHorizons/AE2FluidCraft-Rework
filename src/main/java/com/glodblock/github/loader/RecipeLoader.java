@@ -71,6 +71,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.storage.CellType;
+import com.glodblock.github.loader.recipe.DisassembleRecipe;
 import com.glodblock.github.loader.recipe.WirelessTerminalEnergyRecipe;
 import com.glodblock.github.loader.recipe.WirelessTerminalQuantumBridgeRecipe;
 import com.glodblock.github.loader.recipe.WirelessTerminalRecipe;
@@ -756,5 +757,9 @@ public class RecipeLoader implements Runnable {
                 WIRELESS_ULTRA_TERM.stack(),
                 Arrays.stream(term).filter(Objects::nonNull).toArray());
 
+    }
+
+    public static void addDisassembleRecipe() {
+        GameRegistry.addRecipe(new DisassembleRecipe());
     }
 }
