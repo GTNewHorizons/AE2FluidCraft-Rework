@@ -13,6 +13,8 @@ package com.glodblock.github.client.me;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
@@ -52,6 +54,7 @@ public class FluidRepo implements IDisplayRepo {
 
     protected String searchString = "";
     protected IPartitionList<IAEItemStack> myPartitionList;
+    protected boolean paused = false;
     private String NEIWord = null;
     private boolean hasPower;
 
@@ -100,12 +103,60 @@ public class FluidRepo implements IDisplayRepo {
     @SuppressWarnings("deprecation")
     @Override
     public void updateView() {
-        this.view.clear();
+        if (this.paused) {
+            // Update existing view with new data
+            for (int i = 0; i < this.view.size(); i++) {
+                IAEItemStack entry = this.view.get(i);
+                IAEItemStack serverEntry = this.list.findPrecise(entry);
+                if (serverEntry == null) {
+                    entry.setStackSize(0);
+                } else {
+                    this.view.set(i, serverEntry);
+                }
+            }
+
+            // Append newly added item stacks to the end of the view
+            Set<IAEItemStack> viewSet = new HashSet<>(this.view);
+            ArrayList<IAEItemStack> entriesToAdd = new ArrayList<>();
+            for (IAEItemStack serverEntry : this.list) {
+                if (!viewSet.contains(serverEntry)) {
+                    entriesToAdd.add(serverEntry);
+                }
+            }
+            addEntriesToView(entriesToAdd);
+        } else {
+            this.view.clear();
+            this.view.ensureCapacity(this.list.size());
+            addEntriesToView(this.list);
+        }
+
+        // Do not sort if paused
+        if (!paused) {
+            final Enum<?> SortBy = this.sortSrc.getSortBy();
+            final Enum<?> SortDir = this.sortSrc.getSortDir();
+
+            FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
+            FluidSorters.init();
+
+            if (SortBy == SortOrder.MOD) {
+                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
+            } else if (SortBy == SortOrder.AMOUNT) {
+                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
+            } else if (SortBy == SortOrder.INVTWEAKS) {
+                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
+            } else {
+                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
+            }
+        }
+
         this.dsp.clear();
-
-        this.view.ensureCapacity(this.list.size());
         this.dsp.ensureCapacity(this.list.size());
+        for (final IAEItemStack is : this.view) {
+            this.dsp.add(is.getItemStack());
+        }
+    }
 
+    private void addEntriesToView(Iterable<IAEItemStack> entries) {
         final Enum<?> viewMode = this.sortSrc.getSortDisplay();
         final Enum<?> searchMode = AEConfig.instance.settings.getSetting(Settings.SEARCH_MODE);
         if (searchMode == SearchBoxMode.NEI_AUTOSEARCH || searchMode == SearchBoxMode.NEI_MANUAL_SEARCH) {
@@ -131,7 +182,7 @@ public class FluidRepo implements IDisplayRepo {
             }
         }
 
-        for (IAEItemStack is : this.list) {
+        for (IAEItemStack is : entries) {
             if (this.myPartitionList != null) {
                 if (!this.myPartitionList.isListed(is)) {
                     continue;
@@ -167,26 +218,6 @@ public class FluidRepo implements IDisplayRepo {
                     this.view.add(is);
                 }
             }
-        }
-
-        final Enum<?> SortBy = this.sortSrc.getSortBy();
-        final Enum<?> SortDir = this.sortSrc.getSortDir();
-
-        FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
-        FluidSorters.init();
-
-        if (SortBy == SortOrder.MOD) {
-            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
-        } else if (SortBy == SortOrder.AMOUNT) {
-            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
-        } else if (SortBy == SortOrder.INVTWEAKS) {
-            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
-        } else {
-            this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
-        }
-
-        for (final IAEItemStack is : this.view) {
-            this.dsp.add(is.getItemStack());
         }
     }
 
@@ -244,5 +275,22 @@ public class FluidRepo implements IDisplayRepo {
 
     public void setSearchString(@Nonnull final String searchString) {
         this.searchString = searchString;
+    }
+
+    @Override
+    public boolean isPaused() {
+        return this.paused;
+    }
+
+    @Override
+    public void setPaused(boolean paused) {
+        if (this.paused != paused) {
+            this.paused = paused;
+
+            // Update view when un-paused
+            if (!paused) {
+                updateView();
+            }
+        }
     }
 }
