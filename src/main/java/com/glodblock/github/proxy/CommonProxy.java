@@ -81,6 +81,10 @@ public class CommonProxy {
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096KM), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384KM), 1);
 
+        Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 1);
+        Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 1);
+        Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 1);
+
         if (Config.fluidIOBus) {
             Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_EXPORT_BUS), 2);
             Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_IMPORT_BUS), 2);
