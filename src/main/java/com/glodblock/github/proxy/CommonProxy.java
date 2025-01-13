@@ -59,6 +59,9 @@ public class CommonProxy {
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 1);
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 1);
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 1);
+		Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 1);
+        Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 1);
+        Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 1);
         Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 5);
         Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
