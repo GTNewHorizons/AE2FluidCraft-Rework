@@ -64,6 +64,7 @@ import appeng.helpers.IPriorityHost;
 import appeng.me.GridAccessException;
 import appeng.me.cache.GridStorageCache;
 import appeng.me.storage.MEInventoryHandler;
+import appeng.me.storage.StorageBusInventoryHandler;
 import appeng.parts.automation.PartUpgradeable;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.InvOperation;
@@ -374,7 +375,7 @@ public class PartFluidStorageBus extends PartUpgradeable
                     this.monitor = h;
                 }
                 if (inv != null) {
-                    this.handler = new MEInventoryHandler(inv, StorageChannel.FLUIDS);
+                    this.handler = new StorageBusInventoryHandler(inv, StorageChannel.FLUIDS);
                     AccessRestriction currentAccess = (AccessRestriction) this.getConfigManager().getSetting(Settings.ACCESS);
                     this.handler.setBaseAccess(currentAccess);
                     this.handler.setWhitelist(
