@@ -9,6 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import com.glodblock.github.util.ModAndClassUtil;
+
 import appeng.api.networking.IGrid;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEItemStack;
@@ -32,14 +34,13 @@ public class ThaumicEnergisticsCrafting {
      * an aspect.
      */
     public static boolean isAspectStack(ItemStack stack) {
-        if (stack == null) return false;
+        if (!ModAndClassUtil.ThE || stack == null) return false;
 
         return stack.getItem() == neiAddonAspect || stack.getItem() == thaumicEnergisticsAspect;
     }
 
-    @Nullable
     @Method(modid = "thaumicenergistics")
-    public static String getAspectName(ItemStack stack) {
+    private static @Nullable Aspect getAspect(ItemStack stack) {
         if (stack == null) return null;
 
         if (stack.getItem() == neiAddonAspect) {
@@ -49,28 +50,37 @@ public class ThaumicEnergisticsCrafting {
             String aspect = aspects.getCompoundTagAt(0).getString("key");
             if (aspect.isEmpty()) return null;
 
-            return aspect;
+            return Aspect.getAspect(aspect);
         }
 
         if (stack.getItem() == thaumicEnergisticsAspect) {
-            return ItemCraftingAspect.getAspect(stack).getTag();
+            return Aspect.getAspect(ItemCraftingAspect.getAspect(stack).getTag());
         }
 
         return null;
     }
 
     @Method(modid = "thaumicenergistics")
-    public static ItemStack getAspectStack(String aspectName, int stackSize) {
-        return ItemCraftingAspect.createStackForAspect(Aspect.getAspect(aspectName), stackSize);
+    private static ItemStack getAspectStack(Aspect aspect, int stackSize) {
+        return ItemCraftingAspect.createStackForAspect(aspect, stackSize);
     }
 
     /**
      * Converts an aspect stack into a thaumic energistics stack.
      */
     public static IAEItemStack convertAspectStack(IAEItemStack stack) {
+        if (ModAndClassUtil.ThE) {
+            return convertAspectStackImpl(stack);
+        } else {
+            return stack;
+        }
+    }
+
+    @Method(modid = "thaumicenergistics")
+    private static IAEItemStack convertAspectStackImpl(IAEItemStack stack) {
         if (stack == null) return null;
 
-        String aspect = getAspectName(stack.getItemStack());
+        Aspect aspect = getAspect(stack.getItemStack());
 
         if (aspect == null) return stack;
 
@@ -80,13 +90,17 @@ public class ThaumicEnergisticsCrafting {
     /**
      * Gets the amount of essentia stored in a grid for a given aspect preview.
      */
-    @Method(modid = "thaumicenergistics")
     public static long getEssentiaAmount(IAEItemStack stack, IGrid grid) {
-        String aspectName = getAspectName(stack.getItemStack());
+        if (ModAndClassUtil.ThE) {
+            return getEssentiaAmountImpl(stack, grid);
+        } else {
+            return 0;
+        }
+    }
 
-        if (aspectName == null) return 0;
-
-        Aspect aspect = Aspect.getAspect(aspectName);
+    @Method(modid = "thaumicenergistics")
+    private static long getEssentiaAmountImpl(IAEItemStack stack, IGrid grid) {
+        Aspect aspect = getAspect(stack.getItemStack());
 
         if (aspect == null) return 0;
 

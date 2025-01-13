@@ -18,6 +18,7 @@ import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.AeStackInventory;
 import com.glodblock.github.inventory.AeStackInventoryImpl;
+import com.glodblock.github.util.ModAndClassUtil;
 import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
@@ -171,16 +172,20 @@ public class TileLevelMaintainer extends AENetworkTile
                 if (batchSize > 0) {
                     IAEItemStack craftItem = requests.getCraftItem(i);
 
-                    if (craftItem != null && ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
-                        craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
+                    if (ModAndClassUtil.ThE) {
+                        if (craftItem != null && ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
+                            craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
+                        }
                     }
 
                     IAEItemStack aeItem = inv.findPrecise(craftItem);
 
                     long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
 
-                    if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
-                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(aeItem, grid);
+                    if (ModAndClassUtil.ThE) {
+                        if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
+                            stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(aeItem, grid);
+                        }
                     }
 
                     boolean isDone = requests.isDone(i);
