@@ -61,6 +61,11 @@ public interface IFluidCellInventory extends IMEInventory<IAEFluidStack> {
     long getRemainingFluidCount();
 
     /**
+     * @return how many more fluids can be stored with Distribution card.
+     */
+    long getRemainingFluidCountDist(IAEFluidStack l);
+
+    /**
      * @return how many fluid types remain.
      */
     long getRemainingFluidTypes();

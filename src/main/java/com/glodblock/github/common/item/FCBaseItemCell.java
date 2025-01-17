@@ -190,7 +190,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
     @Override
     public IInventory getUpgradesInventory(ItemStack is) {
-        return new CellUpgrades(is, 2);
+        return new CellUpgrades(is, 5);
     }
 
     @Override

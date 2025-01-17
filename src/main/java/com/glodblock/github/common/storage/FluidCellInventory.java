@@ -19,7 +19,9 @@ import com.glodblock.github.crossmod.extracells.storage.ProxyFluidStorageCell;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
+import appeng.api.config.Upgrades;
 import appeng.api.exceptions.AppEngException;
+import appeng.api.implementations.items.IUpgradeModule;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.ISaveProvider;
@@ -46,6 +48,8 @@ public class FluidCellInventory implements IFluidCellInventory {
     protected IItemList<IAEFluidStack> cellFluids;
     protected final NBTTagCompound tagCompound;
     public static final int singleByteAmount = 256 * 8;
+    private boolean cardVoidOverflow = false;
+    private boolean cardDistribution = false;
 
     public FluidCellInventory(final ItemStack o, final ISaveProvider container) throws AppEngException {
         if (o == null) {
@@ -71,6 +75,21 @@ public class FluidCellInventory implements IFluidCellInventory {
             for (int x = 0; x < MAX_TYPE; x++) {
                 fluidSlots[x] = FLUID_SLOT + x;
                 fluidSlotCount[x] = FLUID_SLOT_COUNT + x;
+            }
+        }
+
+        final IInventory upgrades = this.getUpgradesInventory();
+        for (int x = 0; x < upgrades.getSizeInventory(); x++) {
+            final ItemStack is = upgrades.getStackInSlot(x);
+            if (is != null && is.getItem() instanceof IUpgradeModule) {
+                final Upgrades u = ((IUpgradeModule) is.getItem()).getType(is);
+                if (u != null) {
+                    switch (u) {
+                        case VOID_OVERFLOW -> cardVoidOverflow = true;
+                        case DISTRIBUTION -> cardDistribution = true;
+                        default -> {}
+                    }
+                }
             }
         }
 
@@ -177,6 +196,25 @@ public class FluidCellInventory implements IFluidCellInventory {
     @Override
     public long getRemainingFluidCount() {
         final long remaining = this.getFreeBytes() * singleByteAmount + this.getUnusedFluidCount();
+        return remaining > 0 ? remaining : 0;
+    }
+
+    @Override
+    public long getRemainingFluidCountDist(IAEFluidStack l) {
+        long remaining;
+        long types = 0;
+        for (int i = 0; i < this.getTotalFluidTypes(); i++) {
+            if (this.getConfigInventory().getStackInSlot(i) != null) {
+                types++;
+            }
+        }
+        if (types == 0) types = this.getTotalFluidTypes();
+        if (l != null) {
+            remaining = (((this.getTotalBytes() / types) - (int) Math.ceil((double) l.getStackSize() / singleByteAmount)
+                    - getBytesPerType()) * singleByteAmount) + (singleByteAmount - l.getStackSize() % singleByteAmount);
+        } else {
+            remaining = ((this.getTotalBytes() / types) - this.getBytesPerType()) * singleByteAmount;
+        }
         return remaining > 0 ? remaining : 0;
     }
 
@@ -293,9 +331,17 @@ public class FluidCellInventory implements IFluidCellInventory {
         final IAEFluidStack l = this.getCellFluids().findPrecise(input);
 
         if (l != null) {
-            final long remainingFluidSlots = this.getRemainingFluidCount();
+            long remainingFluidSlots;
+            if (cardDistribution) {
+                remainingFluidSlots = this.getRemainingFluidCountDist(l);
+            } else {
+                remainingFluidSlots = this.getRemainingFluidCount();
+            }
 
-            if (remainingFluidSlots < 0) {
+            if (remainingFluidSlots <= 0) {
+                if (cardVoidOverflow) {
+                    return null;
+                }
                 return input;
             }
 
@@ -320,8 +366,13 @@ public class FluidCellInventory implements IFluidCellInventory {
 
         if (this.canHoldNewFluid()) // room for new type, and for at least one item!
         {
-            final long remainingFluidCount = this.getRemainingFluidCount()
-                    - ((long) this.getBytesPerType() * singleByteAmount);
+            long remainingFluidCount;
+            if (cardDistribution) {
+                remainingFluidCount = this.getRemainingFluidCountDist(null);
+            } else {
+                remainingFluidCount = this.getRemainingFluidCount()
+                        - ((long) this.getBytesPerType() * singleByteAmount);
+            }
 
             if (remainingFluidCount > 0) {
                 if (input.getStackSize() > remainingFluidCount) {
