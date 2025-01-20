@@ -155,8 +155,8 @@ public class FluidCellInventory implements IFluidCellInventory {
     public boolean canHoldNewFluid() {
         final long bytesFree = this.getFreeBytes();
         return (bytesFree > this.getBytesPerType()
-            || (bytesFree == this.getBytesPerType() && this.getUnusedFluidCount() > 0))
-            && this.getRemainingFluidTypes() > 0;
+                || (bytesFree == this.getBytesPerType() && this.getUnusedFluidCount() > 0))
+                && this.getRemainingFluidTypes() > 0;
     }
 
     @Override
@@ -202,8 +202,8 @@ public class FluidCellInventory implements IFluidCellInventory {
     public long getRemainingFluidCount() {
         if (restrictionLong > 0) {
             return Math.min(
-                restrictionLong - this.getStoredFluidCount(),
-                this.getFreeBytes() * singleByteAmount + this.getUnusedFluidCount());
+                    restrictionLong - this.getStoredFluidCount(),
+                    this.getFreeBytes() * singleByteAmount + this.getUnusedFluidCount());
         }
         final long remaining = this.getFreeBytes() * singleByteAmount + this.getUnusedFluidCount();
         return remaining > 0 ? remaining : 0;
@@ -224,15 +224,15 @@ public class FluidCellInventory implements IFluidCellInventory {
                 remaining = Math.min((restrictionLong / types) - l.getStackSize(), this.getUnusedFluidCount());
             } else {
                 remaining = (((this.getTotalBytes() / types)
-                    - (int) Math.ceil((double) l.getStackSize() / singleByteAmount)
-                    - getBytesPerType()) * singleByteAmount)
-                    + (singleByteAmount - l.getStackSize() % singleByteAmount);
+                        - (int) Math.ceil((double) l.getStackSize() / singleByteAmount)
+                        - getBytesPerType()) * singleByteAmount)
+                        + (singleByteAmount - l.getStackSize() % singleByteAmount);
             }
         } else {
             if (restrictionLong > 0) {
                 remaining = Math.min(
-                    restrictionLong / types,
-                    ((this.getTotalBytes() / types) - this.getBytesPerType()) * singleByteAmount);
+                        restrictionLong / types,
+                        ((this.getTotalBytes() / types) - this.getBytesPerType()) * singleByteAmount);
             } else {
                 remaining = ((this.getTotalBytes() / types) - this.getBytesPerType()) * singleByteAmount;
             }
@@ -393,7 +393,7 @@ public class FluidCellInventory implements IFluidCellInventory {
                 remainingFluidCount = this.getRemainingFluidCountDist(null);
             } else {
                 remainingFluidCount = this.getRemainingFluidCount()
-                    - ((long) this.getBytesPerType() * singleByteAmount);
+                        - ((long) this.getBytesPerType() * singleByteAmount);
             }
 
             if (remainingFluidCount > 0) {

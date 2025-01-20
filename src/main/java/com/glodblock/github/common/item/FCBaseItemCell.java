@@ -1,6 +1,7 @@
 package com.glodblock.github.common.item;
 
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.GuiText;
+import appeng.helpers.ICellRestriction;
 import appeng.items.AEBaseItem;
 import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
@@ -41,7 +43,7 @@ import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.ReadableNumberConverter;
 
-public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluidCell {
+public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluidCell, ICellRestriction {
 
     protected CellType component;
     protected long totalBytes;
@@ -92,9 +94,9 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
     @Override
     public void addCheckedInformation(final ItemStack stack, final EntityPlayer player, final List<String> lines,
-            final boolean displayMoreInfo) {
+                                      final boolean displayMoreInfo) {
         final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
-                .getCellInventory(stack, null, StorageChannel.FLUIDS);
+            .getCellInventory(stack, null, StorageChannel.FLUIDS);
 
         if (inventory instanceof final FluidCellInventoryHandler handler) {
             final IFluidCellInventory cellInventory = handler.getCellInv();
@@ -144,7 +146,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
                 if (handler.isPreformatted()) {
                     final String list = (handler.getIncludeExcludeMode() == IncludeExclude.WHITELIST ? GuiText.Included
-                            : GuiText.Excluded).getLocal();
+                        : GuiText.Excluded).getLocal();
                     lines.add(GuiText.Partitioned.getLocal() + " - " + list + ' ' + GuiText.Precise.getLocal());
 
                     if (GuiScreen.isShiftKeyDown()) {
@@ -211,6 +213,27 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
     @Override
     public void setFuzzyMode(ItemStack is, FuzzyMode fzMode) {
         Platform.openNbtData(is).setString("FuzzyMode", fzMode.name());
+    }
+
+    @Override
+    public String getCellData(ItemStack is) {
+        return totalBytes + ","
+                + this.getTotalTypes(null)
+                + ","
+                + this.getBytesPerType(null)
+                + ","
+                + 256 * 8
+                + ","
+                + Platform.openNbtData(is).getByte("cellRestrictionTypes")
+                + ","
+                + Platform.openNbtData(is).getLong("cellRestrictionAmount");
+    }
+
+    @Override
+    public void setCellRestriction(ItemStack is, String newData) {
+        List<String> data = Arrays.asList(newData.split(",", 2));
+        Platform.openNbtData(is).setByte("cellRestrictionTypes", Byte.parseByte(data.get(0)));
+        Platform.openNbtData(is).setLong("cellRestrictionAmount", Long.parseLong(data.get(1)));
     }
 
     @SuppressWarnings("unchecked")
