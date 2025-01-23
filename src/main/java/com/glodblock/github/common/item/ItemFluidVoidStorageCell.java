@@ -111,7 +111,7 @@ public class ItemFluidVoidStorageCell extends AEBaseItem
 
     @Override
     public IInventory getUpgradesInventory(ItemStack is) {
-        return new CellUpgrades(is, 0);
+        return new CellUpgrades(is, 5);
     }
 
     @Override
