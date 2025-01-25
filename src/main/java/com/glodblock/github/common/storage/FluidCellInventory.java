@@ -1,6 +1,7 @@
 package com.glodblock.github.common.storage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -178,6 +179,10 @@ public class FluidCellInventory implements IFluidCellInventory {
     @Override
     public long getTotalFluidTypes() {
         if (restrictionTypes > 0) return restrictionTypes;
+        return this.cellType.getTotalTypes(this.cellItem);
+    }
+
+    public long getMaxFluidTypes() {
         return this.cellType.getTotalTypes(this.cellItem);
     }
 
@@ -488,5 +493,9 @@ public class FluidCellInventory implements IFluidCellInventory {
     @Override
     public StorageChannel getChannel() {
         return StorageChannel.FLUIDS;
+    }
+
+    public List<Object> getRestriction() {
+        return Arrays.asList(restrictionLong, restrictionTypes);
     }
 }

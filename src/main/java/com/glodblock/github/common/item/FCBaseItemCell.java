@@ -17,8 +17,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.storage.CellType;
+import com.glodblock.github.common.storage.FluidCellInventory;
 import com.glodblock.github.common.storage.FluidCellInventoryHandler;
-import com.glodblock.github.common.storage.IFluidCellInventory;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
@@ -99,7 +99,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
             .getCellInventory(stack, null, StorageChannel.FLUIDS);
 
         if (inventory instanceof final FluidCellInventoryHandler handler) {
-            final IFluidCellInventory cellInventory = handler.getCellInv();
+            final FluidCellInventory cellInventory = (FluidCellInventory) handler.getCellInv();
 
             if (cellInventory != null) {
                 lines.add(
@@ -120,7 +120,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
                                 + GuiText.Of.getLocal()
                                 + " "
                                 + EnumChatFormatting.DARK_GREEN
-                                + cellInventory.getTotalFluidTypes()
+                                + cellInventory.getMaxFluidTypes()
                                 + " "
                                 + EnumChatFormatting.GRAY
                                 + GuiText.Types.getLocal());
@@ -159,6 +159,17 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
                     }
                     if (handler.getSticky()) {
                         lines.add(GuiText.Sticky.getLocal());
+                    }
+                }
+                List<Object> restricted = handler.getRestricted();
+                if (restricted != null && ((long) restricted.get(0) != 0 || (byte) restricted.get(1) != 0)) {
+                    lines.add(GuiText.Restricted.getLocal());
+                    if (GuiScreen.isShiftKeyDown()) {
+                        NumberFormat nf = NumberFormat.getNumberInstance();
+                        if ((long) restricted.get(0) != 0)
+                            lines.add(GuiText.MaxFluid.getLocal() + " " + nf.format((long) restricted.get(0)) + " mB");
+                        if ((byte) restricted.get(1) != 0)
+                            lines.add(GuiText.MaxTypes.getLocal() + " " + restricted.get(1));
                     }
                 }
             }
@@ -226,7 +237,9 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
                 + ","
                 + Platform.openNbtData(is).getByte("cellRestrictionTypes")
                 + ","
-                + Platform.openNbtData(is).getLong("cellRestrictionAmount");
+                + Platform.openNbtData(is).getLong("cellRestrictionAmount")
+                + ","
+                + "fluid";
     }
 
     @Override

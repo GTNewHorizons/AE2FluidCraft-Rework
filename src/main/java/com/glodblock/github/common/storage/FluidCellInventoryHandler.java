@@ -1,5 +1,7 @@
 package com.glodblock.github.common.storage;
 
+import java.util.List;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -147,5 +149,14 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
     @Override
     public TYPE getCellType() {
         return TYPE.FLUID;
+    }
+
+    public List<Object> getRestricted() {
+        IFluidCellInventory cellInventory = this.getCellInv();
+        if (cellInventory instanceof FluidCellInventory ci) {
+            return ci.getRestriction();
+
+        }
+        return null;
     }
 }
