@@ -67,6 +67,7 @@ public class CommonProxy {
         Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
 
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_VOID_CELL), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1K), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4K), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16K), 1);
@@ -75,6 +76,8 @@ public class CommonProxy {
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1024K), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096K), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384K), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.QUANTUM_CELL), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.SINGULARITY_CELL), 1);
 
         Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.CELL1K), 1);
         Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.CELL4K), 1);
@@ -84,6 +87,7 @@ public class CommonProxy {
         Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.CELL1024K), 1);
         Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096K), 1);
         Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384K), 1);
+        Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.QUANTUM_CELL), 1);
 
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1KM), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4KM), 1);
@@ -93,6 +97,7 @@ public class CommonProxy {
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL1024KM), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096KM), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384KM), 1);
+        Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.ARTIFICIAL_UNIVERSE_CELL), 1);
 
         Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.CELL1KM), 1);
         Upgrades.VOID_OVERFLOW.registerItem(new ItemStack(ItemAndBlockHolder.CELL4KM), 1);

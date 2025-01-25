@@ -34,22 +34,22 @@
  * For more details, see https://docs.gradle.org/8.0.1/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
-    api('com.github.GTNewHorizons:NotEnoughItems:2.7.22-GTNH:dev')
-    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-523-GTNH:dev')
+    api('com.github.GTNewHorizons:NotEnoughItems:2.7.25-GTNH:dev')
+    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-527-GTNH:dev')
     api('curse.maven:cofh-core-69162:2388751')
     api('com.github.GTNewHorizons:waila:1.8.2:dev')
-    api("com.github.GTNewHorizons:GTNHLib:0.6.2:dev")
+    api("com.github.GTNewHorizons:GTNHLib:0.6.3:dev")
 
     implementation("com.github.GTNewHorizons:WirelessCraftingTerminal:1.11.7:dev") {
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
     }
 
-    compileOnly("com.github.GTNewHorizons:GTNHLib:0.6.2:dev") { transitive = false }
+    compileOnly("com.github.GTNewHorizons:GTNHLib:0.6.3:dev") { transitive = false }
     compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.0.3:dev')
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.35:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ForestryMC:4.10.1:dev')
     compileOnly('com.github.GTNewHorizons:EnderIO:2.9.2:dev')
-    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.51.79:dev') {
+    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.51.93:dev') {
         exclude group: 'com.github.GTNewHorizons', module: 'AE2FluidCraft-Rework'
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
     }
@@ -57,9 +57,9 @@ dependencies {
     compileOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
     compileOnly('com.gregoriust.gregtech:gregtech_1.7.10:6.14.23:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:OpenComputers:1.11.4-GTNH:dev') { transitive = false }
-    compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.7.4-GTNH:dev') { transitive = false }
-    compileOnly("com.github.GTNewHorizons:Hodgepodge:2.6.16:dev") { transitive = false }
+    compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.7.5-GTNH:dev') { transitive = false }
+    compileOnly("com.github.GTNewHorizons:Hodgepodge:2.6.20:dev") { transitive = false }
 
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:DuraDisplay:1.3.4:dev")
-	runtimeOnlyNonPublishable("com.github.GTNewHorizons:GTNHLib:0.6.2:dev")
+	runtimeOnlyNonPublishable("com.github.GTNewHorizons:GTNHLib:0.6.3:dev")
 }
