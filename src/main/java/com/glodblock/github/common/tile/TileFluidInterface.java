@@ -1,11 +1,13 @@
 package com.glodblock.github.common.tile;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -217,5 +219,12 @@ public class TileFluidInterface extends TileInterface implements IDualHost {
         if (id >= 0 && id < 6) {
             getInternalFluid().setFluidInSlot(id, fluid);
         }
+    }
+
+    @Override
+    public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
+        this.fluidDuality.addDrops(drops);
+        this.fluidDuality.convertDrops(drops, this.getInterfaceDuality().getWaitingToSend());
+        super.getDrops(w, x, y, z, drops);
     }
 }

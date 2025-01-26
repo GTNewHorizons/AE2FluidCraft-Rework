@@ -1,8 +1,10 @@
 package com.glodblock.github.util;
 
+import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -456,6 +458,26 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
 
         InterfaceInventory(DualityFluidInterface tileInterface) {
             super(tileInterface.tanks);
+        }
+    }
+
+    public void addDrops(final List<ItemStack> drops) {
+        for (int i = 0; i < NUMBER_OF_TANKS; i++) {
+            ItemStack is = ItemFluidPacket.newStack(this.tanks.getFluidStackInSlot(i));
+            if (is != null) {
+                drops.add(is);
+            }
+        }
+    }
+
+    public void convertDrops(final List<ItemStack> drops, final List<ItemStack> waitingToSend) {
+        if (waitingToSend != null) {
+            for (final ItemStack is : waitingToSend) {
+                if (is != null && is.getItem() instanceof ItemFluidDrop) {
+                    drops.add(ItemFluidPacket.newStack(ItemFluidDrop.getFluidStack(is)));
+                    is.stackSize = 0;
+                }
+            }
         }
     }
 }
