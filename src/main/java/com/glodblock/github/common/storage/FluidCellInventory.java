@@ -1,6 +1,7 @@
 package com.glodblock.github.common.storage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -50,6 +51,8 @@ public class FluidCellInventory implements IFluidCellInventory {
     public static final int singleByteAmount = 256 * 8;
     private boolean cardVoidOverflow = false;
     private boolean cardDistribution = false;
+    private byte restrictionTypes = 0;
+    private long restrictionLong = 0;
 
     public FluidCellInventory(final ItemStack o, final ISaveProvider container) throws AppEngException {
         if (o == null) {
@@ -97,6 +100,8 @@ public class FluidCellInventory implements IFluidCellInventory {
         this.tagCompound = Platform.openNbtData(o);
         this.storedFluids = this.tagCompound.getShort(FLUID_TYPE_TAG);
         this.storedFluidCount = this.tagCompound.getLong(FLUID_COUNT_TAG);
+        this.restrictionTypes = this.tagCompound.getByte("cellRestrictionTypes");
+        this.restrictionLong = this.tagCompound.getLong("cellRestrictionAmount");
         this.cellFluids = null;
     }
 
@@ -173,6 +178,11 @@ public class FluidCellInventory implements IFluidCellInventory {
 
     @Override
     public long getTotalFluidTypes() {
+        if (restrictionTypes > 0) return restrictionTypes;
+        return this.cellType.getTotalTypes(this.cellItem);
+    }
+
+    public long getMaxFluidTypes() {
         return this.cellType.getTotalTypes(this.cellItem);
     }
 
@@ -195,6 +205,11 @@ public class FluidCellInventory implements IFluidCellInventory {
 
     @Override
     public long getRemainingFluidCount() {
+        if (restrictionLong > 0) {
+            return Math.min(
+                    restrictionLong - this.getStoredFluidCount(),
+                    this.getFreeBytes() * singleByteAmount + this.getUnusedFluidCount());
+        }
         final long remaining = this.getFreeBytes() * singleByteAmount + this.getUnusedFluidCount();
         return remaining > 0 ? remaining : 0;
     }
@@ -210,10 +225,22 @@ public class FluidCellInventory implements IFluidCellInventory {
         }
         if (types == 0) types = this.getTotalFluidTypes();
         if (l != null) {
-            remaining = (((this.getTotalBytes() / types) - (int) Math.ceil((double) l.getStackSize() / singleByteAmount)
-                    - getBytesPerType()) * singleByteAmount) + (singleByteAmount - l.getStackSize() % singleByteAmount);
+            if (restrictionLong > 0) {
+                remaining = Math.min((restrictionLong / types) - l.getStackSize(), this.getUnusedFluidCount());
+            } else {
+                remaining = (((this.getTotalBytes() / types)
+                        - (int) Math.ceil((double) l.getStackSize() / singleByteAmount)
+                        - getBytesPerType()) * singleByteAmount)
+                        + (singleByteAmount - l.getStackSize() % singleByteAmount);
+            }
         } else {
-            remaining = ((this.getTotalBytes() / types) - this.getBytesPerType()) * singleByteAmount;
+            if (restrictionLong > 0) {
+                remaining = Math.min(
+                        restrictionLong / types,
+                        ((this.getTotalBytes() / types) - this.getBytesPerType()) * singleByteAmount);
+            } else {
+                remaining = ((this.getTotalBytes() / types) - this.getBytesPerType()) * singleByteAmount;
+            }
         }
         return remaining > 0 ? remaining : 0;
     }
@@ -466,5 +493,9 @@ public class FluidCellInventory implements IFluidCellInventory {
     @Override
     public StorageChannel getChannel() {
         return StorageChannel.FLUIDS;
+    }
+
+    public List<Object> getRestriction() {
+        return Arrays.asList(restrictionLong, restrictionTypes);
     }
 }
