@@ -115,7 +115,7 @@ public class GuiPatternMulti extends GuiAmount {
     }
 
     @Override
-    protected int addOrderAmount(final int i) {
+    protected long addOrderAmount(final int i) {
         return i + getAmount();
     }
 
