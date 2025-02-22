@@ -395,12 +395,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
             } else if (partialTanksStack != null) {
                 player.inventory.setInventorySlotContents(slotIndex, partialTanksStack);
             } else {
-                player.inventory.setItemStack(null);
-                if (shift) {
-                    player.inventory.setInventorySlotContents(slotIndex, null);
-                } else {
-                    shouldSendStack = false;
-                }
+                player.inventory.setInventorySlotContents(slotIndex, null);
             }
         }
         if (shouldSendStack) {
