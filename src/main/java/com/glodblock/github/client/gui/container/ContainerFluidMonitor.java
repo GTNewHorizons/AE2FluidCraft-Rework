@@ -332,10 +332,15 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
 
         if (targetStack.getItem() instanceof IFluidContainerItem fcItem) {
             if (emptiedTanks > 0) {
-                emptiedTanksStack = targetStack.copy();
-                emptiedTanksStack.stackSize = 1;
-                fcItem.drain(emptiedTanksStack, fluidPerContainer, true);
-                emptiedTanksStack.stackSize = emptiedTanks;
+                final ItemStack testDrainStack = targetStack.copy();
+                testDrainStack.stackSize = 1;
+                fcItem.drain(testDrainStack, fluidPerContainer, true);
+                if (testDrainStack.stackSize == 0) {
+                    emptiedTanksStack = null;
+                } else {
+                    emptiedTanksStack = targetStack.copy();
+                    emptiedTanksStack.stackSize = emptiedTanks;
+                }
             } else {
                 emptiedTanksStack = null;
             }
@@ -391,7 +396,11 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
                 player.inventory.setInventorySlotContents(slotIndex, partialTanksStack);
             } else {
                 player.inventory.setItemStack(null);
-                shouldSendStack = false;
+                if (shift) {
+                    player.inventory.setInventorySlotContents(slotIndex, null);
+                } else {
+                    shouldSendStack = false;
+                }
             }
         }
         if (shouldSendStack) {
