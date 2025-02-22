@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import appeng.api.storage.data.IAEStack;
+import appeng.util.item.AEItemStack;
+import appeng.util.item.AEStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -378,6 +381,36 @@ public final class Util {
             else {
                 IAEFluidStack fluid = AEFluidStack.loadFluidStackFromPacket(buf);
                 list.put(id, fluid);
+            }
+        }
+    }
+
+    public static void writeAEStackMapToBuf(Map<Integer, IAEStack<?>> list, ByteBuf buf) throws IOException {
+        buf.writeInt(list.size());
+        for (Map.Entry<Integer, IAEStack<?>> as : list.entrySet()) {
+            buf.writeInt(as.getKey());
+            if (as.getValue() == null) buf.writeBoolean(false);
+            else {
+                buf.writeBoolean(true);
+                as.getValue().writeToPacket(buf);
+            }
+        }
+    }
+
+    public static void readAEStackMapFromBuf(Map<Integer, IAEStack<?>> list, ByteBuf buf) throws IOException {
+        int size = buf.readInt();
+        for (int i = 0; i < size; i++) {
+            int id = buf.readInt();
+            boolean isNull = buf.readBoolean();
+            if (!isNull) list.put(id, null);
+            else {
+                IAEStack<?> as;
+                if (id > 99) {
+                    as = AEItemStack.loadItemStackFromPacket(buf);
+                } else {
+                    as = AEFluidStack.loadFluidStackFromPacket(buf);
+                }
+                list.put(id, as);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.glodblock.github.loader;
 
+import com.glodblock.github.network.SPacketSuperStokerUpdate;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.world.World;
@@ -59,6 +60,7 @@ public class ChannelLoader implements Runnable {
         netHandler.registerMessage(new CPacketTransferRecipe.Handler(), CPacketTransferRecipe.class, id++, Side.SERVER);
         netHandler.registerMessage(new CPacketDumpTank.Handler(), CPacketDumpTank.class, id++, Side.SERVER);
         netHandler.registerMessage(new SPacketFluidUpdate.Handler(), SPacketFluidUpdate.class, id++, Side.CLIENT);
+        netHandler.registerMessage(new SPacketSuperStokerUpdate.Handler(), SPacketSuperStokerUpdate.class, id++, Side.CLIENT);
         netHandler
                 .registerMessage(new CPacketPatternValueSet.Handler(), CPacketPatternValueSet.class, id++, Side.SERVER);
         netHandler.registerMessage(new CPacketValueConfig.Handler(), CPacketValueConfig.class, id++, Side.SERVER);
