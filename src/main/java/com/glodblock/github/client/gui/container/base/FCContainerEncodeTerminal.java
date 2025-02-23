@@ -271,6 +271,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         pattern.setInputs(collectInventory(this.craftingSlots));
         pattern.setOutputs(collectInventory(this.outputSlots));
         pattern.setCanBeSubstitute(this.beSubstitute ? 1 : 0);
+        pattern.setCombine(this.combine ? 1 : 0);
         patternSlotOUT.putStack(stampAuthor(pattern.writeToStack()));
     }
 
