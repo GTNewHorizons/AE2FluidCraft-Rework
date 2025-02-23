@@ -29,17 +29,23 @@ import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
 
+import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.InsertionMode;
 import appeng.api.config.Upgrades;
 import appeng.api.parts.IPart;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEItemStack;
 import appeng.helpers.DualityInterface;
+import appeng.helpers.IDigitalInventory;
 import appeng.helpers.IInterfaceHost;
 import appeng.me.GridAccessException;
 import appeng.me.helpers.AENetworkProxy;
 import appeng.parts.p2p.PartP2PLiquids;
 import appeng.tile.misc.TileInterface;
 import appeng.tile.networking.TileCableBus;
+import appeng.tile.storage.TileChest;
 import appeng.util.InventoryAdaptor;
 import appeng.util.inv.IInventoryDestination;
 import appeng.util.inv.ItemSlot;
@@ -51,7 +57,7 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaPipeEntity;
 
-public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
+public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements IDigitalInventory {
 
     // facing is the target TE direction
     // |T|-facing->|I|
@@ -265,6 +271,104 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     public ItemStack simulateSimilarRemove(int amount, ItemStack filter, FuzzyMode fuzzyMode,
             IInventoryDestination destination) {
         return invItems != null ? invItems.simulateSimilarRemove(amount, filter, fuzzyMode, destination) : null;
+    }
+
+    @Override
+    public boolean isDigitalMode() {
+        return targetInterface != null || invFluids instanceof TileChest;
+    }
+
+    @Override
+    public IAEItemStack simulateAdd(IAEItemStack toBeSimulated) {
+        IAEFluidStack aeFluid = null;
+        if (toBeSimulated.getItem() instanceof ItemFluidDrop) {
+            aeFluid = ItemFluidDrop.getAeFluidStack(toBeSimulated);
+        } else if (toBeSimulated.getItem() instanceof ItemFluidPacket) {
+            aeFluid = ItemFluidPacket.getAEFluidStack(toBeSimulated);
+        }
+        if (aeFluid != null) {
+            if (targetInterface != null) {
+                IMEMonitor<IAEFluidStack> monitor = targetInterface.getInterfaceDuality().getFluidInventory();
+                IAEFluidStack fluid = monitor.injectItems(
+                        aeFluid,
+                        Actionable.SIMULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            } else {
+                IMEMonitor<IAEFluidStack> monitor = ((TileChest) invFluids).getFluidInventory();
+                if (monitor == null) return toBeSimulated;
+                IAEFluidStack fluid = monitor
+                        .injectItems(aeFluid, Actionable.SIMULATE, ((TileChest) invFluids).getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            if (targetInterface != null) {
+                IMEMonitor<IAEItemStack> monitor = targetInterface.getInterfaceDuality().getItemInventory();
+                return monitor.injectItems(
+                        toBeSimulated,
+                        Actionable.SIMULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+            } else {
+                IMEMonitor<IAEItemStack> monitor = ((TileChest) invFluids).getItemInventory();
+                if (monitor == null) return toBeSimulated;
+                return monitor
+                        .injectItems(toBeSimulated, Actionable.SIMULATE, ((TileChest) invFluids).getActionSource());
+            }
+        }
+    }
+
+    @Override
+    public IAEItemStack addItems(IAEItemStack toBeAdded) {
+        IAEFluidStack aeFluid = null;
+        if (toBeAdded.getItem() instanceof ItemFluidDrop) {
+            aeFluid = ItemFluidDrop.getAeFluidStack(toBeAdded);
+        } else if (toBeAdded.getItem() instanceof ItemFluidPacket) {
+            aeFluid = ItemFluidPacket.getAEFluidStack(toBeAdded);
+        }
+        if (aeFluid != null) {
+            if (targetInterface != null) {
+                IMEMonitor<IAEFluidStack> monitor = targetInterface.getInterfaceDuality().getFluidInventory();
+                IAEFluidStack fluid = monitor.injectItems(
+                        aeFluid,
+                        Actionable.MODULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            } else {
+                IMEMonitor<IAEFluidStack> monitor = ((TileChest) invFluids).getFluidInventory();
+                if (monitor == null) return toBeAdded;
+                IAEFluidStack fluid = monitor
+                        .injectItems(aeFluid, Actionable.MODULATE, ((TileChest) invFluids).getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            if (targetInterface != null) {
+                IMEMonitor<IAEItemStack> monitor = targetInterface.getInterfaceDuality().getItemInventory();
+                return monitor.injectItems(
+                        toBeAdded,
+                        Actionable.MODULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+            } else {
+                IMEMonitor<IAEItemStack> monitor = ((TileChest) invFluids).getItemInventory();
+                if (monitor == null) return toBeAdded;
+                return monitor.injectItems(toBeAdded, Actionable.MODULATE, ((TileChest) invFluids).getActionSource());
+            }
+        }
     }
 
     @Override

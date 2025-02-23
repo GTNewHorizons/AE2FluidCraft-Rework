@@ -67,7 +67,7 @@ public class GuiPatternMulti extends GuiAmount {
         this.nextBtn.displayString = GuiText.Set.getLocal();
 
         try {
-            int resultI = getAmount();
+            long resultI = getAmount();
 
             this.symbolSwitch.set(resultI >= 0 ? ActionItems.MULTIPLY : ActionItems.DIVIDE);
             this.nextBtn.enabled = resultI < -1 || resultI > 1;
@@ -85,7 +85,7 @@ public class GuiPatternMulti extends GuiAmount {
         try {
 
             if (btn == this.nextBtn && btn.enabled) {
-                int resultI = getAmount();
+                int resultI = (int) getAmount();
                 if (resultI > 1 || resultI < -1)
                     FluidCraft.proxy.netHandler.sendToServer(new CPacketPatternMultiSet(this.originalGui, resultI));
             }
@@ -95,14 +95,14 @@ public class GuiPatternMulti extends GuiAmount {
         }
 
         if (btn == this.symbolSwitch) {
-            int resultI = -getAmount();
+            int resultI = (int) -getAmount();
             this.amountTextField.setText(Integer.toString(resultI));
         }
 
     }
 
     @Override
-    protected int getAmount() {
+    protected long getAmount() {
         String out = this.amountTextField.getText();
 
         double resultD = Calculator.conversion(out);
@@ -115,7 +115,7 @@ public class GuiPatternMulti extends GuiAmount {
     }
 
     @Override
-    protected int addOrderAmount(final int i) {
+    protected long addOrderAmount(final long i) {
         return i + getAmount();
     }
 

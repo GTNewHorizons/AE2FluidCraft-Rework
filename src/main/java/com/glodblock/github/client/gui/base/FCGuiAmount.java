@@ -122,7 +122,7 @@ public abstract class FCGuiAmount extends AEBaseGui {
         }
     }
 
-    protected void addQty(final int i) {
+    protected void addQty(final long i) {
         try {
             long resultI = getAmount();
             if (resultI == 1 && i > 1) {
@@ -141,14 +141,14 @@ public abstract class FCGuiAmount extends AEBaseGui {
 
     protected abstract String getBackground();
 
-    protected int getAmount() {
+    protected long getAmount() {
         try {
             String out = this.amountBox.getText();
             double result = Calculator.conversion(out);
             if (result <= 0 || Double.isNaN(result)) {
                 return 0;
             } else {
-                return (int) ArithHelper.round(result, 0);
+                return (long) ArithHelper.round(result, 0);
             }
         } catch (final NumberFormatException e) {
             return 0;

@@ -13,7 +13,7 @@ import com.glodblock.github.inventory.gui.GuiType;
 import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.tile.inventory.BiggerAppEngInventory;
+import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.InvOperation;
 
 public class PartFluidPatternTerminal extends FCFluidEncodeTerminal {
@@ -24,8 +24,8 @@ public class PartFluidPatternTerminal extends FCFluidEncodeTerminal {
 
     public PartFluidPatternTerminal(ItemStack is) {
         super(is);
-        this.crafting = new BiggerAppEngInventory(this, 9);
-        this.output = new BiggerAppEngInventory(this, 3);
+        this.crafting = new AppEngInternalAEInventory(this, 9);
+        this.output = new AppEngInternalAEInventory(this, 3);
         this.prioritize = false;
         this.inverted = false;
         this.activePage = 0;
@@ -68,9 +68,12 @@ public class PartFluidPatternTerminal extends FCFluidEncodeTerminal {
                             final IAEItemStack item = inItems[i];
                             if (item != null && item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
-                                        .newStack(ItemFluidDrop.getFluidStack(item.getItemStack()));
+                                        .newStack(ItemFluidDrop.getAeFluidStack(item));
                                 this.crafting.setInventorySlotContents(i, packet);
-                            } else this.crafting.setInventorySlotContents(i, item == null ? null : item.getItemStack());
+                            } else {
+                                this.crafting.setInventorySlotContents(i, item == null ? null : item.getItemStack());
+                                this.crafting.getAEStackInSlot(i).setStackSize(inItems[i].getStackSize());
+                            }
                         }
                     }
 
@@ -79,9 +82,12 @@ public class PartFluidPatternTerminal extends FCFluidEncodeTerminal {
                             final IAEItemStack item = outItems[i];
                             if (item != null && item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
-                                        .newStack(ItemFluidDrop.getFluidStack(item.getItemStack()));
+                                        .newStack(ItemFluidDrop.getAeFluidStack(item));
                                 this.output.setInventorySlotContents(i, packet);
-                            } else this.output.setInventorySlotContents(i, item == null ? null : item.getItemStack());
+                            } else {
+                                this.output.setInventorySlotContents(i, item == null ? null : item.getItemStack());
+                                this.output.getAEStackInSlot(i).setStackSize(outItems[i].getStackSize());
+                            }
                         }
                     }
                 }

@@ -52,7 +52,7 @@ public class GuiFCPriority extends FCGuiAmount {
     }
 
     @Override
-    protected void addQty(final int i) {
+    protected void addQty(final long i) {
         try {
             this.amountBox.setText(Long.toString(getAmount() + i));
         } catch (final NumberFormatException ignore) {}
@@ -87,14 +87,14 @@ public class GuiFCPriority extends FCGuiAmount {
     }
 
     @Override
-    protected int getAmount() {
+    protected long getAmount() {
         try {
             String out = this.amountBox.getText();
             double result = Calculator.conversion(out);
             if (Double.isNaN(result)) {
                 return 0;
             } else {
-                return (int) ArithHelper.round(result, 0);
+                return (long) ArithHelper.round(result, 0);
             }
         } catch (final NumberFormatException e) {
             return 0;

@@ -11,12 +11,13 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
 
 import appeng.api.storage.data.IAEItemStack;
+import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 
 public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatternTerminal {
 
-    protected AppEngInternalInventory crafting;
-    protected AppEngInternalInventory output;
+    protected AppEngInternalAEInventory crafting;
+    protected AppEngInternalAEInventory output;
     protected final AppEngInternalInventory pattern = new AppEngInternalInventory(this, 2);
 
     protected boolean craftingMode = true;

@@ -13,7 +13,7 @@ import com.glodblock.github.inventory.gui.GuiType;
 import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.tile.inventory.BiggerAppEngInventory;
+import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.InvOperation;
 
 public class PartFluidPatternTerminalEx extends FCFluidEncodeTerminal {
@@ -24,8 +24,8 @@ public class PartFluidPatternTerminalEx extends FCFluidEncodeTerminal {
 
     public PartFluidPatternTerminalEx(ItemStack is) {
         super(is);
-        this.crafting = new BiggerAppEngInventory(this, 32);
-        this.output = new BiggerAppEngInventory(this, 32);
+        this.crafting = new AppEngInternalAEInventory(this, 32);
+        this.output = new AppEngInternalAEInventory(this, 32);
         this.craftingMode = false;
     }
 

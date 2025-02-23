@@ -166,9 +166,28 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
         tag.setTag("out", writeStackArray(checkInitialized(outputs)));
         tag.setInteger("combine", this.getCombine());
         tag.setBoolean("beSubstitute", this.canBeSubstitute());
+        tag.setBoolean("isLong", isLongPattern());
         patternStack.setTagCompound(tag);
         patternStackAe = Objects.requireNonNull(AEItemStack.create(patternStack));
         return patternStack;
+    }
+
+    private boolean isLongPattern() {
+        final IAEItemStack[] in = this.getInputs();
+        final IAEItemStack[] out = this.getOutputs();
+
+        if (in == null || out == null) {
+            return false;
+        }
+
+        for (IAEItemStack ais : in) {
+            if (ais != null && ais.getStackSize() > Integer.MAX_VALUE) return true;
+        }
+
+        for (IAEItemStack ais : out) {
+            if (ais != null && ais.getStackSize() > Integer.MAX_VALUE) return true;
+        }
+        return false;
     }
 
     public static NBTTagList writeStackArray(IAEItemStack[] stacks) {

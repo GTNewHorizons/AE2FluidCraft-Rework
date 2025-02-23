@@ -21,7 +21,9 @@ import appeng.api.config.PatternBeSubstitution;
 import appeng.api.config.PatternSlotConfig;
 import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.widgets.GuiImgButton;
+import appeng.container.slot.SlotFake;
 import appeng.helpers.InventoryAction;
 
 public class GuiFluidPatternTerminalEx extends FCGuiEncodeTerminal {
@@ -228,5 +230,9 @@ public class GuiFluidPatternTerminalEx extends FCGuiEncodeTerminal {
                 new CPacketFluidPatternTermBtns(
                         "PatternTerminal.ActivePage",
                         String.valueOf(this.processingScrollBar.getCurrentScroll())));
+    }
+
+    public void setSlotAE(final int slotId, final IAEItemStack ais) {
+        ((SlotFake) this.inventorySlots.inventorySlots.get(slotId)).putAEStack(ais);
     }
 }

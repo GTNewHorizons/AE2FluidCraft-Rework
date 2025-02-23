@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerPatternMulti;
@@ -20,6 +19,7 @@ import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
+import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
@@ -147,10 +147,10 @@ public class CPacketInventoryAction implements IMessage {
                                     ForgeDirection.UNKNOWN,
                                     GuiType.PATTERN_VALUE_SET);
                         }
-                        int amt = (int) message.stack.getStackSize();
+                        long amt = message.stack.getStackSize();
                         if (message.stack.getItem() instanceof ItemFluidPacket) {
-                            FluidStack fluid = ItemFluidPacket.getFluidStack(message.stack);
-                            amt = fluid == null ? 1 : fluid.amount;
+                            IAEFluidStack fluid = ItemFluidPacket.getAEFluidStack(message.stack);
+                            amt = fluid == null ? 1 : fluid.getStackSize();
                         }
                         FluidCraft.proxy.netHandler.sendTo(new SPacketSetItemAmount(amt), sender);
                         if (sender.openContainer instanceof final ContainerPatternValueAmount cpv) {

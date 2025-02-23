@@ -19,6 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerItemMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
@@ -26,6 +27,7 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.IPatternConsumer;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.network.SPacketUpdateAESlot;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.Util;
 
@@ -39,16 +41,17 @@ import appeng.container.slot.IOptionalSlotHost;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFake;
 import appeng.container.slot.SlotFakeCraftingMatrix;
+import appeng.container.slot.SlotPatternOutputs;
 import appeng.container.slot.SlotPatternTerm;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.helpers.IContainerCraftingPacket;
 import appeng.helpers.InventoryAction;
 import appeng.items.misc.ItemEncodedPattern;
+import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
-import appeng.util.item.AEItemStack;
 
 public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket, IPatternConsumer {
@@ -277,18 +280,17 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     protected static IAEItemStack[] collectInventory(Slot[] slots) {
         IAEItemStack[] stacks = new IAEItemStack[slots.length];
         for (int i = 0; i < stacks.length; i++) {
-            ItemStack stack = slots[i].getStack();
+            IAEItemStack stack = ((SlotFake) slots[i]).getAEStack();
             if (stack != null) {
                 if (stack.getItem() instanceof ItemFluidPacket) {
-                    IAEItemStack dropStack = ItemFluidDrop.newAeStack(ItemFluidPacket.getFluidStack(stack));
+                    IAEItemStack dropStack = ItemFluidDrop.newAeStack(ItemFluidPacket.getAEFluidStack(stack));
                     if (dropStack != null) {
                         stacks[i] = dropStack;
                         continue;
                     }
                 }
             }
-            IAEItemStack aeStack = AEItemStack.create(stack);
-            stacks[i] = aeStack;
+            stacks[i] = stack;
         }
         return stacks;
     }
@@ -392,8 +394,8 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
 
     public void encodeItemPattern() {
         ItemStack output = this.patternSlotOUT.getStack();
-        final ItemStack[] in = this.getInputs();
-        final ItemStack[] out = this.getOutputs();
+        final IAEItemStack[] in = this.getInputs();
+        final IAEItemStack[] out = this.getOutputs();
 
         // if there is no input, this would be silly.
         if (in == null || out == null) {
@@ -433,11 +435,11 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         final NBTTagList tagIn = new NBTTagList();
         final NBTTagList tagOut = new NBTTagList();
 
-        for (final ItemStack i : in) {
+        for (final IAEItemStack i : in) {
             tagIn.appendTag(this.createItemTag(i));
         }
 
-        for (final ItemStack i : out) {
+        for (final IAEItemStack i : out) {
             tagOut.appendTag(this.createItemTag(i));
         }
 
@@ -452,24 +454,24 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         this.patternSlotOUT.putStack(output);
     }
 
-    protected ItemStack[] getInputs() {
-        final ArrayList<ItemStack> input = new ArrayList<>();
+    protected IAEItemStack[] getInputs() {
+        final ArrayList<IAEItemStack> input = new ArrayList<>();
         for (SlotFake craftingSlot : this.craftingSlots) {
-            input.add(craftingSlot.getStack());
+            input.add(craftingSlot.getAEStack());
         }
         if (input.stream().anyMatch(Objects::nonNull)) {
-            return input.toArray(new ItemStack[0]);
+            return input.toArray(new IAEItemStack[0]);
         }
         return null;
     }
 
-    protected ItemStack[] getOutputs() {
-        final ArrayList<ItemStack> output = new ArrayList<>();
+    protected IAEItemStack[] getOutputs() {
+        final ArrayList<IAEItemStack> output = new ArrayList<>();
         for (final SlotFake outputSlot : this.outputSlots) {
-            output.add(outputSlot.getStack());
+            output.add(outputSlot.getAEStack());
         }
         if (output.stream().anyMatch(Objects::nonNull)) {
-            return output.toArray(new ItemStack[0]);
+            return output.toArray(new IAEItemStack[0]);
         }
         return null;
     }
@@ -489,10 +491,10 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return !isPattern;
     }
 
-    protected NBTBase createItemTag(final ItemStack i) {
+    protected NBTBase createItemTag(final IAEItemStack i) {
         final NBTTagCompound c = new NBTTagCompound();
         if (i != null) {
-            Util.writeItemStackToNBT(i, c);
+            i.writeToNBT(c);
         }
         return c;
     }
@@ -506,12 +508,14 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
             this.beSubstitute = this.patternTerminal.canBeSubstitute();
             this.prioritize = this.patternTerminal.isPrioritize();
             this.autoFillPattern = this.patternTerminal.isAutoFillPattern();
+            updateSlots();
         }
     }
 
     @Override
     public void onSlotChange(final Slot s) {
         if (s == this.patternSlotOUT && Platform.isServer()) {
+            if (s.getHasStack()) updateSlotsOnPatternInject();
             for (final Object crafter : this.crafters) {
                 final ICrafting icrafting = (ICrafting) crafter;
 
@@ -524,6 +528,44 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                 ((EntityPlayerMP) icrafting).isChangingQuantityOnly = false;
             }
             this.detectAndSendChanges();
+        }
+    }
+
+    public void updateSlotsOnPatternInject() {
+        for (final Object crafter : this.crafters) {
+            final EntityPlayerMP emp = (EntityPlayerMP) crafter;
+            for (final Object g : this.inventorySlots) {
+                if (((Slot) g).getHasStack()) {
+                    if (g instanceof SlotFakeCraftingMatrix sf) {
+                        AppEngInternalAEInventory inv = (AppEngInternalAEInventory) this.patternTerminal
+                                .getInventoryByName("crafting");
+                        sf.putAEStack(inv.getAEStackInSlot(sf.getSlotIndex()));
+                        FluidCraft.proxy.netHandler
+                                .sendTo(new SPacketUpdateAESlot(sf.slotNumber, sf.getAEStack()), emp);
+                    } else if (g instanceof SlotPatternOutputs sf) {
+                        AppEngInternalAEInventory inv = (AppEngInternalAEInventory) this.patternTerminal
+                                .getInventoryByName("output");
+                        sf.putAEStack(inv.getAEStackInSlot(sf.getSlotIndex()));
+                        FluidCraft.proxy.netHandler
+                                .sendTo(new SPacketUpdateAESlot(sf.slotNumber, sf.getAEStack()), emp);
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateSlots() {
+        for (final Object crafter : this.crafters) {
+            final EntityPlayerMP emp = (EntityPlayerMP) crafter;
+            for (final Object g : this.inventorySlots) {
+                if (g instanceof SlotPatternOutputs || g instanceof SlotFakeCraftingMatrix) {
+                    final SlotFake sri = (SlotFake) g;
+                    if (sri.getHasStack()) {
+                        FluidCraft.proxy.netHandler
+                                .sendTo(new SPacketUpdateAESlot(sri.slotNumber, sri.getAEStack()), emp);
+                    }
+                }
+            }
         }
     }
 
@@ -548,31 +590,31 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
 
     static boolean canMultiplyOrDivide(SlotFake[] slots, int mult) {
         if (mult > 0) {
-            for (Slot s : slots) {
+            for (SlotFake s : slots) {
                 ItemStack st = s.getStack();
                 if (st == null) continue;
                 final long count;
                 if (st.getItem() instanceof ItemFluidPacket) {
                     count = ItemFluidPacket.getFluidAmount(st);
                 } else {
-                    count = s.getStack().stackSize;
+                    count = s.getAEStack().getStackSize();
                 }
-                long result = count * mult;
-                if (result > Integer.MAX_VALUE) {
+                double result = (double) count * mult;
+                if (result > Long.MAX_VALUE) {
                     return false;
                 }
             }
             return true;
         } else if (mult < 0) {
             mult = Math.abs(mult);
-            for (Slot s : slots) {
+            for (SlotFake s : slots) {
                 ItemStack st = s.getStack();
                 if (st == null) continue;
-                final int count;
+                final long count;
                 if (st.getItem() instanceof ItemFluidPacket) {
                     count = ItemFluidPacket.getFluidAmount(st);
                 } else {
-                    count = s.getStack().stackSize;
+                    count = s.getAEStack().getStackSize();
                 }
                 if (count % mult != 0) {
                     return false;
@@ -586,27 +628,27 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     static void multiplyOrDivideStacksInternal(SlotFake[] slots, int mult) {
         List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
         if (mult > 0) {
-            for (final Slot s : enabledSlots) {
+            for (final SlotFake s : enabledSlots) {
                 ItemStack st = s.getStack();
                 if (st != null) {
                     if (st.getItem() instanceof ItemFluidPacket) {
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
-                    } else {
-                        st.stackSize *= mult;
                         s.putStack(st);
+                    } else {
+                        s.getAEStack().setStackSize(s.getAEStack().getStackSize() * mult);
                     }
                 }
             }
         } else if (mult < 0) {
             mult = Math.abs(mult);
-            for (final Slot s : enabledSlots) {
+            for (final SlotFake s : enabledSlots) {
                 ItemStack st = s.getStack();
                 if (st != null) {
                     if (st.getItem() instanceof ItemFluidPacket) {
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) / mult);
-                    } else {
-                        st.stackSize /= mult;
                         s.putStack(st);
+                    } else {
+                        s.getAEStack().setStackSize(s.getAEStack().getStackSize() / mult);
                     }
                 }
             }

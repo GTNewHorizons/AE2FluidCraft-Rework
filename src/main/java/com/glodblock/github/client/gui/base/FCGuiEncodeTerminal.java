@@ -181,7 +181,7 @@ public abstract class FCGuiEncodeTerminal extends GuiItemMonitor {
             IAEItemStack fake = stack.copy();
             if (fake.getItemStack().getItem() instanceof ItemFluidPacket) {
                 if (ItemFluidPacket.getFluidStack(stack) != null && ItemFluidPacket.getFluidStack(stack).amount > 0)
-                    fake.setStackSize(ItemFluidPacket.getFluidStack(stack).amount);
+                    fake.setStackSize(ItemFluidPacket.getAEFluidStack(stack).getStackSize());
             } else return true;
             aeRenderItem.setAeStack(fake);
             GL11.glTranslatef(0.0f, 0.0f, 200.0f);

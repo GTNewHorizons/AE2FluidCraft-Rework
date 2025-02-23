@@ -14,24 +14,24 @@ import io.netty.buffer.ByteBuf;
 
 public class SPacketSetItemAmount implements IMessage {
 
-    private int amount;
+    private long amount;
 
     public SPacketSetItemAmount() {
         // NO-OP
     }
 
-    public SPacketSetItemAmount(int amount) {
+    public SPacketSetItemAmount(long amount) {
         this.amount = amount;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        amount = buf.readInt();
+        amount = buf.readLong();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(amount);
+        buf.writeLong(amount);
     }
 
     public static class Handler implements IMessageHandler<SPacketSetItemAmount, IMessage> {

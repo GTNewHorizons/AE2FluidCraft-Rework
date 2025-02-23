@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
@@ -29,14 +28,14 @@ import io.netty.buffer.ByteBuf;
 public class CPacketPatternValueSet implements IMessage {
 
     private GuiType originGui;
-    private int amount;
+    private long amount;
     private int valueIndex;
 
     public CPacketPatternValueSet() {
         // NO-OP
     }
 
-    public CPacketPatternValueSet(int originalGui, int amount, int valueIndex) {
+    public CPacketPatternValueSet(int originalGui, long amount, int valueIndex) {
         this.originGui = GuiType.getByOrdinal(originalGui);
         this.amount = amount;
         this.valueIndex = valueIndex;
@@ -45,14 +44,14 @@ public class CPacketPatternValueSet implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(originGui.ordinal());
-        buf.writeInt(amount);
+        buf.writeLong(amount);
         buf.writeInt(valueIndex);
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         this.originGui = GuiType.getByOrdinal(buf.readInt());
-        this.amount = buf.readInt();
+        this.amount = buf.readLong();
         this.valueIndex = buf.readInt();
     }
 
@@ -94,18 +93,13 @@ public class CPacketPatternValueSet implements IMessage {
                         }
                         if (player.openContainer instanceof FCContainerEncodeTerminal) {
                             Slot slot = player.openContainer.getSlot(message.valueIndex);
-                            if (slot instanceof SlotFake) {
-                                ItemStack stack = slot.getStack().copy();
+                            if (slot instanceof SlotFake sf) {
+                                ItemStack stack = sf.getStack();
                                 if (Util.isFluidPacket(stack)) {
-                                    FluidStack fluidStack = ItemFluidPacket.getFluidStack(stack);
-                                    if (fluidStack != null) {
-                                        fluidStack = ItemFluidPacket.getFluidStack(stack).copy();
-                                        fluidStack.amount = message.amount;
-                                    }
-                                    slot.putStack(ItemFluidPacket.newStack(fluidStack));
+                                    ItemFluidPacket.setFluidAmount(stack, message.amount);
+                                    sf.putStack(stack);
                                 } else {
-                                    stack.stackSize = message.amount;
-                                    slot.putStack(stack);
+                                    sf.getAEStack().setStackSize(message.amount);
                                 }
                             }
                         }
