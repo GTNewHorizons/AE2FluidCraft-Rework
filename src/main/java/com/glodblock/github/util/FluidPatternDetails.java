@@ -187,6 +187,9 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
             return false;
         }
         NBTTagCompound tag = Objects.requireNonNull(patternStack.getTagCompound());
+        setCanBeSubstitute(tag.getBoolean("beSubstitute") ? 1 : 0);
+        setCombine(tag.getInteger("combine"));
+
         // may be possible to enter a partially-correct state if setInputs succeeds but setOutputs failed
         // but outside code should treat it as completely incorrect and not attempt to make calls
         return setInputs(readStackArray(tag.getTagList("in", Constants.NBT.TAG_COMPOUND)))
