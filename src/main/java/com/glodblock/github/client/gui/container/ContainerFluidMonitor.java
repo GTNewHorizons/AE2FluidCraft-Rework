@@ -338,7 +338,7 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
                 if (testDrainStack.stackSize == 0) {
                     emptiedTanksStack = null;
                 } else {
-                    emptiedTanksStack = targetStack.copy();
+                    emptiedTanksStack = testDrainStack.copy();
                     emptiedTanksStack.stackSize = emptiedTanks;
                 }
             } else {
