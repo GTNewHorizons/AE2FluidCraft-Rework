@@ -44,18 +44,18 @@ dependencies {
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
     }
 
-    compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.0.3:dev')
+    compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.1.5-GTNH:dev')
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.35:dev') { transitive = false }
-    compileOnly('com.github.GTNewHorizons:ForestryMC:4.10.2:dev')
+    compileOnly('com.github.GTNewHorizons:ForestryMC:4.10.3:dev')
     compileOnly('com.github.GTNewHorizons:EnderIO:2.9.4:dev')
-    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.51.150:dev') {
+    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.51.153:dev') {
         exclude group: 'com.github.GTNewHorizons', module: 'AE2FluidCraft-Rework'
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
     }
 
     compileOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
     compileOnly('com.gregoriust.gregtech:gregtech_1.7.10:6.14.23:dev') { transitive = false }
-    compileOnly('com.github.GTNewHorizons:OpenComputers:1.11.8-GTNH:dev') { transitive = false }
+    compileOnly('com.github.GTNewHorizons:OpenComputers:1.11.10-GTNH:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.7.6-GTNH:dev') { transitive = false }
     compileOnly("com.github.GTNewHorizons:Hodgepodge:2.6.26:dev") { transitive = false }
 
