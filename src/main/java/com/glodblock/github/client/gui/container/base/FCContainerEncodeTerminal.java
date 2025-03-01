@@ -481,7 +481,6 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     public void onSlotChange(final Slot s) {
         if (Platform.isServer()) {
             if (s == this.patternSlotOUT) {
-                if (s.getHasStack()) updateSlotsOnPatternInject();
                 for (final Object crafter : this.crafters) {
                     final ICrafting icrafting = (ICrafting) crafter;
 
@@ -493,6 +492,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                     }
                     ((EntityPlayerMP) icrafting).isChangingQuantityOnly = false;
                 }
+                if (s.getHasStack()) updateSlotsOnPatternInject();
                 this.detectAndSendChanges();
             } else if (s instanceof SlotFake sf) {
                 for (final Object crafter : this.crafters) {
