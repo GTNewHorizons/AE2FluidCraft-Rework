@@ -208,7 +208,7 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
                         if (item != null) {
                             if (item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
-                                        .newStack(ItemFluidDrop.getFluidStack(item.getItemStack()));
+                                        .newStack(ItemFluidDrop.getAeFluidStack(item));
                                 this.crafting.setInventorySlotContents(i, packet);
                             } else this.crafting.setAEInventorySlotContents(i, item);
                         }
@@ -219,7 +219,7 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
                         if (item != null) {
                             if (item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
-                                        .newStack(ItemFluidDrop.getFluidStack(item.getItemStack()));
+                                        .newStack(ItemFluidDrop.getAeFluidStack(item));
                                 this.output.setInventorySlotContents(i, packet);
                             } else this.output.setAEInventorySlotContents(i, item);
                         }

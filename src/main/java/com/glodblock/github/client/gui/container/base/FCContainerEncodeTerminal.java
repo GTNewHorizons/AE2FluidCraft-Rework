@@ -490,6 +490,8 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                             icrafting.sendSlotContents(this, sri.slotNumber, sri.getStack());
                         }
                     }
+                    onCraftMatrixChanged(this.patternTerminal.getInventoryByName("crafting"));
+                    onCraftMatrixChanged(this.patternTerminal.getInventoryByName("output"));
                     ((EntityPlayerMP) icrafting).isChangingQuantityOnly = false;
                 }
                 if (s.getHasStack()) updateSlotsOnPatternInject();
