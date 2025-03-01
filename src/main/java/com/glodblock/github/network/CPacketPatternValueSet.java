@@ -91,7 +91,7 @@ public class CPacketPatternValueSet implements IMessage {
                                     Objects.requireNonNull(context.getSide()),
                                     message.originGui);
                         }
-                        if (player.openContainer instanceof FCContainerEncodeTerminal) {
+                        if (player.openContainer instanceof FCContainerEncodeTerminal fcet) {
                             Slot slot = player.openContainer.getSlot(message.valueIndex);
                             if (slot instanceof SlotFake sf) {
                                 ItemStack stack = sf.getStack();
@@ -101,6 +101,8 @@ public class CPacketPatternValueSet implements IMessage {
                                 } else {
                                     sf.getAEStack().setStackSize(message.amount);
                                 }
+                                fcet.onCraftMatrixChanged(slot.inventory);
+                                fcet.onSlotChange(slot);
                             }
                         }
                     }

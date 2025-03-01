@@ -125,7 +125,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements
     }
 
     public ItemStack addItems(ItemStack toBeAdded, InsertionMode insertionMode) {
-        FluidStack fluid = Util.getFluidFromVirtual(toBeAdded);
+        IAEFluidStack fluid = Util.getFluidFromVirtual(toBeAdded);
         if (!this.onmi) {
             if (!checkValidSide(
                     this.posInterface.getOffSet(this.side.getOpposite()).getTileEntity(),
@@ -133,9 +133,9 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements
                 return toBeAdded;
             }
             if (fluid != null) {
-                int filled = fillSideFluid(fluid, this.invFluids, this.side, true);
-                fluid.amount -= filled;
-                return ItemFluidDrop.newStack(fluid);
+                int filled = fillSideFluid(fluid.getFluidStack(), this.invFluids, this.side, true);
+                fluid.decStackSize(filled);
+                return ItemFluidPacket.newStack(fluid);
             } else {
                 ItemStack notFilled = fillSideItem(toBeAdded, this.invItems, insertionMode, true);
                 if (notFilled != null) {
@@ -150,14 +150,14 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements
         } else {
             if (fluid != null) {
                 for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                    if (fluid.amount <= 0) {
+                    if (fluid.getStackSize() <= 0) {
                         return null;
                     }
                     if (!checkValidSide(this.posInterface.getOffSet(dir).getTileEntity(), dir)) {
                         continue;
                     }
-                    int filled = fillSideFluid(fluid, getSideFluid(dir), dir.getOpposite(), true);
-                    fluid.amount -= filled;
+                    int filled = fillSideFluid(fluid.getFluidStack(), getSideFluid(dir), dir.getOpposite(), true);
+                    fluid.decStackSize(filled);
                 }
                 return ItemFluidPacket.newStack(fluid);
             } else {
@@ -198,7 +198,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements
 
     @Override
     public ItemStack simulateAdd(ItemStack toBeSimulated, InsertionMode insertionMode) {
-        FluidStack fluid = Util.getFluidFromVirtual(toBeSimulated);
+        IAEFluidStack fluid = Util.getFluidFromVirtual(toBeSimulated);
         if (!this.onmi) {
             if (!checkValidSide(
                     this.posInterface.getOffSet(this.side.getOpposite()).getTileEntity(),
@@ -206,8 +206,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements
                 return toBeSimulated;
             }
             if (fluid != null) {
-                int filled = fillSideFluid(fluid, this.invFluids, this.side, false);
-                fluid.amount -= filled;
+                int filled = fillSideFluid(fluid.getFluidStack(), this.invFluids, this.side, false);
+                fluid.decStackSize(filled);
                 return ItemFluidPacket.newStack(fluid);
             } else {
                 // Assert EIO conduit can hold all item, as it is the origin practice in AE2
@@ -225,7 +225,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements
                     if (!checkValidSide(this.posInterface.getOffSet(dir).getTileEntity(), dir)) {
                         continue;
                     }
-                    int filled = fillSideFluid(fluid, getSideFluid(dir), dir.getOpposite(), false);
+                    int filled = fillSideFluid(fluid.getFluidStack(), getSideFluid(dir), dir.getOpposite(), false);
                     if (filled > 0) {
                         sus = true;
                         break;

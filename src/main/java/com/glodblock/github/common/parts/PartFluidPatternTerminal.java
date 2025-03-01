@@ -64,30 +64,24 @@ public class PartFluidPatternTerminal extends FCFluidEncodeTerminal {
                     }
 
                     for (int i = 0; i < this.crafting.getSizeInventory() && i < inItems.length; i++) {
-                        if (inItems[i] != null) {
-                            final IAEItemStack item = inItems[i];
-                            if (item != null && item.getItem() instanceof ItemFluidDrop) {
+                        final IAEItemStack item = inItems[i];
+                        if (item != null) {
+                            if (item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
                                         .newStack(ItemFluidDrop.getAeFluidStack(item));
                                 this.crafting.setInventorySlotContents(i, packet);
-                            } else {
-                                this.crafting.setInventorySlotContents(i, item == null ? null : item.getItemStack());
-                                this.crafting.getAEStackInSlot(i).setStackSize(inItems[i].getStackSize());
-                            }
+                            } else this.crafting.setAEInventorySlotContents(i, item);
                         }
                     }
 
                     for (int i = 0; i < this.output.getSizeInventory() && i < outItems.length; i++) {
-                        if (outItems[i] != null) {
-                            final IAEItemStack item = outItems[i];
-                            if (item != null && item.getItem() instanceof ItemFluidDrop) {
+                        final IAEItemStack item = outItems[i];
+                        if (item != null) {
+                            if (item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
                                         .newStack(ItemFluidDrop.getAeFluidStack(item));
                                 this.output.setInventorySlotContents(i, packet);
-                            } else {
-                                this.output.setInventorySlotContents(i, item == null ? null : item.getItemStack());
-                                this.output.getAEStackInSlot(i).setStackSize(outItems[i].getStackSize());
-                            }
+                            } else this.output.setAEInventorySlotContents(i, item);
                         }
                     }
                 }

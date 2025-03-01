@@ -470,15 +470,4 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
             }
         }
     }
-
-    public void convertDrops(final List<ItemStack> drops, final List<ItemStack> waitingToSend) {
-        if (waitingToSend != null) {
-            for (final ItemStack is : waitingToSend) {
-                if (is != null && is.getItem() instanceof ItemFluidDrop) {
-                    drops.add(ItemFluidPacket.newStack(ItemFluidDrop.getFluidStack(is)));
-                    is.stackSize = 0;
-                }
-            }
-        }
-    }
 }

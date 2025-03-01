@@ -124,7 +124,9 @@ public class ItemFluidPacket extends FCBaseItem {
             return 0;
         }
         // Default to 0 if no tag exists
-        return stack.getTagCompound().getCompoundTag("FluidStack").getLong("Cnt");
+        if (stack.getTagCompound().getCompoundTag("FluidStack").hasKey("Cnt"))
+            return stack.getTagCompound().getCompoundTag("FluidStack").getLong("Cnt");
+        else return stack.getTagCompound().getCompoundTag("FluidStack").getInteger("Amount");
     }
 
     @Nullable

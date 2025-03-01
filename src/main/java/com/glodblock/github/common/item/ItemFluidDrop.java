@@ -154,6 +154,11 @@ public class ItemFluidDrop extends FCBaseItem {
     }
 
     @Nullable
+    public static IAEFluidStack getAeFluidStack(@Nullable ItemStack stack) {
+        return AEFluidStack.create(getFluidStack(stack));
+    }
+
+    @Nullable
     public static IAEItemStack newAeStack(@Nullable FluidStack fluid) {
         if (fluid == null || fluid.amount <= 0) {
             return null;

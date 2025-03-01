@@ -12,7 +12,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.ItemBiggerAppEngInventory;
+import com.glodblock.github.inventory.ItemAppEngInternalAEInventory;
 import com.glodblock.github.inventory.WirelessFluidPatternTerminalPatterns;
 import com.glodblock.github.util.Util;
 
@@ -37,6 +37,7 @@ import appeng.api.util.AECableType;
 import appeng.api.util.IConfigManager;
 import appeng.items.contents.WirelessTerminalViewCells;
 import appeng.items.tools.powered.ToolWirelessTerminal;
+import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
@@ -52,8 +53,8 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
     private final StorageChannel channel;
     private final IGridNode grid;
 
-    protected AppEngInternalInventory crafting;
-    protected AppEngInternalInventory output;
+    protected AppEngInternalAEInventory crafting;
+    protected AppEngInternalAEInventory output;
     protected final WirelessFluidPatternTerminalPatterns pattern;
 
     protected boolean craftingMode = true;
@@ -78,8 +79,8 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
         this.viewCell = new WirelessTerminalViewCells(is);
         this.channel = StorageChannel.ITEMS;
         this.pattern = new WirelessFluidPatternTerminalPatterns(is, this);
-        this.crafting = new ItemBiggerAppEngInventory(is, "crafting", 9);
-        this.output = new ItemBiggerAppEngInventory(is, "output", 3);
+        this.crafting = new ItemAppEngInternalAEInventory(is, "crafting", 9);
+        this.output = new ItemAppEngInternalAEInventory(is, "output", 3);
     }
 
     public StorageChannel getChannel() {
@@ -203,24 +204,24 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
                     }
 
                     for (int i = 0; i < this.crafting.getSizeInventory() && i < inItems.length; i++) {
-                        if (inItems[i] != null) {
-                            final IAEItemStack item = inItems[i];
-                            if (item != null && item.getItem() instanceof ItemFluidDrop) {
+                        final IAEItemStack item = inItems[i];
+                        if (item != null) {
+                            if (item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
                                         .newStack(ItemFluidDrop.getFluidStack(item.getItemStack()));
                                 this.crafting.setInventorySlotContents(i, packet);
-                            } else this.crafting.setInventorySlotContents(i, item == null ? null : item.getItemStack());
+                            } else this.crafting.setAEInventorySlotContents(i, item);
                         }
                     }
 
                     for (int i = 0; i < this.output.getSizeInventory() && i < outItems.length; i++) {
-                        if (outItems[i] != null) {
-                            final IAEItemStack item = outItems[i];
-                            if (item != null && item.getItem() instanceof ItemFluidDrop) {
+                        final IAEItemStack item = outItems[i];
+                        if (item != null) {
+                            if (item.getItem() instanceof ItemFluidDrop) {
                                 ItemStack packet = ItemFluidPacket
                                         .newStack(ItemFluidDrop.getFluidStack(item.getItemStack()));
                                 this.output.setInventorySlotContents(i, packet);
-                            } else this.output.setInventorySlotContents(i, item == null ? null : item.getItemStack());
+                            } else this.output.setAEInventorySlotContents(i, item);
                         }
                     }
                 }
@@ -285,27 +286,11 @@ public class WirelessPatternTerminalInventory extends MEMonitorHandler<IAEItemSt
     }
 
     @Override
-    public void onChangeCrafting(IAEItemStack[] newCrafting, IAEItemStack[] newOutput) {
-        IInventory crafting = this.getInventoryByName("crafting");
-        IInventory output = this.getInventoryByName("output");
-        if (crafting instanceof AppEngInternalInventory && output instanceof AppEngInternalInventory) {
-            for (int x = 0; x < crafting.getSizeInventory() && x < newCrafting.length; x++) {
-                final IAEItemStack item = newCrafting[x];
-                crafting.setInventorySlotContents(x, item == null ? null : item.getItemStack());
-            }
-            for (int x = 0; x < output.getSizeInventory() && x < newOutput.length; x++) {
-                final IAEItemStack item = newOutput[x];
-                output.setInventorySlotContents(x, item == null ? null : item.getItemStack());
-            }
-        }
-    }
-
-    @Override
     public void setCraftingRecipe(boolean craftingMode) {
         this.craftingMode = craftingMode;
         this.fixCraftingRecipes();
         // force update crafting mode
-        ((ItemBiggerAppEngInventory) this.crafting).setCraftingMode(craftingMode);
+        ((ItemAppEngInternalAEInventory) this.crafting).setCraftingMode(craftingMode);
     }
 
     @Override

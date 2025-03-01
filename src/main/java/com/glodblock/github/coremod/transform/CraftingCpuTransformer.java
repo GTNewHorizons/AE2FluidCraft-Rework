@@ -84,13 +84,23 @@ public class CraftingCpuTransformer extends FCClassTransformer.ClassMapper {
                     return;
                 }
             }
-            if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("net/minecraft/inventory/InventoryCrafting")
+            if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("appeng/helpers/AEInventoryCrafting")
                     && (name.equals("getStackInSlot") || name.equals("func_70301_a"))) {
                 super.visitMethodInsn(
                         Opcodes.INVOKESTATIC,
                         "com/glodblock/github/coremod/hooker/CoreModHooks",
                         "removeFluidPackets",
-                        "(Lnet/minecraft/inventory/InventoryCrafting;I)Lnet/minecraft/item/ItemStack;",
+                        "(Lappeng/helpers/AEInventoryCrafting;I)Lnet/minecraft/item/ItemStack;",
+                        false);
+                return;
+            }
+            if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("appeng/helpers/AEInventoryCrafting")
+                    && (name.equals("getAEStackInSlot"))) {
+                super.visitMethodInsn(
+                        Opcodes.INVOKESTATIC,
+                        "com/glodblock/github/coremod/hooker/CoreModHooks",
+                        "removeAEFluidPackets",
+                        "(Lappeng/helpers/AEInventoryCrafting;I)Lappeng/api/storage/data/IAEItemStack;",
                         false);
                 return;
             }
@@ -106,13 +116,13 @@ public class CraftingCpuTransformer extends FCClassTransformer.ClassMapper {
                             "(Lappeng/api/storage/data/IAEItemStack;)Lappeng/api/storage/data/IAEItemStack;",
                             false);
                 }
-            } else if (opcode == Opcodes.INVOKESPECIAL && owner.equals("net/minecraft/inventory/InventoryCrafting")
+            } else if (opcode == Opcodes.INVOKESPECIAL && owner.equals("appeng/helpers/AEInventoryCrafting")
                     && name.equals("<init>")) {
                         super.visitMethodInsn(
                                 Opcodes.INVOKESTATIC,
                                 "com/glodblock/github/coremod/hooker/CoreModHooks",
                                 "wrapCraftingBuffer",
-                                "(Lnet/minecraft/inventory/InventoryCrafting;)Lnet/minecraft/inventory/InventoryCrafting;",
+                                "(Lappeng/helpers/AEInventoryCrafting;)Lappeng/helpers/AEInventoryCrafting;",
                                 false);
                     }
         }

@@ -1,7 +1,5 @@
 package com.glodblock.github.inventory.item;
 
-import appeng.api.storage.data.IAEItemStack;
-
 public interface IItemPatternTerminal extends IItemTerminal {
 
     boolean isInverted();
@@ -13,8 +11,6 @@ public interface IItemPatternTerminal extends IItemTerminal {
     boolean isSubstitution();
 
     boolean shouldCombine();
-
-    void onChangeCrafting(IAEItemStack[] newCrafting, IAEItemStack[] newOutput);
 
     void setCraftingRecipe(final boolean craftingMode);
 
