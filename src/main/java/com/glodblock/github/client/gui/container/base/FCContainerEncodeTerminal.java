@@ -494,8 +494,8 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                     onCraftMatrixChanged(this.patternTerminal.getInventoryByName("output"));
                     ((EntityPlayerMP) icrafting).isChangingQuantityOnly = false;
                 }
-                if (s.getHasStack()) updateSlotsOnPatternInject();
                 this.detectAndSendChanges();
+                if (s.getHasStack()) updateSlotsOnPatternInject();
             } else if (s instanceof SlotFake sf) {
                 for (final Object crafter : this.crafters) {
                     final EntityPlayerMP emp = (EntityPlayerMP) crafter;
