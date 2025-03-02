@@ -15,7 +15,6 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.tile.TileFluidPatternEncoder;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.AeStackInventory;
-import com.glodblock.github.inventory.IPatternConsumer;
 import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.FluidPatternDetails;
@@ -27,7 +26,7 @@ import appeng.container.AEBaseContainer;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.helpers.InventoryAction;
 
-public class ContainerFluidPatternEncoder extends AEBaseContainer implements IPatternConsumer {
+public class ContainerFluidPatternEncoder extends AEBaseContainer {
 
     private final TileFluidPatternEncoder tile;
 
@@ -169,19 +168,6 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements IPa
             }
         } else {
             super.doAction(player, action, slotId, id);
-        }
-    }
-
-    @Override
-    public void acceptPattern(IAEItemStack[] inputs, IAEItemStack[] outputs) {
-        copyStacks(inputs, tile.getCraftingSlots());
-        copyStacks(outputs, tile.getOutputSlots());
-    }
-
-    private static void copyStacks(IAEItemStack[] src, AeStackInventory<IAEItemStack> dest) {
-        int bound = Math.min(src.length, dest.getSlotCount());
-        for (int i = 0; i < bound; i++) {
-            dest.setStack(i, src[i]);
         }
     }
 }

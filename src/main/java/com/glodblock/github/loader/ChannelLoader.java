@@ -26,6 +26,7 @@ import com.glodblock.github.network.SPacketMEItemInvUpdate;
 import com.glodblock.github.network.SPacketSetItemAmount;
 import com.glodblock.github.network.SPacketStringUpdate;
 import com.glodblock.github.network.SPacketSwitchBack;
+import com.glodblock.github.network.SPacketUpdateAESlot;
 import com.glodblock.github.network.wrapper.FCNetworkWrapper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -81,6 +82,7 @@ public class ChannelLoader implements Runnable {
                 Side.SERVER);
         netHandler
                 .registerMessage(new CPacketPatternMultiSet.Handler(), CPacketPatternMultiSet.class, id++, Side.SERVER);
+        netHandler.registerMessage(new SPacketUpdateAESlot.Handler(), SPacketUpdateAESlot.class, id++, Side.CLIENT);
     }
 
     public static void sendPacketToAllPlayers(Packet packet, World world) {

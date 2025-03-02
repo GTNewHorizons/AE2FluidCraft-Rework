@@ -39,7 +39,7 @@ public class GuiPatternValueAmount extends FCGuiAmount {
     public void drawBG(final int offsetX, final int offsetY, final int mouseX, final int mouseY) {
         super.drawBG(offsetX, offsetY, mouseX, mouseY);
         try {
-            int result = getAmount();
+            long result = getAmount();
             this.submit.enabled = result > 0;
         } catch (final NumberFormatException e) {
             this.submit.enabled = false;
@@ -85,7 +85,7 @@ public class GuiPatternValueAmount extends FCGuiAmount {
         return "guis/craftAmt.png";
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(long amount) {
         this.amountBox.setText(String.valueOf(amount));
         this.amountBox.setSelectionPos(0);
     }
