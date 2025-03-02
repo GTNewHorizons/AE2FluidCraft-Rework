@@ -145,9 +145,10 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     public void provideCrafting(ICraftingProviderHelper craftingTracker) {
         IStorageGrid storage = getStorageGrid();
         if (storage == null) return;
-        IItemList<IAEFluidStack> fluidStorage = this.fluids.isEmpty() ? storage.getFluidInventory().getStorageList()
-                : this.fluids;
-        for (IAEFluidStack fluidStack : fluidStorage) {
+        if (this.fluids.isEmpty()) {
+            this.fluids = storage.getFluidInventory().getStorageList();
+        }
+        for (IAEFluidStack fluidStack : this.fluids) {
             Fluid fluid = fluidStack.getFluid();
             if (fluid == null) continue;
             int maxCapacity = Util.FluidUtil.getCapacity(this.getContainerItem(), fluid);
@@ -212,12 +213,10 @@ public class TileFluidAutoFiller extends AENetworkInvTile
             BaseActionSource source) {
         if (this.getProxy().isActive() && this.getStorageGrid() != null) {
             boolean hasChanged = false;
-            IItemList<IAEFluidStack> stored = this.getStorageGrid().getFluidInventory().getStorageList();
             for (IAEFluidStack tmp : change) {
-                if (stored.findPrecise(tmp) == null || this.fluids.findPrecise(tmp) == null) {
+                if (this.fluids.findPrecise(tmp) == null) {
                     hasChanged = true;
-                    this.fluids = stored;
-                    break;
+                    this.fluids.add(tmp);
                 }
             }
             if (hasChanged) postEvent();
