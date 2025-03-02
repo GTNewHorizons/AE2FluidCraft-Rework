@@ -557,6 +557,21 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         }
     }
 
+    public void setPatternValue(int index, long amount) {
+        SlotFake sf = (SlotFake) this.inventorySlots.get(index);
+        ItemStack stack = sf.getStack();
+
+        if (Util.isFluidPacket(stack)) {
+            ItemFluidPacket.setFluidAmount(stack, amount);
+        } else {
+            sf.getAEStack().setStackSize(amount);
+        }
+        this.inventoryItemStacks.set(index, stack);
+
+        onCraftMatrixChanged(sf.inventory);
+        onSlotChange(sf);
+    }
+
     @Override
     public IInventory getInventoryByName(final String name) {
         if (name.equals("player")) {

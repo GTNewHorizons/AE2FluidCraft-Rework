@@ -3,13 +3,10 @@ package com.glodblock.github.network;
 import java.util.Objects;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
-import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.gui.PartOrItemGuiFactory;
@@ -19,7 +16,6 @@ import com.glodblock.github.util.Util;
 
 import appeng.api.networking.IGridHost;
 import appeng.container.ContainerOpenContext;
-import appeng.container.slot.SlotFake;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -92,18 +88,7 @@ public class CPacketPatternValueSet implements IMessage {
                                     message.originGui);
                         }
                         if (player.openContainer instanceof FCContainerEncodeTerminal fcet) {
-                            Slot slot = player.openContainer.getSlot(message.valueIndex);
-                            if (slot instanceof SlotFake sf) {
-                                ItemStack stack = sf.getStack();
-                                if (Util.isFluidPacket(stack)) {
-                                    ItemFluidPacket.setFluidAmount(stack, message.amount);
-                                    sf.putStack(stack);
-                                } else {
-                                    sf.getAEStack().setStackSize(message.amount);
-                                }
-                                fcet.onCraftMatrixChanged(slot.inventory);
-                                fcet.onSlotChange(slot);
-                            }
+                            fcet.setPatternValue(message.valueIndex, message.amount);
                         }
                     }
                 }
