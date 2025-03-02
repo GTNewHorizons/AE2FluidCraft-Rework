@@ -490,8 +490,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                             icrafting.sendSlotContents(this, sri.slotNumber, sri.getStack());
                         }
                     }
-                    onCraftMatrixChanged(this.patternTerminal.getInventoryByName("crafting"));
-                    onCraftMatrixChanged(this.patternTerminal.getInventoryByName("output"));
+                    onCraftMatrixChanged();
                     ((EntityPlayerMP) icrafting).isChangingQuantityOnly = false;
                 }
                 this.detectAndSendChanges();
@@ -557,16 +556,22 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         }
     }
 
+    public void onCraftMatrixChanged() {
+        onCraftMatrixChanged(this.patternTerminal.getInventoryByName("crafting"));
+        onCraftMatrixChanged(this.patternTerminal.getInventoryByName("output"));
+    }
+
     public void setPatternValue(int index, long amount) {
         SlotFake sf = (SlotFake) this.inventorySlots.get(index);
         ItemStack stack = sf.getStack();
 
         if (Util.isFluidPacket(stack)) {
             ItemFluidPacket.setFluidAmount(stack, amount);
+            sf.putStack(stack);
         } else {
             sf.getAEStack().setStackSize(amount);
+            this.inventoryItemStacks.set(index, stack);
         }
-        this.inventoryItemStacks.set(index, stack);
 
         onCraftMatrixChanged(sf.inventory);
         onSlotChange(sf);
@@ -668,7 +673,9 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
             if (canMultiplyOrDivide(this.craftingSlots, multi) && canMultiplyOrDivide(this.outputSlots, multi)) {
                 multiplyOrDivideStacksInternal(this.craftingSlots, multi);
                 multiplyOrDivideStacksInternal(this.outputSlots, multi);
+                this.updateSlots();
             }
+            onCraftMatrixChanged();
             this.detectAndSendChanges();
         }
     }
