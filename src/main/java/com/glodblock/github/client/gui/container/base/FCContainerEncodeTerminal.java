@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -17,14 +16,12 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerItemMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
 import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.network.SPacketUpdateAESlot;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.Util;
 
@@ -38,13 +35,11 @@ import appeng.container.guisync.GuiSync;
 import appeng.container.slot.IOptionalSlotHost;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFake;
-import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternTerm;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.helpers.IContainerCraftingPacket;
 import appeng.helpers.InventoryAction;
 import appeng.items.misc.ItemEncodedPattern;
-import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
@@ -473,79 +468,10 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     }
 
     @Override
-    public void addCraftingToCrafters(ICrafting c) {
-        super.addCraftingToCrafters(c);
-        updateSlots();
-    }
-
-    @Override
     public void onSlotChange(final Slot s) {
-        if (Platform.isServer()) {
-            if (s == this.patternSlotOUT) {
-                for (final Object crafter : this.crafters) {
-                    final ICrafting icrafting = (ICrafting) crafter;
-
-                    for (final Object g : this.inventorySlots) {
-                        if (g instanceof OptionalSlotFake || g instanceof SlotFakeCraftingMatrix) {
-                            final Slot sri = (Slot) g;
-                            icrafting.sendSlotContents(this, sri.slotNumber, sri.getStack());
-                        }
-                    }
-                    onCraftMatrixChanged();
-                    ((EntityPlayerMP) icrafting).isChangingQuantityOnly = false;
-                }
-                this.detectAndSendChanges();
-                if (s.getHasStack()) updateSlotsOnPatternInject();
-            } else if (s instanceof SlotFake sf) {
-                for (final Object crafter : this.crafters) {
-                    final EntityPlayerMP emp = (EntityPlayerMP) crafter;
-                    if (sf.getHasStack()) {
-                        FluidCraft.proxy.netHandler
-                                .sendTo(new SPacketUpdateAESlot(sf.slotNumber, sf.getAEStack()), emp);
-                    }
-                }
-            }
-        }
-    }
-
-    public void updateSlotsOnPatternInject() {
-        for (final Object crafter : this.crafters) {
-            final EntityPlayerMP emp = (EntityPlayerMP) crafter;
-            for (final SlotFake sf : this.craftingSlots) {
-                if (sf.getHasStack()) {
-                    AppEngInternalAEInventory inv = (AppEngInternalAEInventory) this.patternTerminal
-                            .getInventoryByName("crafting");
-                    sf.putAEStack(inv.getAEStackInSlot(sf.getSlotIndex()));
-                    FluidCraft.proxy.netHandler.sendTo(new SPacketUpdateAESlot(sf.slotNumber, sf.getAEStack()), emp);
-                }
-            }
-
-            for (final OptionalSlotFake osf : this.outputSlots) {
-                if (osf.getHasStack()) {
-                    AppEngInternalAEInventory inv = (AppEngInternalAEInventory) this.patternTerminal
-                            .getInventoryByName("output");
-                    osf.putAEStack(inv.getAEStackInSlot(osf.getSlotIndex()));
-                    FluidCraft.proxy.netHandler.sendTo(new SPacketUpdateAESlot(osf.slotNumber, osf.getAEStack()), emp);
-                }
-            }
-        }
-    }
-
-    public void updateSlots() {
-        for (final Object crafter : this.crafters) {
-            final EntityPlayerMP emp = (EntityPlayerMP) crafter;
-
-            for (final SlotFake sf : this.craftingSlots) {
-                if (sf.getHasStack()) {
-                    FluidCraft.proxy.netHandler.sendTo(new SPacketUpdateAESlot(sf.slotNumber, sf.getAEStack()), emp);
-                }
-            }
-
-            for (final OptionalSlotFake osf : this.outputSlots) {
-                if (osf.getHasStack()) {
-                    FluidCraft.proxy.netHandler.sendTo(new SPacketUpdateAESlot(osf.slotNumber, osf.getAEStack()), emp);
-                }
-            }
+        if (Platform.isServer() && s == this.patternSlotOUT) {
+            this.onCraftMatrixChanged();
+            this.detectAndSendChanges();
         }
     }
 
@@ -571,11 +497,9 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
             sf.putStack(stack);
         } else {
             sf.getAEStack().setStackSize(amount);
-            this.inventoryItemStacks.set(index, stack);
         }
 
         onCraftMatrixChanged(sf.inventory);
-        onSlotChange(sf);
     }
 
     @Override
@@ -674,7 +598,6 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
             if (canMultiplyOrDivide(this.craftingSlots, multi) && canMultiplyOrDivide(this.outputSlots, multi)) {
                 multiplyOrDivideStacksInternal(this.craftingSlots, multi);
                 multiplyOrDivideStacksInternal(this.outputSlots, multi);
-                this.updateSlots();
             }
             onCraftMatrixChanged();
             this.detectAndSendChanges();

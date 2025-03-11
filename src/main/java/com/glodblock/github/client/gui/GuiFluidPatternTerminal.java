@@ -20,11 +20,9 @@ import appeng.api.config.ItemSubstitution;
 import appeng.api.config.PatternBeSubstitution;
 import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.container.slot.OptionalSlotFake;
-import appeng.container.slot.SlotFake;
 import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternTerm;
 import appeng.core.localization.GuiText;
@@ -178,9 +176,5 @@ public class GuiFluidPatternTerminal extends FCGuiEncodeTerminal {
             return "gui/pattern.png";
         }
         return "gui/pattern2.png";
-    }
-
-    public void setSlotAE(final int slotId, final IAEItemStack ais) {
-        ((SlotFake) this.inventorySlots.inventorySlots.get(slotId)).putAEStack(ais);
     }
 }
