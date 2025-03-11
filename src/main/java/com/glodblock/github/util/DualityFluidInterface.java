@@ -25,6 +25,7 @@ import appeng.api.config.Upgrades;
 import appeng.api.implementations.IUpgradeableHost;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.crafting.ICraftingLongPattern;
 import appeng.api.networking.events.MENetworkChannelsChanged;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.security.BaseActionSource;
@@ -52,7 +53,7 @@ import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 
 public class DualityFluidInterface implements IGridTickable, IStorageMonitorable, IAEFluidInventory, IUpgradeableHost,
-        IConfigManagerHost, IFluidHandler {
+        IConfigManagerHost, IFluidHandler, ICraftingLongPattern {
 
     public static final int NUMBER_OF_TANKS = 6;
     public static final long TANK_CAPACITY = 16000;
@@ -466,17 +467,6 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
             ItemStack is = ItemFluidPacket.newStack(this.tanks.getFluidStackInSlot(i));
             if (is != null) {
                 drops.add(is);
-            }
-        }
-    }
-
-    public void convertDrops(final List<ItemStack> drops, final List<ItemStack> waitingToSend) {
-        if (waitingToSend != null) {
-            for (final ItemStack is : waitingToSend) {
-                if (is != null && is.getItem() instanceof ItemFluidDrop) {
-                    drops.add(ItemFluidPacket.newStack(ItemFluidDrop.getFluidStack(is)));
-                    is.stackSize = 0;
-                }
             }
         }
     }

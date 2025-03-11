@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -31,13 +30,14 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.IGuiTooltipHandler;
 import appeng.crafting.MECraftingInventory;
+import appeng.helpers.AEInventoryCrafting;
 import appeng.me.cache.CraftingGridCache;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.util.InventoryAdaptor;
 
 public class CoreModHooks {
 
-    public static InventoryCrafting wrapCraftingBuffer(InventoryCrafting inv) {
+    public static AEInventoryCrafting wrapCraftingBuffer(AEInventoryCrafting inv) {
         return new FluidConvertingInventoryCrafting(
                 inv.eventHandler,
                 inv.inventoryWidth,
@@ -46,7 +46,7 @@ public class CoreModHooks {
 
     public static IAEItemStack wrapFluidPacketStack(IAEItemStack stack) {
         if (stack.getItem() == ItemAndBlockHolder.PACKET) {
-            IAEItemStack dropStack = ItemFluidDrop.newAeStack(ItemFluidPacket.getFluidStack(stack.getItemStack()));
+            IAEItemStack dropStack = ItemFluidDrop.newAeStack(ItemFluidPacket.getAEFluidStack(stack));
             if (dropStack != null) {
                 return dropStack;
             }
@@ -54,11 +54,21 @@ public class CoreModHooks {
         return stack;
     }
 
-    public static ItemStack removeFluidPackets(InventoryCrafting inv, int index) {
+    public static ItemStack removeFluidPackets(AEInventoryCrafting inv, int index) {
         ItemStack stack = inv.getStackInSlot(index);
         if (stack != null && stack.getItem() instanceof ItemFluidPacket) {
             FluidStack fluid = ItemFluidPacket.getFluidStack(stack);
             return ItemFluidDrop.newStack(fluid);
+        } else {
+            return stack;
+        }
+    }
+
+    public static IAEItemStack removeAEFluidPackets(AEInventoryCrafting inv, int index) {
+        IAEItemStack stack = inv.getAEStackInSlot(index);
+        if (stack != null && stack.getItem() instanceof ItemFluidPacket) {
+            IAEFluidStack fluid = ItemFluidPacket.getAEFluidStack(stack);
+            return ItemFluidDrop.newAeStack(fluid);
         } else {
             return stack;
         }
