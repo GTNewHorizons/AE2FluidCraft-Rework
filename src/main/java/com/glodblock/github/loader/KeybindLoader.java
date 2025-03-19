@@ -30,21 +30,34 @@ public class KeybindLoader implements Runnable {
         FMLCommonHandler.instance().bus().register(this);
     }
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+        if (openTerminal.isPressed()) {
+            handleOpenTerminalKey();
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onMouseInput(InputEvent.MouseInputEvent event) {
+        if (openTerminal.isPressed()) {
+            handleOpenTerminalKey();
+        }
+    }
+
+    private void handleOpenTerminalKey() {
         if (Minecraft.getMinecraft().currentScreen != null) return;
-        EntityClientPlayerMP p = Minecraft.getMinecraft().thePlayer;
-        if (p.openContainer == null) {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        if (player.openContainer == null) {
             return;
         }
 
-        if (openTerminal.isPressed()) {
-            ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(p);
-            if (term != null && term.getRight().getItem() instanceof ItemWirelessUltraTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(
-                        p,
-                        ((ItemWirelessUltraTerminal) term.getRight().getItem()).guiGuiType(term.getRight()));
-            }
+        ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(player);
+        if (term != null && term.getRight().getItem() instanceof ItemWirelessUltraTerminal) {
+            ItemWirelessUltraTerminal.switchTerminal(
+                    player,
+                    ((ItemWirelessUltraTerminal) term.getRight().getItem()).guiGuiType(term.getRight()));
         }
     }
 }
