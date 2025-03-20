@@ -56,14 +56,12 @@ public class CreativeFluidCellInventory extends FluidCellInventory {
         IInventory inv = this.cellType.getConfigInventory(this.cellItem);
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack is = inv.getStackInSlot(i);
-            if (Util.FluidUtil.isFluidContainer(is)) {
-                FluidStack fs = Util.getFluidFromItem(is);
-                if (fs == null) continue;
-                IAEFluidStack iaeFluidStack = Util.FluidUtil.createAEFluidStack(fs);
-                if (this.cellFluids.findPrecise(iaeFluidStack) == null) {
-                    iaeFluidStack.setStackSize(Integer.MAX_VALUE * 1_000_000L);
-                    this.cellFluids.add(iaeFluidStack);
-                }
+            FluidStack fs = Util.getFluidFromItem(is);
+            if (fs == null) continue;
+            IAEFluidStack iaeFluidStack = Util.FluidUtil.createAEFluidStack(fs);
+            if (this.cellFluids.findPrecise(iaeFluidStack) == null) {
+                iaeFluidStack.setStackSize(Integer.MAX_VALUE * 1_000_000L);
+                this.cellFluids.add(iaeFluidStack);
             }
         }
     }
