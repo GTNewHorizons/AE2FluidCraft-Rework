@@ -57,6 +57,10 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     }
 
     public IAEFluidStack injectItems(IAEFluidStack input, Actionable type, BaseActionSource src) {
+        if (!this.handler.canFill(this.side, input.getFluid())) {
+            return null;
+        }
+
         int filled = this.handler.fill(this.side, input.getFluidStack(), type == Actionable.MODULATE);
 
         if (type == Actionable.MODULATE) {
@@ -73,6 +77,9 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     }
 
     public IAEFluidStack extractItems(IAEFluidStack request, Actionable type, BaseActionSource src) {
+        if (!this.handler.canDrain(this.side, request.getFluid())) {
+            return null;
+        }
         FluidStack removed = this.handler.drain(this.side, request.getFluidStack(), type == Actionable.MODULATE);
         if (removed != null && removed.amount != 0) {
             IAEFluidStack o = request.copy();
