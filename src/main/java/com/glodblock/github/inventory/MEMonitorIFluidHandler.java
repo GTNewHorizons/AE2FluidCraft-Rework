@@ -58,7 +58,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
 
     public IAEFluidStack injectItems(IAEFluidStack input, Actionable type, BaseActionSource src) {
         if (!this.handler.canFill(this.side, input.getFluid())) {
-            return null;
+            return input;
         }
 
         int filled = this.handler.fill(this.side, input.getFluidStack(), type == Actionable.MODULATE);
