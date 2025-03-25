@@ -112,6 +112,9 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
 
     @Override
     public boolean canHandle(final ItemStack is) {
+        if (is == null) {
+            return false;
+        }
         return is.getItem() instanceof ItemBaseWirelessTerminal;
     }
 
