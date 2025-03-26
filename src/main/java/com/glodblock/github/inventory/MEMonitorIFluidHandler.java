@@ -1,10 +1,8 @@
 package com.glodblock.github.inventory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -144,8 +142,6 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     // *Decompiled Stuff*//
 
     public TickRateModulation onTick() {
-        boolean changed = false;
-        List<IAEFluidStack> changes = new ArrayList<>();
         FluidTankInfo[] tankProperties = this.handler.getTankInfo(this.side);
         IItemList<IAEFluidStack> currentlyOnStorage = AEApi.instance().storage().createFluidList();
 
@@ -157,37 +153,32 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
             }
         }
 
-        Iterator<?> var9 = this.cache.iterator();
-
-        IAEFluidStack is;
-        while (var9.hasNext()) {
-            is = (IAEFluidStack) var9.next();
-            is.setStackSize(-is.getStackSize());
+        // make diff between cache and new contents
+        IItemList<IAEFluidStack> changes = AEApi.instance().storage().createFluidList();
+        // using non-enhanced for to prevent concurrency errors
+        for (Iterator<IAEFluidStack> iter = this.cache.iterator(); iter.hasNext();) {
+            IAEFluidStack copy = iter.next().copy();
+            copy.setStackSize(-copy.getStackSize());
+            changes.add(copy);
         }
-
-        var9 = currentlyOnStorage.iterator();
-
-        while (var9.hasNext()) {
-            is = (IAEFluidStack) var9.next();
-            this.cache.add(is);
+        for (IAEFluidStack is : currentlyOnStorage) {
+            changes.add(is);
         }
-
-        var9 = this.cache.iterator();
-
-        while (var9.hasNext()) {
-            is = (IAEFluidStack) var9.next();
-            if (is.getStackSize() != 0L) {
-                changes.add(is);
+        // update cache as soon as possible
+        this.cache = currentlyOnStorage;
+        // remove unchanged values
+        for (Iterator<IAEFluidStack> iter = changes.iterator(); iter.hasNext();) {
+            if (iter.next().getStackSize() == 0L) {
+                iter.remove();
             }
         }
 
-        this.cache = currentlyOnStorage;
         if (!changes.isEmpty()) {
             this.postDifference(changes);
-            changed = true;
+            return TickRateModulation.URGENT;
         }
 
-        return changed ? TickRateModulation.URGENT : TickRateModulation.SLOWER;
+        return TickRateModulation.SLOWER;
     }
 
     private void postDifference(Iterable<IAEFluidStack> a) {
