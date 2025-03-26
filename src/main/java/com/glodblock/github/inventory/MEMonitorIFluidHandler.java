@@ -9,6 +9,12 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -88,12 +94,32 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
             // perform a one time log if the removed fluid isn't what's reported since this will create a dupe exploit
             if (!WrongFluidRemovedWarnIssued && !removed.isFluidEqual(request.getFluidStack())) {
                 WrongFluidRemovedWarnIssued = true;
+                String issuesUrl = "https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues/new";
                 String msg = String.format(
-                        "[AE2FC] MEMonitorIFluidHandler.extractItems got the wrong fluids while extracting from %s. expected %s got %s. Please report this message if seen: https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues/new",
+                        "[AE2FC] MEMonitorIFluidHandler.extractItems got the wrong fluids while extracting from %s. expected %s got %s. Please report this message if seen: ",
                         this.handler.getClass().getSimpleName(),
                         request.getFluidStack().getUnlocalizedName(),
                         removed.getUnlocalizedName());
-                AELog.warn(msg);
+                // elevate log to error if chat msg is removed to make it easier to find.
+                AELog.warn(msg + issuesUrl);
+
+                ChatComponentText chatTxt = new ChatComponentText(msg);
+                chatTxt.setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED).setBold(true));
+
+                ChatComponentText chatUrl = new ChatComponentText(issuesUrl);
+                chatUrl.setChatStyle(
+                        new ChatStyle().setUnderlined(true)
+                                .setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, issuesUrl))
+                                .setChatHoverEvent(
+                                        new HoverEvent(
+                                                HoverEvent.Action.SHOW_TEXT,
+                                                new ChatComponentText("Click to open link"))));
+
+                ChatComponentText chat = new ChatComponentText("");
+                chat.appendSibling(chatTxt);
+                chat.appendSibling(chatUrl);
+
+                MinecraftServer.getServer().getConfigurationManager().sendChatMsg(chat);
             }
             IAEFluidStack o = request.copy();
             o.setStackSize(removed.amount);
