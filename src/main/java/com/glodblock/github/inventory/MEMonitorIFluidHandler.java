@@ -25,9 +25,12 @@ import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
+import appeng.core.AELog;
 import appeng.util.item.AEFluidStack;
 
 public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
+
+    private static boolean WrongFluidRemovedWarnIssued = false;
 
     private final IFluidHandler handler;
     private final ForgeDirection side;
@@ -82,6 +85,16 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         }
         FluidStack removed = this.handler.drain(this.side, request.getFluidStack(), type == Actionable.MODULATE);
         if (removed != null && removed.amount != 0) {
+            // perform a one time log if the removed fluid isn't what's reported since this will create a dupe exploit
+            if (!WrongFluidRemovedWarnIssued && !removed.isFluidEqual(request.getFluidStack())) {
+                WrongFluidRemovedWarnIssued = true;
+                String msg = String.format(
+                        "[AE2FC] MEMonitorIFluidHandler.extractItems got the wrong fluids while extracting from %s. expected %s got %s. Please report this message if seen: https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues/new",
+                        this.handler.getClass().getSimpleName(),
+                        request.getFluidStack().getUnlocalizedName(),
+                        removed.getUnlocalizedName());
+                AELog.warn(msg);
+            }
             IAEFluidStack o = request.copy();
             o.setStackSize(removed.amount);
             if (type == Actionable.MODULATE) {
