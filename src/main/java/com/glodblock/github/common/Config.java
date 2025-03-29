@@ -22,6 +22,8 @@ public class Config {
     public static boolean replaceEC2;
     public static int levelMaintainerMinTicks;
     public static int levelMaintainerMaxTicks;
+    public static int reStockTime;
+    public static int magnetRange;
 
     public static void run() {
         loadCategory();
@@ -73,6 +75,9 @@ public class Config {
                 .getInt();
         levelMaintainerMaxTicks = Config.get("LevelMaintainer", "maxTick", 120, "Number on ticks for maximal request")
                 .getInt();
+
+        reStockTime = Config.get("UltraWireless", "reStockTime", 1000, "Time between restocks").getInt();
+        magnetRange = Config.get("UltraWireless", "magnetRange", 16, "Magnet pick up radius").getInt();
 
         if (Config.hasChanged()) Config.save();
     }
