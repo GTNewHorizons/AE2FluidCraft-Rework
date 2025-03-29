@@ -8,6 +8,7 @@ import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.api.implementations.tiles.IViewCellStorage;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.security.IActionHost;
+import appeng.api.storage.StorageChannel;
 import appeng.tile.inventory.IAEAppEngInventory;
 
 public interface IWirelessTerminal
@@ -21,4 +22,7 @@ public interface IWirelessTerminal
         return false;
     }
 
+    default StorageChannel getChannel() {
+        return null;
+    }
 }
