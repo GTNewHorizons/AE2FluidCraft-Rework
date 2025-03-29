@@ -1,6 +1,13 @@
 package com.glodblock.github.proxy;
 
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.Config;
@@ -12,23 +19,103 @@ import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
+import com.glodblock.github.inventory.item.WirelessMagnet;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.network.wrapper.FCNetworkWrapper;
 import com.glodblock.github.util.ModAndClassUtil;
+import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
 import appeng.api.IAppEngApi;
 import appeng.api.config.Upgrades;
+import appeng.api.networking.IGridNode;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IItemList;
+import appeng.util.Platform;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class CommonProxy {
 
     public final FCNetworkWrapper netHandler = new FCNetworkWrapper(FluidCraft.MODID);
+
+    public CommonProxy() {
+        MinecraftForge.EVENT_BUS.register(this);
+        FMLCommonHandler.instance().bus().register(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent
+    public void pickupEvent(EntityItemPickupEvent e) {
+        try {
+            if (Platform.isClient() || e.entityPlayer == null) return;
+            EntityPlayer player = e.entityPlayer;
+            EntityItem itemEntity = e.item;
+            ItemStack stack = itemEntity.getEntityItem();
+            World world = player.getEntityWorld();
+
+            ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
+            if (result == null) return;
+            final ItemStack wirelessTerm = result.getRight();
+            WirelessMagnet.Mode mode = WirelessMagnet.getMode(wirelessTerm);
+            if (mode != WirelessMagnet.Mode.ME) return;
+            IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
+            if (gridNode == null || !Util.rangeCheck(wirelessTerm, player, gridNode)) return;
+            WirelessMagnetCardFilterInventory inv = new WirelessMagnetCardFilterInventory(
+                    wirelessTerm,
+                    result.getLeft(),
+                    gridNode,
+                    player);
+
+            IItemList<IAEItemStack> filteredList = inv.getAEFilteredItems();
+            IAEItemStack ais = AEApi.instance().storage().createItemStack(stack);
+            if (inv.getListMode() == WirelessMagnet.ListMode.WhiteList) { // whitelisting
+                if (!filteredList.isEmpty() && inv.isItemFiltered(stack, filteredList)) {
+                    if (inv.doInject(ais, itemEntity, world)) {
+                        stack = null;
+                        itemEntity.setDead();
+                        e.setCanceled(true);
+                    }
+                }
+            } else if (inv.getListMode() == WirelessMagnet.ListMode.BlackList) {
+                if (!inv.isItemFiltered(stack, filteredList)) {
+                    if (inv.doInject(ais, itemEntity, world)) {
+                        stack = null;
+                        itemEntity.setDead();
+                        e.setCanceled(true);
+                    }
+                }
+            }
+
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @SubscribeEvent
+    public void tickEvent(TickEvent.PlayerTickEvent e) {
+        EntityPlayer player = e.player;
+        ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
+        if (result == null) return;
+        final ItemStack wirelessTerm = result.getRight();
+        if (WirelessMagnet.getMode(wirelessTerm) == WirelessMagnet.Mode.Off) return;
+        IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
+        if (gridNode == null) return;
+        WirelessMagnetCardFilterInventory inv = new WirelessMagnetCardFilterInventory(
+                wirelessTerm,
+                result.getLeft(),
+                gridNode,
+                player);
+        WirelessMagnet.doMagnet(wirelessTerm, e.player.worldObj, e.player, inv);
+
+    }
 
     public void preInit(FMLPreInitializationEvent event) {
         ModAndClassUtil.init();

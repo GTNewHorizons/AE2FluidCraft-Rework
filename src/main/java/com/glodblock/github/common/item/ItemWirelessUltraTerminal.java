@@ -25,6 +25,7 @@ import com.glodblock.github.inventory.item.WirelessCraftingTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessFluidTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessInterfaceTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalExInventory;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.IRegister;
@@ -102,7 +103,9 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         try {
             IGridNode gridNode = Util.getWirelessGrid(stack);
             final GuiType gui;
-            if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z > 0) {
+            if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z == -1) {
+                gui = GuiType.WIRELESS_MAGNET_FILTER;
+            } else if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z > 0) {
                 gui = getGuis().get(Util.GuiHelper.decodeType(y).getRight());
             } else {
                 gui = readMode(stack);
@@ -121,6 +124,8 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 return new WirelessLevelTerminalInventory(stack, x, gridNode, player);
             } else if (gui == GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX) {
                 return new WirelessPatternTerminalExInventory(stack, x, gridNode, player);
+            } else if (gui == GuiType.WIRELESS_MAGNET_FILTER) {
+                return new WirelessMagnetCardFilterInventory(stack, x, gridNode, player);
             } else {
                 this.setMode(GuiType.WIRELESS_FLUID_TERMINAL, stack); // set as default mode
                 return new WirelessFluidTerminalInventory(stack, x, gridNode, player);
