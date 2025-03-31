@@ -60,7 +60,7 @@ public class CreativeFluidCellInventory extends FluidCellInventory {
             if (fs == null) continue;
             IAEFluidStack iaeFluidStack = Util.FluidUtil.createAEFluidStack(fs);
             if (this.cellFluids.findPrecise(iaeFluidStack) == null) {
-                iaeFluidStack.setStackSize(Integer.MAX_VALUE * 1_000_000L);
+                iaeFluidStack.setStackSize((long) (Math.pow(2, 52) - 1));
                 this.cellFluids.add(iaeFluidStack);
             }
         }
