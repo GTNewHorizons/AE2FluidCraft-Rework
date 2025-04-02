@@ -1,14 +1,10 @@
 package com.glodblock.github.inventory.item;
 
-import java.util.Objects;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import com.glodblock.github.util.Util;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -18,9 +14,7 @@ import appeng.api.config.SortOrder;
 import appeng.api.config.ViewItems;
 import appeng.api.implementations.items.IAEItemPowerStorage;
 import appeng.api.networking.IGridNode;
-import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.MEMonitorHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
@@ -33,7 +27,7 @@ import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.Platform;
 
-public class WirelessFluidTerminalInventory extends MEMonitorHandler<IAEFluidStack> implements IWirelessTerminal {
+public class WirelessFluidTerminalInventory extends BaseWirelessInventory implements IWirelessTerminal, IItemTerminal {
 
     private final ItemStack target;
     private final IAEItemPowerStorage ips;
@@ -44,9 +38,7 @@ public class WirelessFluidTerminalInventory extends MEMonitorHandler<IAEFluidSta
 
     @SuppressWarnings("unchecked")
     public WirelessFluidTerminalInventory(final ItemStack is, final int slot, IGridNode gridNode, EntityPlayer player) {
-        super(
-                (IMEInventoryHandler<IAEFluidStack>) Objects
-                        .requireNonNull(Util.getWirelessInv(is, player, StorageChannel.FLUIDS)));
+        super(is, slot, gridNode, player, StorageChannel.FLUIDS);
         this.ips = (ToolWirelessTerminal) is.getItem();
         this.grid = gridNode;
         this.target = is;
@@ -135,4 +127,9 @@ public class WirelessFluidTerminalInventory extends MEMonitorHandler<IAEFluidSta
     @Override
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removedStack,
             ItemStack newStack) {}
+
+    @Override
+    public IInventory getInventoryByName(String name) {
+        return null;
+    }
 }
