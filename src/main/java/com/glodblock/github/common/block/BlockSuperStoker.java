@@ -1,10 +1,8 @@
 package com.glodblock.github.common.block;
 
-import appeng.tile.crafting.TileCraftingTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -13,16 +11,15 @@ import com.glodblock.github.common.tile.TileSuperStoker;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.NameConst;
 
 import appeng.block.AEBaseItemBlock;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-import java.util.ArrayList;
-
 public class BlockSuperStoker extends FCBaseBlock {
 
     public BlockSuperStoker() {
-        super(Material.iron, "SuperStoker");
+        super(Material.web, NameConst.BLOCK_SUPER_STOKER);
         setTileEntity(TileSuperStoker.class);
         setOpaque(false);
         setFullBlock(false);
@@ -61,8 +58,8 @@ public class BlockSuperStoker extends FCBaseBlock {
 
     @Override
     public BlockSuperStoker register() {
-        GameRegistry.registerBlock(this, AEBaseItemBlock.class, "SuperStoker");
-        GameRegistry.registerTileEntity(TileSuperStoker.class, "SuperStoker");
+        GameRegistry.registerBlock(this, AEBaseItemBlock.class, NameConst.BLOCK_SUPER_STOKER);
+        GameRegistry.registerTileEntity(TileSuperStoker.class, NameConst.BLOCK_SUPER_STOKER);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
     }

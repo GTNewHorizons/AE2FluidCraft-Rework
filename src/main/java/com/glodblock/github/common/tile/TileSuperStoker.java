@@ -1,12 +1,10 @@
 package com.glodblock.github.common.tile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import javax.annotation.Nonnull;
 
-import appeng.tile.inventory.AppEngInternalAEInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,16 +38,16 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import appeng.core.AELog;
 import appeng.items.storage.ItemBasicStorageCell;
 import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
+import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.item.AEFluidStack;
-import appeng.util.item.AEItemStack;
-import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 
 public class TileSuperStoker extends AENetworkInvTile
@@ -67,7 +65,7 @@ public class TileSuperStoker extends AENetworkInvTile
     private long storedItemCount;
 
     public TileSuperStoker() {
-        getProxy().setIdlePowerUsage(2D);
+        getProxy().setIdlePowerUsage(4D);
         getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
         this.source = new MachineSource(this);
     }
@@ -115,6 +113,7 @@ public class TileSuperStoker extends AENetworkInvTile
                 returnItem(i, Long.MAX_VALUE);
             }
         }
+
         return TickRateModulation.SAME;
     }
 
@@ -176,7 +175,10 @@ public class TileSuperStoker extends AENetworkInvTile
                     .extractItems(is, Actionable.MODULATE, this.source);
             if (extracted != null) {
                 if (invItems.getAEStackInSlot(index) != null) invItems.getAEStackInSlot(index).add(extracted);
-                else { invItems.setInventorySlotContents(index, extracted.getItemStack()); invItems.getAEStackInSlot(index).setStackSize(extracted.getStackSize()); }
+                else {
+                    invItems.setInventorySlotContents(index, extracted.getItemStack());
+                    invItems.getAEStackInSlot(index).setStackSize(extracted.getStackSize());
+                }
                 storedItemCount += extracted.getStackSize();
             }
         } catch (final GridAccessException ignored) {}
@@ -210,7 +212,8 @@ public class TileSuperStoker extends AENetworkInvTile
     }
 
     public long getFreeBytes() {
-        return totalBytes - (((storedItemCount + getUnusedItemCount()) / 8) + ((storedFluidCount + getUnusedFluidCount()) / 2048));
+        return totalBytes - (((storedItemCount + getUnusedItemCount()) / 8)
+                + ((storedFluidCount + getUnusedFluidCount()) / 2048));
     }
 
     public long getRemainingFluidCount() {
@@ -247,28 +250,40 @@ public class TileSuperStoker extends AENetworkInvTile
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removed, ItemStack added) {
         switch (mc) {
             case setInventorySlotContents -> {
-                if (inv == cell) {
+                if (inv == cell && added != null) {
                     if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
                         totalBytes = ibsc.getBytesLong(added);
                     } else if (added.getItem() instanceof ItemBasicFluidStorageCell ibfsc) {
                         totalBytes = ibfsc.getBytes(added);
                     }
+                    getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
                 }
             }
             case decreaseStackSize -> {
-                if (inv == cell) totalBytes = 0;
-                if (inv == invItems && invItems.getAEStackInSlot(slot) != null) invItems.getAEStackInSlot(slot).decStackSize(removed.stackSize);
+                if (inv == cell) {
+                    totalBytes = 0;
+                    getProxy().setIdlePowerUsage(4d);
+                }
+                if (inv == invItems && invItems.getAEStackInSlot(slot) != null)
+                    invItems.getAEStackInSlot(slot).decStackSize(removed.stackSize);
             }
             case markDirty -> {
 
             }
         }
+
+        try {
+            getProxy().getTick().alertDevice(getProxy().getNode());
+        } catch (GridAccessException e) {
+            AELog.error(e, "Couldn't wake up level emitter for delayed updates");
+        }
+
         markForUpdate();
     }
 
     public void fullRefund() {
         for (int i = 0; i < 9; i++) {
-            if ( invFluids.getFluidStackInSlot(i) != null) {
+            if (invFluids.getFluidStackInSlot(i) != null) {
                 returnFluid(i, Integer.MAX_VALUE);
             }
         }
@@ -283,8 +298,8 @@ public class TileSuperStoker extends AENetworkInvTile
     @Override
     public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
         for (int i = 0; i < 9; i++) {
-           ItemStack ifp = ItemFluidPacket.newStack(invFluids.getFluidStackInSlot(i));
-           if (ifp != null) drops.add(ifp);
+            ItemStack ifp = ItemFluidPacket.newStack(invFluids.getFluidStackInSlot(i));
+            if (ifp != null) drops.add(ifp);
         }
         super.getDrops(w, x, y, z, drops);
     }
@@ -296,7 +311,7 @@ public class TileSuperStoker extends AENetworkInvTile
 
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-        return invFluids.fill(from, resource, doFill);
+        return 0;
     }
 
     @Override
@@ -308,7 +323,6 @@ public class TileSuperStoker extends AENetworkInvTile
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
         return invFluids.drain(from, maxDrain, doDrain);
     }
-
 
     @Override
     public boolean canFill(ForgeDirection from, Fluid fluid) {
@@ -336,26 +350,16 @@ public class TileSuperStoker extends AENetworkInvTile
         return this.invFluids;
     }
 
-    @TileEvent(TileEventType.NETWORK_WRITE)
-    protected void writeToStream(ByteBuf data) throws IOException {
-        for (int i = 0; i < invItems.getSizeInventory(); i++) {
-            ByteBufUtils.writeItemStack(data, invItems.getStackInSlot(i));
-        }
-        this.invFluids.writeToBuf(data);
+    @TileEvent(TileEventType.NETWORK_READ)
+    public boolean readFromStream_TileSuperStoker(final ByteBuf data) {
+        final boolean oldPower = isPowered;
+        isPowered = data.readBoolean();
+        return isPowered != oldPower;
     }
 
-    @TileEvent(TileEventType.NETWORK_READ)
-    protected boolean readFromStream(ByteBuf data) throws IOException {
-        boolean changed = false;
-        for (int i = 0; i < invItems.getSizeInventory(); i++) {
-            ItemStack stack = ByteBufUtils.readItemStack(data);
-            if (!ItemStack.areItemStacksEqual(stack, invItems.getStackInSlot(i))) {
-                invItems.setInventorySlotContents(i, stack);
-                changed = true;
-            }
-        }
-        changed |= this.invFluids.readFromBuf(data);
-        return changed;
+    @TileEvent(TileEventType.NETWORK_WRITE)
+    public void writeToStream_TileSuperStoker(final ByteBuf data) {
+        data.writeBoolean(isActive());
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
@@ -368,6 +372,7 @@ public class TileSuperStoker extends AENetworkInvTile
         totalBytes = data.getLong("totalBytes");
         storedFluidCount = data.getLong("storedFluidCount");
         storedItemCount = data.getLong("storedItemCount");
+        getProxy().setIdlePowerUsage(data.getDouble("powerDraw"));
     }
 
     @TileEvent(TileEventType.WORLD_NBT_WRITE)
@@ -380,6 +385,7 @@ public class TileSuperStoker extends AENetworkInvTile
         data.setLong("totalBytes", totalBytes);
         data.setLong("storedFluidCount", storedFluidCount);
         data.setLong("storedItemCount", storedItemCount);
+        data.setDouble("powerDraw", getProxy().getIdlePowerUsage());
         return data;
     }
 

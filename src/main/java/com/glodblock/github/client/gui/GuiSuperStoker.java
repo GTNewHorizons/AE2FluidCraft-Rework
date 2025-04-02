@@ -1,11 +1,8 @@
 package com.glodblock.github.client.gui;
 
-import appeng.api.storage.data.IAEStack;
-import appeng.util.Platform;
-import appeng.util.item.AEStack;
-import com.glodblock.github.client.gui.container.ContainerFluidAutoFiller;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.slot.OptionalFluidSlotFake;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -15,21 +12,18 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerSuperStoker;
+import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.tile.TileSuperStoker;
 import com.glodblock.github.network.CPacketInventoryAction;
 
-import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.client.gui.AEBaseGui;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.SlotFake;
 import appeng.core.localization.GuiText;
 import appeng.helpers.InventoryAction;
 import appeng.util.item.AEItemStack;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 public class GuiSuperStoker extends AEBaseGui {
 
@@ -83,8 +77,10 @@ public class GuiSuperStoker extends AEBaseGui {
             String s = "0%";
             if (slotInt > 0 && slotInt < 9) {
                 IAEStack<?> aeStack = list.get(slotInt - 1);
-                if (aeStack != null) s = (int) (((float) aeStack.getStackSize() / ItemFluidPacket.getFluidAmount(itemstack)) * 100) + "%";
-            } else if (slotInt > 9 && slotInt < 73){
+                if (aeStack != null)
+                    s = (int) (((float) aeStack.getStackSize() / ItemFluidPacket.getFluidAmount(itemstack)) * 100)
+                            + "%";
+            } else if (slotInt > 9 && slotInt < 73) {
                 IAEStack<?> aeStack = list.get(slotInt + 90);
                 if (aeStack != null && itemstack.stackSize > 0) {
                     long i = aeStack.getStackSize();
@@ -97,10 +93,7 @@ public class GuiSuperStoker extends AEBaseGui {
             float shiftY = 1;
             final float inverseScaleFactor = 1.0f / scale;
 
-            final int X = (int) (((float) offsetX - shiftX
-                + 16.0f
-                + 1.0f
-                - this.fontRendererObj.getStringWidth(s) * scale) * inverseScaleFactor);
+            final int X = (int) (((float) offsetX - shiftX + 10.0f) * inverseScaleFactor);
             final int Y = (int) (((float) offsetY - shiftY + 16.0f - 7.0f * scale) * inverseScaleFactor);
             GL11.glTranslatef(0.0f, 0.0f, 200.0f);
             GL11.glScaled(scale, scale, scale);

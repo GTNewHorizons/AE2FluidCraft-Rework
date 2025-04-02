@@ -3,8 +3,6 @@ package com.glodblock.github.client.gui.container;
 import java.util.HashMap;
 import java.util.Map;
 
-import appeng.api.storage.data.IAEStack;
-import com.glodblock.github.network.SPacketSuperStokerUpdate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -14,18 +12,16 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
-import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.tile.TileSuperStoker;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFake;
-import com.glodblock.github.network.SPacketFluidUpdate;
+import com.glodblock.github.network.SPacketSuperStokerUpdate;
 
-import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.IOptionalSlotHost;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.items.storage.ItemBasicStorageCell;
-import appeng.util.item.AEFluidStack;
 
 public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSlotHost {
 
@@ -88,9 +84,7 @@ public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSl
             tmp.put(i, tile.getInternalFluid().getFluidInSlot(i));
         }
         for (int i = 0; i < tile.getInternalInventory().getSizeInventory(); i++) {
-            tmp.put(
-                    i + 100,
-                    tile.getInternalAEInventory().getAEStackInSlot(i));
+            tmp.put(i + 100, tile.getInternalAEInventory().getAEStackInSlot(i));
         }
         for (final Object g : this.crafters) {
             if (g instanceof EntityPlayer) {
