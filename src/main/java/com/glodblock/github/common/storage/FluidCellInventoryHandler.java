@@ -39,7 +39,9 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
                 final ItemStack is = config.getStackInSlot(x);
                 final FluidStack fluid = Util.getFluidFromItem(is);
                 if (fluid != null) {
-                    priorityList.add(AEFluidStack.create(fluid));
+                    AEFluidStack stack = AEFluidStack.create(fluid);
+                    stack.setStackSize(1);
+                    priorityList.add(stack);
                 }
             }
             if (!priorityList.isEmpty()) {
