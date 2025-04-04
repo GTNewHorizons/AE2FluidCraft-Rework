@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import appeng.util.Platform;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -203,5 +204,17 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
             stacks[i] = AEItemStack.loadItemStackFromNBT(listTag.getCompoundTagAt(i));
         }
         return stacks;
+    }
+
+    @Override
+    public void patternJustUsed() {
+        NBTTagCompound tag = Platform.openNbtData(patternStack);
+        tag.setLong("lastUsed", System.currentTimeMillis());
+    }
+
+    @Override
+    public long patternLastUsed() {
+        NBTTagCompound tag = Platform.openNbtData(patternStack);
+        return tag.getLong("lastUsed");
     }
 }
