@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import appeng.util.Platform;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,6 +15,7 @@ import net.minecraftforge.common.util.Constants;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.helpers.PatternHelper;
+import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 
 public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<FluidPatternDetails> {
