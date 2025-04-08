@@ -37,6 +37,8 @@ import codechicken.nei.api.IRecipeOverlayRenderer;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.IUsageHandler;
 
+import static net.minecraft.util.EnumChatFormatting.GRAY;
+
 public class NEICellViewHandler implements IUsageHandler {
 
     private static class ViewItemStack {
@@ -247,6 +249,14 @@ public class NEICellViewHandler implements IUsageHandler {
 
     @Override
     public List<String> handleItemTooltip(GuiRecipe<?> gui, ItemStack stack, List<String> currenttip, int recipe) {
+        if (stack == null) return currenttip;
+
+        this.stacks.stream().filter(viewStack -> viewStack.stack.item.equals(stack)).findFirst().ifPresent(
+            viewItemStack -> currenttip.set(
+                1,
+                GRAY + GuiText.Stored.getLocal()
+                    + ": "
+                    + NumberFormat.getNumberInstance().format(viewItemStack.amount)));
         return currenttip;
     }
 
