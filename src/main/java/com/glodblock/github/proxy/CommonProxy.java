@@ -107,7 +107,7 @@ public class CommonProxy {
         final ItemStack wirelessTerm = result.getRight();
         if (WirelessMagnet.getMode(wirelessTerm) == WirelessMagnet.Mode.Off) return;
         IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
-        if (gridNode == null) return;
+        if (gridNode == null || !Util.rangeCheck(wirelessTerm, player, gridNode)) return;
         WirelessMagnetCardFilterInventory inv = new WirelessMagnetCardFilterInventory(
                 wirelessTerm,
                 result.getLeft(),
