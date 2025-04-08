@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.glodblock.github.util.ModAndClassUtil;
+import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -44,13 +46,13 @@ public class NEICellViewHandler implements IUsageHandler {
     private static class ViewItemStack {
 
         public PositionedStack stack;
-        public long stackSize;
+        public long amount;
         public IIcon icon;
         public int color;
 
-        public ViewItemStack(PositionedStack stack, long stackSize, IIcon icon, int color) {
+        public ViewItemStack(PositionedStack stack, long amount, IIcon icon, int color) {
             this.stack = stack;
-            this.stackSize = stackSize;
+            this.amount = amount;
             this.icon = icon;
             this.color = color;
         }
@@ -163,6 +165,10 @@ public class NEICellViewHandler implements IUsageHandler {
             final int line = i % ROW_ITEM_NUM;
             final int row = i / ROW_ITEM_NUM;
 
+            if (ModAndClassUtil.HODGEPODGE && icon instanceof IPatchedTextureAtlasSprite sprite) {
+                sprite.markNeedsAnimationUpdate();
+            }
+
             tessellator.setColorRGBA(color >> 16 & 0xFF, color >> 8 & 0xFF, color & 0xFF, 0xFF);
             tessellator.addVertexWithUV(
                     OFFSET_X + 18 * (line + 1) - 1,
@@ -198,7 +204,7 @@ public class NEICellViewHandler implements IUsageHandler {
             StackSizeRenderer.drawStackSize(
                     viewStack.stack.relx,
                     viewStack.stack.rely,
-                    viewStack.stackSize,
+                    viewStack.amount,
                     fontRenderer,
                     TerminalFontSize.SMALL);
         }
