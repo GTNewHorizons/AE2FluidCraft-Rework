@@ -15,6 +15,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.Nullable;
@@ -554,12 +555,24 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         }
 
         public void draw() {
+            String current = amount != null
+                    ? StatCollector.translateToLocal(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
+                            + NumberFormat.getNumberInstance().format(amount)
+                            + "\n"
+                    : "";
             if (isShiftKeyDown()) {
-                this.setTooltip(render.wrapFormattedStringToWidth(NameConst.i18n(this.tooltip), xSize / 2));
+                this.setTooltip(
+                        render.wrapFormattedStringToWidth(
+                                StatCollector.translateToLocal(this.tooltip) + "\n"
+                                        + current
+                                        + "\n"
+                                        + StatCollector.translateToLocal(this.tooltip + ".hint"),
+                                xSize / 2));
             } else {
                 this.setTooltip(
                         render.wrapFormattedStringToWidth(
                                 NameConst.i18n(this.tooltip, "\n", false) + "\n"
+                                        + current
                                         + NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE),
                                 (int) Math.floor(xSize * 0.8)));
             }
