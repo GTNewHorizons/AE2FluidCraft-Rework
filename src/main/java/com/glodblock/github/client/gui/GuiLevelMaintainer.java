@@ -233,13 +233,11 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             super.func_146977_a(new SlotSingleItem(slot));
             if (stack == null) return true;
             IAEItemStack fake = stack.copy();
-            final double stackSize = Calculator
-                    .conversion(this.component[slot.getSlotIndex()].getQty().textField.getText());
-            if (!Double.isNaN(stackSize)) {
-                fake.setStackSize((long) ArithHelper.round(stackSize, 0));
-            } else {
-                fake.setStackSize(0);
-            }
+
+            Widget qty = this.component[slot.getSlotIndex()].getQty();
+            qty.validate();
+            fake.setStackSize(qty.getAmount() != null ? qty.getAmount() : 0);
+
             GL11.glTranslatef(0.0f, 0.0f, 200.0f);
             aeRenderItem.setAeStack(fake);
             aeRenderItem.renderItemOverlayIntoGUI(
