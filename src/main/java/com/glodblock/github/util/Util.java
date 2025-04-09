@@ -51,6 +51,7 @@ import appeng.api.parts.IPart;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.util.DimensionalCoord;
 import appeng.api.util.WorldCoord;
 import appeng.container.AEBaseContainer;
@@ -60,6 +61,7 @@ import appeng.tile.networking.TileCableBus;
 import appeng.tile.networking.TileWireless;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
+import appeng.util.item.AEItemStack;
 import baubles.api.BaublesApi;
 import codechicken.nei.recipe.StackInfo;
 import cpw.mods.fml.common.ModContainer;
@@ -398,6 +400,36 @@ public final class Util {
             else {
                 IAEFluidStack fluid = AEFluidStack.loadFluidStackFromPacket(buf);
                 list.put(id, fluid);
+            }
+        }
+    }
+
+    public static void writeAEStackMapToBuf(Map<Integer, IAEStack<?>> list, ByteBuf buf) throws IOException {
+        buf.writeInt(list.size());
+        for (Map.Entry<Integer, IAEStack<?>> as : list.entrySet()) {
+            buf.writeInt(as.getKey());
+            if (as.getValue() == null) buf.writeBoolean(false);
+            else {
+                buf.writeBoolean(true);
+                as.getValue().writeToPacket(buf);
+            }
+        }
+    }
+
+    public static void readAEStackMapFromBuf(Map<Integer, IAEStack<?>> list, ByteBuf buf) throws IOException {
+        int size = buf.readInt();
+        for (int i = 0; i < size; i++) {
+            int id = buf.readInt();
+            boolean isNull = buf.readBoolean();
+            if (!isNull) list.put(id, null);
+            else {
+                IAEStack<?> as;
+                if (id > 99) {
+                    as = AEItemStack.loadItemStackFromPacket(buf);
+                } else {
+                    as = AEFluidStack.loadFluidStackFromPacket(buf);
+                }
+                list.put(id, as);
             }
         }
     }
