@@ -68,7 +68,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     private final ContainerLevelMaintainer cont;
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
-    private FCGuiTextField input;
+    private FCGuiTextField focusedTextField;
     private int lastWorkingTick;
     private int refreshTick;
     private final CoFHFontRenderer render;
@@ -206,7 +206,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
         int tick = this.refreshTick;
         int interval = 20;
-        if (tick > lastWorkingTick + interval && this.input == null) {
+        if (tick > lastWorkingTick + interval && this.focusedTextField == null) {
             FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Refresh));
             lastWorkingTick = this.refreshTick;
         }
@@ -256,43 +256,43 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
         if (btn == 0) {
-            if (input != null) {
-                input.setFocused(false);
+            if (focusedTextField != null) {
+                focusedTextField.setFocused(false);
             }
             for (Component com : this.component) {
                 FCGuiTextField textField = com.isMouseIn(xCoord, yCoord);
                 if (textField != null) {
                     textField.setFocused(true);
-                    this.input = textField;
+                    this.focusedTextField = textField;
                     super.mouseClicked(xCoord, yCoord, btn);
                     return;
                 }
             }
-            this.input = null;
+            this.focusedTextField = null;
         }
         super.mouseClicked(xCoord, yCoord, btn);
     }
 
     @Override
     protected void keyTyped(final char character, final int key) {
-        if (this.input == null) {
+        if (this.focusedTextField == null) {
             super.keyTyped(character, key);
             return;
         }
         if (!this.checkHotbarKeys(key)) {
-            if (!((character == ' ') && this.input.getText().isEmpty())) {
-                this.input.textboxKeyTyped(character, key);
+            if (!((character == ' ') && this.focusedTextField.getText().isEmpty())) {
+                this.focusedTextField.textboxKeyTyped(character, key);
             }
             super.keyTyped(character, key);
 
-            if (Double.isNaN(Calculator.conversion(this.input.getText()))) {
-                this.input.setTextColor(0xFF0000);
+            if (Double.isNaN(Calculator.conversion(this.focusedTextField.getText()))) {
+                this.focusedTextField.setTextColor(0xFF0000);
             } else {
-                this.input.setTextColor(0xFFFFFF);
+                this.focusedTextField.setTextColor(0xFFFFFF);
             }
             if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
-                this.input.setFocused(false);
-                this.input = null;
+                this.focusedTextField.setFocused(false);
+                this.focusedTextField = null;
             }
         }
     }
