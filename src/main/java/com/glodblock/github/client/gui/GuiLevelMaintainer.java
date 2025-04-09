@@ -69,7 +69,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     private final ContainerLevelMaintainer cont;
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
-    private FCGuiTextField focusedTextField;
+    private Widget focusedWidget;
     private int lastWorkingTick;
     private int refreshTick;
     private final CoFHFontRenderer render;
@@ -207,7 +207,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
         int tick = this.refreshTick;
         int interval = 20;
-        if (tick > lastWorkingTick + interval && this.focusedTextField == null) {
+        if (tick > lastWorkingTick + interval && this.focusedWidget == null) {
             FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Refresh));
             lastWorkingTick = this.refreshTick;
         }
@@ -255,43 +255,41 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
         if (btn == 0) {
-            if (focusedTextField != null) {
-                focusedTextField.setFocused(false);
+            if (focusedWidget != null) {
+                focusedWidget.textField.setFocused(false);
             }
             for (Component com : this.component) {
-                FCGuiTextField textField = com.isMouseIn(xCoord, yCoord);
+                Widget textField = com.isMouseIn(xCoord, yCoord);
                 if (textField != null) {
-                    textField.setFocused(true);
-                    this.focusedTextField = textField;
+                    textField.textField.setFocused(true);
+                    this.focusedWidget = textField;
                     super.mouseClicked(xCoord, yCoord, btn);
                     return;
                 }
             }
-            this.focusedTextField = null;
+            this.focusedWidget = null;
         }
         super.mouseClicked(xCoord, yCoord, btn);
     }
 
     @Override
     protected void keyTyped(final char character, final int key) {
-        if (this.focusedTextField == null) {
+        if (this.focusedWidget == null) {
             super.keyTyped(character, key);
             return;
         }
         if (!this.checkHotbarKeys(key)) {
-            if (!((character == ' ') && this.focusedTextField.getText().isEmpty())) {
-                this.focusedTextField.textboxKeyTyped(character, key);
+            if (!((character == ' ') && this.focusedWidget.textField.getText().isEmpty())) {
+                this.focusedWidget.textField.textboxKeyTyped(character, key);
             }
             super.keyTyped(character, key);
 
-            if (Double.isNaN(Calculator.conversion(this.focusedTextField.getText()))) {
-                this.focusedTextField.setTextColor(0xFF0000);
-            } else {
-                this.focusedTextField.setTextColor(0xFFFFFF);
-            }
+            this.focusedWidget.validate();
+
             if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
-                this.focusedTextField.setFocused(false);
-                this.focusedTextField = null;
+                this.component[this.focusedWidget.componentIndex].submit();
+                this.focusedWidget.textField.setFocused(false);
+                this.focusedWidget = null;
             }
         }
     }
@@ -410,7 +408,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         }
 
         public int getIndex() {
-            return this.qty.idx;
+            return this.qty.componentIndex;
         }
 
         public void setEnable(boolean enable) {
@@ -418,10 +416,14 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         }
 
         private void send(Widget widget) {
-            if (cont.inventorySlots.get(widget.idx).getHasStack() && widget.getAmount() != null) {
-                FluidCraft.proxy.netHandler
-                        .sendToServer(new CPacketLevelMaintainer(widget.action, widget.idx, widget.getAmount()));
+            if (cont.inventorySlots.get(widget.componentIndex).getHasStack() && widget.getAmount() != null) {
+                FluidCraft.proxy.netHandler.sendToServer(
+                        new CPacketLevelMaintainer(widget.action, widget.componentIndex, widget.getAmount()));
             }
+        }
+
+        public void submit() {
+            this.sendToServer(this.submit);
         }
 
         protected boolean sendToServer(GuiButton btn) {
@@ -449,9 +451,9 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             return didSomething;
         }
 
-        public FCGuiTextField isMouseIn(final int xCoord, final int yCoord) {
-            if (this.qty.textField.isMouseIn(xCoord, yCoord)) return this.getQty().textField;
-            if (this.batch.textField.isMouseIn(xCoord, yCoord)) return this.getBatch().textField;
+        public Widget isMouseIn(final int xCoord, final int yCoord) {
+            if (this.qty.textField.isMouseIn(xCoord, yCoord)) return this.getQty();
+            if (this.batch.textField.isMouseIn(xCoord, yCoord)) return this.getBatch();
             return null;
         }
 
@@ -536,18 +538,18 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
     private class Widget {
 
-        public final int idx;
+        public final int componentIndex;
         public final Action action;
-        private final FCGuiTextField textField;
+        public final FCGuiTextField textField;
         private final String tooltip;
         private Long amount;
 
-        public Widget(FCGuiTextField textField, String tooltip, int idx, Action action) {
+        public Widget(FCGuiTextField textField, String tooltip, int componentIndex, Action action) {
             this.textField = textField;
             this.textField.setEnableBackgroundDrawing(false);
             this.textField.setText("0");
             this.textField.setMaxStringLength(16); // this length is enough to be useful
-            this.idx = idx;
+            this.componentIndex = componentIndex;
             this.action = action;
             this.tooltip = tooltip;
         }
