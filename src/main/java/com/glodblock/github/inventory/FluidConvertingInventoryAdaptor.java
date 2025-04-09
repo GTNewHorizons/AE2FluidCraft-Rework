@@ -374,7 +374,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     }
 
     private boolean isItemConduit(TileEntity te) {
-        if (ModAndClassUtil.EIO && conduitClazz.isInstance(te)) {
+        if (isConduit(te)) {
             try {
                 return eioTypeCheck.invoke(te, IItemConduit.class) != null;
             } catch (InvocationTargetException | IllegalAccessException e) {
@@ -385,7 +385,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     }
 
     private boolean isConduit(TileEntity te) {
-        return ModAndClassUtil.EIO && te instanceof IItemDuct;
+        return ModAndClassUtil.EIO && conduitClazz.isInstance(te);
     }
 
     private ItemStack fillEIOConduit(ItemStack item, TileEntity te, ForgeDirection direction) {
