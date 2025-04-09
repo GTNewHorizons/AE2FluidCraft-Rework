@@ -1,13 +1,13 @@
 package com.glodblock.github.nei;
 
+import static net.minecraft.util.EnumChatFormatting.GRAY;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.glodblock.github.util.ModAndClassUtil;
-import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -23,6 +23,8 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.storage.FluidCellInventoryHandler;
+import com.glodblock.github.util.ModAndClassUtil;
+import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 
 import appeng.api.AEApi;
 import appeng.api.config.TerminalFontSize;
@@ -38,8 +40,6 @@ import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.IUsageHandler;
-
-import static net.minecraft.util.EnumChatFormatting.GRAY;
 
 public class NEICellViewHandler implements IUsageHandler {
 
@@ -258,11 +258,11 @@ public class NEICellViewHandler implements IUsageHandler {
         if (stack == null) return currenttip;
 
         this.stacks.stream().filter(viewStack -> viewStack.stack.item.equals(stack)).findFirst().ifPresent(
-            viewItemStack -> currenttip.set(
-                1,
-                GRAY + GuiText.Stored.getLocal()
-                    + ": "
-                    + NumberFormat.getNumberInstance().format(viewItemStack.amount)));
+                viewItemStack -> currenttip.set(
+                        1,
+                        GRAY + GuiText.Stored.getLocal()
+                                + ": "
+                                + NumberFormat.getNumberInstance().format(viewItemStack.amount)));
         return currenttip;
     }
 
