@@ -32,7 +32,6 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
-import appeng.util.item.AEFluidStack;
 
 public class TileFluidPacketDecoder extends AENetworkTile
         implements IGridTickable, IAEAppEngInventory, IInventory, IFluidHandler {
@@ -66,22 +65,21 @@ public class TileFluidPacketDecoder extends AENetworkTile
         if (stack == null || !(stack.getItem() instanceof ItemFluidPacket)) {
             return TickRateModulation.SLEEP;
         }
-        FluidStack fluid = ItemFluidPacket.getFluidStack(stack);
-        if (fluid == null || fluid.amount <= 0) {
+        IAEFluidStack fluid = ItemFluidPacket.getAEFluidStack(stack);
+        if (fluid == null || fluid.getStackSize() <= 0) {
             inventory.setInventorySlotContents(0, null);
             return TickRateModulation.SLEEP;
         }
-        IAEFluidStack aeFluid = AEFluidStack.create(fluid.copy());
         IEnergyGrid energyGrid = node.getGrid().getCache(IEnergyGrid.class);
         IMEMonitor<IAEFluidStack> fluidGrid = node.getGrid().<IStorageGrid>getCache(IStorageGrid.class)
                 .getFluidInventory();
-        IAEFluidStack remaining = Platform.poweredInsert(energyGrid, fluidGrid, aeFluid, ownActionSource);
+        IAEFluidStack remaining = Platform.poweredInsert(energyGrid, fluidGrid, fluid, ownActionSource);
         if (remaining != null) {
-            if (remaining.getStackSize() == aeFluid.getStackSize()) {
-                inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(remaining.getFluidStack()));
+            if (remaining.getStackSize() == fluid.getStackSize()) {
+                inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(remaining));
                 return TickRateModulation.SLOWER;
             }
-            inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(remaining.getFluidStack()));
+            inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(remaining));
             return TickRateModulation.FASTER;
         } else {
             inventory.setInventorySlotContents(0, null);
@@ -184,16 +182,16 @@ public class TileFluidPacketDecoder extends AENetworkTile
         if (requestFluid == null || requestFluid.amount <= 0) return null;
         ItemStack fluidPacket = this.inventory.getStackInSlot(0);
         if (fluidPacket != null) {
-            FluidStack fs = ItemFluidPacket.getFluidStack(fluidPacket);
+            IAEFluidStack fs = ItemFluidPacket.getAEFluidStack(fluidPacket);
             if (fs == null) return null;
-            if (fs.isFluidEqual(requestFluid)) {
-                if (fs.amount > requestFluid.amount) {
-                    fs.amount -= requestFluid.amount;
+            if (fs.equals(requestFluid)) {
+                if (fs.getStackSize() > requestFluid.amount) {
+                    fs.setStackSize(requestFluid.amount);
                     if (doDrain) this.inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(fs));
                     return requestFluid;
                 } else {
                     if (doDrain) this.inventory.setInventorySlotContents(0, null);
-                    return fs;
+                    return fs.getFluidStack();
                 }
             }
         }
@@ -204,10 +202,10 @@ public class TileFluidPacketDecoder extends AENetworkTile
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
         ItemStack fluidPacket = this.inventory.getStackInSlot(0);
         if (fluidPacket != null) {
-            FluidStack requestFluid = ItemFluidPacket.getFluidStack(fluidPacket);
+            IAEFluidStack requestFluid = ItemFluidPacket.getAEFluidStack(fluidPacket);
             if (requestFluid == null) return null;
-            requestFluid.amount = maxDrain;
-            return this.drain(requestFluid, doDrain);
+            requestFluid.setStackSize(maxDrain);
+            return this.drain(requestFluid.getFluidStack(), doDrain);
         }
         return null;
     }

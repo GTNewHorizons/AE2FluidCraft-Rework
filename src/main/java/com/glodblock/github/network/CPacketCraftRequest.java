@@ -39,11 +39,11 @@ public class CPacketCraftRequest implements IMessage {
 
     public CPacketCraftRequest() {}
 
-    public CPacketCraftRequest(final int craftAmt, final boolean shift) {
+    public CPacketCraftRequest(final long craftAmt, final boolean shift) {
         this(craftAmt, shift, CraftingMode.STANDARD);
     }
 
-    public CPacketCraftRequest(final int craftAmt, final boolean shift, final CraftingMode craftingMode) {
+    public CPacketCraftRequest(final long craftAmt, final boolean shift, final CraftingMode craftingMode) {
         amount = craftAmt;
         heldShift = shift;
         this.craftingMode = craftingMode;

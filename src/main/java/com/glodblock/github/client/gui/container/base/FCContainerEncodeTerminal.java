@@ -2,7 +2,6 @@ package com.glodblock.github.client.gui.container.base;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -10,20 +9,17 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.client.gui.container.ContainerItemMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.IPatternConsumer;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.FluidPatternDetails;
@@ -33,12 +29,12 @@ import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.container.guisync.GuiSync;
 import appeng.container.slot.IOptionalSlotHost;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFake;
-import appeng.container.slot.SlotFakeCraftingMatrix;
 import appeng.container.slot.SlotPatternTerm;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.helpers.IContainerCraftingPacket;
@@ -48,10 +44,9 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
-import appeng.util.item.AEItemStack;
 
 public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
-        implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket, IPatternConsumer {
+        implements IAEAppEngInventory, IOptionalSlotHost, IContainerCraftingPacket {
 
     public static final int MULTIPLE_OF_BUTTON_CLICK = 2;
     public static final int MULTIPLE_OF_BUTTON_CLICK_ON_SHIFT = 8;
@@ -133,9 +128,9 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         }
         Slot slot = getSlot(slotId);
         ItemStack stack = player.inventory.getItemStack();
-        FluidStack fluid = Util.getFluidFromItem(stack);
+        IAEFluidStack fluid = Util.getAEFluidFromItem(stack);
 
-        if (fluid == null || fluid.amount <= 0) {
+        if (fluid == null || fluid.getStackSize() <= 0) {
             super.doAction(player, action, slotId, id);
             return;
         }
@@ -148,11 +143,11 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                     return;
                 }
                 case SPLIT_OR_PLACE_SINGLE -> {
-                    fluid = Util.getFluidFromItem(Util.copyStackWithSize(stack, 1));
-                    FluidStack origin = ItemFluidPacket.getFluidStack(slot.getStack());
+                    fluid = Util.getAEFluidFromItem(Util.copyStackWithSize(stack, 1));
+                    IAEFluidStack origin = ItemFluidPacket.getAEFluidStack(slot.getStack());
                     if (fluid != null && fluid.equals(origin)) {
-                        fluid.amount += origin.amount;
-                        if (fluid.amount <= 0) fluid = null;
+                        fluid.add(origin);
+                        if (fluid.getStackSize() <= 0) fluid = null;
                     }
                     slot.putStack(ItemFluidPacket.newStack(fluid));
                     return;
@@ -185,43 +180,6 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
 
     public IItemPatternTerminal getPatternTerminal() {
         return this.patternTerminal;
-    }
-
-    protected static boolean canDoubleStacks(SlotFake[] slots) {
-        List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
-        long emptySlots = enabledSlots.stream().filter(s -> s.getStack() == null).count();
-        long fullSlots = enabledSlots.stream().filter(s -> s.getStack() != null && s.getStack().stackSize * 2 > 127)
-                .count();
-        return fullSlots <= emptySlots;
-    }
-
-    protected static void doubleStacksInternal(SlotFake[] slots) {
-        List<ItemStack> overFlowStacks = new ArrayList<>();
-        List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
-        for (final Slot s : enabledSlots) {
-            ItemStack st = s.getStack();
-            if (st == null) continue;
-            if (Util.isFluidPacket(st)) {
-                FluidStack fluidStack = ItemFluidPacket.getFluidStack(st);
-                if (fluidStack != null) {
-                    fluidStack = ItemFluidPacket.getFluidStack(st).copy();
-                    if (fluidStack.amount < Integer.MAX_VALUE / 2) fluidStack.amount *= 2;
-                }
-                s.putStack(ItemFluidPacket.newStack(fluidStack));
-            } else if (st.stackSize * 2 > 127) {
-                overFlowStacks.add(st.copy());
-            } else {
-                st.stackSize *= 2;
-                s.putStack(st);
-            }
-        }
-        Iterator<ItemStack> ow = overFlowStacks.iterator();
-        for (final Slot s : enabledSlots) {
-            if (!ow.hasNext()) break;
-            if (s.getStack() != null) continue;
-            s.putStack(ow.next());
-        }
-        assert !ow.hasNext();
     }
 
     protected static boolean containsItem(SlotFake[] slots) {
@@ -278,18 +236,17 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     protected static IAEItemStack[] collectInventory(Slot[] slots) {
         IAEItemStack[] stacks = new IAEItemStack[slots.length];
         for (int i = 0; i < stacks.length; i++) {
-            ItemStack stack = slots[i].getStack();
+            IAEItemStack stack = ((SlotFake) slots[i]).getAEStack();
             if (stack != null) {
                 if (stack.getItem() instanceof ItemFluidPacket) {
-                    IAEItemStack dropStack = ItemFluidDrop.newAeStack(ItemFluidPacket.getFluidStack(stack));
+                    IAEItemStack dropStack = ItemFluidDrop.newAeStack(ItemFluidPacket.getAEFluidStack(stack));
                     if (dropStack != null) {
                         stacks[i] = dropStack;
                         continue;
                     }
                 }
             }
-            IAEItemStack aeStack = AEItemStack.create(stack);
-            stacks[i] = aeStack;
+            stacks[i] = stack;
         }
         return stacks;
     }
@@ -393,8 +350,8 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
 
     public void encodeItemPattern() {
         ItemStack output = this.patternSlotOUT.getStack();
-        final ItemStack[] in = this.getInputs();
-        final ItemStack[] out = this.getOutputs();
+        final IAEItemStack[] in = this.getInputs();
+        final IAEItemStack[] out = this.getOutputs();
 
         // if there is no input, this would be silly.
         if (in == null || out == null) {
@@ -434,11 +391,11 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         final NBTTagList tagIn = new NBTTagList();
         final NBTTagList tagOut = new NBTTagList();
 
-        for (final ItemStack i : in) {
+        for (final IAEItemStack i : in) {
             tagIn.appendTag(this.createItemTag(i));
         }
 
-        for (final ItemStack i : out) {
+        for (final IAEItemStack i : out) {
             tagOut.appendTag(this.createItemTag(i));
         }
 
@@ -453,24 +410,24 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         this.patternSlotOUT.putStack(output);
     }
 
-    protected ItemStack[] getInputs() {
-        final ArrayList<ItemStack> input = new ArrayList<>();
+    protected IAEItemStack[] getInputs() {
+        final ArrayList<IAEItemStack> input = new ArrayList<>();
         for (SlotFake craftingSlot : this.craftingSlots) {
-            input.add(craftingSlot.getStack());
+            input.add(craftingSlot.getAEStack());
         }
         if (input.stream().anyMatch(Objects::nonNull)) {
-            return input.toArray(new ItemStack[0]);
+            return input.toArray(new IAEItemStack[0]);
         }
         return null;
     }
 
-    protected ItemStack[] getOutputs() {
-        final ArrayList<ItemStack> output = new ArrayList<>();
+    protected IAEItemStack[] getOutputs() {
+        final ArrayList<IAEItemStack> output = new ArrayList<>();
         for (final SlotFake outputSlot : this.outputSlots) {
-            output.add(outputSlot.getStack());
+            output.add(outputSlot.getAEStack());
         }
         if (output.stream().anyMatch(Objects::nonNull)) {
-            return output.toArray(new ItemStack[0]);
+            return output.toArray(new IAEItemStack[0]);
         }
         return null;
     }
@@ -490,10 +447,10 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return !isPattern;
     }
 
-    protected NBTBase createItemTag(final ItemStack i) {
+    protected NBTBase createItemTag(final IAEItemStack i) {
         final NBTTagCompound c = new NBTTagCompound();
         if (i != null) {
-            Util.writeItemStackToNBT(i, c);
+            i.writeToNBT(c);
         }
         return c;
     }
@@ -512,20 +469,37 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
 
     @Override
     public void onSlotChange(final Slot s) {
-        if (s == this.patternSlotOUT && Platform.isServer()) {
-            for (final Object crafter : this.crafters) {
-                final ICrafting icrafting = (ICrafting) crafter;
-
-                for (final Object g : this.inventorySlots) {
-                    if (g instanceof OptionalSlotFake || g instanceof SlotFakeCraftingMatrix) {
-                        final Slot sri = (Slot) g;
-                        icrafting.sendSlotContents(this, sri.slotNumber, sri.getStack());
-                    }
-                }
-                ((EntityPlayerMP) icrafting).isChangingQuantityOnly = false;
-            }
+        if (Platform.isServer() && s == this.patternSlotOUT) {
+            this.onCraftMatrixChanged();
             this.detectAndSendChanges();
         }
+    }
+
+    @Override
+    public void onCraftMatrixChanged(IInventory p_75130_1_) {
+        super.onCraftMatrixChanged(p_75130_1_);
+        if (Platform.isServer()) {
+            p_75130_1_.markDirty();
+        }
+    }
+
+    public void onCraftMatrixChanged() {
+        onCraftMatrixChanged(this.patternTerminal.getInventoryByName("crafting"));
+        onCraftMatrixChanged(this.patternTerminal.getInventoryByName("output"));
+    }
+
+    public void setPatternValue(int index, long amount) {
+        SlotFake sf = (SlotFake) this.inventorySlots.get(index);
+        ItemStack stack = sf.getStack();
+
+        if (Util.isFluidPacket(stack)) {
+            ItemFluidPacket.setFluidAmount(stack, amount);
+            sf.putStack(stack);
+        } else {
+            sf.getAEStack().setStackSize(amount);
+        }
+
+        onCraftMatrixChanged(sf.inventory);
     }
 
     @Override
@@ -549,31 +523,31 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
 
     static boolean canMultiplyOrDivide(SlotFake[] slots, int mult) {
         if (mult > 0) {
-            for (Slot s : slots) {
+            for (SlotFake s : slots) {
                 ItemStack st = s.getStack();
                 if (st == null) continue;
                 final long count;
                 if (st.getItem() instanceof ItemFluidPacket) {
                     count = ItemFluidPacket.getFluidAmount(st);
                 } else {
-                    count = s.getStack().stackSize;
+                    count = s.getAEStack().getStackSize();
                 }
-                long result = count * mult;
-                if (result > Integer.MAX_VALUE) {
+                double result = (double) count * mult;
+                if (result > Long.MAX_VALUE) {
                     return false;
                 }
             }
             return true;
         } else if (mult < 0) {
             mult = Math.abs(mult);
-            for (Slot s : slots) {
+            for (SlotFake s : slots) {
                 ItemStack st = s.getStack();
                 if (st == null) continue;
-                final int count;
+                final long count;
                 if (st.getItem() instanceof ItemFluidPacket) {
                     count = ItemFluidPacket.getFluidAmount(st);
                 } else {
-                    count = s.getStack().stackSize;
+                    count = s.getAEStack().getStackSize();
                 }
                 if (count % mult != 0) {
                     return false;
@@ -587,27 +561,27 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     static void multiplyOrDivideStacksInternal(SlotFake[] slots, int mult) {
         List<SlotFake> enabledSlots = Arrays.stream(slots).filter(SlotFake::isEnabled).collect(Collectors.toList());
         if (mult > 0) {
-            for (final Slot s : enabledSlots) {
+            for (final SlotFake s : enabledSlots) {
                 ItemStack st = s.getStack();
                 if (st != null) {
                     if (st.getItem() instanceof ItemFluidPacket) {
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) * mult);
-                    } else {
-                        st.stackSize *= mult;
                         s.putStack(st);
+                    } else {
+                        s.getAEStack().setStackSize(s.getAEStack().getStackSize() * mult);
                     }
                 }
             }
         } else if (mult < 0) {
             mult = Math.abs(mult);
-            for (final Slot s : enabledSlots) {
+            for (final SlotFake s : enabledSlots) {
                 ItemStack st = s.getStack();
                 if (st != null) {
                     if (st.getItem() instanceof ItemFluidPacket) {
                         ItemFluidPacket.setFluidAmount(st, ItemFluidPacket.getFluidAmount(st) / mult);
-                    } else {
-                        st.stackSize /= mult;
                         s.putStack(st);
+                    } else {
+                        s.getAEStack().setStackSize(s.getAEStack().getStackSize() / mult);
                     }
                 }
             }
@@ -625,14 +599,8 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
                 multiplyOrDivideStacksInternal(this.craftingSlots, multi);
                 multiplyOrDivideStacksInternal(this.outputSlots, multi);
             }
+            onCraftMatrixChanged();
             this.detectAndSendChanges();
-        }
-    }
-
-    @Override
-    public void acceptPattern(IAEItemStack[] inputs, IAEItemStack[] outputs) {
-        if (this.patternTerminal != null) {
-            this.patternTerminal.onChangeCrafting(inputs, outputs);
         }
     }
 
