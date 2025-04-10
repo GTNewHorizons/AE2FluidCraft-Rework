@@ -5,6 +5,7 @@ import static com.glodblock.github.inventory.item.WirelessMagnet.filterConfigKey
 import static com.glodblock.github.inventory.item.WirelessMagnet.filterKey;
 
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import net.minecraft.entity.item.EntityItem;
@@ -262,11 +263,11 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
 
     public static class FilterCache {
 
-        private static final HashMap<EntityPlayer, WirelessMagnetCardFilterInventory> cache = new HashMap<>();
+        private static final HashMap<UUID, WirelessMagnetCardFilterInventory> cache = new HashMap<>();
 
         public static WirelessMagnetCardFilterInventory getFilter(ItemStack is, int slot, IGridNode gridNode,
                 EntityPlayer player) {
-            WirelessMagnetCardFilterInventory cachedInv = cache.get(player);
+            WirelessMagnetCardFilterInventory cachedInv = cache.get(player.getUniqueID());
             if (cachedInv != null && cachedInv.checkCache(is)) {
                 return cachedInv;
             } else {
@@ -275,7 +276,7 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
                         slot,
                         gridNode,
                         player);
-                cache.put(player, newInv);
+                cache.put(player.getUniqueID(), newInv);
                 return newInv;
             }
         }
