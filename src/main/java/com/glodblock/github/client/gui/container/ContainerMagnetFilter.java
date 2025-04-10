@@ -15,6 +15,7 @@ import appeng.api.storage.ITerminalHost;
 import appeng.container.guisync.GuiSync;
 import appeng.container.slot.AppEngSlot;
 import appeng.container.slot.IOptionalSlotHost;
+import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFake;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.util.Platform;
@@ -32,13 +33,21 @@ public class ContainerMagnetFilter extends FCBaseContainer implements IOptionalS
 
     @GuiSync(104)
     public boolean ore;
-    protected SlotFake[] filterSlots;
+
+    @GuiSync(105)
+    public boolean oreDict;
+
+    @GuiSync(106)
+    public String oreDictFilter;
+
+    protected OptionalSlotFake[] filterSlots;
     protected final IInventory filter;
 
     public ContainerMagnetFilter(InventoryPlayer ip, ITerminalHost monitorable) {
         super(ip, monitorable);
         this.filter = ((IItemTerminal) monitorable).getInventoryByName("config");
-        this.filterSlots = new SlotFake[27];
+        this.filterSlots = new OptionalSlotFake[27];
+        oreDictFilter = ((IWirelessMagnetFilter) getHost()).getOreDictFilter();
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
                 this.addSlotToContainer(
@@ -51,6 +60,7 @@ public class ContainerMagnetFilter extends FCBaseContainer implements IOptionalS
                                 0,
                                 0,
                                 1));
+                this.filterSlots[x + y * 9].setRenderDisabled(false);
             }
         }
         bindPlayerInventory(ip, 0, 126);
@@ -84,6 +94,8 @@ public class ContainerMagnetFilter extends FCBaseContainer implements IOptionalS
             this.meta = host.getMetaMode();
             this.nbt = host.getNBTMode();
             this.ore = host.getOreMode();
+            this.oreDict = host.getOreDictMode();
+            this.oreDictFilter = host.getOreDictFilter();
         }
         super.detectAndSendChanges();
     }

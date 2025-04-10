@@ -162,22 +162,26 @@ public final class Util {
     }
 
     public static IMEInventoryHandler<?> getWirelessInv(ItemStack is, EntityPlayer player, StorageChannel channel) {
-        if (Platform.isClient()) return new NullInventory<>();
-        IGridNode gridNode = getWirelessGrid(is);
-        if (gridNode == null) return null;
-        IGrid grid = gridNode.getGrid();
-        if (grid == null) return null;
-        if (rangeCheck(is, player, grid)) {
-            IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
-            if (gridCache != null) {
-                if (channel == StorageChannel.FLUIDS) {
-                    return gridCache.getFluidInventory();
-                } else {
-                    return gridCache.getItemInventory();
+        if (Platform.isServer()) {
+            IGridNode gridNode = getWirelessGrid(is);
+            if (gridNode != null) {
+                IGrid grid = gridNode.getGrid();
+                if (grid != null) {
+                    if (rangeCheck(is, player, grid)) {
+                        IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
+                        if (gridCache != null) {
+                            if (channel == StorageChannel.FLUIDS) {
+                                return gridCache.getFluidInventory();
+                            } else {
+                                return gridCache.getItemInventory();
+                            }
+                        }
+                    }
                 }
             }
+            return null;
         }
-        return null;
+        return new NullInventory<>();
     }
 
     public static ItemStack getWirelessTerminal(EntityPlayer player, int x) {

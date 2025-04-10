@@ -112,6 +112,8 @@ public class NameConst {
     public static final String TT_ULTRA_TERMINAL_RESTOCK_ON = TT_ULTRA_TERMINAL_RESTOCK + ".on";
     public static final String TT_ULTRA_TERMINAL_RESTOCK_OFF = TT_ULTRA_TERMINAL_RESTOCK + ".off";
 
+    public static final String TT_MAGNET_CARD_OREDICT = TT_KEY + "magnet_card.oreDictFilter";
+
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
     public static final String WAILA_DISABLE = WAILA_KEY + "disable";

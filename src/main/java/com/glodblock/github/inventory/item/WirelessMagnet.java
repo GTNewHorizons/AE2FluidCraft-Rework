@@ -3,8 +3,6 @@ package com.glodblock.github.inventory.item;
 
 import static com.glodblock.github.common.Config.magnetRange;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,11 +15,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
-import com.glodblock.github.inventory.ItemBiggerAppEngInventory;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.api.storage.data.IItemList;
-import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.Platform;
 
 public class WirelessMagnet {
@@ -54,32 +48,13 @@ public class WirelessMagnet {
     }
 
     @SuppressWarnings("unchecked")
-    public static List<ItemStack> getFilteredItems(ItemStack wirelessTerm) {
-        if (wirelessTerm == null) {
-            return null;
-        }
-        if (wirelessTerm.getItem() instanceof ItemWirelessUltraTerminal) {
-            if (wirelessTerm.hasTagCompound()) {
-                NBTTagCompound data = Platform.openNbtData(wirelessTerm);
-                if (!data.hasKey(filterKey)) {
-                    return Collections.emptyList();
-                }
-                AppEngInternalInventory filterList = new ItemBiggerAppEngInventory(wirelessTerm, filterKey, 27);
-                ArrayList<ItemStack> list = new ArrayList<>();
-                filterList.iterator().forEachRemaining(list::add);
-                return list;
-            }
-        }
-        return Collections.emptyList();
-    }
 
     public static boolean isConfigured(ItemStack wirelessTerm) {
         NBTTagCompound data = Platform.openNbtData(wirelessTerm);
         return data.hasKey(modeKey);
     }
 
-    public static void doMagnet(ItemStack wirelessTerm, World world, EntityPlayer player,
-            WirelessMagnetCardFilterInventory inv) {
+    public static void doMagnet(ItemStack wirelessTerm, World world, EntityPlayer player) {
         if (Platform.isClient() || wirelessTerm == null
                 || getMode(wirelessTerm) == Mode.Off
                 || player == null
@@ -94,7 +69,6 @@ public class WirelessMagnet {
                 (int) player.posY,
                 (int) player.posZ,
                 magnetRange).iterator();
-        IItemList<IAEItemStack> filteredList = inv.getAEFilteredItems();
         while (iterator.hasNext()) {
             EntityItem itemToGet = (EntityItem) iterator.next();
             if (itemToGet.func_145800_j() != null && itemToGet.func_145800_j()
@@ -107,19 +81,16 @@ public class WirelessMagnet {
             if (closestPlayer != null && closestPlayer != player) {
                 continue;
             }
-            ItemStack stack = itemToGet.getEntityItem();
-            if ((inv.getListMode() == ListMode.WhiteList && !filteredList.isEmpty()
-                    && inv.isItemFiltered(stack, filteredList))
-                    || (inv.getListMode() == ListMode.BlackList && !inv.isItemFiltered(stack, filteredList))) {
-                if (itemToGet.delayBeforeCanPickup > 0) {
-                    itemToGet.delayBeforeCanPickup = 0;
-                }
-                itemToGet.motionX = itemToGet.motionY = itemToGet.motionZ = 0;
-                itemToGet.setPosition(
-                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                        player.posY - 0.6,
-                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+
+            if (itemToGet.delayBeforeCanPickup > 0) {
+                itemToGet.delayBeforeCanPickup = 0;
             }
+            itemToGet.motionX = itemToGet.motionY = itemToGet.motionZ = 0;
+            itemToGet.setPosition(
+                    player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                    player.posY - 0.6,
+                    player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+
         }
 
         // xp

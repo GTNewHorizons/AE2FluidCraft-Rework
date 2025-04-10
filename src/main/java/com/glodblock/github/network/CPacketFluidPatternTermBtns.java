@@ -111,6 +111,12 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                     case "WirelessTerminal.magnet.Ore":
                         ((IWirelessMagnetFilter) itemTerminal).setOreMode(Value.equals("1"));
                         break;
+                    case "WirelessTerminal.magnet.OreDictState":
+                        ((IWirelessMagnetFilter) itemTerminal).setOreDictMode(Value.equals("1"));
+                        break;
+                    case "WirelessTerminal.magnet.OreDictFilter":
+                        ((IWirelessMagnetFilter) itemTerminal).setOreDictFilter(Value);
+                        break;
                     case "WirelessTerminal.magnet.FilterMode":
                         ((IWirelessMagnetFilter) itemTerminal).setListMode(
                             Value.equals("1") ? WirelessMagnet.ListMode.WhiteList

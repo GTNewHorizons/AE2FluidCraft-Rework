@@ -170,6 +170,7 @@ ae2fc.tooltip.magnet_card.inv.hint=Pickup to Inventory
 ae2fc.tooltip.magnet_card.me=Magnet Card
 ae2fc.tooltip.magnet_card.me.hint=Pickup to ME
 ae2fc.tooltip.magnet_card.filter=Magnet Filter
+ae2fc.tooltip.magnet_card.oreDictFilter=Oredictionary filter
 ae2fc.tooltip.restock.on=Toggle Restock
 ae2fc.tooltip.restock.on.hint=Enable
 ae2fc.tooltip.restock.off=Toggle Restock

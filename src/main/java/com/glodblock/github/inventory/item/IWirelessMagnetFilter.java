@@ -10,6 +10,10 @@ public interface IWirelessMagnetFilter extends IWirelessTerminal, IItemTerminal 
 
     boolean getOreMode();
 
+    boolean getOreDictMode();
+
+    String getOreDictFilter();
+
     void setListMode(WirelessMagnet.ListMode mode);
 
     void setNBTMode(boolean ignoreNBT);
@@ -17,6 +21,10 @@ public interface IWirelessMagnetFilter extends IWirelessTerminal, IItemTerminal 
     void setMetaMode(boolean ignoreMeta);
 
     void setOreMode(boolean useOre);
+
+    void setOreDictMode(boolean useOreDict);
+
+    void setOreDictFilter(String str);
 
     default void clearConfig() {};
 

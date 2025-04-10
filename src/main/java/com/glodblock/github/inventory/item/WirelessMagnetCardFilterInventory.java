@@ -4,7 +4,8 @@ package com.glodblock.github.inventory.item;
 import static com.glodblock.github.inventory.item.WirelessMagnet.filterConfigKey;
 import static com.glodblock.github.inventory.item.WirelessMagnet.filterKey;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.function.Predicate;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +16,6 @@ import net.minecraft.world.World;
 
 import com.glodblock.github.inventory.ItemBiggerAppEngInventory;
 
-import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.networking.IGridNode;
@@ -23,24 +23,33 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.api.storage.data.IItemList;
 import appeng.api.util.IConfigManager;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import appeng.util.item.AEItemStack;
+import appeng.util.item.OreHelper;
+import appeng.util.prioitylist.OreFilteredList;
 
 public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory implements IWirelessMagnetFilter {
 
     private boolean ignoreNbt;
     private boolean ignoreMeta;
+    private boolean useOre;
     private boolean useOreDict;
+    private String oreDictFilter;
+    protected Predicate<IAEItemStack> filterPredicate = null;
     private WirelessMagnet.ListMode listMode = WirelessMagnet.ListMode.WhiteList;
-    protected AppEngInternalInventory filterList;
+    private final AppEngInternalInventory filterInventory;
+    private final NBTTagCompound settingCache;
+    private final NBTTagCompound filterCache;
 
     @SuppressWarnings("unchecked")
     public WirelessMagnetCardFilterInventory(ItemStack is, int slot, IGridNode gridNode, EntityPlayer player) {
-        super(is, slot, gridNode, player, StorageChannel.ITEMS);
-        this.filterList = new ItemBiggerAppEngInventory(is, filterKey, 27);
+        super(is, slot, gridNode, player, StorageChannel.ITEMS, true);
+        filterInventory = new ItemBiggerAppEngInventory(is, filterKey, 27);
+        settingCache = getSettingTag(is);
+        filterCache = getFilterTag(is);
         readFromNBT();
     }
 
@@ -50,7 +59,9 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         NBTTagCompound tag = (NBTTagCompound) data.getTag(filterConfigKey);
         ignoreNbt = tag.getBoolean("nbt");
         ignoreMeta = tag.getBoolean("meta");
-        useOreDict = tag.getBoolean("ore");
+        useOre = tag.getBoolean("ore");
+        useOreDict = tag.getBoolean("oreDict");
+        oreDictFilter = tag.getString("oreDictFilter");
         this.listMode = WirelessMagnet.ListMode.values()[tag.getInteger("list")];
     }
 
@@ -59,9 +70,19 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         NBTTagCompound tmp = new NBTTagCompound();
         tmp.setBoolean("nbt", ignoreNbt);
         tmp.setBoolean("meta", ignoreMeta);
-        tmp.setBoolean("ore", useOreDict);
+        tmp.setBoolean("ore", useOre);
+        tmp.setBoolean("oreDict", useOreDict);
+        tmp.setString("oreDictFilter", oreDictFilter);
         tmp.setInteger("list", this.listMode.ordinal());
         data.setTag(filterConfigKey, tmp);
+    }
+
+    private NBTTagCompound getSettingTag(ItemStack is) {
+        return (NBTTagCompound) is.getTagCompound().getCompoundTag(filterConfigKey).copy();
+    }
+
+    private NBTTagCompound getFilterTag(ItemStack is) {
+        return (NBTTagCompound) is.getTagCompound().getCompoundTag(filterKey).copy();
     }
 
     @Override
@@ -81,7 +102,17 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
 
     @Override
     public boolean getOreMode() {
+        return useOre;
+    }
+
+    @Override
+    public boolean getOreDictMode() {
         return useOreDict;
+    }
+
+    @Override
+    public String getOreDictFilter() {
+        return oreDictFilter;
     }
 
     @Override
@@ -101,7 +132,18 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
 
     @Override
     public void setOreMode(boolean useOre) {
-        useOreDict = useOre;
+        this.useOre = useOre;
+    }
+
+    @Override
+    public void setOreDictMode(boolean useOreDict) {
+        this.useOreDict = useOreDict;
+    }
+
+    @Override
+    public void setOreDictFilter(String str) {
+        oreDictFilter = str;
+        filterPredicate = null;
     }
 
     @Override
@@ -129,7 +171,7 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
 
     @Override
     public IMEMonitor<IAEItemStack> getItemInventory() {
-        return this;
+        return null;
     }
 
     @Override
@@ -144,9 +186,7 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
 
     @Override
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removedStack,
-            ItemStack newStack) {
-
-    }
+            ItemStack newStack) {}
 
     @Override
     public void saveSettings() {
@@ -157,7 +197,7 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
     @Override
     public IInventory getInventoryByName(String name) {
         if (name.equals("config")) {
-            return this.filterList;
+            return filterInventory;
         }
         return null;
     }
@@ -177,39 +217,67 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         return true;
     }
 
-    public List<ItemStack> getFilteredItems() {
-        return WirelessMagnet.getFilteredItems(this.target);
-    }
-
-    public IItemList<IAEItemStack> getAEFilteredItems() {
-        IItemList<IAEItemStack> list = AEApi.instance().storage().createItemList();
-        for (ItemStack is : this.getFilteredItems()) {
-            list.add(AEApi.instance().storage().createItemStack(is));
+    public boolean isItemFiltered(ItemStack inputItemStack) {
+        if (useOreDict && !oreDictFilter.isEmpty()) {
+            if (filterPredicate == null) filterPredicate = OreFilteredList.makeFilter(oreDictFilter);
+            if (filterPredicate.test(AEItemStack.create(inputItemStack))) return true;
         }
-        return list;
-    }
 
-    public boolean isItemFiltered(ItemStack is, IItemList<IAEItemStack> list) {
-        if (is == null && list.isEmpty()) return false;
-        IAEItemStack ais = AEApi.instance().storage().createItemStack(is);
-        for (IAEItemStack i : list) {
-            if (useOreDict) {
-                // use oredict
-                return i.sameOre(ais);
-            } else if (ignoreMeta && ignoreNbt) {
-                // ignore meta & nbt
-                return ais.getItem() == i.getItem();
-            } else if (ignoreMeta) {
-                // ignore meta only
-                return ais.getItemStack().getTagCompound().equals(i.getItemStack().getTagCompound());
-            } else if (ignoreNbt) {
-                // ignore nbt only
-                return i.getItemDamage() == ais.getItemDamage();
-            } else {
-                // ignore nothing/don't use oredict--must be exact match
-                return ais.equals(i);
+        for (int i = 0; i < filterInventory.getSizeInventory(); i++) {
+            ItemStack is = filterInventory.getStackInSlot(i);
+            if (is != null) {
+                if (useOre) {
+                    // use oredict
+                    if (OreHelper.INSTANCE
+                            .sameOre(OreHelper.INSTANCE.isOre(is), OreHelper.INSTANCE.isOre(inputItemStack)))
+                        return true;
+                }
+                if (ignoreMeta && ignoreNbt) {
+                    // ignore meta & nbt
+                    return is.getItem().equals(inputItemStack.getItem());
+                } else if (ignoreMeta) {
+                    // ignore meta only
+                    return ItemStack.areItemStackTagsEqual(is, inputItemStack)
+                            && is.getItem() == inputItemStack.getItem();
+                } else if (ignoreNbt) {
+                    // ignore nbt only
+                    return is.getItem() == inputItemStack.getItem()
+                            && is.getItemDamage() == inputItemStack.getItemDamage();
+                } else {
+                    // ignore nothing/don't use oredict--must be exact match
+                    return is.isItemEqual(inputItemStack) && ItemStack.areItemStackTagsEqual(is, inputItemStack);
+                }
             }
         }
         return false;
+    }
+
+    public boolean isPassFilter(ItemStack is) {
+        return is != null && (listMode == WirelessMagnet.ListMode.WhiteList) == isItemFiltered(is);
+    }
+
+    public boolean checkCache(ItemStack is) {
+        return settingCache.equals(getSettingTag(is)) && filterCache.equals(getFilterTag(is));
+    }
+
+    public static class FilterCache {
+
+        private static final HashMap<EntityPlayer, WirelessMagnetCardFilterInventory> cache = new HashMap<>();
+
+        public static WirelessMagnetCardFilterInventory getFilter(ItemStack is, int slot, IGridNode gridNode,
+                EntityPlayer player) {
+            WirelessMagnetCardFilterInventory cachedInv = cache.get(player);
+            if (cachedInv != null && cachedInv.checkCache(is)) {
+                return cachedInv;
+            } else {
+                WirelessMagnetCardFilterInventory newInv = new WirelessMagnetCardFilterInventory(
+                        is,
+                        slot,
+                        gridNode,
+                        player);
+                cache.put(player, newInv);
+                return newInv;
+            }
+        }
     }
 }

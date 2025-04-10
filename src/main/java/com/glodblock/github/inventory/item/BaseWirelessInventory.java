@@ -26,6 +26,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
 import appeng.items.tools.powered.ToolWirelessTerminal;
+import appeng.me.storage.NullInventory;
 import appeng.util.Platform;
 
 public abstract class BaseWirelessInventory extends MEMonitorHandler implements IWirelessTerminal, IWirelessExtendCard {
@@ -46,6 +47,19 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
     public BaseWirelessInventory(final ItemStack is, final int slot, IGridNode gridNode, EntityPlayer player,
             StorageChannel channel) {
         super(Objects.requireNonNull(Util.getWirelessInv(is, player, channel)));
+        this.ips = (ToolWirelessTerminal) is.getItem();
+        this.grid = gridNode;
+        this.target = is;
+        this.inventorySlot = slot;
+        this.channel = channel;
+        this.source = new PlayerSource(player, this);
+        this.readFromNBT();
+    }
+
+    @SuppressWarnings("unchecked")
+    public BaseWirelessInventory(final ItemStack is, final int slot, IGridNode gridNode, EntityPlayer player,
+            StorageChannel channel, boolean nullInventory) {
+        super(new NullInventory<>());
         this.ips = (ToolWirelessTerminal) is.getItem();
         this.grid = gridNode;
         this.target = is;
@@ -100,9 +114,7 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
     }
 
     @Override
-    public void saveChanges() {
-
-    }
+    public void saveChanges() {}
 
     @Override
     public IGridNode getActionableNode() {

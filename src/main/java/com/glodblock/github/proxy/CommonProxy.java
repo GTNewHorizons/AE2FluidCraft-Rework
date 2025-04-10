@@ -21,6 +21,7 @@ import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory.FilterCache;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.network.wrapper.FCNetworkWrapper;
@@ -31,8 +32,6 @@ import appeng.api.AEApi;
 import appeng.api.IAppEngApi;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.IGridNode;
-import appeng.api.storage.data.IAEItemStack;
-import appeng.api.storage.data.IItemList;
 import appeng.util.Platform;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -54,48 +53,38 @@ public class CommonProxy {
     @SuppressWarnings("unchecked")
     @SubscribeEvent
     public void pickupEvent(EntityItemPickupEvent e) {
-        try {
-            if (Platform.isClient() || e.entityPlayer == null) return;
-            EntityPlayer player = e.entityPlayer;
-            EntityItem itemEntity = e.item;
-            ItemStack stack = itemEntity.getEntityItem();
-            World world = player.getEntityWorld();
+        if (Platform.isServer() && e.entityPlayer != null) {
+            try {
+                EntityPlayer player = e.entityPlayer;
+                EntityItem itemEntity = e.item;
+                ItemStack stack = itemEntity.getEntityItem();
+                World world = player.getEntityWorld();
 
-            ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
-            if (result == null) return;
-            final ItemStack wirelessTerm = result.getRight();
-            WirelessMagnet.Mode mode = WirelessMagnet.getMode(wirelessTerm);
-            if (mode != WirelessMagnet.Mode.ME) return;
-            IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
-            if (gridNode == null || !Util.rangeCheck(wirelessTerm, player, gridNode)) return;
-            WirelessMagnetCardFilterInventory inv = new WirelessMagnetCardFilterInventory(
-                    wirelessTerm,
-                    result.getLeft(),
-                    gridNode,
-                    player);
+                ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
+                if (result != null) {
+                    final ItemStack wirelessTerm = result.getRight();
+                    WirelessMagnet.Mode mode = WirelessMagnet.getMode(wirelessTerm);
+                    if (mode == WirelessMagnet.Mode.ME) {
+                        IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
+                        if (gridNode != null && Util.rangeCheck(wirelessTerm, player, gridNode)) {
+                            WirelessMagnetCardFilterInventory inv = FilterCache
+                                    .getFilter(wirelessTerm, result.getLeft(), gridNode, player);
 
-            IItemList<IAEItemStack> filteredList = inv.getAEFilteredItems();
-            IAEItemStack ais = AEApi.instance().storage().createItemStack(stack);
-            if (inv.getListMode() == WirelessMagnet.ListMode.WhiteList) { // whitelisting
-                if (!filteredList.isEmpty() && inv.isItemFiltered(stack, filteredList)) {
-                    if (inv.doInject(ais, itemEntity, world)) {
-                        stack = null;
-                        itemEntity.setDead();
-                        e.setCanceled(true);
+                            if (inv.isPassFilter(stack)) {
+                                if (inv.doInject(
+                                        AEApi.instance().storage().createItemStack(stack),
+                                        itemEntity,
+                                        world)) {
+                                    itemEntity.setDead();
+                                    e.setCanceled(true);
+                                }
+                            }
+                        }
                     }
                 }
-            } else if (inv.getListMode() == WirelessMagnet.ListMode.BlackList) {
-                if (!inv.isItemFiltered(stack, filteredList)) {
-                    if (inv.doInject(ais, itemEntity, world)) {
-                        stack = null;
-                        itemEntity.setDead();
-                        e.setCanceled(true);
-                    }
-                }
+            } catch (NullPointerException ex) {
+                ex.printStackTrace();
             }
-
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -103,18 +92,12 @@ public class CommonProxy {
     public void tickEvent(TickEvent.PlayerTickEvent e) {
         EntityPlayer player = e.player;
         ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
-        if (result == null) return;
-        final ItemStack wirelessTerm = result.getRight();
-        if (WirelessMagnet.getMode(wirelessTerm) == WirelessMagnet.Mode.Off) return;
-        IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
-        if (gridNode == null || !Util.rangeCheck(wirelessTerm, player, gridNode)) return;
-        WirelessMagnetCardFilterInventory inv = new WirelessMagnetCardFilterInventory(
-                wirelessTerm,
-                result.getLeft(),
-                gridNode,
-                player);
-        WirelessMagnet.doMagnet(wirelessTerm, e.player.worldObj, e.player, inv);
-
+        if (result != null) {
+            final ItemStack wirelessTerm = result.getRight();
+            if (WirelessMagnet.getMode(wirelessTerm) != WirelessMagnet.Mode.Off) {
+                WirelessMagnet.doMagnet(wirelessTerm, e.player.worldObj, e.player);
+            }
+        }
     }
 
     public void preInit(FMLPreInitializationEvent event) {

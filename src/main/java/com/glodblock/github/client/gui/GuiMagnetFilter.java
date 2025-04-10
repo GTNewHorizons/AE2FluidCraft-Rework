@@ -5,6 +5,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.input.Keyboard;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.client.gui.widget.FCGuiBaseButton;
@@ -20,6 +22,7 @@ import appeng.api.storage.ITerminalHost;
 import appeng.client.gui.AEBaseMEGui;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiTabButton;
+import appeng.client.gui.widgets.MEGuiTextField;
 
 public class GuiMagnetFilter extends AEBaseMEGui {
 
@@ -27,7 +30,8 @@ public class GuiMagnetFilter extends AEBaseMEGui {
     protected ContainerMagnetFilter cont;
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/magnet_filter.png");
 
-    protected Component components[] = new Component[3];
+    protected Component[] components = new Component[4];
+    protected MEGuiTextField oreDict;
     protected GuiTabButton originalGuiBtn;
     protected GuiImgButton clearBtn;
 
@@ -36,13 +40,14 @@ public class GuiMagnetFilter extends AEBaseMEGui {
         this.xSize = 195;
         this.ySize = 214;
         this.cont = (ContainerMagnetFilter) this.inventorySlots;
+        oreDict = new MEGuiTextField(149, 12, NameConst.i18n(NameConst.TT_MAGNET_CARD_OREDICT));
     }
 
     private class Component {
 
-        private GuiFCImgButton enable;
-        private GuiFCImgButton disable;
-        private String action;
+        private final GuiFCImgButton enable;
+        private final GuiFCImgButton disable;
+        private final String action;
         private boolean var;
 
         public Component(int x, int y, boolean var, String action) {
@@ -50,6 +55,8 @@ public class GuiMagnetFilter extends AEBaseMEGui {
             this.disable = new GuiFCImgButton(x, y, "DISABLE_12x", "DISABLE", false);
             this.var = var;
             this.action = action;
+            enable.setThreeFourths(true);
+            disable.setThreeFourths(true);
             buttonList.add(this.enable);
             buttonList.add(this.disable);
         }
@@ -98,20 +105,29 @@ public class GuiMagnetFilter extends AEBaseMEGui {
                                         ? NameConst.GUI_MAGNET_CARD_WhiteList
                                         : NameConst.GUI_MAGNET_CARD_BlackList)));
         this.components[0] = new Component(
-                this.guiLeft + 156,
+                this.guiLeft + 157,
                 this.guiTop + 18,
                 this.cont.nbt,
                 "WirelessTerminal.magnet.NBT");
         this.components[1] = new Component(
-                this.guiLeft + 156,
+                this.guiLeft + 157,
                 this.guiTop + 31,
                 this.cont.meta,
                 "WirelessTerminal.magnet.Meta");
         this.components[2] = new Component(
-                this.guiLeft + 156,
+                this.guiLeft + 157,
                 this.guiTop + 44,
                 this.cont.ore,
                 "WirelessTerminal.magnet.Ore");
+        this.components[3] = new Component(
+                this.guiLeft + 157,
+                this.guiTop + 112,
+                this.cont.oreDict,
+                "WirelessTerminal.magnet.OreDictState");
+
+        oreDict.x = this.guiLeft + 7;
+        oreDict.y = this.guiTop + 112;
+        oreDict.setText(this.cont.oreDictFilter);
 
         this.buttonList.add(
                 this.originalGuiBtn = new GuiTabButton(
@@ -122,23 +138,27 @@ public class GuiMagnetFilter extends AEBaseMEGui {
                         itemRender));
         this.originalGuiBtn.setHideEdge(13); // GuiTabButton implementation //
 
-        this.clearBtn = new GuiImgButton(this.guiLeft + 8, this.guiTop + 48, Settings.ACTIONS, ActionItems.CLOSE);
+        this.clearBtn = new GuiImgButton(this.guiLeft + 7, this.guiTop + 48, Settings.ACTIONS, ActionItems.CLOSE);
         this.clearBtn.setHalfSize(true);
         this.buttonList.add(this.clearBtn);
     }
 
     @Override
+    public void drawScreen(int mouseX, int mouseY, float btn) {
+        handleTooltip(mouseX, mouseY, oreDict);
+        super.drawScreen(mouseX, mouseY, btn);
+    }
+
+    @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        this.fontRendererObj.drawString(getGuiDisplayName(NameConst.i18n(NameConst.GUI_MAGNET_CARD)), 8, 6, 0x404040);
-        this.fontRendererObj
-                .drawString(getGuiDisplayName(NameConst.i18n(NameConst.GUI_MAGNET_CARD_NBT)), 61, 22, 0x404040);
-        this.fontRendererObj
-                .drawString(getGuiDisplayName(NameConst.i18n(NameConst.GUI_MAGNET_CARD_META)), 61, 34, 0x404040);
-        this.fontRendererObj
-                .drawString(getGuiDisplayName(NameConst.i18n(NameConst.GUI_MAGNET_CARD_ORE)), 61, 46, 0x404040);
+        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD), 8, 6, 0x404040);
+        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD_NBT), 61, 22, 0x404040);
+        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD_META), 61, 34, 0x404040);
+        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD_ORE), 61, 46, 0x404040);
         this.components[0].setVar(this.cont.nbt);
         this.components[1].setVar(this.cont.meta);
         this.components[2].setVar(this.cont.ore);
+        this.components[3].setVar(this.cont.oreDict);
         for (Component c : components) {
             c.draw();
         }
@@ -149,8 +169,25 @@ public class GuiMagnetFilter extends AEBaseMEGui {
 
     @Override
     public void drawBG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        mc.getTextureManager().bindTexture(TEX_BG);
-        drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
+        bindTexture(TEX_BG);
+        drawTexturedModalRect(offsetX, offsetY, 0, 0, xSize, ySize);
+        oreDict.drawTextBox();
+    }
+
+    @Override
+    protected void keyTyped(char typedChar, int keyCode) {
+        if (oreDict.isFocused() && (Keyboard.KEY_NUMPADENTER == keyCode || Keyboard.KEY_RETURN == keyCode)) {
+            FluidCraft.proxy.netHandler.sendToServer(
+                    new CPacketFluidPatternTermBtns("WirelessTerminal.magnet.OreDictFilter", oreDict.getText()));
+        }
+
+        if (!oreDict.textboxKeyTyped(typedChar, keyCode)) super.keyTyped(typedChar, keyCode);
+    }
+
+    @Override
+    protected void mouseClicked(int xCoord, int yCoord, int btn) {
+        oreDict.mouseClicked(xCoord, yCoord, btn);
+        super.mouseClicked(xCoord, yCoord, btn);
     }
 
     @Override
