@@ -15,7 +15,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
+import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidInventory;
@@ -99,7 +99,7 @@ public class TileSuperStoker extends AENetworkInvTile
             if (configItem != null) {
                 IAEItemStack is = configItem.copy();
                 if (invItem == null) requestItem(is, i);
-                else if (invItem.getItem() == is.getItem()) {
+                else if (invItem.equals(is)) {
                     if (invItem.getStackSize() < is.getStackSize() / 2) {
                         is.setStackSize(is.getStackSize() - invItem.getStackSize());
                         requestItem(is, i);
@@ -125,7 +125,7 @@ public class TileSuperStoker extends AENetworkInvTile
                     .injectItems(ias, Actionable.MODULATE, this.source);
             if (notInserted != null) {
                 invFluids.fill(index, notInserted, true);
-                storedFluidCount += ias.getStackSize();
+                storedFluidCount += notInserted.getStackSize();
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -146,22 +146,24 @@ public class TileSuperStoker extends AENetworkInvTile
 
     private void returnItem(int index, long amount) {
         try {
-            IAEItemStack ias = invItems.getAEStackInSlot(index);
+            IAEItemStack ais = invItems.getAEStackInSlot(index);
+            long originalSize = ais.getStackSize();
             if (amount != Long.MAX_VALUE) {
-                ias.decStackSize(amount);
-                ias = ias.copy();
-                ias.setStackSize(amount);
+                ais.decStackSize(amount);
+                ais = ais.copy();
+                ais.setStackSize(amount);
             } else {
-                amount = ias.getStackSize();
+                amount = ais.getStackSize();
                 invItems.setInventorySlotContents(index, null);
             }
             storedItemCount -= amount;
             IAEItemStack notInserted = this.getProxy().getStorage().getItemInventory()
-                    .injectItems(ias, Actionable.MODULATE, this.source);
+                    .injectItems(ais, Actionable.MODULATE, this.source);
             if (notInserted != null) {
+                long notInsertedAmount = notInserted.getStackSize();
                 invItems.setInventorySlotContents(index, notInserted.getItemStack());
-                invItems.getAEStackInSlot(index).setStackSize(notInserted.getStackSize());
-                storedItemCount += notInserted.getStackSize();
+                invItems.getAEStackInSlot(index).setStackSize(originalSize - (amount - notInsertedAmount));
+                storedItemCount += notInsertedAmount;
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -253,8 +255,8 @@ public class TileSuperStoker extends AENetworkInvTile
                 if (inv == cell && added != null) {
                     if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
                         totalBytes = ibsc.getBytesLong(added);
-                    } else if (added.getItem() instanceof ItemBasicFluidStorageCell ibfsc) {
-                        totalBytes = ibfsc.getBytes(added);
+                    } else if (added.getItem() instanceof FCBaseItemCell fcbic) {
+                        totalBytes = fcbic.getBytes(added);
                     }
                     getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
                 }
@@ -267,9 +269,7 @@ public class TileSuperStoker extends AENetworkInvTile
                 if (inv == invItems && invItems.getAEStackInSlot(slot) != null)
                     invItems.getAEStackInSlot(slot).decStackSize(removed.stackSize);
             }
-            case markDirty -> {
-
-            }
+            case markDirty -> {}
         }
 
         try {
@@ -284,19 +284,20 @@ public class TileSuperStoker extends AENetworkInvTile
     public void fullRefund() {
         for (int i = 0; i < 9; i++) {
             if (invFluids.getFluidStackInSlot(i) != null) {
-                returnFluid(i, Integer.MAX_VALUE);
+                returnFluid(i, Long.MAX_VALUE);
             }
         }
 
         for (int i = 0; i < 63; i++) {
             if (invItems.getAEStackInSlot(i) != null) {
-                returnItem(i, Integer.MAX_VALUE);
+                returnItem(i, Long.MAX_VALUE);
             }
         }
     }
 
     @Override
     public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
+        if (cell.getStackInSlot(0) != null) drops.add(cell.getStackInSlot(0));
         for (int i = 0; i < 9; i++) {
             ItemStack ifp = ItemFluidPacket.newStack(invFluids.getFluidStackInSlot(i));
             if (ifp != null) drops.add(ifp);

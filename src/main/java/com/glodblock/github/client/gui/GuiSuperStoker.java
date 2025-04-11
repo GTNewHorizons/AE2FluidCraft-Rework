@@ -75,7 +75,7 @@ public class GuiSuperStoker extends AEBaseGui {
         int slotInt = slotIn.slotNumber;
         if (itemstack != null) {
             String s = "0%";
-            if (slotInt > 0 && slotInt < 9) {
+            if (slotInt > 0 && slotInt < 10) {
                 IAEStack<?> aeStack = list.get(slotInt - 1);
                 if (aeStack != null)
                     s = (int) (((float) aeStack.getStackSize() / ItemFluidPacket.getFluidAmount(itemstack)) * 100)
