@@ -3,6 +3,9 @@ package com.glodblock.github.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
@@ -14,15 +17,17 @@ import appeng.api.config.Settings;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.client.gui.implementations.GuiUpgradeable;
 import appeng.client.gui.widgets.GuiImgButton;
-import appeng.client.gui.widgets.GuiNumberBox;
+import appeng.client.gui.widgets.MEGuiTextField;
 import appeng.core.AEConfig;
-import appeng.core.AELog;
 import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
+import appeng.util.calculators.ArithHelper;
+import appeng.util.calculators.Calculator;
 
 public class GuiFluidLevelEmitter extends GuiUpgradeable {
 
-    private GuiNumberBox level;
+    private MEGuiTextField amountTextField;
+
     private GuiButton plus1;
     private GuiButton plus10;
     private GuiButton plus100;
@@ -31,6 +36,9 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
     private GuiButton minus10;
     private GuiButton minus100;
     private GuiButton minus1000;
+
+    private GuiButton setButton;
+
     private boolean isMul = false;
 
     public GuiFluidLevelEmitter(final InventoryPlayer inventoryPlayer, final PartFluidLevelEmitter te) {
@@ -41,13 +49,12 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
     public void initGui() {
         super.initGui();
 
-        this.level = new GuiNumberBox(this.fontRendererObj, 24, 43, 79, this.fontRendererObj.FONT_HEIGHT, Long.class);
-        this.level.setEnableBackgroundDrawing(false);
-        this.level.setMaxStringLength(16);
-        this.level.setTextColor(GuiColors.LevelEmitterValue.getColor());
-        this.level.setVisible(true);
-        this.level.setFocused(true);
-        ((ContainerFluidLevelEmitter) this.inventorySlots).setTextField(this.level);
+        this.amountTextField = new MEGuiTextField(90, 12);
+        this.amountTextField.x = this.guiLeft + 39;
+        this.amountTextField.y = this.guiTop + 44;
+        this.amountTextField.setFocused(true);
+        ((ContainerFluidLevelEmitter) this.inventorySlots).setTextField(this.amountTextField);
+        this.validateText();
     }
 
     @Override
@@ -68,10 +75,19 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
         this.buttonList.add(this.plus100 = new GuiButton(0, this.guiLeft + 82, this.guiTop + 17, 32, 20, "+" + c));
         this.buttonList.add(this.plus1000 = new GuiButton(0, this.guiLeft + 120, this.guiTop + 17, 38, 20, "+" + d));
 
-        this.buttonList.add(this.minus1 = new GuiButton(0, this.guiLeft + 20, this.guiTop + 59, 22, 20, "-" + a));
-        this.buttonList.add(this.minus10 = new GuiButton(0, this.guiLeft + 48, this.guiTop + 59, 28, 20, "-" + b));
-        this.buttonList.add(this.minus100 = new GuiButton(0, this.guiLeft + 82, this.guiTop + 59, 32, 20, "-" + c));
-        this.buttonList.add(this.minus1000 = new GuiButton(0, this.guiLeft + 120, this.guiTop + 59, 38, 20, "-" + d));
+        this.buttonList.add(this.minus1 = new GuiButton(0, this.guiLeft + 20, this.guiTop + 63, 22, 20, "-" + a));
+        this.buttonList.add(this.minus10 = new GuiButton(0, this.guiLeft + 48, this.guiTop + 63, 28, 20, "-" + b));
+        this.buttonList.add(this.minus100 = new GuiButton(0, this.guiLeft + 82, this.guiTop + 63, 32, 20, "-" + c));
+        this.buttonList.add(this.minus1000 = new GuiButton(0, this.guiLeft + 120, this.guiTop + 63, 38, 20, "-" + d));
+
+        this.buttonList.add(
+                this.setButton = new GuiButton(
+                        0,
+                        this.guiLeft + 134,
+                        this.guiTop + 40,
+                        28,
+                        20,
+                        GuiText.Set.getLocal()));
 
         this.buttonList.add(this.redstoneMode);
     }
@@ -89,19 +105,18 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
                 this.ySize - 96 + 3,
                 GuiColors.UpgradableInventory.getColor());
         this.redstoneMode.set(this.cvb.getRedStoneMode());
-        this.level.drawTextBox();
+
         if (isShiftKeyDown() && !isMul) {
-            for (Object btn : this.buttonList) {
+            for (GuiButton btn : this.buttonList) {
                 if (btn instanceof GuiButton) {
-                    ((GuiButton) btn).displayString += "000";
+                    btn.displayString += "000";
                 }
             }
             isMul = true;
         } else if (!isShiftKeyDown() && isMul) {
-            for (Object btn : this.buttonList) {
+            for (GuiButton btn : this.buttonList) {
                 if (btn instanceof GuiButton) {
-                    ((GuiButton) btn).displayString = ((GuiButton) btn).displayString
-                            .substring(0, ((GuiButton) btn).displayString.lastIndexOf("000"));
+                    btn.displayString = btn.displayString.substring(0, btn.displayString.lastIndexOf("000"));
                 }
             }
             isMul = false;
@@ -111,6 +126,11 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
     @Override
     public void drawBG(final int offsetX, final int offsetY, final int mouseX, final int mouseY) {
         super.drawBG(offsetX, offsetY, mouseX, mouseY);
+        this.amountTextField.drawTextBox();
+
+        // Without these two lines, the liquid slot will not draw properly.
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        this.bindTexture(this.getBackground());
     }
 
     @Override
@@ -124,75 +144,76 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
     @Override
     protected void actionPerformed(final GuiButton btn) {
         super.actionPerformed(btn);
-        final boolean isPlus = btn == this.plus1 || btn == this.plus10 || btn == this.plus100 || btn == this.plus1000;
-        final boolean isMinus = btn == this.minus1 || btn == this.minus10
-                || btn == this.minus100
-                || btn == this.minus1000;
 
-        if (isPlus || isMinus) {
-            this.addQty(this.getQty(btn));
+        if (btn == this.setButton && this.setButton.enabled) {
+            final long amount = this.getAmountLong();
+            this.amountTextField.setText(Long.toString(amount));
+
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(amount, 0));
+        } else {
+            final boolean isPlus = btn == this.plus1 || btn == this.plus10
+                    || btn == this.plus100
+                    || btn == this.plus1000;
+            final boolean isMinus = btn == this.minus1 || btn == this.minus10
+                    || btn == this.minus100
+                    || btn == this.minus1000;
+
+            if (isPlus || isMinus) {
+                long result = addOrderAmount(this.getQty(btn));
+                this.amountTextField.setText(Long.toString(result));
+            }
         }
     }
 
-    private void addQty(final long i) {
-        try {
-            String Out = this.level.getText();
+    private long addOrderAmount(final int i) {
+        long resultL = getAmountLong();
 
-            boolean Fixed = false;
-            while (Out.startsWith("0") && Out.length() > 1) {
-                Out = Out.substring(1);
-                Fixed = true;
-            }
-
-            if (Fixed) {
-                this.level.setText(Out);
-            }
-
-            if (Out.isEmpty()) {
-                Out = "0";
-            }
-
-            long result = Long.parseLong(Out);
-            result += i;
-            if (result < 0) {
-                result = 0;
-            }
-
-            this.level.setText(Out = Long.toString(result));
-
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(result, 0));
-        } catch (final NumberFormatException e) {
-            this.level.setText("0");
+        if (resultL == 1 && i > 1) {
+            resultL = 0;
         }
+
+        resultL += i;
+        if (resultL < 1) {
+            resultL = 1;
+        }
+        return resultL;
+    }
+
+    private long getAmountLong() {
+        String out = this.amountTextField.getText();
+        double resultD = Calculator.conversion(out);
+
+        if (resultD <= 0 || Double.isNaN(resultD)) {
+            return 0;
+        } else {
+            return (long) ArithHelper.round(resultD, 0);
+        }
+    }
+
+    private void validateText() {
+        String text = this.amountTextField.getText();
+        double resultD = Calculator.conversion(text);
+        this.setButton.enabled = !Double.isNaN(resultD);
+    }
+
+    @Override
+    protected void mouseClicked(int xCoord, int yCoord, int btn) {
+        this.amountTextField.mouseClicked(xCoord, yCoord, btn);
+        super.mouseClicked(xCoord, yCoord, btn);
     }
 
     @Override
     protected void keyTyped(final char character, final int key) {
         if (!this.checkHotbarKeys(key)) {
-            if ((key == 211 || key == 205 || key == 203 || key == 14 || Character.isDigit(character))
-                    && this.level.textboxKeyTyped(character, key)) {
-                try {
-                    String Out = this.level.getText();
-
-                    boolean Fixed = false;
-                    while (Out.startsWith("0") && Out.length() > 1) {
-                        Out = Out.substring(1);
-                        Fixed = true;
-                    }
-
-                    if (Fixed) {
-                        this.level.setText(Out);
-                    }
-
-                    if (Out.isEmpty()) {
-                        Out = "0";
-                    }
-                    FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(Long.parseLong(Out), 0));
-                } catch (final NumberFormatException e) {
-                    AELog.debug(e);
-                }
+            if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
+                this.actionPerformed(this.setButton);
             } else {
-                super.keyTyped(character, key);
+                boolean typedTextbox = this.amountTextField.textboxKeyTyped(character, key);
+                if (typedTextbox) {
+                    this.validateText();
+                } else {
+                    super.keyTyped(character, key);
+                }
             }
         }
     }

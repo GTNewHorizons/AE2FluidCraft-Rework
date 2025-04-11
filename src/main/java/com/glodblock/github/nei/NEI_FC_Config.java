@@ -20,6 +20,7 @@ public class NEI_FC_Config implements IConfigureNEI {
         API.registerNEIGuiHandler(new AE2FC_NEIGuiHandler());
         API.addSearchProvider(new NEIItemFilter());
         API.registerStackStringifyHandler(new FCStackStringifyHandler());
+        API.registerUsageHandler(new NEICellViewHandler());
 
         if (ModAndClassUtil.AVARITIA) {
             API.registerGuiOverlay(GuiFluidPatternWireless.class, "extreme", null);
