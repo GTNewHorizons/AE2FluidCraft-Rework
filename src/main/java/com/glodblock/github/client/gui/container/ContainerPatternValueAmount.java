@@ -4,7 +4,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 
 import appeng.api.config.SecurityPermissions;
-import appeng.api.storage.ITerminalHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.guisync.GuiSync;
 import appeng.container.slot.SlotInaccessible;
@@ -17,7 +16,7 @@ public class ContainerPatternValueAmount extends AEBaseContainer {
     @GuiSync(11)
     public int valueIndex;
 
-    public ContainerPatternValueAmount(final InventoryPlayer ip, final ITerminalHost te) {
+    public ContainerPatternValueAmount(final InventoryPlayer ip, final Object te) {
         super(ip, te);
         this.patternValue = new SlotInaccessible(new AppEngInternalInventory(null, 1), 0, 34, 53);
         this.addSlotToContainer(patternValue);
