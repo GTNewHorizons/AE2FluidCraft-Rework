@@ -4,12 +4,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
 import com.glodblock.github.inventory.item.WirelessCraftingTerminalInventory;
+import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
@@ -58,13 +61,20 @@ public class CPacketValueConfig implements IMessage {
                     ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
                     if (result != null) {
                         final ItemStack wirelessTerm = result.getRight();
-                        IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
-                        if (gridNode != null && Util.rangeCheck(wirelessTerm, player, gridNode)) {
-                            if (message.valueIndex == 1) {
-                                ItemBaseWirelessTerminal
-                                        .toggleRestockItemsMode(result.getRight(), !Util.isRestock(result.getRight()));
-                            } else if (Util.isRestock(result.getRight())) {
-                                restockItems(result.getRight(), gridNode, result.getLeft(), player);
+                        if (message.valueIndex == 1) {
+                            ItemBaseWirelessTerminal
+                                    .toggleRestockItemsMode(wirelessTerm, !Util.isRestock(wirelessTerm));
+                            player.addChatMessage(
+                                    new ChatComponentText(
+                                            StatCollector.translateToLocal(
+                                                    !Util.isRestock(wirelessTerm)
+                                                            ? NameConst.TT_ULTRA_TERMINAL_RESTOCK_ON
+                                                            : NameConst.TT_ULTRA_TERMINAL_RESTOCK_OFF)));
+                        } else {
+                            IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
+                            if (gridNode != null && Util.isRestock(wirelessTerm)
+                                    && Util.rangeCheck(wirelessTerm, player, gridNode)) {
+                                restockItems(wirelessTerm, gridNode, result.getLeft(), player);
                             }
                         }
                     }

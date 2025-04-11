@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.input.Keyboard;
@@ -12,7 +11,6 @@ import org.lwjgl.input.Keyboard;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.network.CPacketValueConfig;
-import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -81,13 +79,7 @@ public class KeybindLoader implements Runnable {
 
         ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(p);
         if (term != null) {
-            p.addChatMessage(
-                    new ChatComponentText(
-                            NameConst.i18n(
-                                    !Util.isRestock(term.getRight()) ? NameConst.TT_ULTRA_TERMINAL_RESTOCK_ON
-                                            : NameConst.TT_ULTRA_TERMINAL_RESTOCK_OFF)));
             FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(0, 1));
-
         }
     }
 }

@@ -60,8 +60,9 @@ public class ClientProxy extends CommonProxy {
         if (refreshTick + reStockTime < System.currentTimeMillis()) {
             // try to stock items
             ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(mc.thePlayer);
-            if (result == null || !Util.isRestock(result.getRight()) || mc.currentScreen != null) return;
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(1, 0));
+            if (result != null && mc.currentScreen == null && Util.isRestock(result.getRight())) {
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(1, 0));
+            }
             refreshTick = System.currentTimeMillis();
         }
     }
