@@ -109,9 +109,6 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
             if (hasEnergyCard(stack)) {
                 lines.add("  " + EnumChatFormatting.GOLD + getEnergyCard().getDisplayName());
             }
-            if (hasEnergyCard(stack)) {
-                lines.add("  " + EnumChatFormatting.GOLD + getEnergyCard().getDisplayName());
-            }
         } else {
             lines.add(NameConst.i18n(NameConst.TT_CTRL_FOR_MORE));
         }

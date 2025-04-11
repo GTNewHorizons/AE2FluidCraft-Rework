@@ -56,13 +56,17 @@ public class CPacketValueConfig implements IMessage {
                     ((ContainerFluidLevelEmitter) container).setLevel(message.amount, player);
                 } else if (container instanceof ContainerPlayer) {
                     ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
-                    if (result == null) return null;
-                    if (message.valueIndex == 1) {
-                        ItemBaseWirelessTerminal
-                                .toggleRestockItemsMode(result.getRight(), !Util.isRestock(result.getRight()));
-                        return null;
-                    } else if (Util.isRestock(result.getRight())) {
-                        restockItems(result.getRight(), result.getLeft(), player);
+                    if (result != null) {
+                        final ItemStack wirelessTerm = result.getRight();
+                        IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
+                        if (gridNode != null && Util.rangeCheck(wirelessTerm, player, gridNode)) {
+                            if (message.valueIndex == 1) {
+                                ItemBaseWirelessTerminal
+                                        .toggleRestockItemsMode(result.getRight(), !Util.isRestock(result.getRight()));
+                            } else if (Util.isRestock(result.getRight())) {
+                                restockItems(result.getRight(), gridNode, result.getLeft(), player);
+                            }
+                        }
                     }
                 }
             }
@@ -70,30 +74,29 @@ public class CPacketValueConfig implements IMessage {
         }
 
         @SuppressWarnings("unchecked")
-        private void restockItems(ItemStack terminal, int slot, EntityPlayer player) {
-            IGridNode iGridNode = Util.getWirelessGrid(terminal);
-            if (iGridNode == null) return;
+        private void restockItems(ItemStack terminal, IGridNode gridNode, int slot, EntityPlayer player) {
             WirelessCraftingTerminalInventory inv = new WirelessCraftingTerminalInventory(
                     terminal,
                     slot,
-                    iGridNode,
+                    gridNode,
                     player);
 
             for (int i = 0; i < 9; i++) {
                 ItemStack is = player.inventory.mainInventory[i];
-                if (is == null) continue;
-                int maxSize = is.getMaxStackSize();
-                if (is.stackSize == maxSize) continue;
+                if (is != null) {
+                    int maxSize = is.getMaxStackSize();
+                    if (is.stackSize < maxSize) {
+                        int fillSize = maxSize - is.stackSize;
+                        IAEItemStack ias = AEApi.instance().storage().createItemStack(is);
+                        ias.setStackSize(fillSize);
 
-                int fillSize = maxSize - is.stackSize;
-
-                IAEItemStack ias = AEApi.instance().storage().createItemStack(is);
-
-                ias.setStackSize(fillSize);
-                IAEItemStack extractedItem = (IAEItemStack) inv
-                        .extractItems(ias, Actionable.MODULATE, inv.getActionSource());
-                if (extractedItem == null) continue;
-                player.inventory.addItemStackToInventory(extractedItem.getItemStack());
+                        IAEItemStack extractedItem = (IAEItemStack) inv
+                                .extractItems(ias, Actionable.MODULATE, inv.getActionSource());
+                        if (extractedItem != null) {
+                            player.inventory.addItemStackToInventory(extractedItem.getItemStack());
+                        }
+                    }
+                }
             }
         }
     }
