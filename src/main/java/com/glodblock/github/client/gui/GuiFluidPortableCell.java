@@ -27,4 +27,9 @@ public class GuiFluidPortableCell extends GuiFluidTerminal {
             return 3;
         }
     }
+
+    @Override
+    protected boolean isPortableCell() {
+        return true;
+    }
 }
