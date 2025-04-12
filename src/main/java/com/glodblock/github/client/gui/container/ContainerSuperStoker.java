@@ -6,12 +6,13 @@ import java.util.Map;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
+import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.tile.TileSuperStoker;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFake;
 import com.glodblock.github.network.SPacketSuperStokerUpdate;
@@ -26,9 +27,9 @@ import appeng.items.storage.ItemBasicStorageCell;
 public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSlotHost {
 
     private final TileSuperStoker tile;
-    private IInventory configFluids;
-    private IInventory configItems;
-    private Map<Integer, IAEStack<?>> list;
+    private final IInventory configFluids;
+    private final IInventory configItems;
+    private int lastUpdated = 0;
 
     public ContainerSuperStoker(InventoryPlayer ipl, TileSuperStoker tile) {
         super(ipl, tile);
@@ -77,20 +78,34 @@ public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSl
     }
 
     @Override
+    public void addCraftingToCrafters(ICrafting p_75132_1_) {
+        super.addCraftingToCrafters(p_75132_1_);
+        lastUpdated = 24;
+    }
+
+    @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        Map<Integer, IAEStack<?>> tmp = new HashMap<>();
-        for (int i = 0; i < tile.getInternalFluid().getSlots(); i++) {
-            tmp.put(i, tile.getInternalFluid().getFluidInSlot(i));
-        }
-        for (int i = 0; i < tile.getInternalInventory().getSizeInventory(); i++) {
-            tmp.put(i + 100, tile.getInternalAEInventory().getAEStackInSlot(i));
-        }
-        for (final Object g : this.crafters) {
-            if (g instanceof EntityPlayer) {
-                FluidCraft.proxy.netHandler.sendTo(new SPacketSuperStokerUpdate(tmp), (EntityPlayerMP) g);
+
+        if (lastUpdated > 20) {
+            lastUpdated = 0;
+            Map<Integer, IAEStack<?>> tmp = new HashMap<>();
+
+            for (int i = 0; i < tile.getInternalFluid().getSlots(); i++) {
+                tmp.put(i, tile.getInternalFluid().getFluidInSlot(i));
+            }
+
+            for (int i = 0; i < tile.getInternalInventory().getSizeInventory(); i++) {
+                tmp.put(i + 100, tile.getInternalAEInventory().getAEStackInSlot(i));
+            }
+
+            for (final Object g : this.crafters) {
+                if (g instanceof EntityPlayer) {
+                    FluidCraft.proxy.netHandler.sendTo(new SPacketSuperStokerUpdate(tmp), (EntityPlayerMP) g);
+                }
             }
         }
+        lastUpdated++;
     }
 
     private boolean isConfigurated() {
@@ -111,18 +126,18 @@ public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSl
     public boolean isValidForSlot(Slot s, ItemStack is) {
         if (s.slotNumber == 0 && s.getHasStack() && isConfigurated()) {
             long currentBytes = 0;
-            long newBytes = 0;
+            long newBytes = -1;
 
             if (s.getStack().getItem() instanceof ItemBasicStorageCell ibsc) {
                 currentBytes = ibsc.getBytesLong(is);
-            } else if (s.getStack().getItem() instanceof ItemBasicFluidStorageCell ibfsc) {
-                currentBytes = ibfsc.getBytes(is);
+            } else if (s.getStack().getItem() instanceof FCBaseItemCell fcbic) {
+                currentBytes = fcbic.getBytes(is);
             }
 
             if (is.getItem() instanceof ItemBasicStorageCell ibsc) {
                 newBytes = ibsc.getBytesLong(is);
-            } else if (is.getItem() instanceof ItemBasicFluidStorageCell ibfsc) {
-                newBytes = ibfsc.getBytes(is);
+            } else if (is.getItem() instanceof FCBaseItemCell fcbic) {
+                newBytes = fcbic.getBytes(is);
             }
 
             if (currentBytes > newBytes) {
