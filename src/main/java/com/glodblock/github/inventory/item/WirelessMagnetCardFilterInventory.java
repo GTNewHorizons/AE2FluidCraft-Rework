@@ -31,9 +31,9 @@ import appeng.util.Platform;
 
 public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory implements IWirelessMagnetFilter {
 
-    private boolean nbt;
-    private boolean mata;
-    private boolean ore;
+    private boolean ignoreNbt;
+    private boolean ignoreMeta;
+    private boolean useOreDict;
     private WirelessMagnet.ListMode listMode = WirelessMagnet.ListMode.WhiteList;
     protected AppEngInternalInventory filterList;
 
@@ -48,18 +48,18 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         NBTTagCompound data = Platform.openNbtData(this.target);
         if (!data.hasKey(filterConfigKey)) this.writeToNBT();
         NBTTagCompound tag = (NBTTagCompound) data.getTag(filterConfigKey);
-        this.nbt = tag.getBoolean("nbt");
-        this.mata = tag.getBoolean("meta");
-        this.ore = tag.getBoolean("ore");
+        ignoreNbt = tag.getBoolean("nbt");
+        ignoreMeta = tag.getBoolean("meta");
+        useOreDict = tag.getBoolean("ore");
         this.listMode = WirelessMagnet.ListMode.values()[tag.getInteger("list")];
     }
 
     public void writeToNBT() {
         NBTTagCompound data = Platform.openNbtData(this.target);
         NBTTagCompound tmp = new NBTTagCompound();
-        tmp.setBoolean("nbt", this.nbt);
-        tmp.setBoolean("meta", this.mata);
-        tmp.setBoolean("ore", this.ore);
+        tmp.setBoolean("nbt", ignoreNbt);
+        tmp.setBoolean("meta", ignoreMeta);
+        tmp.setBoolean("ore", useOreDict);
         tmp.setInteger("list", this.listMode.ordinal());
         data.setTag(filterConfigKey, tmp);
     }
@@ -71,17 +71,17 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
 
     @Override
     public boolean getNBTMode() {
-        return this.nbt;
+        return ignoreNbt;
     }
 
     @Override
     public boolean getMetaMode() {
-        return this.mata;
+        return ignoreMeta;
     }
 
     @Override
     public boolean getOreMode() {
-        return this.ore;
+        return useOreDict;
     }
 
     @Override
@@ -91,17 +91,17 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
 
     @Override
     public void setNBTMode(boolean ignoreNBT) {
-        this.nbt = ignoreNBT;
+        ignoreNbt = ignoreNBT;
     }
 
     @Override
     public void setMetaMode(boolean ignoreMeta) {
-        this.mata = ignoreMeta;
+        this.ignoreMeta = ignoreMeta;
     }
 
     @Override
     public void setOreMode(boolean useOre) {
-        this.ore = useOre;
+        useOreDict = useOre;
     }
 
     @Override
@@ -193,21 +193,21 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         if (is == null && list.isEmpty()) return false;
         IAEItemStack ais = AEApi.instance().storage().createItemStack(is);
         for (IAEItemStack i : list) {
-            if (this.ore) {
+            if (useOreDict) {
                 // use oredict
                 return i.sameOre(ais);
-            } else if (!this.mata && !this.nbt) {
+            } else if (ignoreMeta && ignoreNbt) {
                 // ignore meta & nbt
-                return Platform.isSameItem(i.getItemStack(), ais.getItemStack());
-            } else if (!this.mata && this.nbt) {
+                return ais.getItem() == i.getItem();
+            } else if (ignoreMeta) {
                 // ignore meta only
-                return Platform.isSameItemPrecise(i.getItemStack(), ais.getItemStack());
-            } else if (this.mata) {
+                return ais.getItemStack().getTagCompound().equals(i.getItemStack().getTagCompound());
+            } else if (ignoreNbt) {
                 // ignore nbt only
                 return i.getItemDamage() == ais.getItemDamage();
             } else {
                 // ignore nothing/don't use oredict--must be exact match
-                return list.findPrecise(ais) != null;
+                return ais.equals(i);
             }
         }
         return false;
