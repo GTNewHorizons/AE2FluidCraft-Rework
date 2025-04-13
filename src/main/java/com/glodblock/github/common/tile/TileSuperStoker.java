@@ -78,11 +78,13 @@ public class TileSuperStoker extends AENetworkInvTile
                 IAEFluidStack fs = AEFluidStack.create(ItemFluidPacket.getFluidStack(configFluid));
                 if (invFluid == null) requestFluid(fs, i);
                 else if (invFluid.equals(fs)) {
-                    if (invFluid.getStackSize() < fs.getStackSize() / 2) {
-                        fs.setStackSize(fs.getStackSize() - invFluid.getStackSize());
+                    long invSize = invFluid.getStackSize();
+                    long confSize = fs.getStackSize();
+                    if (invSize < confSize / 2f) {
+                        fs.setStackSize(confSize - invSize);
                         requestFluid(fs, i);
-                    } else if (invFluid.getStackSize() > fs.getStackSize()) {
-                        returnFluid(i, invFluid.getStackSize() - fs.getStackSize());
+                    } else if (invSize > confSize) {
+                        returnFluid(i, invSize - confSize);
                     }
                 } else {
                     returnFluid(i, Long.MAX_VALUE);
@@ -100,11 +102,13 @@ public class TileSuperStoker extends AENetworkInvTile
                 IAEItemStack is = configItem.copy();
                 if (invItem == null) requestItem(is, i);
                 else if (invItem.equals(is)) {
-                    if (invItem.getStackSize() < is.getStackSize() / 2) {
-                        is.setStackSize(is.getStackSize() - invItem.getStackSize());
+                    long invSize = invItem.getStackSize();
+                    long confSize = is.getStackSize();
+                    if (invSize < confSize / 2f) {
+                        is.setStackSize(confSize - invSize);
                         requestItem(is, i);
-                    } else if (invItem.getStackSize() > is.getStackSize()) {
-                        returnItem(i, invItem.getStackSize() - is.getStackSize());
+                    } else if (invSize > confSize) {
+                        returnItem(i, invSize - confSize);
                     }
                 } else {
                     returnItem(i, Long.MAX_VALUE);
