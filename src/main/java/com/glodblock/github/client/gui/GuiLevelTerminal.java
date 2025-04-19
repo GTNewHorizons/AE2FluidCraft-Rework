@@ -28,6 +28,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -95,6 +96,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     public static final int VIEW_WIDTH = 174;
     public static final int VIEW_LEFT = 8;
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_terminal.png");
+    private static final RenderItem renderItem = new RenderItem();
     protected int offsetY;
     private static final int offsetX = 21;
     protected static String searchFieldOutputsText = "";
@@ -502,7 +504,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         Tessellator.instance.startDrawingQuads();
         int relY = 0;
         final int slotLeftMargin = (VIEW_WIDTH - entry.rowSize * 18);
-        float lastZLevel = aeRenderItem.zLevel;
+        float lastZLevel = renderItem.zLevel;
 
         entry.dispY = viewY;
         /* PASS 1: BG */
@@ -590,10 +592,9 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                     RenderHelper.enableGUIStandardItemLighting();
                     itemStack.stackSize = 0;
-                    aeRenderItem.setAeStack(null);
-                    aeRenderItem.zLevel = ITEM_STACK_Z - MAGIC_RENDER_ITEM_Z;
-                    aeRenderItem.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
-                    aeRenderItem.renderItemOverlayIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
+                    renderItem.zLevel = ITEM_STACK_Z - MAGIC_RENDER_ITEM_Z;
+                    renderItem.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
+                    renderItem.renderItemOverlayIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
                     GL11.glTranslatef(0.0f, 0.0f, ITEM_STACK_OVERLAY_Z - ITEM_STACK_Z);
                     int color = switch (state) {
                         case Idle -> FCGuiColors.StateIdle.getColor();
@@ -641,7 +642,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             }
         }
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        aeRenderItem.zLevel = lastZLevel;
+        renderItem.zLevel = lastZLevel;
         return relY + 1;
     }
 
