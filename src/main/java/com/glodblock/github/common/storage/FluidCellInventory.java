@@ -397,8 +397,10 @@ public class FluidCellInventory implements IFluidCellInventory {
             if (cardDistribution) {
                 remainingFluidCount = this.getRemainingFluidCountDist(null);
             } else {
-                remainingFluidCount = this.getRemainingFluidCount()
-                        - ((long) this.getBytesPerType() * singleByteAmount);
+                remainingFluidCount = Math.min(
+                        getRemainingFluidCount(),
+                        getFreeBytes() * singleByteAmount + getUnusedFluidCount()
+                                - (long) getBytesPerType() * singleByteAmount);
             }
 
             if (remainingFluidCount > 0) {
