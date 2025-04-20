@@ -1381,11 +1381,11 @@ public class GuiInterfaceWireless extends FCBaseMEGui implements IDropToFillText
                 return true;
             }
 
-            int offsetY = mouseY - dispY;
+            int offsetY = mouseY - dispY - 1;
             int offsetX = mouseX - (VIEW_WIDTH - rowSize * 18) - 1;
             if (offsetX >= 0 && offsetX < (rowSize * 18)
                     && mouseY > Math.max(dispY, InterfaceWirelessSection.TITLE_HEIGHT)
-                    && offsetY < Math.min(viewHeight - dispY, guiHeight)) {
+                    && offsetY < Math.min(viewHeight - dispY, guiHeight - 1)) {
                 final int col = offsetX / 18;
                 final int row = offsetY / 18;
                 final int slotIdx = row * rowSize + col;
