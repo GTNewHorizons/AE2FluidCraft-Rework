@@ -1,6 +1,5 @@
 package com.glodblock.github.client.gui.container;
 
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -14,6 +13,7 @@ import appeng.api.config.RedstoneMode;
 import appeng.api.config.SecurityPermissions;
 import appeng.api.config.Settings;
 import appeng.api.implementations.IUpgradeableHost;
+import appeng.client.gui.widgets.MEGuiTextField;
 import appeng.container.guisync.GuiSync;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
@@ -25,7 +25,7 @@ public class ContainerFluidLevelEmitter extends FCContainerFluidConfigurable {
     private final PartFluidLevelEmitter lvlEmitter;
 
     @SideOnly(Side.CLIENT)
-    private GuiTextField textField;
+    private MEGuiTextField textField;
 
     @GuiSync(2)
     public long EmitterValue = -1;
@@ -50,15 +50,12 @@ public class ContainerFluidLevelEmitter extends FCContainerFluidConfigurable {
     @Override
     protected void setupConfig() {
         final IInventory inv = this.getUpgradeable().getInventoryByName("config");
-        final int y = 40;
-        final int x = 80 + 44;
-        this.addSlotToContainer(new OptionalFluidSlotFakeTypeOnly(inv, null, this, 0, x, y, 0, 0, 0));
+        this.addSlotToContainer(new OptionalFluidSlotFakeTypeOnly(inv, null, this, 0, 17, 42, 0, 0, 0));
     }
 
     @SideOnly(Side.CLIENT)
-    public void setTextField(final GuiTextField level) {
+    public void setTextField(final MEGuiTextField level) {
         this.textField = level;
-        this.textField.setText(String.valueOf(this.EmitterValue));
     }
 
     public void setLevel(final long l, final EntityPlayer player) {
@@ -99,6 +96,10 @@ public class ContainerFluidLevelEmitter extends FCContainerFluidConfigurable {
         if (field.equals("EmitterValue")) {
             if (this.textField != null) {
                 this.textField.setText(String.valueOf(this.EmitterValue));
+
+                if (String.valueOf(oldValue).equals("-1")) {
+                    this.textField.setCursorPositionEnd();
+                }
             }
         }
     }
