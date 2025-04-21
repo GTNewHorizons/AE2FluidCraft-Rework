@@ -2,10 +2,10 @@ package com.glodblock.github.client.gui;
 
 import static com.glodblock.github.client.gui.container.ContainerLevelMaintainer.createLevelValues;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -15,8 +15,10 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -40,7 +42,6 @@ import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
-import com.gtnewhorizon.gtnhlib.util.parsing.MathExpressionParser;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.DimensionalCoord;
@@ -53,11 +54,12 @@ import appeng.core.AELog;
 import appeng.core.features.AEFeature;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketNEIDragClick;
+import appeng.util.calculators.ArithHelper;
+import appeng.util.calculators.Calculator;
 import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
 import cofh.core.render.CoFHFontRenderer;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
 @Optional.Interface(modid = "NotEnoughItems", iface = "codechicken.nei.api.INEIGuiHandler")
@@ -67,7 +69,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     private final ContainerLevelMaintainer cont;
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
-    private FCGuiTextField input;
+    private Widget focusedWidget;
     private int lastWorkingTick;
     private int refreshTick;
     private final CoFHFontRenderer render;
@@ -76,10 +78,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     protected GuiType originalGui;
     protected Util.DimensionalCoordSide originalBlockPos;
     protected GuiTabButton originalGuiBtn;
-
-    protected static final boolean isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
-    protected static final Pattern numberPattern = isGTNHLibLoaded ? MathExpressionParser.EXPRESSION_PATTERN
-            : Pattern.compile("^[0-9]+");
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
@@ -152,6 +150,8 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             State state = State.values()[data.getInteger(TLMTags.State.tagName)];
             component[idx].getQty().textField.setText(String.valueOf(quantity));
             component[idx].getBatch().textField.setText(String.valueOf(batch));
+            component[idx].getQty().validate();
+            component[idx].getBatch().validate();
             component[idx].setEnable(isEnable);
             component[idx].setState(state);
         }
@@ -207,7 +207,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
         int tick = this.refreshTick;
         int interval = 20;
-        if (tick > lastWorkingTick + interval && this.input == null) {
+        if (tick > lastWorkingTick + interval && this.focusedWidget == null) {
             FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Refresh));
             lastWorkingTick = this.refreshTick;
         }
@@ -233,11 +233,11 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             super.func_146977_a(new SlotSingleItem(slot));
             if (stack == null) return true;
             IAEItemStack fake = stack.copy();
-            if (this.component[slot.getSlotIndex()].getQty().textField.getText().matches("[0-9]+")) {
-                fake.setStackSize(Long.parseLong(this.component[slot.getSlotIndex()].getQty().textField.getText()));
-            } else {
-                fake.setStackSize(0);
-            }
+
+            Widget qty = this.component[slot.getSlotIndex()].getQty();
+            qty.validate();
+            fake.setStackSize(qty.getAmount() != null ? qty.getAmount() : 0);
+
             GL11.glTranslatef(0.0f, 0.0f, 200.0f);
             aeRenderItem.setAeStack(fake);
             aeRenderItem.renderItemOverlayIntoGUI(
@@ -255,42 +255,41 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
         if (btn == 0) {
-            if (input != null) {
-                input.setFocused(false);
+            if (focusedWidget != null) {
+                focusedWidget.textField.setFocused(false);
             }
             for (Component com : this.component) {
-                FCGuiTextField textField = com.isMouseIn(xCoord, yCoord);
+                Widget textField = com.isMouseIn(xCoord, yCoord);
                 if (textField != null) {
-                    textField.setFocused(true);
-                    this.input = textField;
+                    textField.textField.setFocused(true);
+                    this.focusedWidget = textField;
                     super.mouseClicked(xCoord, yCoord, btn);
                     return;
                 }
             }
-            this.input = null;
+            this.focusedWidget = null;
         }
         super.mouseClicked(xCoord, yCoord, btn);
     }
 
     @Override
     protected void keyTyped(final char character, final int key) {
-        if (this.input == null) {
+        if (this.focusedWidget == null) {
             super.keyTyped(character, key);
             return;
         }
         if (!this.checkHotbarKeys(key)) {
-            if (!((character == ' ') && this.input.getText().isEmpty())) {
-                this.input.textboxKeyTyped(character, key);
+            if (!((character == ' ') && this.focusedWidget.textField.getText().isEmpty())) {
+                this.focusedWidget.textField.textboxKeyTyped(character, key);
             }
             super.keyTyped(character, key);
-            if (!numberPattern.matcher(this.input.getText()).matches()) {
-                this.input.setTextColor(0xFF0000);
-            } else {
-                this.input.setTextColor(0xFFFFFF);
-            }
+
+            this.focusedWidget.validate();
+
             if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
-                this.input.setFocused(false);
-                this.input = null;
+                this.component[this.focusedWidget.componentIndex].submit();
+                this.focusedWidget.textField.setFocused(false);
+                this.focusedWidget = null;
             }
         }
     }
@@ -409,39 +408,38 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         }
 
         public int getIndex() {
-            return this.qty.idx;
+            return this.qty.componentIndex;
         }
 
         public void setEnable(boolean enable) {
             this.isEnable = enable;
         }
 
-        private boolean send(Widget widget) {
-            if (((SlotFluidConvertingFake) cont.inventorySlots.get(widget.idx)).getHasStack()) {
-                if (isGTNHLibLoaded) {
-                    long value = (long) MathExpressionParser.parse(widget.textField.getText());
-                    widget.textField.setText(String.valueOf(value));
-                }
-                if (!widget.textField.getText().isEmpty()
-                        && numberPattern.matcher(widget.textField.getText()).matches()) {
-                    String str = widget.textField.getText().replaceAll("^(0+)", "");
-                    widget.textField.setText(str.isEmpty() ? "0" : str);
-                    FluidCraft.proxy.netHandler.sendToServer(
-                            new CPacketLevelMaintainer(widget.action, widget.idx, widget.textField.getText()));
-                    widget.textField.setTextColor(0xFFFFFF);
-                    return true;
-                } else {
-                    widget.textField.setTextColor(0xFF0000);
-                    return false;
-                }
+        private void send(Widget widget) {
+            if (cont.inventorySlots.get(widget.componentIndex).getHasStack() && widget.getAmount() != null) {
+                FluidCraft.proxy.netHandler.sendToServer(
+                        new CPacketLevelMaintainer(widget.action, widget.componentIndex, widget.getAmount()));
             }
-            return false;
+        }
+
+        public void submit() {
+            this.sendToServer(this.submit);
         }
 
         protected boolean sendToServer(GuiButton btn) {
             boolean didSomething = false;
             if (this.submit == btn) {
-                if (this.send(this.getQty())) this.send(this.getBatch());
+                final Widget qty = this.getQty();
+                final Widget batch = this.getBatch();
+                qty.validate();
+                batch.validate();
+                if (qty.getAmount() != null) {
+                    this.send(qty);
+                }
+                if (batch.getAmount() != null) {
+                    this.send(batch);
+                }
+
                 didSomething = true;
             } else if (this.enable == btn) {
                 FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Enable, this.getIndex()));
@@ -453,9 +451,9 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             return didSomething;
         }
 
-        public FCGuiTextField isMouseIn(final int xCoord, final int yCoord) {
-            if (this.qty.textField.isMouseIn(xCoord, yCoord)) return this.getQty().textField;
-            if (this.batch.textField.isMouseIn(xCoord, yCoord)) return this.getBatch().textField;
+        public Widget isMouseIn(final int xCoord, final int yCoord) {
+            if (this.qty.textField.isMouseIn(xCoord, yCoord)) return this.getQty();
+            if (this.batch.textField.isMouseIn(xCoord, yCoord)) return this.getBatch();
             return null;
         }
 
@@ -540,28 +538,41 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
     private class Widget {
 
-        public final int idx;
+        public final int componentIndex;
         public final Action action;
-        private final FCGuiTextField textField;
+        public final FCGuiTextField textField;
         private final String tooltip;
+        private Long amount;
 
-        public Widget(FCGuiTextField textField, String tooltip, int idx, Action action) {
+        public Widget(FCGuiTextField textField, String tooltip, int componentIndex, Action action) {
             this.textField = textField;
             this.textField.setEnableBackgroundDrawing(false);
             this.textField.setText("0");
             this.textField.setMaxStringLength(16); // this length is enough to be useful
-            this.idx = idx;
+            this.componentIndex = componentIndex;
             this.action = action;
             this.tooltip = tooltip;
         }
 
         public void draw() {
+            String current = amount != null
+                    ? StatCollector.translateToLocal(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
+                            + NumberFormat.getNumberInstance().format(amount)
+                            + "\n"
+                    : "";
             if (isShiftKeyDown()) {
-                this.setTooltip(render.wrapFormattedStringToWidth(NameConst.i18n(this.tooltip), xSize / 2));
+                this.setTooltip(
+                        render.wrapFormattedStringToWidth(
+                                StatCollector.translateToLocal(this.tooltip) + "\n"
+                                        + current
+                                        + "\n"
+                                        + StatCollector.translateToLocal(this.tooltip + ".hint"),
+                                xSize / 2));
             } else {
                 this.setTooltip(
                         render.wrapFormattedStringToWidth(
                                 NameConst.i18n(this.tooltip, "\n", false) + "\n"
+                                        + current
                                         + NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE),
                                 (int) Math.floor(xSize * 0.8)));
             }
@@ -570,6 +581,22 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
         public void setTooltip(String message) {
             this.textField.setMessage(message);
+        }
+
+        public void validate() {
+            final double result = Calculator.conversion(this.textField.getText());
+            if (Double.isNaN(result)) {
+                this.amount = null;
+                this.textField.setTextColor(0xFF0000);
+            } else {
+                this.amount = (long) ArithHelper.round(result, 0);
+                this.textField.setTextColor(0xFFFFFF);
+            }
+        }
+
+        @Nullable
+        public Long getAmount() {
+            return this.amount;
         }
     }
 }

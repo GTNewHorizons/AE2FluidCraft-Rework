@@ -1,14 +1,18 @@
 package com.glodblock.github.inventory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -25,9 +29,12 @@ import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
+import appeng.core.AELog;
 import appeng.util.item.AEFluidStack;
 
 public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
+
+    private static boolean WrongFluidRemovedWarnIssued = false;
 
     private final IFluidHandler handler;
     private final ForgeDirection side;
@@ -57,6 +64,10 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     }
 
     public IAEFluidStack injectItems(IAEFluidStack input, Actionable type, BaseActionSource src) {
+        if (!this.handler.canFill(this.side, input.getFluid())) {
+            return input;
+        }
+
         int filled = this.handler.fill(this.side, input.getFluidStack(), type == Actionable.MODULATE);
 
         if (type == Actionable.MODULATE) {
@@ -73,8 +84,41 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     }
 
     public IAEFluidStack extractItems(IAEFluidStack request, Actionable type, BaseActionSource src) {
+        if (!this.handler.canDrain(this.side, request.getFluid())) {
+            return null;
+        }
         FluidStack removed = this.handler.drain(this.side, request.getFluidStack(), type == Actionable.MODULATE);
         if (removed != null && removed.amount != 0) {
+            // perform a one time log if the removed fluid isn't what's reported since this will create a dupe exploit
+            if (!WrongFluidRemovedWarnIssued && !removed.isFluidEqual(request.getFluidStack())) {
+                WrongFluidRemovedWarnIssued = true;
+                String issuesUrl = "https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues/new";
+                String msg = String.format(
+                        "[AE2FC] MEMonitorIFluidHandler.extractItems got the wrong fluids while extracting from %s. expected %s got %s. Please report this message if seen: ",
+                        this.handler.getClass().getSimpleName(),
+                        request.getFluidStack().getUnlocalizedName(),
+                        removed.getUnlocalizedName());
+                // elevate log to error if chat msg is removed to make it easier to find.
+                AELog.warn(msg + issuesUrl);
+
+                ChatComponentText chatTxt = new ChatComponentText(msg);
+                chatTxt.setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED).setBold(true));
+
+                ChatComponentText chatUrl = new ChatComponentText(issuesUrl);
+                chatUrl.setChatStyle(
+                        new ChatStyle().setUnderlined(true)
+                                .setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, issuesUrl))
+                                .setChatHoverEvent(
+                                        new HoverEvent(
+                                                HoverEvent.Action.SHOW_TEXT,
+                                                new ChatComponentText("Click to open link"))));
+
+                ChatComponentText chat = new ChatComponentText("");
+                chat.appendSibling(chatTxt);
+                chat.appendSibling(chatUrl);
+
+                MinecraftServer.getServer().getConfigurationManager().sendChatMsg(chat);
+            }
             IAEFluidStack o = request.copy();
             o.setStackSize(removed.amount);
             if (type == Actionable.MODULATE) {
@@ -98,8 +142,6 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     // *Decompiled Stuff*//
 
     public TickRateModulation onTick() {
-        boolean changed = false;
-        List<IAEFluidStack> changes = new ArrayList<>();
         FluidTankInfo[] tankProperties = this.handler.getTankInfo(this.side);
         IItemList<IAEFluidStack> currentlyOnStorage = AEApi.instance().storage().createFluidList();
 
@@ -111,37 +153,32 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
             }
         }
 
-        Iterator<?> var9 = this.cache.iterator();
-
-        IAEFluidStack is;
-        while (var9.hasNext()) {
-            is = (IAEFluidStack) var9.next();
-            is.setStackSize(-is.getStackSize());
+        // make diff between cache and new contents
+        IItemList<IAEFluidStack> changes = AEApi.instance().storage().createFluidList();
+        // using non-enhanced for to prevent concurrency errors
+        for (Iterator<IAEFluidStack> iter = this.cache.iterator(); iter.hasNext();) {
+            IAEFluidStack copy = iter.next().copy();
+            copy.setStackSize(-copy.getStackSize());
+            changes.add(copy);
         }
-
-        var9 = currentlyOnStorage.iterator();
-
-        while (var9.hasNext()) {
-            is = (IAEFluidStack) var9.next();
-            this.cache.add(is);
+        for (IAEFluidStack is : currentlyOnStorage) {
+            changes.add(is);
         }
-
-        var9 = this.cache.iterator();
-
-        while (var9.hasNext()) {
-            is = (IAEFluidStack) var9.next();
-            if (is.getStackSize() != 0L) {
-                changes.add(is);
+        // update cache as soon as possible
+        this.cache = currentlyOnStorage;
+        // remove unchanged values
+        for (Iterator<IAEFluidStack> iter = changes.iterator(); iter.hasNext();) {
+            if (iter.next().getStackSize() == 0L) {
+                iter.remove();
             }
         }
 
-        this.cache = currentlyOnStorage;
         if (!changes.isEmpty()) {
             this.postDifference(changes);
-            changed = true;
+            return TickRateModulation.URGENT;
         }
 
-        return changed ? TickRateModulation.URGENT : TickRateModulation.SLOWER;
+        return TickRateModulation.SLOWER;
     }
 
     private void postDifference(Iterable<IAEFluidStack> a) {

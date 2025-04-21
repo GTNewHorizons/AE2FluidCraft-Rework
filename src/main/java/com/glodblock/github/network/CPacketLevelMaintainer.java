@@ -54,12 +54,6 @@ public class CPacketLevelMaintainer implements IMessage {
         this.size = size;
     }
 
-    public CPacketLevelMaintainer(Action action, int slotIndex, String size) {
-        this.action = action;
-        this.slotIndex = slotIndex;
-        this.size = size.isEmpty() ? 0 : Long.parseLong(size);
-    }
-
     @Override
     public void fromBytes(ByteBuf buf) {
         this.action = Action.values()[buf.readInt()];
