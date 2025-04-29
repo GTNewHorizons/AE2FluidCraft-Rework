@@ -13,7 +13,6 @@ import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
 import com.glodblock.github.client.gui.GuiFluidPatternExWireless;
 import com.glodblock.github.client.gui.GuiFluidPatternWireless;
 import com.glodblock.github.client.gui.GuiFluidPortableCell;
-import com.glodblock.github.client.gui.GuiInterfaceWireless;
 import com.glodblock.github.client.gui.GuiLevelWireless;
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
@@ -102,16 +101,14 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
             this.setOffsetY(this.getOffsetY() + 20);
             termBtns.add(this.FluidTerminal);
         }
-        if (!(this instanceof GuiInterfaceWireless)) {
-            this.buttonList.add(
-                    this.InterfaceTerminal = new GuiFCImgButton(
-                            this.guiLeft - 18,
-                            this.getOffsetY(),
-                            "INTERFACE_TEM",
-                            "YES"));
-            this.setOffsetY(this.getOffsetY() + 20);
-            termBtns.add(this.InterfaceTerminal);
-        }
+        this.buttonList.add(
+                this.InterfaceTerminal = new GuiFCImgButton(
+                        this.guiLeft - 18,
+                        this.getOffsetY(),
+                        "INTERFACE_TEM",
+                        "YES"));
+        this.setOffsetY(this.getOffsetY() + 20);
+        termBtns.add(this.InterfaceTerminal);
         if (!(this instanceof GuiLevelWireless)) {
             this.buttonList.add(
                     this.LevelTerminal = new GuiFCImgButton(this.guiLeft - 18, this.getOffsetY(), "LEVEL_TEM", "YES"));
