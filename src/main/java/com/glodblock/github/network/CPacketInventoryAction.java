@@ -24,6 +24,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
+import appeng.container.implementations.ContainerPatternItemRenamer;
 import appeng.helpers.InventoryAction;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -187,7 +188,36 @@ public class CPacketInventoryAction implements IMessage {
                             cpm.detectAndSendChanges();
                         }
                     }
-                } else {
+                } else if (message.action == InventoryAction.RENAME_PATTERN_ITEM) {
+                    final ContainerOpenContext context = baseContainer.getOpenContext();
+                    if (context != null) {
+                        final TileEntity te = context.getTile();
+                        if (te != null) {
+                            InventoryHandler.openGui(
+                                sender,
+                                te.getWorldObj(),
+                                new BlockPos(te),
+                                Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
+                                GuiType.GUI_PATTERN_ITEM_RENAMER);
+                        } else if (target instanceof IWirelessTerminal wt) {
+                            InventoryHandler.openGui(
+                                sender,
+                                sender.worldObj,
+                                new BlockPos(
+                                    wt.getInventorySlot(),
+                                    Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
+                                    0),
+                                ForgeDirection.UNKNOWN,
+                                GuiType.GUI_PATTERN_ITEM_RENAMER);
+                        }
+                        if (sender.openContainer instanceof ContainerPatternItemRenamer cpir) {
+                            if (baseContainer.getTargetStack() != null) {
+                                cpir.getPatternValue().putStack(baseContainer.getTargetStack().getItemStack());
+                            }
+                            cpir.detectAndSendChanges();
+                        }
+                    }
+                }else {
                     baseContainer.doAction(sender, message.action, message.slot, message.id);
                 }
             }

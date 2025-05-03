@@ -34,6 +34,7 @@ import com.glodblock.github.client.gui.GuiLevelMaintainer;
 import com.glodblock.github.client.gui.GuiLevelTerminal;
 import com.glodblock.github.client.gui.GuiLevelWireless;
 import com.glodblock.github.client.gui.GuiOCPatternEditor;
+import com.glodblock.github.client.gui.GuiPatternItemRenamer;
 import com.glodblock.github.client.gui.GuiPatternMulti;
 import com.glodblock.github.client.gui.GuiPatternValueAmount;
 import com.glodblock.github.client.gui.GuiRenamer;
@@ -84,6 +85,7 @@ import com.google.common.collect.ImmutableList;
 import appeng.api.storage.ITerminalHost;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerCraftingStatus;
+import appeng.container.implementations.ContainerPatternItemRenamer;
 import appeng.container.implementations.ContainerPriority;
 import appeng.helpers.IInterfaceHost;
 import appeng.helpers.IPriorityHost;
@@ -526,6 +528,19 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
             return new GuiPatternMulti(player.inventory, inv);
+        }
+    }),
+
+    GUI_PATTERN_ITEM_RENAMER(new PartOrItemGuiFactory<>(ITerminalHost.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
+            return new ContainerPatternItemRenamer(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
+            return new GuiPatternItemRenamer(player.inventory, inv);
         }
     });
 

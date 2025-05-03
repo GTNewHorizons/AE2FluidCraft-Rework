@@ -416,6 +416,9 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
             if (slot instanceof OptionalSlotFake || slot instanceof SlotFakeCraftingMatrix) {
                 if (slot.getHasStack()) {
                     InventoryAction action = InventoryAction.SET_PATTERN_VALUE;
+                    if (isCtrlKeyDown()) {
+                        action = InventoryAction.RENAME_PATTERN_ITEM;
+                    }
                     IAEItemStack stack = AEItemStack.create(slot.getStack());
                     ((AEBaseContainer) this.inventorySlots).setTargetStack(stack);
                     for (int i = 0; i < this.inventorySlots.inventorySlots.size(); i++) {
