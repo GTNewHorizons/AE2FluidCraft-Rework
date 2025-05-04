@@ -562,19 +562,6 @@ public enum GuiType {
         }
     }),
 
-    GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
-
-        @Override
-        protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
-            return new ContainerPatternMulti(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
-            return new GuiPatternMulti(player.inventory, inv);
-        }
-    }),
-
     WIRELESS_MAGNET_FILTER(new ItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
