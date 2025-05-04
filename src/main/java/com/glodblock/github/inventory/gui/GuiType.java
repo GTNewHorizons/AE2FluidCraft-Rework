@@ -536,7 +536,7 @@ public enum GuiType {
         }
     }),
 
-GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
+    GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
         protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
@@ -559,8 +559,8 @@ GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
         @Override
         protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
             return new GuiPatternItemRenamer(player.inventory, inv);
-		}
-}),
+        }
+    }),
 
     GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
