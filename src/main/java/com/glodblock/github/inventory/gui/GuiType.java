@@ -559,7 +559,7 @@ public enum GuiType {
             return new GuiPatternItemRenamer(player.inventory, inv);
         }
     }),
-  
+
     GUI_SUPER_STOKER(new TileGuiFactory<>(TileSuperStoker.class) {
 
         @Override
