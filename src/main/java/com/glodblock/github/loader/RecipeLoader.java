@@ -1,6 +1,7 @@
 package com.glodblock.github.loader;
 
 import static com.glodblock.github.common.storage.CellType.Cell16384kPart;
+import static com.glodblock.github.loader.ItemAndBlockHolder.ARTIFICIAL_UNIVERSE_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.BUFFER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CELL1024K;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CELL1024KM;
@@ -507,6 +508,18 @@ public class RecipeLoader implements Runnable {
                             QUANTUM_CELL,
                             'M',
                             AE2_MATTER_CONDENSER));
+            GameRegistry.addRecipe(
+                    new ShapedOreRecipe(
+                            ARTIFICIAL_UNIVERSE_CELL,
+                            "SCS",
+                            "CNC",
+                            "SCS",
+                            'S',
+                            AE2_SINGULARITY,
+                            'C',
+                            SINGULARITY_CELL,
+                            'N',
+                            NETHER_STAR));
             GameRegistry.addRecipe(
                     new ShapedOreRecipe(
                             FLUID_VOID_CELL,
