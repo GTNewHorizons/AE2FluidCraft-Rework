@@ -9,18 +9,18 @@ import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.common.parts.PartFluidPatternTerminal;
 import com.glodblock.github.common.parts.PartFluidPatternTerminalEx;
+import com.glodblock.github.common.tile.TileSuperStoker;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.CPacketPatternValueSet;
 
-import appeng.api.storage.ITerminalHost;
 import appeng.core.localization.GuiText;
 
 public class GuiPatternValueAmount extends FCGuiAmount {
 
-    public GuiPatternValueAmount(final InventoryPlayer inventoryPlayer, final ITerminalHost te) {
+    public GuiPatternValueAmount(final InventoryPlayer inventoryPlayer, final Object te) {
         super(new ContainerPatternValueAmount(inventoryPlayer, te));
     }
 
@@ -77,6 +77,9 @@ public class GuiPatternValueAmount extends FCGuiAmount {
         } else if (target instanceof WirelessPatternTerminalInventory) {
             this.myIcon = ItemAndBlockHolder.WIRELESS_PATTERN_TERM.stack();
             this.originalGui = GuiType.WIRELESS_FLUID_PATTERN_TERMINAL;
+        } else if (target instanceof TileSuperStoker) {
+            this.myIcon = ItemAndBlockHolder.SUPER_STOKER.stack();
+            this.originalGui = GuiType.GUI_SUPER_STOKER;
         }
     }
 
