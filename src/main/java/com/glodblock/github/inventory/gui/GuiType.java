@@ -574,7 +574,7 @@ public enum GuiType {
             return new GuiMagnetFilter(player.inventory, inv);
         }
     }),
-  
+
     GUI_SUPER_STOKER(new TileGuiFactory<>(TileSuperStoker.class) {
 
         @Override
