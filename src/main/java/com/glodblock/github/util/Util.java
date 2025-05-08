@@ -338,14 +338,14 @@ public final class Util {
         }
     }
 
-    public static FluidStack getFluidFromVirtual(ItemStack virtual) {
+    public static IAEFluidStack getFluidFromVirtual(ItemStack virtual) {
         if (virtual == null) {
             return null;
         }
         if (virtual.getItem() instanceof ItemFluidPacket) {
-            return ItemFluidPacket.getFluidStack(virtual);
+            return ItemFluidPacket.getAEFluidStack(virtual);
         } else if (virtual.getItem() instanceof ItemFluidDrop) {
-            return ItemFluidDrop.getFluidStack(virtual);
+            return ItemFluidDrop.getAeFluidStack(virtual);
         }
         return null;
     }

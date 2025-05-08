@@ -29,17 +29,23 @@ import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
 
+import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.InsertionMode;
 import appeng.api.config.Upgrades;
 import appeng.api.parts.IPart;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEItemStack;
 import appeng.helpers.DualityInterface;
+import appeng.helpers.IDigitalInventory;
 import appeng.helpers.IInterfaceHost;
 import appeng.me.GridAccessException;
 import appeng.me.helpers.AENetworkProxy;
 import appeng.parts.p2p.PartP2PLiquids;
 import appeng.tile.misc.TileInterface;
 import appeng.tile.networking.TileCableBus;
+import appeng.tile.storage.TileChest;
 import appeng.util.InventoryAdaptor;
 import appeng.util.inv.IInventoryDestination;
 import appeng.util.inv.ItemSlot;
@@ -51,7 +57,7 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaPipeEntity;
 
-public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
+public class FluidConvertingInventoryAdaptor extends InventoryAdaptor implements IDigitalInventory {
 
     // facing is the target TE direction
     // |T|-facing->|I|
@@ -119,7 +125,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     }
 
     public ItemStack addItems(ItemStack toBeAdded, InsertionMode insertionMode) {
-        FluidStack fluid = Util.getFluidFromVirtual(toBeAdded);
+        IAEFluidStack fluid = Util.getFluidFromVirtual(toBeAdded);
         if (!this.onmi) {
             if (!checkValidSide(
                     this.posInterface.getOffSet(this.side.getOpposite()).getTileEntity(),
@@ -127,9 +133,9 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 return toBeAdded;
             }
             if (fluid != null) {
-                int filled = fillSideFluid(fluid, this.invFluids, this.side, true);
-                fluid.amount -= filled;
-                return ItemFluidDrop.newStack(fluid);
+                int filled = fillSideFluid(fluid.getFluidStack(), this.invFluids, this.side, true);
+                fluid.decStackSize(filled);
+                return ItemFluidPacket.newStack(fluid);
             } else {
                 ItemStack notFilled = fillSideItem(toBeAdded, this.invItems, insertionMode, true);
                 if (notFilled != null) {
@@ -144,14 +150,14 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         } else {
             if (fluid != null) {
                 for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-                    if (fluid.amount <= 0) {
+                    if (fluid.getStackSize() <= 0) {
                         return null;
                     }
                     if (!checkValidSide(this.posInterface.getOffSet(dir).getTileEntity(), dir)) {
                         continue;
                     }
-                    int filled = fillSideFluid(fluid, getSideFluid(dir), dir.getOpposite(), true);
-                    fluid.amount -= filled;
+                    int filled = fillSideFluid(fluid.getFluidStack(), getSideFluid(dir), dir.getOpposite(), true);
+                    fluid.decStackSize(filled);
                 }
                 return ItemFluidPacket.newStack(fluid);
             } else {
@@ -192,7 +198,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
 
     @Override
     public ItemStack simulateAdd(ItemStack toBeSimulated, InsertionMode insertionMode) {
-        FluidStack fluid = Util.getFluidFromVirtual(toBeSimulated);
+        IAEFluidStack fluid = Util.getFluidFromVirtual(toBeSimulated);
         if (!this.onmi) {
             if (!checkValidSide(
                     this.posInterface.getOffSet(this.side.getOpposite()).getTileEntity(),
@@ -200,8 +206,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 return toBeSimulated;
             }
             if (fluid != null) {
-                int filled = fillSideFluid(fluid, this.invFluids, this.side, false);
-                fluid.amount -= filled;
+                int filled = fillSideFluid(fluid.getFluidStack(), this.invFluids, this.side, false);
+                fluid.decStackSize(filled);
                 return ItemFluidPacket.newStack(fluid);
             } else {
                 // Assert EIO conduit can hold all item, as it is the origin practice in AE2
@@ -219,7 +225,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                     if (!checkValidSide(this.posInterface.getOffSet(dir).getTileEntity(), dir)) {
                         continue;
                     }
-                    int filled = fillSideFluid(fluid, getSideFluid(dir), dir.getOpposite(), false);
+                    int filled = fillSideFluid(fluid.getFluidStack(), getSideFluid(dir), dir.getOpposite(), false);
                     if (filled > 0) {
                         sus = true;
                         break;
@@ -265,6 +271,104 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     public ItemStack simulateSimilarRemove(int amount, ItemStack filter, FuzzyMode fuzzyMode,
             IInventoryDestination destination) {
         return invItems != null ? invItems.simulateSimilarRemove(amount, filter, fuzzyMode, destination) : null;
+    }
+
+    @Override
+    public boolean isDigitalMode() {
+        return targetInterface != null || invFluids instanceof TileChest;
+    }
+
+    @Override
+    public IAEItemStack simulateAdd(IAEItemStack toBeSimulated) {
+        IAEFluidStack aeFluid = null;
+        if (toBeSimulated.getItem() instanceof ItemFluidDrop) {
+            aeFluid = ItemFluidDrop.getAeFluidStack(toBeSimulated);
+        } else if (toBeSimulated.getItem() instanceof ItemFluidPacket) {
+            aeFluid = ItemFluidPacket.getAEFluidStack(toBeSimulated);
+        }
+        if (aeFluid != null) {
+            if (targetInterface != null) {
+                IMEMonitor<IAEFluidStack> monitor = targetInterface.getInterfaceDuality().getFluidInventory();
+                IAEFluidStack fluid = monitor.injectItems(
+                        aeFluid,
+                        Actionable.SIMULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            } else {
+                IMEMonitor<IAEFluidStack> monitor = ((TileChest) invFluids).getFluidInventory();
+                if (monitor == null) return toBeSimulated;
+                IAEFluidStack fluid = monitor
+                        .injectItems(aeFluid, Actionable.SIMULATE, ((TileChest) invFluids).getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            if (targetInterface != null) {
+                IMEMonitor<IAEItemStack> monitor = targetInterface.getInterfaceDuality().getItemInventory();
+                return monitor.injectItems(
+                        toBeSimulated,
+                        Actionable.SIMULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+            } else {
+                IMEMonitor<IAEItemStack> monitor = ((TileChest) invFluids).getItemInventory();
+                if (monitor == null) return toBeSimulated;
+                return monitor
+                        .injectItems(toBeSimulated, Actionable.SIMULATE, ((TileChest) invFluids).getActionSource());
+            }
+        }
+    }
+
+    @Override
+    public IAEItemStack addItems(IAEItemStack toBeAdded) {
+        IAEFluidStack aeFluid = null;
+        if (toBeAdded.getItem() instanceof ItemFluidDrop) {
+            aeFluid = ItemFluidDrop.getAeFluidStack(toBeAdded);
+        } else if (toBeAdded.getItem() instanceof ItemFluidPacket) {
+            aeFluid = ItemFluidPacket.getAEFluidStack(toBeAdded);
+        }
+        if (aeFluid != null) {
+            if (targetInterface != null) {
+                IMEMonitor<IAEFluidStack> monitor = targetInterface.getInterfaceDuality().getFluidInventory();
+                IAEFluidStack fluid = monitor.injectItems(
+                        aeFluid,
+                        Actionable.MODULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            } else {
+                IMEMonitor<IAEFluidStack> monitor = ((TileChest) invFluids).getFluidInventory();
+                if (monitor == null) return toBeAdded;
+                IAEFluidStack fluid = monitor
+                        .injectItems(aeFluid, Actionable.MODULATE, ((TileChest) invFluids).getActionSource());
+                if (fluid != null) {
+                    return ItemFluidPacket.newAeStack(fluid);
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            if (targetInterface != null) {
+                IMEMonitor<IAEItemStack> monitor = targetInterface.getInterfaceDuality().getItemInventory();
+                return monitor.injectItems(
+                        toBeAdded,
+                        Actionable.MODULATE,
+                        targetInterface.getInterfaceDuality().getActionSource());
+            } else {
+                IMEMonitor<IAEItemStack> monitor = ((TileChest) invFluids).getItemInventory();
+                if (monitor == null) return toBeAdded;
+                return monitor.injectItems(toBeAdded, Actionable.MODULATE, ((TileChest) invFluids).getActionSource());
+            }
+        }
     }
 
     @Override
