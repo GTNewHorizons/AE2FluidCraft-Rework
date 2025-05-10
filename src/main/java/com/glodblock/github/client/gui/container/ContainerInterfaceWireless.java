@@ -19,7 +19,7 @@ public class ContainerInterfaceWireless extends FCBaseContainer {
 
         delegateContainer = new ContainerInterfaceTerminal(ip, monitorable);
 
-        this.bindPlayerInventory(ip, 14, 0);
+        this.bindPlayerInventory(ip, 14, 3);
     }
 
     @Override
