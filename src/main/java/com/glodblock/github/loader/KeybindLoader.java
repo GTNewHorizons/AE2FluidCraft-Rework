@@ -8,7 +8,9 @@ import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.input.Keyboard;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
+import com.glodblock.github.network.CPacketValueConfig;
 import com.glodblock.github.util.Util;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -22,11 +24,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class KeybindLoader implements Runnable {
 
     public static KeyBinding openTerminal;
+    public static KeyBinding restock;
 
     @Override
     public void run() {
-        openTerminal = new KeyBinding("key.OpenTerminal", Keyboard.CHAR_NONE, "itemGroup.ae2fc");
+        openTerminal = new KeyBinding(FluidCraft.MODID + ".key.OpenTerminal", Keyboard.CHAR_NONE, "itemGroup.ae2fc");
+        restock = new KeyBinding(FluidCraft.MODID + ".key.Restock", Keyboard.CHAR_NONE, "itemGroup.ae2fc");
         ClientRegistry.registerKeyBinding(openTerminal);
+        ClientRegistry.registerKeyBinding(restock);
         FMLCommonHandler.instance().bus().register(this);
     }
 
@@ -35,6 +40,8 @@ public class KeybindLoader implements Runnable {
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (openTerminal.isPressed()) {
             handleOpenTerminalKey();
+        } else if (restock.isPressed()) {
+            handleRestockKey();
         }
     }
 
@@ -43,6 +50,8 @@ public class KeybindLoader implements Runnable {
     public void onMouseInput(InputEvent.MouseInputEvent event) {
         if (openTerminal.isPressed()) {
             handleOpenTerminalKey();
+        } else if (restock.isPressed()) {
+            handleRestockKey();
         }
     }
 
@@ -58,6 +67,19 @@ public class KeybindLoader implements Runnable {
             ItemWirelessUltraTerminal.switchTerminal(
                     player,
                     ((ItemWirelessUltraTerminal) term.getRight().getItem()).guiGuiType(term.getRight()));
+        }
+    }
+
+    private void handleRestockKey() {
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+        EntityClientPlayerMP p = Minecraft.getMinecraft().thePlayer;
+        if (p.openContainer == null) {
+            return;
+        }
+
+        ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(p);
+        if (term != null) {
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(0, 1));
         }
     }
 }

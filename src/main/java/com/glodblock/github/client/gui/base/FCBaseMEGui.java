@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.GuiEssentiaTerminal;
 import com.glodblock.github.client.gui.GuiFCImgButton;
 import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
@@ -18,8 +19,11 @@ import com.glodblock.github.client.gui.container.base.FCBaseContainer;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
+import com.glodblock.github.inventory.item.WirelessMagnet;
+import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.util.ModAndClassUtil;
 
+import appeng.api.storage.StorageChannel;
 import appeng.client.gui.AEBaseMEGui;
 
 public abstract class FCBaseMEGui extends AEBaseMEGui {
@@ -31,8 +35,15 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
     protected GuiFCImgButton InterfaceTerminal;
     protected GuiFCImgButton LevelTerminal;
     protected GuiFCImgButton PatternTerminalEx;
+    protected GuiFCImgButton magnetOff;
+    protected GuiFCImgButton magnetInv;
+    protected GuiFCImgButton magnetME;
+    protected GuiFCImgButton magnetFilter;
+    protected GuiFCImgButton restockEnableBtn;
+    protected GuiFCImgButton restockDisableBtn;
     protected List<GuiFCImgButton> termBtns = new ArrayList<>();
     protected boolean drawSwitchGuiBtn;
+    private StorageChannel channel = null;
 
     public FCBaseMEGui(final InventoryPlayer inventoryPlayer, Container container) {
         super(container);
@@ -41,8 +52,17 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
             if (target instanceof IWirelessTerminal
                     && ((IWirelessTerminal) target).getItemStack().getItem() instanceof ItemWirelessUltraTerminal) {
                 this.drawSwitchGuiBtn = true;
+                channel = ((IWirelessTerminal) target).getChannel();
             }
         }
+    }
+
+    protected WirelessMagnet.Mode getMagnetMode() {
+        return ((FCBaseContainer) this.inventorySlots).mode;
+    }
+
+    protected boolean isRestock() {
+        return ((FCBaseContainer) this.inventorySlots).restock;
     }
 
     @Override
@@ -64,6 +84,46 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
         if (!drawSwitchGuiBtn) return;
         if (!termBtns.isEmpty()) {
             this.termBtns.clear();
+        }
+        if (this.getMagnetMode() != null && this.channel == StorageChannel.ITEMS) {
+            this.buttonList.add(
+                    this.magnetOff = new GuiFCImgButton(
+                            this.guiLeft + this.xSize - 18,
+                            this.guiTop + this.ySize - 124,
+                            "MAGNET_CARD",
+                            "OFF"));
+            this.buttonList.add(
+                    this.magnetInv = new GuiFCImgButton(
+                            this.guiLeft + this.xSize - 18,
+                            this.guiTop + this.ySize - 124,
+                            "MAGNET_CARD",
+                            "INV"));
+            this.buttonList.add(
+                    this.magnetME = new GuiFCImgButton(
+                            this.guiLeft + this.xSize - 18,
+                            this.guiTop + this.ySize - 124,
+                            "MAGNET_CARD",
+                            "ME"));
+            this.buttonList.add(
+                    this.magnetFilter = new GuiFCImgButton(
+                            this.guiLeft + this.xSize - 18,
+                            this.guiTop + this.ySize - 104,
+                            "MAGNET_CARD",
+                            "FILTER"));
+        }
+        if (this.channel == StorageChannel.ITEMS) {
+            this.buttonList.add(
+                    this.restockEnableBtn = new GuiFCImgButton(
+                            this.guiLeft + this.xSize - 18,
+                            this.guiTop + this.ySize - 84,
+                            "RESTOCK",
+                            "ENABLE"));
+            this.buttonList.add(
+                    this.restockDisableBtn = new GuiFCImgButton(
+                            this.guiLeft + this.xSize - 18,
+                            this.guiTop + this.ySize - 84,
+                            "RESTOCK",
+                            "DISABLE"));
         }
         if (!(this instanceof GuiFluidCraftingWireless)) {
             this.buttonList.add(
@@ -155,6 +215,21 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
     }
 
     @Override
+    public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
+        if (isPortableCell()) return;
+        if (getMagnetMode() != null && this.channel == StorageChannel.ITEMS) {
+            GuiFCImgButton[] magnetButtons = { this.magnetOff, this.magnetInv, this.magnetME };
+            for (int i = 0; i < magnetButtons.length; i++) {
+                magnetButtons[i].visible = getMagnetMode().ordinal() == i;
+            }
+        }
+        if (this.drawSwitchGuiBtn && this.channel == StorageChannel.ITEMS) { // Only ultra terminal
+            this.restockDisableBtn.visible = !this.isRestock();
+            this.restockEnableBtn.visible = this.isRestock();
+        }
+    }
+
+    @Override
     protected void actionPerformed(final GuiButton btn) {
         if (btn instanceof GuiFCImgButton) {
             if (btn == this.FluidTerminal) {
@@ -171,8 +246,20 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
                 ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_LEVEL_TERMINAL);
             } else if (btn == this.PatternTerminalEx) {
                 ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX);
+            } else if (btn == this.magnetOff || btn == this.magnetME || btn == this.magnetInv) {
+                FluidCraft.proxy.netHandler.sendToServer(
+                        new CPacketFluidPatternTermBtns("WirelessTerminal.MagnetMode", this.getMagnetMode().ordinal()));
+            } else if (btn == this.magnetFilter) {
+                FluidCraft.proxy.netHandler
+                        .sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.OpenMagnet", 0));
+            } else if (btn == this.restockDisableBtn || btn == this.restockEnableBtn) {
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.Stock", 1));
             }
         }
         super.actionPerformed(btn);
+    }
+
+    protected boolean isPortableCell() {
+        return false;
     }
 }
