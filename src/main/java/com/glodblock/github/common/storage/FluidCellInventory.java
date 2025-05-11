@@ -228,7 +228,7 @@ public class FluidCellInventory implements IFluidCellInventory {
             if (restrictionLong > 0) {
                 remaining = Math.min((restrictionLong / types) - l.getStackSize(), getRemainingFluidCount());
             } else {
-                remaining = (((getTotalBytes() / types) - getBytesPerType()) * 8) - l.getStackSize();
+                remaining = (((getTotalBytes() / types) - getBytesPerType()) * singleByteAmount) - l.getStackSize();
             }
         } else {
             if (restrictionLong > 0) {
