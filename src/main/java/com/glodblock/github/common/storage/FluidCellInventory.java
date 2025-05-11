@@ -226,12 +226,11 @@ public class FluidCellInventory implements IFluidCellInventory {
         if (types == 0) types = this.getTotalFluidTypes();
         if (l != null) {
             if (restrictionLong > 0) {
-                remaining = Math.min((restrictionLong / types) - l.getStackSize(), this.getUnusedFluidCount());
+                remaining = Math.min((restrictionLong / types) - l.getStackSize(), getRemainingFluidCount());
             } else {
                 remaining = (((this.getTotalBytes() / types)
                         - (int) Math.ceil((double) l.getStackSize() / singleByteAmount)
-                        - getBytesPerType()) * singleByteAmount)
-                        + (singleByteAmount - l.getStackSize() % singleByteAmount);
+                        - getBytesPerType()) * singleByteAmount);
             }
         } else {
             if (restrictionLong > 0) {
