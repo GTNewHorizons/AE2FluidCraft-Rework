@@ -40,7 +40,7 @@ dependencies {
     api('com.github.GTNewHorizons:waila:1.8.4:dev')
     api("com.github.GTNewHorizons:GTNHLib:0.6.21:dev")
 
-    implementation("com.github.GTNewHorizons:WirelessCraftingTerminal:1.12.0:dev") {
+    implementation("com.github.GTNewHorizons:WirelessCraftingTerminal:1.12.1:dev") {
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
     }
 
