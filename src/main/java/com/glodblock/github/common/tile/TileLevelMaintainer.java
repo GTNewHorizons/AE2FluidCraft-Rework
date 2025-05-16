@@ -427,9 +427,9 @@ public class TileLevelMaintainer extends AENetworkTile
                     this.requests[i].loadFromNBT(tag);
                 }
             }
-        } else if (data.hasKey(TLMTags.RequestStacks.tagName)) {
+        } else if (data.hasKey("RequestStacks")) {
             // Migration from old NBT
-            NBTTagList stacksTag = data.getCompoundTag(TLMTags.RequestStacks.tagName)
+            NBTTagList stacksTag = data.getCompoundTag("RequestStacks")
                     .getTagList("Contents", Constants.NBT.TAG_COMPOUND);
             IAEItemStack[] stacks = new IAEItemStack[REQ_COUNT];
             for (int i = 0; i < REQ_COUNT; i++) {
@@ -441,18 +441,18 @@ public class TileLevelMaintainer extends AENetworkTile
                 if (!itemstack.hasTagCompound()) continue;
                 NBTTagCompound itemTag = itemstack.getTagCompound();
 
-                ItemStack craftStack = ItemStack.loadItemStackFromNBT(itemTag.getCompoundTag(TLMTags.Stack.tagName));
+                ItemStack craftStack = ItemStack.loadItemStackFromNBT(itemTag.getCompoundTag("Stack"));
                 craftStack = removeRecursion(craftStack);
                 if (craftStack == null) continue;
                 requests[i] = new RequestInfo(craftStack, this);
-                if (itemTag.hasKey(TLMTags.Enable.tagName)) {
-                    requests[i].enable = itemTag.getBoolean(TLMTags.Enable.tagName);
+                if (itemTag.hasKey("Enable")) {
+                    requests[i].enable = itemTag.getBoolean("Enable");
                 }
-                if (itemTag.hasKey(TLMTags.Quantity.tagName)) {
-                    requests[i].quantity = itemTag.getLong(TLMTags.Quantity.tagName);
+                if (itemTag.hasKey("Quantity")) {
+                    requests[i].quantity = itemTag.getLong("Quantity");
                 }
-                if (itemTag.hasKey(TLMTags.Batch.tagName)) {
-                    requests[i].batchSize = itemTag.getLong(TLMTags.Batch.tagName);
+                if (itemTag.hasKey("Batch")) {
+                    requests[i].batchSize = itemTag.getLong("Batch");
                 }
             }
         } else {
@@ -497,15 +497,10 @@ public class TileLevelMaintainer extends AENetworkTile
         if (itemStack == null || !itemStack.hasTagCompound()) return itemStack;
 
         NBTTagCompound tag = itemStack.getTagCompound();
-        if (tag.hasKey(TLMTags.Stack.tagName) && tag.hasKey(TLMTags.Quantity.tagName)) {
-            return removeRecursion(loadItemStackFromTag(itemStack));
+        if (tag.hasKey("Stack") && tag.hasKey("Quantity")) {
+            return removeRecursion(ItemStack.loadItemStackFromNBT(itemStack.getTagCompound().getCompoundTag("Stack")));
         }
         return itemStack;
-    }
-
-    @Nullable
-    private static ItemStack loadItemStackFromTag(ItemStack itemStack) {
-        return ItemStack.loadItemStackFromNBT(itemStack.getTagCompound().getCompoundTag(TLMTags.Stack.tagName));
     }
 
     @TileEvent(TileEventType.NETWORK_READ)
@@ -558,24 +553,6 @@ public class TileLevelMaintainer extends AENetworkTile
     @Override
     public int rowSize() {
         return REQ_COUNT;
-    }
-
-    private enum TLMTags {
-
-        RequestStacks("RequestStacks"),
-        Enable("Enable"),
-        Quantity("Quantity"),
-        Batch("Batch"),
-        Link("Link"),
-        State("State"),
-        Index("Index"),
-        Stack("Stack");
-
-        public final String tagName;
-
-        TLMTags(String tagName) {
-            this.tagName = tagName;
-        }
     }
 
     public static class RequestInfo {
