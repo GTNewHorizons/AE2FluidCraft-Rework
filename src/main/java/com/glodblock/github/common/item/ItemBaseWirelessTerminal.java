@@ -10,6 +10,7 @@ import java.util.List;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -36,6 +37,8 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     protected GuiType type;
     public static String infinityBoosterCard = "infinityBoosterCard";
     public static String infinityEnergyCard = "InfinityEnergyCard";
+    public static String restockItems = "restock";
+    private static boolean effect = false;
 
     public ItemBaseWirelessTerminal(GuiType t) {
         super();
@@ -48,6 +51,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
                                                                                  // terminal
         if (ForgeEventFactory.onItemUseStart(player, item, 1) > 0) {
             if (Platform.isClient()) {
+                setEffect(false);
                 return item;
             }
             IWirelessTermRegistry term = AEApi.instance().registries().wireless();
@@ -131,4 +135,24 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         return this.type;
     }
 
+    public static void setEffect(boolean e) {
+        effect = e;
+    }
+
+    public static boolean getEffect() {
+        return effect;
+    }
+
+    @Override
+    public boolean hasEffect(ItemStack par1ItemStack, int pass) {
+        if (Platform.isClient()) {
+            return getEffect();
+        }
+        return super.hasEffect(par1ItemStack, pass);
+    }
+
+    public static void toggleRestockItemsMode(ItemStack is, boolean state) {
+        NBTTagCompound data = Platform.openNbtData(is);
+        data.setBoolean(restockItems, state);
+    }
 }
