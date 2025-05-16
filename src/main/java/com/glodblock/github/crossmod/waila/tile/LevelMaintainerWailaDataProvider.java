@@ -11,7 +11,6 @@ import net.minecraft.world.World;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.crossmod.waila.Tooltip;
 
-import appeng.api.storage.data.IAEItemStack;
 import appeng.integration.modules.waila.BaseWailaDataProvider;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -25,15 +24,15 @@ public class LevelMaintainerWailaDataProvider extends BaseWailaDataProvider {
         if (te instanceof TileLevelMaintainer tileLevelMaintainer) {
             te.readFromNBT(accessor.getNBTData());
             for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
-                IAEItemStack ias = tileLevelMaintainer.requests.getAEItemStack(i);
-                if (ias != null) {
-                    currentToolTip.add(
-                            Tooltip.tileLevelMaintainerFormat(
-                                    ias.getItemStack().getDisplayName(),
-                                    tileLevelMaintainer.requests.getQuantity(i),
-                                    tileLevelMaintainer.requests.getBatchSize(i),
-                                    tileLevelMaintainer.requests.isEnable(i)));
-                }
+                TileLevelMaintainer.RequestInfo request = tileLevelMaintainer.requests[i];
+                if (request == null) continue;
+                currentToolTip.add(
+                        Tooltip.tileLevelMaintainerFormat(
+                                request.getAEItemStack().getItemStack().getDisplayName(),
+                                request.getQuantity(),
+                                request.getBatchSize(),
+                                request.isEnable()));
+
             }
         }
         return currentToolTip;
