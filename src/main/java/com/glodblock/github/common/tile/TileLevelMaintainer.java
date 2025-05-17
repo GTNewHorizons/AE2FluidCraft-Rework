@@ -588,7 +588,11 @@ public class TileLevelMaintainer extends AENetworkTile
             enable = tag.getBoolean("enable");
             state = LevelState.values()[tag.getInteger("state")];
             if (tag.hasKey("link")) {
+                try {
                 this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
+                } catch (Exception ignored) {
+                    this.link = null;
+                }
             }
             job = null;
         }
@@ -600,7 +604,11 @@ public class TileLevelMaintainer extends AENetworkTile
             enable = tag.getBoolean("enable");
             state = LevelState.values()[tag.getInteger("state")];
             if (tag.hasKey("link")) {
+                try {
                 this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
+                } catch (Exception ignored) {
+                    this.link = null;
+                }
             }
         }
 
