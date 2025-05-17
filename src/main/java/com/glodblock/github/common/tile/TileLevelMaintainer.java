@@ -254,10 +254,10 @@ public class TileLevelMaintainer extends AENetworkTile
             if (jobToSubmit != null) {
                 // Finished calculating a request, try to submit it.
                 ICraftingLink link = craftingGrid.submitJob(jobToSubmit, this, null, false, source);
-                requests[jobToSubmitIdx] = null;
+                requests[jobToSubmitIdx].job = null;
                 if (link != null) {
                     requests[jobToSubmitIdx].updateState(LevelState.Craft);
-                    requests[jobToSubmitIdx].link = link;
+                    this.updateLink(jobToSubmitIdx, link);
                 } else {
                     requests[jobToSubmitIdx].updateState(LevelState.Error);
                 }
@@ -372,6 +372,12 @@ public class TileLevelMaintainer extends AENetworkTile
             stack = this.removeRecursion(stack);
             requests[idx] = new RequestInfo(stack, this);
         }
+        this.saveChanges();
+    }
+
+    private void updateLink(int idx, ICraftingLink link) {
+        if (requests[idx] == null) return;
+        requests[idx].link = link;
         this.saveChanges();
     }
 
