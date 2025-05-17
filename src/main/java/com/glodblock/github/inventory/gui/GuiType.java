@@ -575,32 +575,6 @@ public enum GuiType {
         protected Object createClientGui(EntityPlayer player, TileEntity inv) {
             return new GuiPatternValueAmount(player.inventory, inv);
         }
-    }),
-
-    GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
-
-        @Override
-        protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
-            return new ContainerPatternMulti(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
-            return new GuiPatternMulti(player.inventory, inv);
-        }
-    }),
-
-    GUI_PATTERN_ITEM_RENAMER(new PartOrItemGuiFactory<>(ITerminalHost.class) {
-
-        @Override
-        protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
-            return new ContainerPatternItemRenamer(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
-            return new GuiPatternItemRenamer(player.inventory, inv);
-        }
     });
 
     public static final List<GuiType> VALUES = ImmutableList.copyOf(values());
