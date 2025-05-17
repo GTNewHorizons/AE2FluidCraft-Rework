@@ -209,8 +209,17 @@ public class TileLevelMaintainer extends AENetworkTile
                 boolean isCraftable = aeItem != null && aeItem.isCraftable();
                 boolean shouldCraft = isCraftable && stackSize < quantity;
 
-                if (isDone) this.updateState(i, LevelState.Idle);
-                if (!isCraftable) this.updateState(i, LevelState.Error);
+                if (isDone) {
+                    if (this.requests[i].state != LevelState.Idle) {
+                        this.updateState(i, LevelState.Idle);
+                    }
+                    if (this.requests[i].link != null) {
+                        this.updateLink(i, null);
+                    }
+                    if (!isCraftable) {
+                        updateState(i, LevelState.Error);
+                    }
+                }
 
                 if (allBusy || !isDone || !shouldCraft) {
                     continue;
@@ -379,6 +388,8 @@ public class TileLevelMaintainer extends AENetworkTile
     private void checkState(int idx) {
         if (!requests[idx].enable || requests[idx].quantity == 0 || requests[idx].batchSize == 0) {
             this.updateState(idx, LevelState.None);
+        } else if (!this.isDone(idx)) {
+            this.updateState(idx, LevelState.Craft);
         } else {
             this.updateState(idx, LevelState.Idle);
         }
@@ -589,7 +600,7 @@ public class TileLevelMaintainer extends AENetworkTile
             state = LevelState.values()[tag.getInteger("state")];
             if (tag.hasKey("link")) {
                 try {
-                this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
+                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
                 } catch (Exception ignored) {
                     this.link = null;
                 }
@@ -605,7 +616,7 @@ public class TileLevelMaintainer extends AENetworkTile
             state = LevelState.values()[tag.getInteger("state")];
             if (tag.hasKey("link")) {
                 try {
-                this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
+                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
                 } catch (Exception ignored) {
                     this.link = null;
                 }
