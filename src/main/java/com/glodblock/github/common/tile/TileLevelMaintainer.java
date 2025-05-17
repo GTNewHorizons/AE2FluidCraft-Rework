@@ -186,7 +186,8 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
-                IAEItemStack craftItem = requests[i].itemStack;
+                IAEItemStack craftItem = requests[i].itemStack.copy();
+                craftItem.setStackSize(batchSize);
 
                 if (ModAndClassUtil.ThE) {
                     if (ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
