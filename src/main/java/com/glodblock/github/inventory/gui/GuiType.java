@@ -33,6 +33,7 @@ import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLevelMaintainer;
 import com.glodblock.github.client.gui.GuiLevelTerminal;
 import com.glodblock.github.client.gui.GuiLevelWireless;
+import com.glodblock.github.client.gui.GuiMagnetFilter;
 import com.glodblock.github.client.gui.GuiOCPatternEditor;
 import com.glodblock.github.client.gui.GuiPatternItemRenamer;
 import com.glodblock.github.client.gui.GuiPatternMulti;
@@ -62,6 +63,7 @@ import com.glodblock.github.client.gui.container.ContainerLargeIngredientBuffer;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
 import com.glodblock.github.client.gui.container.ContainerLevelWireless;
+import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
 import com.glodblock.github.client.gui.container.ContainerPatternMulti;
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
@@ -541,6 +543,19 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
             return new GuiPatternItemRenamer(player.inventory, inv);
+        }
+    }),
+
+    WIRELESS_MAGNET_FILTER(new ItemGuiFactory<>(ITerminalHost.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, ITerminalHost inv) {
+            return new ContainerMagnetFilter(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
+            return new GuiMagnetFilter(player.inventory, inv);
         }
     });
 

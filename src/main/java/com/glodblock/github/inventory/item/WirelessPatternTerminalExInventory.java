@@ -2,7 +2,6 @@ package com.glodblock.github.inventory.item;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -14,7 +13,6 @@ import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.ItemBiggerAppEngInventory;
 import com.glodblock.github.inventory.WirelessFluidPatternTerminalPatterns;
-import com.glodblock.github.util.Util;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
@@ -27,9 +25,7 @@ import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.implementations.items.IAEItemPowerStorage;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
-import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.MEMonitorHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
@@ -42,8 +38,7 @@ import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.Platform;
 
-public class WirelessPatternTerminalExInventory extends MEMonitorHandler<IAEItemStack>
-        implements IWirelessPatternTerminal {
+public class WirelessPatternTerminalExInventory extends BaseWirelessInventory implements IWirelessPatternTerminal {
 
     private final ItemStack target;
     private final IAEItemPowerStorage ips;
@@ -68,9 +63,7 @@ public class WirelessPatternTerminalExInventory extends MEMonitorHandler<IAEItem
     @SuppressWarnings("unchecked")
     public WirelessPatternTerminalExInventory(final ItemStack is, final int slot, IGridNode gridNode,
             EntityPlayer player) {
-        super(
-                (IMEInventoryHandler<IAEItemStack>) Objects
-                        .requireNonNull(Util.getWirelessInv(is, player, StorageChannel.ITEMS)));
+        super(is, slot, gridNode, player, StorageChannel.ITEMS);
         this.ips = (ToolWirelessTerminal) is.getItem();
         this.grid = gridNode;
         this.target = is;
@@ -419,6 +412,7 @@ public class WirelessPatternTerminalExInventory extends MEMonitorHandler<IAEItem
 
     @Override
     public void saveSettings() {
+        super.saveSettings();
         this.writeToNBT();
     }
 

@@ -230,8 +230,4 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
             this.getGui().updateSetting(manager, settingName, newValue);
         }
     }
-
-    public ITerminalHost getHost() {
-        return this.host;
-    }
 }
