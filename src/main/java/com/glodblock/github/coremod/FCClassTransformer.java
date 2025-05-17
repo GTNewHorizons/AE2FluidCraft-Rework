@@ -8,8 +8,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
-import com.glodblock.github.coremod.transform.CraftingCpuTransformer;
-import com.glodblock.github.coremod.transform.CraftingGridCacheTransformer;
 import com.glodblock.github.coremod.transform.CraftingTreeNodeTransformer;
 import com.glodblock.github.coremod.transform.DualityInterfaceTransformer;
 import com.glodblock.github.coremod.transform.ExternalStorageRegistryTransformer;
@@ -25,9 +23,8 @@ public class FCClassTransformer implements IClassTransformer {
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         ClassMapper tform;
         switch (transformedName) {
+
             case "appeng.crafting.CraftingTreeNode" -> tform = CraftingTreeNodeTransformer.INSTANCE;
-            case "appeng.me.cache.CraftingGridCache" -> tform = CraftingGridCacheTransformer.INSTANCE;
-            case "appeng.me.cluster.implementations.CraftingCPUCluster" -> tform = CraftingCpuTransformer.INSTANCE;
             case "appeng.helpers.DualityInterface" -> tform = DualityInterfaceTransformer.INSTANCE;
             case "appeng.client.gui.implementations.GuiCraftingCPU", "appeng.client.gui.implementations.GuiCraftConfirm", "net.p455w0rd.wirelesscraftingterminal.client.gui.GuiCraftConfirm", "appeng.client.gui.widgets.GuiCraftingTree" -> tform = GuiCraftingTransformer.INSTANCE;
             case "appeng.integration.modules.NEI" -> tform = NEITransformer.INSTANCE;
