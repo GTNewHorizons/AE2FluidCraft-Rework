@@ -550,6 +550,19 @@ public enum GuiType {
         }
     }),
 
+    GUI_SUPER_STOKER(new TileGuiFactory<>(TileSuperStoker.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, TileSuperStoker inv) {
+            return new ContainerSuperStoker(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, TileSuperStoker inv) {
+            return new GuiSuperStoker(player.inventory, inv);
+        }
+    }),
+
     WIRELESS_MAGNET_FILTER(new ItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
@@ -562,7 +575,6 @@ public enum GuiType {
             return new GuiMagnetFilter(player.inventory, inv);
         }
     }),
-
 
     PATTERN_VALUE_SET_TILE(new TileGuiFactory<>(TileEntity.class) {
 
