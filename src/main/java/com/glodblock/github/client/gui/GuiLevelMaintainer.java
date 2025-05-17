@@ -159,6 +159,8 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             this.originalGuiBtn.setHideEdge(13);
             this.buttonList.add(originalGuiBtn);
         }
+
+        FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer());
     }
 
     @Override
@@ -342,6 +344,16 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     @Override
     public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
         return false;
+    }
+
+    public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state) {
+        if (index < 0 || index >= TileLevelMaintainer.REQ_COUNT) return;
+        component[index].setEnable(isEnabled);
+        component[index].setState(state);
+        component[index].getQty().textField.setText(String.valueOf(quantity));
+        component[index].getBatch().textField.setText(String.valueOf(batchSize));
+        component[index].getQty().validate();
+        component[index].getBatch().validate();
     }
 
     private class Component {

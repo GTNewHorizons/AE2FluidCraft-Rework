@@ -2,9 +2,9 @@ package com.glodblock.github.network;
 
 import javax.annotation.Nullable;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 
-import appeng.helpers.Reflected;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -16,15 +16,19 @@ public class CPacketLevelMaintainer implements IMessage {
         Quantity,
         Batch,
         Enable,
-        Disable
+        Disable,
+        UPDATE,
     }
 
     private Action action;
     private long size;
     private int slotIndex;
 
-    @Reflected
-    public CPacketLevelMaintainer() {}
+    public CPacketLevelMaintainer() {
+        this.action = Action.UPDATE;
+        this.slotIndex = 0;
+        this.size = 0;
+    }
 
     public CPacketLevelMaintainer(Action action, int slotIndex) {
         this.action = action;
@@ -63,6 +67,7 @@ public class CPacketLevelMaintainer implements IMessage {
                     case Batch -> clm.getTile().updateBatchSize(message.slotIndex, message.size);
                     case Enable -> clm.getTile().updateStatus(message.slotIndex, false);
                     case Disable -> clm.getTile().updateStatus(message.slotIndex, true);
+                    case UPDATE -> FluidCraft.proxy.netHandler.sendTo(new SPacketLevelMaintainerGuiUpdate(clm.getTile().requests), ctx.getServerHandler().playerEntity);
                 }
             }
             return null;
