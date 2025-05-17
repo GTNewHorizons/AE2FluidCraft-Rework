@@ -109,7 +109,7 @@ public class TileLevelMaintainer extends AENetworkTile
                                 .injectItems(ItemFluidDrop.getAeFluidStack(items), mode, source);
                         if (notInjectedItems != null) {
                             items.setStackSize(notInjectedItems.getStackSize());
-                            this.requests[idx].updateState(LevelState.Export);
+                            this.updateState(idx, LevelState.Export);
 
                             return items;
                         } else {
@@ -129,10 +129,9 @@ public class TileLevelMaintainer extends AENetworkTile
 
     @Override
     public void jobStateChange(ICraftingLink link) {
-        for (int x = 0; x < REQ_COUNT; x++) {
-            RequestInfo info = requests[x];
-            if (info != null && info.link == link) {
-                info.link = null;
+        for (int i = 0; i < REQ_COUNT; i++) {
+            if (requests[i] != null && requests[i].link == link) {
+                this.updateLink(i, null);
             }
         }
     }
@@ -183,7 +182,7 @@ public class TileLevelMaintainer extends AENetworkTile
                 final boolean isEnable = requests[i].enable;
 
                 if (!isEnable || quantity == 0 || batchSize == 0) {
-                    requests[i].updateState(LevelState.None);
+                    this.updateState(i, LevelState.None);
                     continue;
                 }
 
@@ -209,8 +208,8 @@ public class TileLevelMaintainer extends AENetworkTile
                 boolean isCraftable = aeItem != null && aeItem.isCraftable();
                 boolean shouldCraft = isCraftable && stackSize < quantity;
 
-                if (isDone) this.requests[i].updateState(LevelState.Idle);
-                if (!isCraftable) this.requests[i].updateState(LevelState.Error);
+                if (isDone) this.updateState(i, LevelState.Idle);
+                if (!isCraftable) this.updateState(i, LevelState.Error);
 
                 if (allBusy || !isDone || !shouldCraft) {
                     continue;
@@ -233,7 +232,7 @@ public class TileLevelMaintainer extends AENetworkTile
                         itemToBeginIdx = i;
                     }
                 } else if (jobTask.isDone()) {
-                    requests[i].updateState(LevelState.Craft);
+                    this.updateState(i, LevelState.Craft);
                     try {
                         ICraftingJob job = jobTask.get();
                         if (job != null) {
@@ -242,10 +241,10 @@ public class TileLevelMaintainer extends AENetworkTile
                                 jobToSubmitIdx = i;
                             }
                         } else {
-                            requests[i].updateState(LevelState.Error);
+                            this.updateState(i, LevelState.Error);
                         }
                     } catch (Exception ignored) {
-                        requests[i].updateState(LevelState.Error);
+                        this.updateState(i, LevelState.Error);
                     }
                 }
 
@@ -256,17 +255,17 @@ public class TileLevelMaintainer extends AENetworkTile
                 ICraftingLink link = craftingGrid.submitJob(jobToSubmit, this, null, false, source);
                 requests[jobToSubmitIdx].job = null;
                 if (link != null) {
-                    requests[jobToSubmitIdx].updateState(LevelState.Craft);
+                    this.updateState(jobToSubmitIdx, LevelState.Craft);
                     this.updateLink(jobToSubmitIdx, link);
                 } else {
-                    requests[jobToSubmitIdx].updateState(LevelState.Error);
+                    this.updateState(jobToSubmitIdx, LevelState.Error);
                 }
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
 
                 requests[itemToBeginIdx].job = craftingGrid
                         .beginCraftingJob(getWorldObj(), grid, source, itemToBegin, null);
-                requests[itemToBeginIdx].updateState(LevelState.Craft);
+                this.updateState(itemToBeginIdx, LevelState.Craft);
 
                 // Try the next item next time.
                 firstRequest = (firstRequest + 1) % REQ_COUNT;
@@ -300,9 +299,6 @@ public class TileLevelMaintainer extends AENetworkTile
     protected boolean canDoBusWork() {
         return getProxy().isActive();
     }
-
-    @Override
-    public void gridChanged() {}
 
     @Override
     public boolean isPowered() {
@@ -350,22 +346,20 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
-    // TODO: rename
     public void updateStatus(int idx, boolean enable) {
         if (requests[idx] == null) return;
         requests[idx].enable = enable;
-
         this.checkState(idx);
-        AELog.info(
-                "[TileLevelMaintainer] " + requests[idx].quantity
-                        + " "
-                        + requests[idx].batchSize
-                        + " "
-                        + requests[idx].enable);
         this.saveChanges();
     }
 
-    public void updateStack(int idx, ItemStack stack) {
+    private void updateState(int idx, @NotNull LevelState state) {
+        if (requests[idx] == null) return;
+        requests[idx].state = state;
+        this.saveChanges();
+    }
+
+    public void updateStack(int idx, @Nullable ItemStack stack) {
         if (stack == null) {
             requests[idx] = null;
         } else {
@@ -375,7 +369,7 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
-    private void updateLink(int idx, ICraftingLink link) {
+    private void updateLink(int idx, @Nullable ICraftingLink link) {
         if (requests[idx] == null) return;
         requests[idx].link = link;
         this.saveChanges();
@@ -383,9 +377,9 @@ public class TileLevelMaintainer extends AENetworkTile
 
     private void checkState(int idx) {
         if (!requests[idx].enable || requests[idx].quantity == 0 || requests[idx].batchSize == 0) {
-            requests[idx].updateState(LevelState.None);
+            this.updateState(idx, LevelState.None);
         } else {
-            requests[idx].updateState(LevelState.Idle);
+            this.updateState(idx, LevelState.Idle);
         }
     }
 
@@ -547,7 +541,7 @@ public class TileLevelMaintainer extends AENetworkTile
     }
 
     @Override
-    public TileEntity getTile() {
+    public @NotNull TileEntity getTile() {
         return this;
     }
 
@@ -624,16 +618,6 @@ public class TileLevelMaintainer extends AENetworkTile
                 tag.setTag("link", linkTag);
             }
             return tag;
-        }
-
-        public void updateState(LevelState state) {
-            this.state = state;
-            this.tile.saveChanges();
-        }
-
-        public void updateEnable(boolean enable) {
-            this.enable = enable;
-            this.tile.saveChanges();
         }
 
         public IAEItemStack getAEItemStack() {

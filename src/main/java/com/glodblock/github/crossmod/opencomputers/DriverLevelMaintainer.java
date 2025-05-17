@@ -81,7 +81,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
                     throw new IllegalArgumentException("Invalid slot");
                 }
                 boolean enable = args.checkBoolean(1);
-                tileEntity.requests[slot].updateEnable(enable);
+                tileEntity.updateStatus(slot, enable);
                 return true;
             }
         }
