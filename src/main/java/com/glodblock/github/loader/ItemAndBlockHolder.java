@@ -14,6 +14,7 @@ import com.glodblock.github.common.block.BlockIngredientBuffer;
 import com.glodblock.github.common.block.BlockLargeIngredientBuffer;
 import com.glodblock.github.common.block.BlockLevelMaintainer;
 import com.glodblock.github.common.block.BlockOCPatternEditor;
+import com.glodblock.github.common.block.BlockSuperStoker;
 import com.glodblock.github.common.block.BlockWalrus;
 import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
 import com.glodblock.github.common.item.ItemBasicFluidStoragePart;
@@ -65,6 +66,7 @@ public class ItemAndBlockHolder {
     public static BlockLargeIngredientBuffer LARGE_BUFFER = new BlockLargeIngredientBuffer().register();
     public static BlockOCPatternEditor OC_EDITOR = new BlockOCPatternEditor().register();
     public static BlockWalrus WALRUS = new BlockWalrus().register();
+    public static BlockSuperStoker SUPER_STOKER = new BlockSuperStoker().register();
     public static ItemFluidDrop DROP = new ItemFluidDrop().register();
     public static ItemFluidEncodedPattern PATTERN = new ItemFluidEncodedPattern().register();
     public static ItemPartFluidTerminal FLUID_TERM = new ItemPartFluidTerminal().register();
