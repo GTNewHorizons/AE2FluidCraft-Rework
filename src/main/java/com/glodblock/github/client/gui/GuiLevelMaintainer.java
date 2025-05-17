@@ -358,7 +358,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
     private class Component {
 
-        public boolean isEnable = true;
+        public boolean isEnable = false;
         private final Widget qty;
         private final Widget batch;
         private final GuiFCImgButton disable;
