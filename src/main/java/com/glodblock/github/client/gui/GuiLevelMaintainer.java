@@ -266,16 +266,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     }
 
     @Override
-    protected void handleMouseClick(final Slot slot, final int slotIdx, final int ctrlDown, final int mouseButton) {
-        if (slot instanceof SlotFluidConvertingFake && this.cont.getPlayerInv().getItemStack() != null) {
-            this.component[slot.getSlotIndex()].getQty().textField
-                    .setText(String.valueOf(this.cont.getPlayerInv().getItemStack().stackSize));
-            return;
-        }
-        super.handleMouseClick(slot, slotIdx, ctrlDown, mouseButton);
-    }
-
-    @Override
     protected void actionPerformed(final GuiButton btn) {
         if (btn == originalGuiBtn) {
             switchGui();
