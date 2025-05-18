@@ -5,8 +5,10 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.crossmod.waila.Tooltip;
@@ -22,17 +24,24 @@ public class LevelMaintainerWailaDataProvider extends BaseWailaDataProvider {
             final IWailaDataAccessor accessor, final IWailaConfigHandler config) {
         final TileEntity te = accessor.getTileEntity();
         if (te instanceof TileLevelMaintainer tileLevelMaintainer) {
-            te.readFromNBT(accessor.getNBTData());
-            for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
-                TileLevelMaintainer.RequestInfo request = tileLevelMaintainer.requests[i];
-                if (request == null) continue;
-                currentToolTip.add(
-                        Tooltip.tileLevelMaintainerFormat(
-                                request.getAEItemStack().getItemStack().getDisplayName(),
-                                request.getQuantity(),
-                                request.getBatchSize(),
-                                request.isEnable()));
+            NBTTagCompound data = accessor.getNBTData();
+            if (data.hasKey("Requests")) {
+                NBTTagList tagList = data.getTagList("Requests", Constants.NBT.TAG_COMPOUND);
+                for (int i = 0; i < tagList.tagCount(); i++) {
+                    NBTTagCompound tag = tagList.getCompoundTagAt(i);
+                    if (tag == null || !tag.hasKey("stack")) continue;
 
+                    TileLevelMaintainer.RequestInfo request = new TileLevelMaintainer.RequestInfo(
+                            tag,
+                            tileLevelMaintainer);
+                    currentToolTip.add(
+                            Tooltip.tileLevelMaintainerFormat(
+                                    request.getAEItemStack().getItemStack().getDisplayName(),
+                                    request.getQuantity(),
+                                    request.getBatchSize(),
+                                    request.isEnable()));
+
+                }
             }
         }
         return currentToolTip;
