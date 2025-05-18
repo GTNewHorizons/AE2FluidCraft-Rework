@@ -25,11 +25,11 @@ public class LevelMaintainerWailaDataProvider extends BaseWailaDataProvider {
         final TileEntity te = accessor.getTileEntity();
         if (te instanceof TileLevelMaintainer tileLevelMaintainer) {
             NBTTagCompound data = accessor.getNBTData();
-            if (data.hasKey("Requests")) {
-                NBTTagList tagList = data.getTagList("Requests", Constants.NBT.TAG_COMPOUND);
+            if (data.hasKey(TileLevelMaintainer.NBT_REQUESTS)) {
+                NBTTagList tagList = data.getTagList(TileLevelMaintainer.NBT_REQUESTS, Constants.NBT.TAG_COMPOUND);
                 for (int i = 0; i < tagList.tagCount(); i++) {
                     NBTTagCompound tag = tagList.getCompoundTagAt(i);
-                    if (tag == null || !tag.hasKey("stack")) continue;
+                    if (tag == null || !tag.hasKey(TileLevelMaintainer.NBT_STACK)) continue;
 
                     TileLevelMaintainer.RequestInfo request = new TileLevelMaintainer.RequestInfo(
                             tag,

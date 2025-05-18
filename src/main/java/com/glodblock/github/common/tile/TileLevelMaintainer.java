@@ -66,6 +66,13 @@ public class TileLevelMaintainer extends AENetworkTile
         implements IAEAppEngInventory, IGridTickable, ICraftingRequester, IPowerChannelState, ILevelViewable {
 
     public static final int REQ_COUNT = 5;
+    public static final String NBT_REQUESTS = "Requests";
+    public static final String NBT_STACK = "stack";
+    public static final String NBT_QUANTITY = "quantity";
+    public static final String NBT_BATCH = "batch";
+    public static final String NBT_ENABLE = "enable";
+    public static final String NBT_STATE = "state";
+    public static final String NBT_LINK = "link";
 
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
     private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests, this);
@@ -422,16 +429,16 @@ public class TileLevelMaintainer extends AENetworkTile
                 tagList.appendTag(new NBTTagCompound());
             }
         }
-        data.setTag("Requests", tagList);
+        data.setTag(NBT_REQUESTS, tagList);
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public void readFromNBTEvent(NBTTagCompound data) {
-        if (data.hasKey("Requests")) {
-            NBTTagList tagList = data.getTagList("Requests", Constants.NBT.TAG_COMPOUND);
+        if (data.hasKey(NBT_REQUESTS)) {
+            NBTTagList tagList = data.getTagList(NBT_REQUESTS, Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < tagList.tagCount(); i++) {
                 NBTTagCompound tag = tagList.getCompoundTagAt(i);
-                if (tag == null || !tag.hasKey("stack")) {
+                if (tag == null || !tag.hasKey(NBT_STACK)) {
                     this.requests[i] = null;
                 } else if (this.requests[i] == null) {
                     this.requests[i] = new RequestInfo(tag, this);
@@ -593,14 +600,14 @@ public class TileLevelMaintainer extends AENetworkTile
 
         public RequestInfo(NBTTagCompound tag, TileLevelMaintainer tile) {
             this.tile = tile;
-            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag("stack"));
-            quantity = tag.getLong("quantity");
-            batchSize = tag.getLong("batch");
-            enable = tag.getBoolean("enable");
-            state = LevelState.values()[tag.getInteger("state")];
-            if (tag.hasKey("link")) {
+            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag(NBT_STACK));
+            quantity = tag.getLong(NBT_QUANTITY);
+            batchSize = tag.getLong(NBT_BATCH);
+            enable = tag.getBoolean(NBT_ENABLE);
+            state = LevelState.values()[tag.getInteger(NBT_STATE)];
+            if (tag.hasKey(NBT_LINK)) {
                 try {
-                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
+                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag(NBT_LINK), this.tile);
                 } catch (Exception ignored) {
                     this.link = null;
                 }
@@ -609,14 +616,14 @@ public class TileLevelMaintainer extends AENetworkTile
         }
 
         public void loadFromNBT(NBTTagCompound tag) {
-            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag("stack"));
-            quantity = tag.getLong("quantity");
-            batchSize = tag.getLong("batch");
-            enable = tag.getBoolean("enable");
-            state = LevelState.values()[tag.getInteger("state")];
-            if (tag.hasKey("link")) {
+            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag(NBT_STACK));
+            quantity = tag.getLong(NBT_QUANTITY);
+            batchSize = tag.getLong(NBT_BATCH);
+            enable = tag.getBoolean(NBT_ENABLE);
+            state = LevelState.values()[tag.getInteger(NBT_STATE)];
+            if (tag.hasKey(NBT_LINK)) {
                 try {
-                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag("link"), this.tile);
+                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag(NBT_LINK), this.tile);
                 } catch (Exception ignored) {
                     this.link = null;
                 }
@@ -627,15 +634,15 @@ public class TileLevelMaintainer extends AENetworkTile
             NBTTagCompound tag = new NBTTagCompound();
             NBTTagCompound stackTag = new NBTTagCompound();
             itemStack.writeToNBT(stackTag);
-            tag.setTag("stack", stackTag);
-            tag.setLong("quantity", quantity);
-            tag.setLong("batch", batchSize);
-            tag.setBoolean("enable", enable);
-            tag.setInteger("state", state.ordinal());
+            tag.setTag(NBT_STACK, stackTag);
+            tag.setLong(NBT_QUANTITY, quantity);
+            tag.setLong(NBT_BATCH, batchSize);
+            tag.setBoolean(NBT_ENABLE, enable);
+            tag.setInteger(NBT_STATE, state.ordinal());
             if (this.link != null) {
                 NBTTagCompound linkTag = new NBTTagCompound();
                 this.link.writeToNBT(linkTag);
-                tag.setTag("link", linkTag);
+                tag.setTag(NBT_LINK, linkTag);
             }
             return tag;
         }
