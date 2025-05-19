@@ -24,18 +24,6 @@ public class CoreModHooks {
         return tile != null ? FluidConvertingInventoryAdaptor.wrap(tile, face) : null;
     }
 
-    public static long getCraftingByteCost(IAEItemStack stack) {
-        return stack.getItem() instanceof ItemFluidDrop ? (long) Math.ceil(stack.getStackSize() / 1000D)
-                : stack.getStackSize();
-    }
-
-    public static long getFluidDropsByteCost(long totalBytes, long originByte, IAEItemStack stack) {
-        if (stack != null && stack.getItem() instanceof ItemFluidDrop) {
-            return (long) Math.ceil(originByte / 1000D) + totalBytes;
-        }
-        return originByte + totalBytes;
-    }
-
     public static ItemStack displayFluid(IAEItemStack aeStack) {
         if (aeStack.getItemStack() != null && aeStack.getItemStack().getItem() instanceof ItemFluidDrop) {
             FluidStack fluid = ItemFluidDrop.getFluidStack(aeStack.getItemStack());
