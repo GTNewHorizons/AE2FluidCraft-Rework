@@ -1,6 +1,5 @@
 package com.glodblock.github.common.item;
 
-import static com.glodblock.github.common.Config.reStockTime;
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
 
 import java.util.ArrayList;
@@ -8,7 +7,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,9 +39,7 @@ import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
-import appeng.api.config.Actionable;
 import appeng.api.networking.IGridNode;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.PlayerMessages;
 import appeng.util.Platform;
@@ -276,47 +272,11 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         return true;
     }
 
-    private static final Minecraft mc = Minecraft.getMinecraft();
-    private static long refreshTick = System.currentTimeMillis();
-
     @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int slot, boolean p_77663_5_) {
         if (Platform.isServer() && entityIn instanceof EntityPlayer player) {
             if (WirelessMagnet.getMode(stack) != WirelessMagnet.Mode.Off) {
                 WirelessMagnet.doMagnet(stack, player.worldObj, player);
-            }
-
-            if (refreshTick + reStockTime < System.currentTimeMillis()) {
-                // try to stock items
-                if (mc.currentScreen == null && Util.isRestock(stack)) {
-                    IGridNode gridNode = Util.getWirelessGrid(stack);
-                    if (gridNode != null && Util.isRestock(stack) && Util.rangeCheck(stack, player, gridNode)) {
-                        restockItems(stack, gridNode, slot, player);
-                    }
-                }
-                refreshTick = System.currentTimeMillis();
-            }
-        }
-    }
-
-    private void restockItems(ItemStack terminal, IGridNode gridNode, int slot, EntityPlayer player) {
-        WirelessCraftingTerminalInventory inv = new WirelessCraftingTerminalInventory(terminal, slot, gridNode, player);
-
-        for (int i = 0; i < 9; i++) {
-            ItemStack is = player.inventory.mainInventory[i];
-            if (is != null) {
-                int maxSize = is.getMaxStackSize();
-                if (is.stackSize < maxSize) {
-                    int fillSize = maxSize - is.stackSize;
-                    IAEItemStack ias = AEApi.instance().storage().createItemStack(is);
-                    ias.setStackSize(fillSize);
-
-                    IAEItemStack extractedItem = (IAEItemStack) inv
-                            .extractItems(ias, Actionable.MODULATE, inv.getActionSource());
-                    if (extractedItem != null) {
-                        player.inventory.addItemStackToInventory(extractedItem.getItemStack());
-                    }
-                }
             }
         }
     }
