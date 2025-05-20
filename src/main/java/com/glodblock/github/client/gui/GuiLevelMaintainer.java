@@ -122,7 +122,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     @Override
     public void initGui() {
         super.initGui();
-        TileLevelMaintainer tile = this.cont.getTile();
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             component[i] = new Component(
                     new Widget(
@@ -140,14 +139,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "DISABLE", "DISABLE", false),
                     new FCGuiLineField(fontRendererObj, guiLeft + 47, guiTop + 33 + 19 * i, 125),
                     this.buttonList);
-
-            if (tile.requests[i] == null) continue;
-            component[i].setEnable(tile.requests[i].isEnable());
-            component[i].setState(tile.requests[i].getState());
-            component[i].getQty().textField.setText(String.valueOf(tile.requests[i].getQuantity()));
-            component[i].getBatch().textField.setText(String.valueOf(tile.requests[i].getBatchSize()));
-            component[i].getQty().validate();
-            component[i].getBatch().validate();
         }
         if (this.icon != null) {
             this.originalGuiBtn = new GuiTabButton(
@@ -159,8 +150,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             this.originalGuiBtn.setHideEdge(13);
             this.buttonList.add(originalGuiBtn);
         }
-
-        FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer());
     }
 
     @Override
@@ -178,11 +167,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         mc.getTextureManager().bindTexture(TEX_BG);
         drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
 
-        TileLevelMaintainer tile = this.cont.getTile();
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
-            if (tile.requests[i] != null) {
-                this.component[i].setState(tile.requests[i].getState());
-            }
             this.component[i].draw();
         }
     }
@@ -344,6 +329,11 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         component[index].getBatch().textField.setText(String.valueOf(batchSize));
         component[index].getQty().validate();
         component[index].getBatch().validate();
+    }
+
+    public void updateComponent(int index, LevelState state) {
+        if (index < 0 || index >= TileLevelMaintainer.REQ_COUNT) return;
+        component[index].setState(state);
     }
 
     private class Component {

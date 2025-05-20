@@ -5,9 +5,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
+import com.glodblock.github.network.SPacketLevelMaintainerGuiUpdate;
 
 import appeng.api.config.SecurityPermissions;
 import appeng.container.AEBaseContainer;
@@ -18,6 +20,10 @@ public class ContainerLevelMaintainer extends AEBaseContainer {
 
     private final TileLevelMaintainer tile;
     private final SlotFluidConvertingFake[] requestSlots = new SlotFluidConvertingFake[TileLevelMaintainer.REQ_COUNT];
+
+    private static final int UPDATE_INTERVAL = 20;
+    private boolean isFirstUpdate = true;
+    private int updateCount = UPDATE_INTERVAL;
 
     public ContainerLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(ipl, tile);
@@ -79,8 +85,23 @@ public class ContainerLevelMaintainer extends AEBaseContainer {
 
     @Override
     public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        if (Platform.isClient()) {
+            return;
+        }
+
         this.verifyPermissions(SecurityPermissions.BUILD, false);
 
-        super.detectAndSendChanges();
+        if (this.updateCount++ >= UPDATE_INTERVAL) {
+            this.updateGui();
+        }
+    }
+
+    public void updateGui() {
+        FluidCraft.proxy.netHandler.sendTo(
+                new SPacketLevelMaintainerGuiUpdate(this.tile.requests, !this.isFirstUpdate),
+                (EntityPlayerMP) this.getInventoryPlayer().player);
+        this.isFirstUpdate = false;
+        this.updateCount = 0;
     }
 }

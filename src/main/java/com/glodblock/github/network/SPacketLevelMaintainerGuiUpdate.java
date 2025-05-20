@@ -17,12 +17,15 @@ import io.netty.buffer.ByteBuf;
 public class SPacketLevelMaintainerGuiUpdate implements IMessage {
 
     private Info[] infoList;
+    private boolean onlyState;
 
     @SuppressWarnings("unused")
     public SPacketLevelMaintainerGuiUpdate() {}
 
-    SPacketLevelMaintainerGuiUpdate(RequestInfo[] requests) {
+    public SPacketLevelMaintainerGuiUpdate(RequestInfo[] requests, boolean onlyState) {
         this.infoList = new Info[REQ_COUNT];
+        this.onlyState = onlyState;
+
         for (int i = 0; i < REQ_COUNT; i++) {
             if (requests[i] == null) {
                 this.infoList[i] = null;
@@ -39,13 +42,19 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         this.infoList = new Info[REQ_COUNT];
+        this.onlyState = buf.readBoolean();
+
         for (int i = 0; i < REQ_COUNT; i++) {
             if (buf.readBoolean()) {
-                this.infoList[i] = new Info(
-                        buf.readLong(),
-                        buf.readLong(),
-                        buf.readBoolean(),
-                        LevelState.values()[buf.readInt()]);
+                if (this.onlyState) {
+                    this.infoList[i] = new Info(LevelState.values()[buf.readInt()]);
+                } else {
+                    this.infoList[i] = new Info(
+                            buf.readLong(),
+                            buf.readLong(),
+                            buf.readBoolean(),
+                            LevelState.values()[buf.readInt()]);
+                }
             } else {
                 this.infoList[i] = null;
             }
@@ -54,12 +63,15 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
+        buf.writeBoolean(this.onlyState);
         for (Info info : this.infoList) {
             buf.writeBoolean(info != null);
             if (info == null) continue;
-            buf.writeLong(info.quantity);
-            buf.writeLong(info.batchSize);
-            buf.writeBoolean(info.enable);
+            if (!this.onlyState) {
+                buf.writeLong(info.quantity);
+                buf.writeLong(info.batchSize);
+                buf.writeBoolean(info.enable);
+            }
             buf.writeInt(info.state.ordinal());
         }
     }
@@ -77,6 +89,13 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
             this.enable = enable;
             this.state = state;
         }
+
+        Info(LevelState state) {
+            this.quantity = 0;
+            this.batchSize = 0;
+            this.enable = false;
+            this.state = state;
+        }
     }
 
     public static class Handler implements IMessageHandler<SPacketLevelMaintainerGuiUpdate, IMessage> {
@@ -89,7 +108,11 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
                 for (int i = 0; i < REQ_COUNT; i++) {
                     Info info = message.infoList[i];
                     if (info == null) continue;
-                    gui.updateComponent(i, info.quantity, info.batchSize, info.enable, info.state);
+                    if (message.onlyState) {
+                        gui.updateComponent(i, info.state);
+                    } else {
+                        gui.updateComponent(i, info.quantity, info.batchSize, info.enable, info.state);
+                    }
                 }
             }
 
