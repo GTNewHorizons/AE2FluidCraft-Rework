@@ -441,7 +441,11 @@ public class TileLevelMaintainer extends AENetworkTile
                 if (tag == null || !tag.hasKey(NBT_STACK)) {
                     this.requests[i] = null;
                 } else if (this.requests[i] == null) {
-                    this.requests[i] = new RequestInfo(tag, this);
+                    try {
+                        this.requests[i] = new RequestInfo(tag, this);
+                    } catch (Exception ignored) {
+                        this.requests[i] = null;
+                    }
                 } else {
                     this.requests[i].loadFromNBT(tag);
                 }
@@ -598,9 +602,12 @@ public class TileLevelMaintainer extends AENetworkTile
             job = null;
         }
 
-        public RequestInfo(NBTTagCompound tag, TileLevelMaintainer tile) {
+        public RequestInfo(NBTTagCompound tag, TileLevelMaintainer tile) throws IllegalArgumentException {
             this.tile = tile;
             itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag(NBT_STACK));
+            if (itemStack == null) {
+                throw new IllegalArgumentException("ItemStack cannot be null!");
+            }
             quantity = tag.getLong(NBT_QUANTITY);
             batchSize = tag.getLong(NBT_BATCH);
             enable = tag.getBoolean(NBT_ENABLE);

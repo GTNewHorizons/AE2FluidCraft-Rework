@@ -31,16 +31,17 @@ public class LevelMaintainerWailaDataProvider extends BaseWailaDataProvider {
                     NBTTagCompound tag = tagList.getCompoundTagAt(i);
                     if (tag == null || !tag.hasKey(TileLevelMaintainer.NBT_STACK)) continue;
 
-                    TileLevelMaintainer.RequestInfo request = new TileLevelMaintainer.RequestInfo(
-                            tag,
-                            tileLevelMaintainer);
-                    currentToolTip.add(
-                            Tooltip.tileLevelMaintainerFormat(
-                                    request.getAEItemStack().getItemStack().getDisplayName(),
-                                    request.getQuantity(),
-                                    request.getBatchSize(),
-                                    request.isEnable()));
-
+                    try {
+                        TileLevelMaintainer.RequestInfo request = new TileLevelMaintainer.RequestInfo(
+                                tag,
+                                tileLevelMaintainer);
+                        currentToolTip.add(
+                                Tooltip.tileLevelMaintainerFormat(
+                                        request.getAEItemStack().getItemStack().getDisplayName(),
+                                        request.getQuantity(),
+                                        request.getBatchSize(),
+                                        request.isEnable()));
+                    } catch (Exception ignored) {}
                 }
             }
         }
