@@ -13,9 +13,9 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.FCBaseItemCell;
-import com.glodblock.github.common.tile.TileSuperStoker;
+import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFake;
-import com.glodblock.github.network.SPacketSuperStokerUpdate;
+import com.glodblock.github.network.SPacketSuperStockReplenisherUpdate;
 
 import appeng.api.storage.data.IAEStack;
 import appeng.container.AEBaseContainer;
@@ -24,14 +24,14 @@ import appeng.container.slot.SlotPatternOutputs;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.items.storage.ItemBasicStorageCell;
 
-public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSlotHost {
+public class ContainerSuperStockReplenisher extends AEBaseContainer implements IOptionalSlotHost {
 
-    private final TileSuperStoker tile;
+    private final TileSuperStockReplenisher tile;
     private final IInventory configFluids;
     private final IInventory configItems;
     private int lastUpdated = 0;
 
-    public ContainerSuperStoker(InventoryPlayer ipl, TileSuperStoker tile) {
+    public ContainerSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(ipl, tile);
         this.tile = tile;
         configFluids = tile.getConfigFluid();
@@ -101,7 +101,7 @@ public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSl
 
             for (final Object g : this.crafters) {
                 if (g instanceof EntityPlayer) {
-                    FluidCraft.proxy.netHandler.sendTo(new SPacketSuperStokerUpdate(tmp), (EntityPlayerMP) g);
+                    FluidCraft.proxy.netHandler.sendTo(new SPacketSuperStockReplenisherUpdate(tmp), (EntityPlayerMP) g);
                 }
             }
         }
@@ -147,7 +147,7 @@ public class ContainerSuperStoker extends AEBaseContainer implements IOptionalSl
         return super.isValidForSlot(s, is);
     }
 
-    public TileSuperStoker getTile() {
+    public TileSuperStockReplenisher getTile() {
         return tile;
     }
 }

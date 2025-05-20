@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
-import com.glodblock.github.client.gui.container.ContainerSuperStoker;
+import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
 import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -94,7 +94,7 @@ public class CPacketPatternValueSet implements IMessage {
                                     message.originGui);
                         }
                         if (player.openContainer instanceof FCContainerEncodeTerminal
-                                || player.openContainer instanceof ContainerSuperStoker) {
+                                || player.openContainer instanceof ContainerSuperStockReplenisher) {
                             Slot slot = player.openContainer.getSlot(message.valueIndex);
                             if (slot instanceof SlotFake) {
                                 ItemStack stack = slot.getStack().copy();

@@ -11,9 +11,9 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.container.ContainerSuperStoker;
+import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.tile.TileSuperStoker;
+import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 import com.glodblock.github.network.CPacketInventoryAction;
 
 import appeng.api.storage.data.IAEItemStack;
@@ -25,17 +25,17 @@ import appeng.core.localization.GuiText;
 import appeng.helpers.InventoryAction;
 import appeng.util.item.AEItemStack;
 
-public class GuiSuperStoker extends AEBaseGui {
+public class GuiSuperStockReplenisher extends AEBaseGui {
 
-    private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/superStoker.png");
-    private final ContainerSuperStoker cont;
-    private final TileSuperStoker tile;
+    private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/superStockReplenisher.png");
+    private final ContainerSuperStockReplenisher cont;
+    private final TileSuperStockReplenisher tile;
     private Map<Integer, IAEStack<?>> list = new HashMap<>();
 
-    public GuiSuperStoker(InventoryPlayer ipl, TileSuperStoker tile) {
-        super(new ContainerSuperStoker(ipl, tile));
+    public GuiSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
+        super(new ContainerSuperStockReplenisher(ipl, tile));
         this.tile = tile;
-        this.cont = (ContainerSuperStoker) inventorySlots;
+        this.cont = (ContainerSuperStockReplenisher) inventorySlots;
         this.ySize = 251;
         this.xSize = 216;
     }

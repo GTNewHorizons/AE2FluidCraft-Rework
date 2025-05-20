@@ -50,7 +50,7 @@ import appeng.tile.inventory.InvOperation;
 import appeng.util.item.AEFluidStack;
 import io.netty.buffer.ByteBuf;
 
-public class TileSuperStoker extends AENetworkInvTile
+public class TileSuperStockReplenisher extends AENetworkInvTile
         implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
@@ -64,7 +64,7 @@ public class TileSuperStoker extends AENetworkInvTile
     private long storedFluidCount;
     private long storedItemCount;
 
-    public TileSuperStoker() {
+    public TileSuperStockReplenisher() {
         getProxy().setIdlePowerUsage(4D);
         getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
         this.source = new MachineSource(this);
@@ -356,14 +356,14 @@ public class TileSuperStoker extends AENetworkInvTile
     }
 
     @TileEvent(TileEventType.NETWORK_READ)
-    public boolean readFromStream_TileSuperStoker(final ByteBuf data) {
+    public boolean readFromStream_TileSuperStockReplenisher(final ByteBuf data) {
         final boolean oldPower = isPowered;
         isPowered = data.readBoolean();
         return isPowered != oldPower;
     }
 
     @TileEvent(TileEventType.NETWORK_WRITE)
-    public void writeToStream_TileSuperStoker(final ByteBuf data) {
+    public void writeToStream_TileSuperStockReplenisher(final ByteBuf data) {
         data.writeBoolean(isActive());
     }
 

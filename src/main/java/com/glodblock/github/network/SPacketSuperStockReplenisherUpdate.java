@@ -7,7 +7,7 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
-import com.glodblock.github.client.gui.GuiSuperStoker;
+import com.glodblock.github.client.gui.GuiSuperStockReplenisher;
 import com.glodblock.github.util.Util;
 
 import appeng.api.storage.data.IAEStack;
@@ -16,13 +16,13 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-public class SPacketSuperStokerUpdate implements IMessage {
+public class SPacketSuperStockReplenisherUpdate implements IMessage {
 
     private Map<Integer, IAEStack<?>> list;
 
-    public SPacketSuperStokerUpdate() {}
+    public SPacketSuperStockReplenisherUpdate() {}
 
-    public SPacketSuperStokerUpdate(Map<Integer, IAEStack<?>> data) {
+    public SPacketSuperStockReplenisherUpdate(Map<Integer, IAEStack<?>> data) {
         this.list = data;
     }
 
@@ -45,12 +45,12 @@ public class SPacketSuperStokerUpdate implements IMessage {
         }
     }
 
-    public static class Handler implements IMessageHandler<SPacketSuperStokerUpdate, IMessage> {
+    public static class Handler implements IMessageHandler<SPacketSuperStockReplenisherUpdate, IMessage> {
 
         @Override
-        public IMessage onMessage(SPacketSuperStokerUpdate message, MessageContext ctx) {
+        public IMessage onMessage(SPacketSuperStockReplenisherUpdate message, MessageContext ctx) {
             final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
-            if (gs instanceof GuiSuperStoker gss) {
+            if (gs instanceof GuiSuperStockReplenisher gss) {
                 gss.update(message.list);
             }
             return null;

@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
-import com.glodblock.github.common.tile.TileSuperStoker;
+import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
@@ -16,11 +16,11 @@ import com.glodblock.github.util.NameConst;
 import appeng.block.AEBaseItemBlock;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BlockSuperStoker extends FCBaseBlock {
+public class BlockSuperStockReplenisher extends FCBaseBlock {
 
-    public BlockSuperStoker() {
-        super(Material.web, NameConst.BLOCK_SUPER_STOKER);
-        setTileEntity(TileSuperStoker.class);
+    public BlockSuperStockReplenisher() {
+        super(Material.web, NameConst.BLOCK_SUPER_STOCK_REPLENISHER);
+        setTileEntity(TileSuperStockReplenisher.class);
         setOpaque(false);
         setFullBlock(false);
         this.lightOpacity = 4;
@@ -32,7 +32,7 @@ public class BlockSuperStoker extends FCBaseBlock {
         if (player.isSneaking()) {
             return false;
         }
-        TileSuperStoker tile = getTileEntity(world, x, y, z);
+        TileSuperStockReplenisher tile = getTileEntity(world, x, y, z);
         if (tile != null) {
             if (!world.isRemote) {
                 InventoryHandler.openGui(
@@ -40,7 +40,7 @@ public class BlockSuperStoker extends FCBaseBlock {
                         world,
                         new BlockPos(x, y, z),
                         ForgeDirection.getOrientation(facing),
-                        GuiType.GUI_SUPER_STOKER);
+                        GuiType.GUI_SUPER_STOCK_REPLENISHER);
             }
             return true;
         }
@@ -49,7 +49,7 @@ public class BlockSuperStoker extends FCBaseBlock {
 
     @Override
     public void breakBlock(World w, int x, int y, int z, Block a, int b) {
-        final TileSuperStoker tss = this.getTileEntity(w, x, y, z);
+        final TileSuperStockReplenisher tss = this.getTileEntity(w, x, y, z);
         if (tss != null) {
             tss.fullRefund();
         }
@@ -57,9 +57,9 @@ public class BlockSuperStoker extends FCBaseBlock {
     }
 
     @Override
-    public BlockSuperStoker register() {
-        GameRegistry.registerBlock(this, AEBaseItemBlock.class, NameConst.BLOCK_SUPER_STOKER);
-        GameRegistry.registerTileEntity(TileSuperStoker.class, NameConst.BLOCK_SUPER_STOKER);
+    public BlockSuperStockReplenisher register() {
+        GameRegistry.registerBlock(this, AEBaseItemBlock.class, NameConst.BLOCK_SUPER_STOCK_REPLENISHER);
+        GameRegistry.registerTileEntity(TileSuperStockReplenisher.class, NameConst.BLOCK_SUPER_STOCK_REPLENISHER);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
     }
