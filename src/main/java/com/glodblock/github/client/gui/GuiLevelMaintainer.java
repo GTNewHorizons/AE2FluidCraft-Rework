@@ -138,7 +138,8 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "ENABLE", "ENABLE", false),
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "DISABLE", "DISABLE", false),
                     new FCGuiLineField(fontRendererObj, guiLeft + 47, guiTop + 33 + 19 * i, 125),
-                    this.buttonList);
+                    this.buttonList,
+                    this.cont);
         }
         if (this.icon != null) {
             this.originalGuiBtn = new GuiTabButton(
@@ -294,6 +295,14 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     }
 
     @Override
+    protected void handleMouseClick(Slot slot, int slotIdx, int ctrlDown, int mouseButton) {
+        if (slot instanceof SlotFluidConvertingFake && this.cont.getPlayerInv().getItemStack() == null) {
+            this.component[slot.getSlotIndex()].reset();
+        }
+        super.handleMouseClick(slot, slotIdx, ctrlDown, mouseButton);
+    }
+
+    @Override
     public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
         if (draggedStack == null) {
             return false;
@@ -346,9 +355,11 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         private final GuiFCImgButton submit;
         private final FCGuiLineField line;
         private LevelState state;
+        private final ContainerLevelMaintainer container;
 
         public Component(Widget qtyInput, Widget batchInput, GuiFCImgButton submitBtn, GuiFCImgButton enableBtn,
-                GuiFCImgButton disableBtn, FCGuiLineField line, List<GuiButton> buttonList) {
+                GuiFCImgButton disableBtn, FCGuiLineField line, List<GuiButton> buttonList,
+                ContainerLevelMaintainer container) {
             this.qty = qtyInput;
             this.batch = batchInput;
             this.enable = enableBtn;
@@ -356,6 +367,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             this.submit = submitBtn;
             this.line = line;
             this.state = LevelState.None;
+            this.container = container;
             buttonList.add(this.submit);
             buttonList.add(this.enable);
             buttonList.add(this.disable);
@@ -402,9 +414,12 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                 FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Enable, this.getIndex()));
                 didSomething = true;
             } else if (this.disable == btn) {
-                this.setEnable(true);
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Disable, this.getIndex()));
-                didSomething = true;
+                if (this.container.getInventory().get(this.getIndex()) != null) {
+                    this.setEnable(true);
+                    FluidCraft.proxy.netHandler
+                            .sendToServer(new CPacketLevelMaintainer(Action.Disable, this.getIndex()));
+                    didSomething = true;
+                }
             }
             return didSomething;
         }
@@ -499,6 +514,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             this.qty.validate();
             this.batch.validate();
             this.setEnable(false);
+            this.setState(LevelState.None);
         }
     }
 
