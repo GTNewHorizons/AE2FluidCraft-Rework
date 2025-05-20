@@ -823,7 +823,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 && mouseY < guiTop + HEADER_HEIGHT + viewHeight;
     }
 
-    public void receivePacket(List<SPacketLevelTerminalUpdate.PacketEntry> packets) {
+    public void receivePackets(List<SPacketLevelTerminalUpdate.PacketEntry> packets) {
         for (SPacketLevelTerminalUpdate.PacketEntry packet : packets) {
             parsePacket(packet);
         }

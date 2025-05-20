@@ -106,7 +106,7 @@ public class SPacketLevelTerminalUpdate implements IMessage {
             final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
 
             if (gs instanceof GuiLevelTerminal levelTerminal) {
-                levelTerminal.receivePacket(message.commands);
+                levelTerminal.receivePackets(message.commands);
             }
 
             return null;
