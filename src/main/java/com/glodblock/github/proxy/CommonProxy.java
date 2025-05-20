@@ -39,7 +39,6 @@ import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class CommonProxy {
 
@@ -84,18 +83,6 @@ public class CommonProxy {
                 }
             } catch (NullPointerException ex) {
                 ex.printStackTrace();
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void tickEvent(TickEvent.PlayerTickEvent e) {
-        EntityPlayer player = e.player;
-        ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
-        if (result != null) {
-            final ItemStack wirelessTerm = result.getRight();
-            if (WirelessMagnet.getMode(wirelessTerm) != WirelessMagnet.Mode.Off) {
-                WirelessMagnet.doMagnet(wirelessTerm, e.player.worldObj, e.player);
             }
         }
     }

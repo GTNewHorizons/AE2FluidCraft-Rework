@@ -1,4 +1,3 @@
-/* Author: asdflj */
 package com.glodblock.github.client.gui;
 
 import net.minecraft.client.gui.GuiButton;
@@ -9,7 +8,6 @@ import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
-import com.glodblock.github.client.gui.widget.FCGuiBaseButton;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.item.WirelessMagnet;

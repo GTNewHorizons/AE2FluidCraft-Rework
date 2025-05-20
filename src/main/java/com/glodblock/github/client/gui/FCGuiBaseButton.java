@@ -1,4 +1,5 @@
-package com.glodblock.github.client.gui.widget;
+
+package com.glodblock.github.client.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -8,9 +9,9 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+// copy from WirelessCraftingTerminal WCTGuiButton
 public class FCGuiBaseButton extends GuiButton {
 
-    // copy from wct button
     protected static final ResourceLocation buttonTextures = new ResourceLocation(
             "minecraft",
             "textures/gui/widgets.png");

@@ -1,4 +1,3 @@
-/* Author: asdflj */
 package com.glodblock.github.client.gui.container;
 
 import net.minecraft.entity.player.EntityPlayer;

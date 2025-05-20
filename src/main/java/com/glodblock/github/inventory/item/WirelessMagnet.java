@@ -1,4 +1,3 @@
-/* Author: asdflj */
 package com.glodblock.github.inventory.item;
 
 import static com.glodblock.github.common.Config.magnetRange;
@@ -56,7 +55,6 @@ public class WirelessMagnet {
 
     public static void doMagnet(ItemStack wirelessTerm, World world, EntityPlayer player) {
         if (Platform.isClient() || wirelessTerm == null
-                || getMode(wirelessTerm) == Mode.Off
                 || player == null
                 || player.isSneaking()
                 || !isConfigured(wirelessTerm))
@@ -69,28 +67,32 @@ public class WirelessMagnet {
                 (int) player.posY,
                 (int) player.posZ,
                 magnetRange).iterator();
+
         while (iterator.hasNext()) {
             EntityItem itemToGet = (EntityItem) iterator.next();
-            if (itemToGet.func_145800_j() != null && itemToGet.func_145800_j()
-                    .equals(player.getCommandSenderName())) { /* don`t pick up items dropped by yourself */
-                continue;
-            }
-
             EntityPlayer closestPlayer = world.getClosestPlayerToEntity(itemToGet, magnetRange);
 
-            if (closestPlayer != null && closestPlayer != player) {
-                continue;
-            }
+            if (closestPlayer != null && closestPlayer == player) {
+                NBTTagCompound itemNBT = new NBTTagCompound();
+                itemToGet.writeEntityToNBT(itemNBT);
 
-            if (itemToGet.delayBeforeCanPickup > 0) {
-                itemToGet.delayBeforeCanPickup = 0;
-            }
-            itemToGet.motionX = itemToGet.motionY = itemToGet.motionZ = 0;
-            itemToGet.setPosition(
-                    player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                    player.posY - 0.6,
-                    player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                if (itemToGet.func_145800_j() == null
+                        || !itemToGet.func_145800_j().equals(player.getCommandSenderName()))
+                    itemToGet.delayBeforeCanPickup = 0;
 
+                if (itemToGet.delayBeforeCanPickup <= 0) {
+                    itemNBT.setBoolean("attractable", true);
+                    itemToGet.readEntityFromNBT(itemNBT);
+                }
+
+                if (itemNBT.getBoolean("attractable")) {
+                    itemToGet.motionX = itemToGet.motionY = itemToGet.motionZ = 0;
+                    itemToGet.setPosition(
+                            player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                            player.posY - 0.6,
+                            player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                }
+            }
         }
 
         // xp
@@ -103,20 +105,21 @@ public class WirelessMagnet {
                 magnetRange).iterator();
         while (iterator.hasNext()) {
             EntityXPOrb xpToGet = (EntityXPOrb) iterator.next();
-            if (xpToGet.isDead || xpToGet.isInvisible()) {
-                continue;
+            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
+
+            if (!xpToGet.isDead && !xpToGet.isInvisible() && closestPlayer != null && closestPlayer == player) {
+                int xpAmount = xpToGet.xpValue;
+                xpToGet.xpValue = 0;
+                player.xpCooldown = 0;
+                player.addExperience(xpAmount);
+                xpToGet.setDead();
+                xpToGet.setInvisible(true);
+                world.playSoundAtEntity(
+                        player,
+                        "random.orb",
+                        0.08F,
+                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
             }
-            int xpAmount = xpToGet.xpValue;
-            xpToGet.xpValue = 0;
-            player.xpCooldown = 0;
-            player.addExperience(xpAmount);
-            xpToGet.setDead();
-            xpToGet.setInvisible(true);
-            world.playSoundAtEntity(
-                    player,
-                    "random.orb",
-                    0.08F,
-                    0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
         }
     }
 

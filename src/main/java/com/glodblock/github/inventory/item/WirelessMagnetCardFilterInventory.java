@@ -1,4 +1,3 @@
-/* Author: asdflj */
 package com.glodblock.github.inventory.item;
 
 import static com.glodblock.github.inventory.item.WirelessMagnet.filterConfigKey;
@@ -48,7 +47,14 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
     @SuppressWarnings("unchecked")
     public WirelessMagnetCardFilterInventory(ItemStack is, int slot, IGridNode gridNode, EntityPlayer player) {
         super(is, slot, gridNode, player, StorageChannel.ITEMS, true);
-        filterInventory = new ItemBiggerAppEngInventory(is, filterKey, 27);
+        filterInventory = new ItemBiggerAppEngInventory(is, filterKey, 27) {
+
+            @Override
+            public void setInventorySlotContents(int slot, ItemStack newItemStack) {
+                if (newItemStack != null) newItemStack.stackSize = 1;
+                super.setInventorySlotContents(slot, newItemStack);
+            }
+        };
         settingCache = getSettingTag(is);
         filterCache = getFilterTag(is);
         readFromNBT();

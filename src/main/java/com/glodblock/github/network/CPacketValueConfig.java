@@ -11,14 +11,9 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
-import com.glodblock.github.inventory.item.WirelessCraftingTerminalInventory;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
-import appeng.api.AEApi;
-import appeng.api.config.Actionable;
-import appeng.api.networking.IGridNode;
-import appeng.api.storage.data.IAEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -70,44 +65,11 @@ public class CPacketValueConfig implements IMessage {
                                                     !Util.isRestock(wirelessTerm)
                                                             ? NameConst.TT_ULTRA_TERMINAL_RESTOCK_ON
                                                             : NameConst.TT_ULTRA_TERMINAL_RESTOCK_OFF)));
-                        } else {
-                            IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
-                            if (gridNode != null && Util.isRestock(wirelessTerm)
-                                    && Util.rangeCheck(wirelessTerm, player, gridNode)) {
-                                restockItems(wirelessTerm, gridNode, result.getLeft(), player);
-                            }
                         }
                     }
                 }
             }
             return null;
-        }
-
-        @SuppressWarnings("unchecked")
-        private void restockItems(ItemStack terminal, IGridNode gridNode, int slot, EntityPlayer player) {
-            WirelessCraftingTerminalInventory inv = new WirelessCraftingTerminalInventory(
-                    terminal,
-                    slot,
-                    gridNode,
-                    player);
-
-            for (int i = 0; i < 9; i++) {
-                ItemStack is = player.inventory.mainInventory[i];
-                if (is != null) {
-                    int maxSize = is.getMaxStackSize();
-                    if (is.stackSize < maxSize) {
-                        int fillSize = maxSize - is.stackSize;
-                        IAEItemStack ias = AEApi.instance().storage().createItemStack(is);
-                        ias.setStackSize(fillSize);
-
-                        IAEItemStack extractedItem = (IAEItemStack) inv
-                                .extractItems(ias, Actionable.MODULATE, inv.getActionSource());
-                        if (extractedItem != null) {
-                            player.inventory.addItemStackToInventory(extractedItem.getItemStack());
-                        }
-                    }
-                }
-            }
         }
     }
 }

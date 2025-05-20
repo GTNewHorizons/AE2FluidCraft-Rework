@@ -38,7 +38,6 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     public static String infinityBoosterCard = "infinityBoosterCard";
     public static String infinityEnergyCard = "InfinityEnergyCard";
     public static String restockItems = "restock";
-    private static boolean effect = false;
 
     public ItemBaseWirelessTerminal(GuiType t) {
         super();
@@ -51,7 +50,6 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
                                                                                  // terminal
         if (ForgeEventFactory.onItemUseStart(player, item, 1) > 0) {
             if (Platform.isClient()) {
-                setEffect(false);
                 return item;
             }
             IWirelessTermRegistry term = AEApi.instance().registries().wireless();
@@ -133,22 +131,6 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
 
     public GuiType guiGuiType(ItemStack stack) {
         return this.type;
-    }
-
-    public static void setEffect(boolean e) {
-        effect = e;
-    }
-
-    public static boolean getEffect() {
-        return effect;
-    }
-
-    @Override
-    public boolean hasEffect(ItemStack par1ItemStack, int pass) {
-        if (Platform.isClient()) {
-            return getEffect();
-        }
-        return super.hasEffect(par1ItemStack, pass);
     }
 
     public static void toggleRestockItemsMode(ItemStack is, boolean state) {
