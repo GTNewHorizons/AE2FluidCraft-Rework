@@ -59,11 +59,14 @@ import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import baubles.api.BaublesApi;
 import codechicken.nei.recipe.StackInfo;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import io.netty.buffer.ByteBuf;
 
 public final class Util {
+
+    public static boolean isBaublesLoaded = Loader.isModLoaded("Baubles");
 
     public static int drainItemPower(AEBaseContainer c, InventoryPlayer ip, int slot, int ticks, double pm,
             IFluidPortableCell wt) {
@@ -181,16 +184,20 @@ public final class Util {
                 return new ImmutablePair<>(i, is);
             }
         }
-        IInventory handler = BaublesApi.getBaubles(player);
-        if (handler != null) {
-            invSize = handler.getSizeInventory();
-            for (int i = 0; i < invSize; ++i) {
-                ItemStack is = handler.getStackInSlot(i);
-                if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
-                    return new ImmutablePair<>(GuiHelper.encodeType(i, GuiHelper.InvType.PLAYER_BAUBLES), is);
+
+        if (isBaublesLoaded) {
+            IInventory handler = BaublesApi.getBaubles(player);
+            if (handler != null) {
+                invSize = handler.getSizeInventory();
+                for (int i = 0; i < invSize; ++i) {
+                    ItemStack is = handler.getStackInSlot(i);
+                    if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
+                        return new ImmutablePair<>(GuiHelper.encodeType(i, GuiHelper.InvType.PLAYER_BAUBLES), is);
+                    }
                 }
             }
         }
+
         return null;
     }
 
