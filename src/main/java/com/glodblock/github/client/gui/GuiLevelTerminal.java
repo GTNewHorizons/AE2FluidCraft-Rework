@@ -1,13 +1,6 @@
 package com.glodblock.github.client.gui;
 
 import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.hasInfinityBoosterCard;
-import static com.glodblock.github.network.SPacketLevelTerminalUpdate.CLEAR_ALL_BIT;
-import static com.glodblock.github.network.SPacketLevelTerminalUpdate.DISCONNECT_BIT;
-import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketAdd;
-import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketEntry;
-import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketOverwrite;
-import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketRemove;
-import static com.glodblock.github.network.SPacketLevelTerminalUpdate.PacketRename;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -17,7 +10,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -34,8 +26,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -45,16 +35,17 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.api.registries.LevelItemInfo;
+import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.base.FCBaseMEGui;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
-import com.glodblock.github.common.tile.TileLevelMaintainer.State;
-import com.glodblock.github.common.tile.TileLevelMaintainer.TLMTags;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.network.CPacketLevelTerminalCommands.Action;
 import com.glodblock.github.network.CPacketRenamer;
+import com.glodblock.github.network.SPacketLevelTerminalUpdate;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
@@ -65,7 +56,6 @@ import appeng.api.config.TerminalFontSize;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
 import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.IGuiTooltipHandler;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -83,7 +73,6 @@ import appeng.core.localization.PlayerMessages;
 import appeng.helpers.InventoryAction;
 import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
-import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.Platform;
 import appeng.util.ReadableNumberConverter;
 import appeng.util.item.AEItemStack;
@@ -151,6 +140,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         };
         searchFieldNames.setFocused(true);
         extraOptionsText.add(ButtonToolTips.HighlightInterface.getLocal());
+        online = true;
     }
 
     public GuiLevelTerminal(final InventoryPlayer inventoryPlayer, final ITerminalHost te) {
@@ -184,8 +174,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         final int unusedSpace = height - ySize;
         guiTop = (int) Math.floor(unusedSpace / (unusedSpace < 0 ? 3.8f : 2.0f));
 
-        // modeSwitchView = new GuiFCImgButton(guiLeft + xSize - 40, guiTop + 1, "SWITCH", "OFF", false);
-        // modeSwitchEdit = new GuiFCImgButton(guiLeft + xSize - 40, guiTop + 1, "SWITCH", "ON", false);
         offsetY = guiTop + 8;
         terminalStyleBox = new GuiImgButton(
                 guiLeft - 18,
@@ -290,7 +278,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         buttonList.add(terminalStyleBox);
         buttonList.add(searchStringSave);
         buttonList.add(craftingStatusBtn);
-        // buttonList.add(Objects.equals(currentMode, "OFF") ? modeSwitchView : modeSwitchEdit);
         addSwitchGuiBtns();
 
         super.drawScreen(mouseX, mouseY, btn);
@@ -322,11 +309,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
     @Override
     protected void actionPerformed(final GuiButton btn) {
-//        if (btn == modeSwitchView) {
-//            currentMode = "ON";
-//        } else if (btn == modeSwitchEdit) {
-//            currentMode = "OFF";
-//        } else
             if (ModAndClassUtil.isSaveText && btn == searchStringSave) {
 
             final boolean backwards = Mouse.isButtonDown(1);
@@ -566,26 +548,21 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             if (viewY + rowYBot <= titleBottom) {
                 continue;
             }
-            AppEngInternalInventory inv = entry.getInventory();
 
             for (int col = 0; col < entry.rowSize; ++col) {
                 final int colLeft = col * 18 + slotLeftMargin + 1;
                 final int colRight = colLeft + 18 + 1;
                 final int slotIdx = row * entry.rowSize + col;
-                ItemStack stack = inv.getStackInSlot(slotIdx);
+                LevelItemInfo info = entry.infoList[slotIdx];
 
                 boolean tooltip = relMouseX > colLeft - 1 && relMouseX < colRight - 1
                         && relMouseY >= Math.max(viewY + rowYTop, LevelTerminalSection.TITLE_HEIGHT)
                         && relMouseY < Math.min(viewY + rowYBot, viewHeight);
-                if (stack != null) {
-
-                    NBTTagCompound data = stack.getTagCompound();
-                    ItemStack itemStack = data.hasKey(TLMTags.Stack.tagName)
-                            ? ItemStack.loadItemStackFromNBT(data.getCompoundTag(TLMTags.Stack.tagName))
-                            : stack.copy();
-                    long quantity = data.getLong(TLMTags.Quantity.tagName);
-                    long batch = data.getLong(TLMTags.Batch.tagName);
-                    State state = State.values()[data.getInteger(TLMTags.State.tagName)];
+                if (info != null) {
+                    ItemStack itemStack = info.stack;
+                    long quantity = info.quantity;
+                    long batch = info.batchSize;
+                    LevelState state = info.state;
 
                     GL11.glPushMatrix();
                     GL11.glTranslatef(colLeft, viewY + rowYTop + 1, ITEM_STACK_Z);
@@ -608,7 +585,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     drawRect(offset, offset, offset + size, offset + size, color);
                     GL11.glTranslatef(0.0f, 0.0f, ITEM_STACK_OVERLAY_Z - ITEM_STACK_Z);
                     this.drawReadableAmount(fontRendererObj, quantity, true, 16777215);
-                    if (batch > 0) {
+                    if (batch >= 0) {
                         this.drawReadableAmount(fontRendererObj, batch, false, 16777215);
                     }
                     RenderHelper.disableStandardItemLighting();
@@ -622,7 +599,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                             drawRect(0, 0, 16, 16, GuiColors.ItemSlotOverlayUnpowered.getColor());
                         }
                     } else {
-                        tooltipStack = stack;
+                        tooltipStack = itemStack;
                     }
                     GL11.glPopMatrix();
                 } else if (entry.filteredRecipes[slotIdx]) {
@@ -846,58 +823,50 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 && mouseY < guiTop + HEADER_HEIGHT + viewHeight;
     }
 
-    public void postUpdate(List<PacketEntry> updates, int statusFlags) {
-        if ((statusFlags & CLEAR_ALL_BIT) == CLEAR_ALL_BIT) {
-            /* Should clear all client entries. */
-            masterList.list.clear();
-        }
-        /* Should indicate disconnected, so the terminal turns dark. */
-        online = (statusFlags & DISCONNECT_BIT) != DISCONNECT_BIT;
-
-        for (PacketEntry cmd : updates) {
-            parsePacketCmd(cmd);
+    public void receivePackets(List<SPacketLevelTerminalUpdate.PacketEntry> packets) {
+        for (SPacketLevelTerminalUpdate.PacketEntry packet : packets) {
+            parsePacket(packet);
         }
         masterList.markDirty();
     }
 
-    private void parsePacketCmd(PacketEntry cmd) {
-        long id = cmd.entryId;
-        if (cmd instanceof PacketAdd addCmd) {
+    private void parsePacket(SPacketLevelTerminalUpdate.PacketEntry packet) {
+        if (packet instanceof SPacketLevelTerminalUpdate.PacketAdd packetAdd) {
             LevelTerminalEntry entry = new LevelTerminalEntry(
-                    id,
-                    addCmd.name,
-                    addCmd.rows,
-                    addCmd.rowSize,
-                    addCmd.online).setLocation(addCmd.x, addCmd.y, addCmd.z, addCmd.dim, addCmd.side)
-                            .setIcons(addCmd.selfItemStack, addCmd.displayItemStack).setItems(addCmd.items);
-            masterList.addEntry(entry);
-        } else if (cmd instanceof PacketRemove) {
-            masterList.removeEntry(id);
-        } else if (cmd instanceof PacketOverwrite owCmd) {
-            LevelTerminalEntry entry = masterList.list.get(id);
+                    packetAdd.entryId,
+                    packetAdd.name,
+                    packetAdd.rows,
+                    packetAdd.rowSize,
+                    true).setLocation(packetAdd.x, packetAdd.y, packetAdd.z, packetAdd.dim, packetAdd.side)
+                            .setInfoList(packetAdd.infolist);
+            this.masterList.addEntry(entry);
+        } else if (packet instanceof SPacketLevelTerminalUpdate.PacketRemove packetRemove) {
+            this.masterList.removeEntry(packetRemove.entryId);
+        } else if (packet instanceof SPacketLevelTerminalUpdate.PacketRename packetRename) {
+            LevelTerminalEntry entry = masterList.list.get(packetRename.entryId);
+            if (entry == null) return;
 
-            if (entry == null) {
-                return;
-            }
-
-            if (owCmd.itemsValid) {
-                if (owCmd.allItemUpdate) {
-                    entry.fullItemUpdate(owCmd.items, owCmd.validIndices.length);
-                } else {
-                    entry.partialItemUpdate(owCmd.items, owCmd.validIndices);
-                }
+            if (StatCollector.canTranslate(packetRename.newName)) {
+                entry.customName = StatCollector.translateToLocal(packetRename.newName);
+            } else {
+                entry.customName = StatCollector.translateToFallback(packetRename.newName);
             }
             masterList.isDirty = true;
-        } else if (cmd instanceof PacketRename renameCmd) {
-            LevelTerminalEntry entry = masterList.list.get(id);
+        } else if (packet instanceof SPacketLevelTerminalUpdate.PacketDisconnect) {
+            online = false;
+        }
 
-            if (entry != null) {
-                if (StatCollector.canTranslate(renameCmd.newName)) {
-                    entry.customName = StatCollector.translateToLocal(renameCmd.newName);
-                } else {
-                    entry.customName = StatCollector.translateToFallback(renameCmd.newName);
-                }
-            }
+        else if (packet instanceof SPacketLevelTerminalUpdate.PacketOverwriteSlot packetOverwirteSlot) {
+            LevelTerminalEntry entry = masterList.list.get(packetOverwirteSlot.entryId);
+            if (entry == null) return;
+
+            entry.infoList[packetOverwirteSlot.index] = packetOverwirteSlot.info;
+            masterList.isDirty = true;
+        } else if (packet instanceof SPacketLevelTerminalUpdate.PacketOverwirteAllSlot packetOverwirteAllSlot) {
+            LevelTerminalEntry entry = masterList.list.get(packetOverwirteAllSlot.entryId);
+            if (entry == null) return;
+
+            entry.infoList = packetOverwirteAllSlot.infoList;
             masterList.isDirty = true;
         }
     }
@@ -932,22 +901,23 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
     @Override
     public List<String> handleItemTooltip(ItemStack stack, int mouseX, int mouseY, List<String> currentToolTip) {
+        if (stack == null || !isShiftKeyDown()) return currentToolTip;
 
-        if (stack != null && isShiftKeyDown() && stack.hasTagCompound()) {
-            NBTTagCompound data = stack.getTagCompound();
+        for (LevelTerminalSection section : this.masterList.getVisibleSections()) {
+            for (LevelTerminalEntry entry : section.visibleEntries) {
+                for (LevelItemInfo info : entry.infoList) {
+                    if (info != null && info.stack.equals(stack)) {
+                        currentToolTip.add(
+                                I18n.format(NameConst.TT_LEVEL_MAINTAINER_REQUEST_SIZE, "\n", false) + ": "
+                                        + NumberFormat.getInstance().format(info.quantity));
 
-            if (data.hasKey(TLMTags.Quantity.tagName)) {
-                long quantity = data.getLong(TLMTags.Quantity.tagName);
-                long batch = data.getLong(TLMTags.Batch.tagName);
-
-                currentToolTip.add(
-                        I18n.format(NameConst.TT_LEVEL_MAINTAINER_REQUEST_SIZE, "\n", false) + ": "
-                                + NumberFormat.getNumberInstance(Locale.US).format(quantity));
-
-                if (batch > 0) {
-                    currentToolTip.add(
-                            I18n.format(NameConst.TT_LEVEL_MAINTAINER_BATCH_SIZE, "\n", false) + ": "
-                                    + NumberFormat.getNumberInstance(Locale.US).format(batch));
+                        if (info.batchSize >= 0) {
+                            currentToolTip.add(
+                                    I18n.format(NameConst.TT_LEVEL_MAINTAINER_BATCH_SIZE, "\n", false) + ": "
+                                            + NumberFormat.getInstance().format(info.batchSize));
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -1102,13 +1072,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
         String name;
         List<LevelTerminalEntry> entries = new ArrayList<>();
-        Set<LevelTerminalEntry> visibleEntries = new TreeSet<>(Comparator.comparing(e -> {
-            if (e.displayItemStack != null) {
-                return e.displayItemStack.getDisplayName() + e.id;
-            } else {
-                return String.valueOf(e.id);
-            }
-        }));
+        Set<LevelTerminalEntry> visibleEntries = new TreeSet<>(Comparator.comparing(e -> e.customName + e.id));
         int height;
         private boolean isDirty = true;
         boolean visible = false;
@@ -1148,18 +1112,22 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 entry.dispY = -9999;
                 // Find search terms
                 if (!output.isEmpty()) {
-                    AppEngInternalInventory inv = entry.inv;
                     boolean shouldAdd = false;
 
-                    for (int i = 0; i < inv.getSizeInventory(); ++i) {
-                        ItemStack stack = inv.getStackInSlot(i);
-                        if (itemStackMatchesSearchTerm(stack, output)) {
+                    for (int i = 0; i < entry.infoList.length; ++i) {
+                        if (entry.infoList[i] == null) {
+                            entry.filteredRecipes[i] = true;
+                            continue;
+                        }
+
+                        if (itemStackMatchesSearchTerm(entry.infoList[i].stack, output)) {
                             shouldAdd = true;
                             entry.filteredRecipes[i] = false;
                         } else {
                             entry.filteredRecipes[i] = true;
                         }
                     }
+
                     if (!shouldAdd) {
                         continue;
                     }
@@ -1207,12 +1175,9 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     private class LevelTerminalEntry {
 
         String customName;
-        AppEngInternalInventory inv;
         GuiFCImgButton highlightButton;
         GuiFCImgButton renameButton;
         GuiFCImgButton configButton;
-        /** Nullable - icon that represents the interface's "target" */
-        ItemStack displayItemStack;
         LevelTerminalSection section;
         long id;
         int x, y, z, dim, side;
@@ -1220,7 +1185,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         int guiHeight;
         int dispY = -9999;
         boolean[] filteredRecipes;
-        int numItems = 0;
+
+        LevelItemInfo[] infoList;
 
         LevelTerminalEntry(long id, String name, int rows, int rowSize, boolean online) {
             this.id = id;
@@ -1236,7 +1202,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     customName = StatCollector.translateToFallback(name);
                 }
             }
-            inv = new AppEngInternalInventory(null, rows * rowSize, 1);
             highlightButton = new GuiFCImgButton(1, 0, "HIGHLIGHT", "YES");
             renameButton = new GuiFCImgButton(1, 0, "EDIT", "YES");
             configButton = new GuiFCImgButton(1, 0, "CONFIG", "YES");
@@ -1254,51 +1219,9 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             return this;
         }
 
-        LevelTerminalEntry setIcons(ItemStack selfItemStack, ItemStack displayItemStack) {
-            this.displayItemStack = displayItemStack;
-
+        LevelTerminalEntry setInfoList(LevelItemInfo[] infoList) {
+            this.infoList = infoList;
             return this;
-        }
-
-        public void fullItemUpdate(NBTTagList items, int newSize) {
-            inv = new AppEngInternalInventory(null, newSize);
-            rows = newSize / rowSize;
-            numItems = 0;
-
-            for (int i = 0; i < inv.getSizeInventory(); ++i) {
-                setItemInSlot(ItemStack.loadItemStackFromNBT(items.getCompoundTagAt(i)), i);
-            }
-            guiHeight = 18 * rows + 4;
-        }
-
-        LevelTerminalEntry setItems(NBTTagList items) {
-            assert items.tagCount() == inv.getSizeInventory();
-
-            for (int i = 0; i < items.tagCount(); ++i) {
-                setItemInSlot(ItemStack.loadItemStackFromNBT(items.getCompoundTagAt(i)), i);
-            }
-            return this;
-        }
-
-        public void partialItemUpdate(NBTTagList items, int[] validIndices) {
-            for (int i = 0; i < validIndices.length; ++i) {
-                setItemInSlot(ItemStack.loadItemStackFromNBT(items.getCompoundTagAt(i)), validIndices[i]);
-            }
-        }
-
-        private void setItemInSlot(ItemStack stack, int idx) {
-            final int oldHasItem = inv.getStackInSlot(idx) != null ? 1 : 0;
-            final int newHasItem = stack != null ? 1 : 0;
-
-            inv.setInventorySlotContents(idx, stack);
-
-            // Update item count
-            numItems += newHasItem - oldHasItem;
-            assert numItems >= 0;
-        }
-
-        public AppEngInternalInventory getInventory() {
-            return inv;
         }
 
         public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
@@ -1368,20 +1291,10 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     default -> null;// drop item:
                 };
 
-                if (action != null) {
-                    ItemStack itemStack = getInventory().getStackInSlot(slotIdx);
-                    if (itemStack != null && itemStack.hasTagCompound()
-                            && itemStack.getTagCompound().hasKey(TLMTags.Stack.tagName)) {
-                        long batch = itemStack.getTagCompound().getLong(TLMTags.Batch.tagName);
-                        NBTTagCompound stackData = itemStack.getTagCompound().getCompoundTag(TLMTags.Stack.tagName);
-                        ItemStack is = ItemStack.loadItemStackFromNBT(stackData);
-                        IAEItemStack stack = AEItemStack.create(is);
-
-                        if (stack == null) return true;
-                        stack.setStackSize(batch);
-                        ((AEBaseContainer) inventorySlots).setTargetStack(stack);
-                        FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, slotIdx, 0, stack));
-                    }
+                if (action != null && this.infoList[slotIdx] != null) {
+                    AEItemStack aeStack = AEItemStack.create(this.infoList[slotIdx].stack);
+                    ((AEBaseContainer) inventorySlots).setTargetStack(aeStack);
+                    FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, slotIdx, 0, aeStack));
                 }
 
                 return true;
