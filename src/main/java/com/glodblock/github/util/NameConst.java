@@ -57,7 +57,9 @@ public class NameConst {
     public static final String ITEM_ENERGY_CARD = "energy_card";
 
     public static final String TT_KEY = FluidCraft.MODID + ".tooltip.";
+    public static final String TT_CRAFTING_COMPLETE = TT_KEY + "crafting_complete";
     public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";
+    public static final String TT_FLUID_TERMINAL_AMOUNT = TT_FLUID_TERMINAL + ".amount";
     public static final String TT_LEVEL_TERMINAL = TT_KEY + "level_terminal";
     public static final String TT_INVALID_FLUID = TT_KEY + "invalid_fluid";
     public static final String TT_FLUID_PACKET = TT_KEY + "fluid_packet";
@@ -106,6 +108,12 @@ public class NameConst {
     public static final String TT_QUANTUM_BRIDGE_CARD_DESC = TT_QUANTUM_BRIDGE_CARD + ".desc";
     public static final String TT_ITEM_FLUID_VOID_CELL = TT_KEY + ITEM_FLUID_VOID_CELL;
 
+    public static final String TT_ULTRA_TERMINAL_RESTOCK = TT_ULTRA_TERMINAL + ".restock";
+    public static final String TT_ULTRA_TERMINAL_RESTOCK_ON = TT_ULTRA_TERMINAL_RESTOCK + ".on";
+    public static final String TT_ULTRA_TERMINAL_RESTOCK_OFF = TT_ULTRA_TERMINAL_RESTOCK + ".off";
+
+    public static final String TT_MAGNET_CARD_OREDICT = TT_KEY + "magnet_card.oreDictFilter";
+
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
     public static final String WAILA_DISABLE = WAILA_KEY + "disable";
@@ -129,6 +137,13 @@ public class NameConst {
     public static final String GUI_FLUID_IMPORT = GUI_KEY + ITEM_PART_FLUID_IMPORT;
     public static final String GUI_FLUID_EXPORT = GUI_KEY + ITEM_PART_FLUID_EXPORT;
     public static final String GUI_FLUID_STORAGE_BUS = GUI_KEY + ITEM_PART_FLUID_STORAGE_BUS;
+
+    public static final String GUI_MAGNET_CARD = GUI_KEY + "magnet";
+    public static final String GUI_MAGNET_CARD_NBT = GUI_MAGNET_CARD + ".nbt";
+    public static final String GUI_MAGNET_CARD_META = GUI_MAGNET_CARD + ".meta";
+    public static final String GUI_MAGNET_CARD_ORE = GUI_MAGNET_CARD + ".ore";
+    public static final String GUI_MAGNET_CARD_WhiteList = GUI_MAGNET_CARD + ".whitelist";
+    public static final String GUI_MAGNET_CARD_BlackList = GUI_MAGNET_CARD + ".blacklist";
 
     public static String i18n(String t, String delimiter, boolean hint) {
         if (!hint) {

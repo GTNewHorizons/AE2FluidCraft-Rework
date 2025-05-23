@@ -2,7 +2,9 @@ package com.glodblock.github.util;
 
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityBoosterCard;
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityEnergyCard;
+import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.restockItems;
 import static com.glodblock.github.util.Util.DimensionalCoordSide.hasEnergyCard;
+import static net.minecraft.init.Items.glass_bottle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -108,6 +111,40 @@ public final class Util {
         return ticks;
     }
 
+    public static boolean rangeCheck(ItemStack is, EntityPlayer player, IGridNode grid) {
+        if (grid.getGrid() == null) return false;
+        return rangeCheck(is, player, grid.getGrid());
+    }
+
+    public static boolean rangeCheck(ItemStack is, EntityPlayer player, IGrid grid) {
+        boolean canConnect = false;
+        if (hasInfinityBoosterCard(is)) {
+            canConnect = true;
+        } else {
+            for (IGridNode node : grid.getMachines(TileWireless.class)) {
+                IWirelessAccessPoint accessPoint = (IWirelessAccessPoint) node.getMachine();
+                if (accessPoint.isActive() && accessPoint.getLocation().getDimension() == player.dimension) {
+                    WorldCoord distance = accessPoint.getLocation()
+                            .subtract((int) player.posX, (int) player.posY, (int) player.posZ);
+                    int squaredDistance = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z;
+                    if (squaredDistance <= accessPoint.getRange() * accessPoint.getRange()) {
+                        canConnect = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return canConnect;
+    }
+
+    public static boolean isRestock(ItemStack is) {
+        if (is.getItem() instanceof ItemBaseWirelessTerminal) {
+            NBTTagCompound data = Platform.openNbtData(is);
+            return data.hasKey(restockItems) && data.getBoolean(restockItems);
+        }
+        return false;
+    }
+
     public static boolean hasInfinityBoosterCard(ItemStack is) {
         if (is.getItem() instanceof ItemBaseWirelessTerminal) {
             NBTTagCompound data = Platform.openNbtData(is);
@@ -128,39 +165,26 @@ public final class Util {
     }
 
     public static IMEInventoryHandler<?> getWirelessInv(ItemStack is, EntityPlayer player, StorageChannel channel) {
-        if (Platform.isClient()) return new NullInventory<>();
-        IGridNode gridNode = getWirelessGrid(is);
-        if (gridNode == null) return null;
-        IGrid grid = gridNode.getGrid();
-        if (grid == null) return null;
-        boolean canConnect = false;
-        if (hasInfinityBoosterCard(is)) {
-            canConnect = true;
-        } else {
-            for (IGridNode node : grid.getMachines(TileWireless.class)) {
-                IWirelessAccessPoint accessPoint = (IWirelessAccessPoint) node.getMachine();
-                if (accessPoint.isActive() && accessPoint.getLocation().getDimension() == player.dimension) {
-                    WorldCoord distance = accessPoint.getLocation()
-                            .subtract((int) player.posX, (int) player.posY, (int) player.posZ);
-                    int squaredDistance = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z;
-                    if (squaredDistance <= accessPoint.getRange() * accessPoint.getRange()) {
-                        canConnect = true;
-                        break;
+        if (Platform.isServer()) {
+            IGridNode gridNode = getWirelessGrid(is);
+            if (gridNode != null) {
+                IGrid grid = gridNode.getGrid();
+                if (grid != null) {
+                    if (rangeCheck(is, player, grid)) {
+                        IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
+                        if (gridCache != null) {
+                            if (channel == StorageChannel.FLUIDS) {
+                                return gridCache.getFluidInventory();
+                            } else {
+                                return gridCache.getItemInventory();
+                            }
+                        }
                     }
                 }
             }
+            return null;
         }
-        if (canConnect) {
-            IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
-            if (gridCache != null) {
-                if (channel == StorageChannel.FLUIDS) {
-                    return gridCache.getFluidInventory();
-                } else {
-                    return gridCache.getItemInventory();
-                }
-            }
-        }
-        return null;
+        return new NullInventory<>();
     }
 
     public static ItemStack getWirelessTerminal(EntityPlayer player, int x) {
@@ -439,6 +463,18 @@ public final class Util {
     }
 
     public static class FluidUtil {
+
+        private static final ItemStack glassBottle = new ItemStack(glass_bottle, 1);
+
+        public static ItemStack getPotion(FluidStack fs) {
+            if (fs == null) return null;
+            MutablePair<Integer, ItemStack> fillStack = Util.FluidUtil.fillStack(glassBottle, fs);
+            if (fillStack != null && fillStack.getRight() != null
+                    && fillStack.getRight().getItem() instanceof ItemPotion) {
+                return fillStack.right;
+            }
+            return null;
+        }
 
         public static final ItemStack water_bucket = new ItemStack(Items.water_bucket, 1);
 
