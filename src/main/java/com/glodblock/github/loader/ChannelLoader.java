@@ -20,6 +20,7 @@ import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.network.CPacketTransferRecipe;
 import com.glodblock.github.network.CPacketValueConfig;
 import com.glodblock.github.network.SPacketFluidUpdate;
+import com.glodblock.github.network.SPacketLevelMaintainerGuiUpdate;
 import com.glodblock.github.network.SPacketLevelTerminalUpdate;
 import com.glodblock.github.network.SPacketMEFluidInvUpdate;
 import com.glodblock.github.network.SPacketMEItemInvUpdate;
@@ -87,6 +88,11 @@ public class ChannelLoader implements Runnable {
                 SPacketPatternItemRenamer.class,
                 id++,
                 Side.SERVER);
+        netHandler.registerMessage(
+                new SPacketLevelMaintainerGuiUpdate.Handler(),
+                SPacketLevelMaintainerGuiUpdate.class,
+                id++,
+                Side.CLIENT);
     }
 
     public static void sendPacketToAllPlayers(Packet packet, World world) {

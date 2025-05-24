@@ -1,7 +1,5 @@
 package com.glodblock.github.client.gui;
 
-import static com.glodblock.github.client.gui.container.ContainerLevelMaintainer.createLevelValues;
-
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +11,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -23,12 +20,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.common.tile.TileLevelMaintainer.State;
-import com.glodblock.github.common.tile.TileLevelMaintainer.TLMTags;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
@@ -49,9 +45,6 @@ import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.SlotFake;
-import appeng.core.AEConfig;
-import appeng.core.AELog;
-import appeng.core.features.AEFeature;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketNEIDragClick;
 import appeng.util.calculators.ArithHelper;
@@ -70,8 +63,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
-    private int lastWorkingTick;
-    private int refreshTick;
     private final CoFHFontRenderer render;
     protected ItemStack icon = null;
 
@@ -89,7 +80,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                 TEX_BG,
                 Minecraft.getMinecraft().getTextureManager(),
                 true);
-        this.refreshTick = 0;
+
         if (ipl.player.openContainer instanceof AEBaseContainer container) {
             var target = container.getTarget();
             if (target instanceof PartLevelTerminal terminal) {
@@ -126,40 +117,11 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
             }
         }
-
     }
 
-    public void postUpdate(List<IAEItemStack> list) {
-        for (Slot slot : this.cont.getRequestSlots()) {
-            if (!slot.getHasStack()) {
-                component[slot.getSlotIndex()].setState(State.None);
-            }
-        }
-        for (IAEItemStack is : list) {
-            NBTTagCompound data = is.getItemStack().getTagCompound();
-            if (data == null) {
-                if (AEConfig.instance.isFeatureEnabled(AEFeature.PacketLogging)) {
-                    AELog.info("Received empty configuration: ", is);
-                }
-                continue;
-            }
-            long batch = data.getLong(TLMTags.Batch.tagName);
-            long quantity = data.getLong(TLMTags.Quantity.tagName);
-            int idx = data.getInteger(TLMTags.Index.tagName);
-            boolean isEnable = data.getBoolean(TLMTags.Enable.tagName);
-            State state = State.values()[data.getInteger(TLMTags.State.tagName)];
-            component[idx].getQty().textField.setText(String.valueOf(quantity));
-            component[idx].getBatch().textField.setText(String.valueOf(batch));
-            component[idx].getQty().validate();
-            component[idx].getBatch().validate();
-            component[idx].setEnable(isEnable);
-            component[idx].setState(state);
-        }
-    }
-
+    @Override
     public void initGui() {
         super.initGui();
-        this.lastWorkingTick = this.refreshTick;
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             component[i] = new Component(
                     new Widget(
@@ -176,7 +138,8 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "ENABLE", "ENABLE", false),
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "DISABLE", "DISABLE", false),
                     new FCGuiLineField(fontRendererObj, guiLeft + 47, guiTop + 33 + 19 * i, 125),
-                    this.buttonList);
+                    this.buttonList,
+                    this.cont);
         }
         if (this.icon != null) {
             this.originalGuiBtn = new GuiTabButton(
@@ -188,11 +151,10 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             this.originalGuiBtn.setHideEdge(13);
             this.buttonList.add(originalGuiBtn);
         }
-        FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Refresh));
     }
 
+    @Override
     public void drawScreen(final int mouseX, final int mouseY, final float btn) {
-        this.refreshTick++;
         super.drawScreen(mouseX, mouseY, btn);
         for (Component com : this.component) {
             com.getQty().textField.handleTooltip(mouseX, mouseY, this);
@@ -205,12 +167,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     public void drawBG(int offsetX, int offsetY, int mouseX, int mouseY) {
         mc.getTextureManager().bindTexture(TEX_BG);
         drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
-        int tick = this.refreshTick;
-        int interval = 20;
-        if (tick > lastWorkingTick + interval && this.focusedWidget == null) {
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Refresh));
-            lastWorkingTick = this.refreshTick;
-        }
+
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             this.component[i].draw();
         }
@@ -295,20 +252,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     }
 
     @Override
-    protected void handleMouseClick(final Slot slot, final int slotIdx, final int ctrlDown, final int mouseButton) {
-        if (slot instanceof SlotFluidConvertingFake && this.cont.getPlayerInv().getItemStack() != null) {
-            this.component[slot.getSlotIndex()].getQty().textField
-                    .setText(String.valueOf(this.cont.getPlayerInv().getItemStack().stackSize));
-            return;
-        }
-        super.handleMouseClick(slot, slotIdx, ctrlDown, mouseButton);
-    }
-
-    public void updateAmount(int idx, int stackSize) {
-        this.component[idx].getQty().textField.setText(String.valueOf(stackSize));
-    }
-
-    @Override
     protected void actionPerformed(final GuiButton btn) {
         if (btn == originalGuiBtn) {
             switchGui();
@@ -352,6 +295,15 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     }
 
     @Override
+    protected void handleMouseClick(Slot slot, int slotIdx, int ctrlDown, int mouseButton) {
+        if (slot instanceof SlotFluidConvertingFake && this.cont.getPlayerInv().getItemStack() == null) {
+            slot.putStack(null);
+            this.component[slot.getSlotIndex()].reset();
+        }
+        super.handleMouseClick(slot, slotIdx, ctrlDown, mouseButton);
+    }
+
+    @Override
     public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
         if (draggedStack == null) {
             return false;
@@ -366,11 +318,9 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         for (int i = 0; i < this.cont.getRequestSlots().length; i++) {
             SlotFluidConvertingFake slot = this.cont.getRequestSlots()[i];
             if (slotAtPosition.equals(slot)) {
-                ItemStack itemStack = createLevelValues(draggedStack.copy());
-                itemStack.getTagCompound().setInteger(TLMTags.Index.tagName, i);
-                slot.putStack(itemStack);
-                NetworkHandler.instance.sendToServer(new PacketNEIDragClick(itemStack, slot.getSlotIndex()));
-                this.updateAmount(slot.getSlotIndex(), itemStack.stackSize);
+                slot.putStack(draggedStack);
+                component[i].reset();
+                NetworkHandler.instance.sendToServer(new PacketNEIDragClick(draggedStack, slot.getSlotIndex()));
                 return true;
             }
         }
@@ -382,26 +332,44 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         return false;
     }
 
+    public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state) {
+        if (index < 0 || index >= TileLevelMaintainer.REQ_COUNT) return;
+        component[index].setEnable(isEnabled);
+        component[index].setState(state);
+        component[index].getQty().textField.setText(String.valueOf(quantity));
+        component[index].getBatch().textField.setText(String.valueOf(batchSize));
+        component[index].getQty().validate();
+        component[index].getBatch().validate();
+    }
+
+    public void updateComponent(int index, LevelState state) {
+        if (index < 0 || index >= TileLevelMaintainer.REQ_COUNT) return;
+        component[index].setState(state);
+    }
+
     private class Component {
 
-        public boolean isEnable = true;
+        public boolean isEnable = false;
         private final Widget qty;
         private final Widget batch;
         private final GuiFCImgButton disable;
         private final GuiFCImgButton enable;
         private final GuiFCImgButton submit;
         private final FCGuiLineField line;
-        private State state;
+        private LevelState state;
+        private final ContainerLevelMaintainer container;
 
         public Component(Widget qtyInput, Widget batchInput, GuiFCImgButton submitBtn, GuiFCImgButton enableBtn,
-                GuiFCImgButton disableBtn, FCGuiLineField line, List<GuiButton> buttonList) {
+                GuiFCImgButton disableBtn, FCGuiLineField line, List<GuiButton> buttonList,
+                ContainerLevelMaintainer container) {
             this.qty = qtyInput;
             this.batch = batchInput;
             this.enable = enableBtn;
             this.disable = disableBtn;
             this.submit = submitBtn;
             this.line = line;
-            this.state = State.None;
+            this.state = LevelState.None;
+            this.container = container;
             buttonList.add(this.submit);
             buttonList.add(this.enable);
             buttonList.add(this.disable);
@@ -435,18 +403,25 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                 batch.validate();
                 if (qty.getAmount() != null) {
                     this.send(qty);
+                    qty.textField.setText(String.valueOf(qty.getAmount()));
                 }
                 if (batch.getAmount() != null) {
                     this.send(batch);
+                    batch.textField.setText(String.valueOf(batch.getAmount()));
                 }
 
                 didSomething = true;
             } else if (this.enable == btn) {
+                this.setEnable(false);
                 FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Enable, this.getIndex()));
                 didSomething = true;
             } else if (this.disable == btn) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Disable, this.getIndex()));
-                didSomething = true;
+                if (this.container.getInventory().get(this.getIndex()) != null) {
+                    this.setEnable(true);
+                    FluidCraft.proxy.netHandler
+                            .sendToServer(new CPacketLevelMaintainer(Action.Disable, this.getIndex()));
+                    didSomething = true;
+                }
             }
             return didSomething;
         }
@@ -531,8 +506,17 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             }
         }
 
-        public void setState(State state) {
+        public void setState(LevelState state) {
             this.state = state;
+        }
+
+        public void reset() {
+            this.qty.textField.setText("0");
+            this.batch.textField.setText("0");
+            this.qty.validate();
+            this.batch.validate();
+            this.setEnable(false);
+            this.setState(LevelState.None);
         }
     }
 
@@ -585,7 +569,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
         public void validate() {
             final double result = Calculator.conversion(this.textField.getText());
-            if (Double.isNaN(result)) {
+            if (Double.isNaN(result) || result < 0) {
                 this.amount = null;
                 this.textField.setTextColor(0xFF0000);
             } else {
