@@ -21,6 +21,7 @@ public class NameConst {
     public static final String BLOCK_OC_PATTERN_EDITOR = "oc_pattern_editor";
     public static final String BLOCK_LEVEL_MAINTAINER = "level_maintainer";
     public static final String BLOCK_WALRUS = "walrus";
+    public static final String BLOCK_SUPER_STOCK_REPLENISHER = "super_stock_replenisher";
     public static final String ITEM_FLUID_DROP = "fluid_drop";
     public static final String ITEM_FLUID_ENCODED_PATTERN = "fluid_encoded_pattern";
     public static final String ITEM_PART_FLUID_STORAGE_MONITOR = "part_fluid_storage_monitor";
