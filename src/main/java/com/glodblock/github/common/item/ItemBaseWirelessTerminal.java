@@ -10,6 +10,7 @@ import java.util.List;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -36,6 +37,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     protected GuiType type;
     public static String infinityBoosterCard = "infinityBoosterCard";
     public static String infinityEnergyCard = "InfinityEnergyCard";
+    public static String restockItems = "restock";
 
     public ItemBaseWirelessTerminal(GuiType t) {
         super();
@@ -131,4 +133,8 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         return this.type;
     }
 
+    public static void toggleRestockItemsMode(ItemStack is, boolean state) {
+        NBTTagCompound data = Platform.openNbtData(is);
+        data.setBoolean(restockItems, state);
+    }
 }
