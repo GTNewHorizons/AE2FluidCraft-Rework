@@ -1,5 +1,7 @@
 package com.glodblock.github.nei;
 
+import net.minecraft.util.EnumChatFormatting;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
 import com.glodblock.github.client.gui.GuiFluidPatternExWireless;
@@ -9,6 +11,8 @@ import com.glodblock.github.client.gui.GuiFluidPatternWireless;
 import com.glodblock.github.nei.recipes.FluidRecipe;
 import com.glodblock.github.util.ModAndClassUtil;
 
+import codechicken.nei.SearchField;
+import codechicken.nei.SearchTokenParser;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 
@@ -18,7 +22,18 @@ public class NEI_FC_Config implements IConfigureNEI {
     @Override
     public void loadConfig() {
         API.registerNEIGuiHandler(new AE2FC_NEIGuiHandler());
-        API.addSearchProvider(new NEISearchFilter());
+        API.addSearchProvider(
+                new SearchField.SearchParserProvider(
+                        '\0',
+                        "cellSearch",
+                        EnumChatFormatting.RESET,
+                        CellSearchFilter::new) {
+
+                    @Override
+                    public SearchTokenParser.SearchMode getSearchMode() {
+                        return SearchTokenParser.SearchMode.ALWAYS;
+                    }
+                });
         API.registerStackStringifyHandler(new FCStackStringifyHandler());
         API.registerUsageHandler(new NEICellViewHandler());
 
