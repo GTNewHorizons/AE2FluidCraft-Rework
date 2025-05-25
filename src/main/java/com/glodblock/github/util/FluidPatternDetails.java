@@ -1,5 +1,8 @@
 package com.glodblock.github.util;
 
+import static appeng.util.Platform.readStackNBT;
+import static appeng.util.Platform.stackConvert;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -14,7 +17,9 @@ import net.minecraftforge.common.util.Constants;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.helpers.PatternHelper;
+import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 
 public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<FluidPatternDetails> {
@@ -22,6 +27,7 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
     private final ItemStack patternStack;
     private IAEItemStack patternStackAe;
     private IAEItemStack[] inputs = null, inputsCond = null, outputs = null, outputsCond = null;
+    private IAEStack<?>[] aeInputs = null, aeInputsCond = null, aeOutputs = null, aeOutputsCond = null;
     private int priority = 0;
     private int combine = 0;
     private int beSubstitute = 0;
@@ -84,17 +90,41 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
     }
 
     @Override
+    public IAEStack<?>[] getAEInputs() {
+        return checkInitialized(aeInputs);
+    }
+
+    @Override
     public IAEItemStack[] getCondensedInputs() {
         return checkInitialized(inputsCond);
     }
 
-    public boolean setInputs(IAEItemStack[] inputs) {
-        IAEItemStack[] condensed = condenseStacks(inputs);
+    @Override
+    public IAEStack<?>[] getCondensedAEInputs() {
+        return checkInitialized(aeInputsCond);
+    }
+
+    public boolean setInputs(IAEStack<?>[] inputs) {
+        IAEStack<?>[] condensed = condenseAEStacks(inputs);
         if (condensed.length == 0) {
             return false;
         }
-        this.inputs = inputs;
-        this.inputsCond = condensed;
+        this.aeInputs = inputs;
+        this.aeInputsCond = condensed;
+
+        IAEItemStack[] legacy = new IAEItemStack[inputs.length];
+        for (int i = 0; i < inputs.length; i++) {
+            if (inputs[i] != null) {
+                if (inputs[i].isItem()) {
+                    legacy[i] = (IAEItemStack) inputs[i];
+                } else {
+                    legacy[i] = stackConvert(inputs[i]);
+                }
+            }
+        }
+        this.inputs = legacy;
+        this.inputsCond = condenseStacks(legacy);
+
         return true;
     }
 
@@ -104,17 +134,41 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
     }
 
     @Override
+    public IAEStack<?>[] getAEOutputs() {
+        return checkInitialized(aeOutputs);
+    }
+
+    @Override
     public IAEItemStack[] getCondensedOutputs() {
         return checkInitialized(outputsCond);
     }
 
-    public boolean setOutputs(IAEItemStack[] outputs) {
-        IAEItemStack[] condensed = condenseStacks(outputs);
+    @Override
+    public IAEStack<?>[] getCondensedAEOutputs() {
+        return checkInitialized(aeOutputsCond);
+    }
+
+    public boolean setOutputs(IAEStack<?>[] outputs) {
+        IAEStack<?>[] condensed = condenseAEStacks(outputs);
         if (condensed.length == 0) {
             return false;
         }
-        this.outputs = Arrays.stream(outputs).filter(Objects::nonNull).toArray(IAEItemStack[]::new);
-        this.outputsCond = condensed;
+        this.aeOutputs = Arrays.stream(outputs).filter(Objects::nonNull).toArray(IAEStack<?>[]::new);
+        this.aeOutputsCond = condensed;
+
+        IAEItemStack[] legacy = new IAEItemStack[outputs.length];
+        for (int i = 0; i < outputs.length; i++) {
+            if (outputs[i] != null) {
+                if (outputs[i].isItem()) {
+                    legacy[i] = (IAEItemStack) outputs[i];
+                } else {
+                    legacy[i] = stackConvert(outputs[i]);
+                }
+            }
+        }
+        this.outputs = legacy;
+        this.outputsCond = condenseStacks(legacy);
+
         return true;
     }
 
@@ -122,8 +176,17 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
         return PatternHelper.convertToCondensedList(stacks);
     }
 
+    private static IAEStack<?>[] condenseAEStacks(IAEStack<?>[] stacks) {
+        return PatternHelper.convertToCondensedAEList(stacks);
+    }
+
     @Override
     public ItemStack getOutput(InventoryCrafting craftingInv, World world) {
+        throw new IllegalStateException("Not a crafting recipe!");
+    }
+
+    @Override
+    public boolean isValidItemForSlot(int slotIndex, IAEStack<?> stack, World world) {
         throw new IllegalStateException("Not a crafting recipe!");
     }
 
@@ -171,12 +234,12 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
         return patternStack;
     }
 
-    public static NBTTagList writeStackArray(IAEItemStack[] stacks) {
+    public static NBTTagList writeStackArray(IAEStack<?>[] stacks) {
         NBTTagList listTag = new NBTTagList();
-        for (IAEItemStack stack : stacks) {
+        for (IAEStack<?> stack : stacks) {
             // see note at top of class
             NBTTagCompound stackTag = new NBTTagCompound();
-            if (stack != null) stack.writeToNBT(stackTag);
+            Platform.writeStackNBT(stack, stackTag);
             listTag.appendTag(stackTag);
         }
         return listTag;
@@ -196,11 +259,11 @@ public class FluidPatternDetails implements ICraftingPatternDetails, Comparable<
                 && setOutputs(readStackArray(tag.getTagList("out", Constants.NBT.TAG_COMPOUND)));
     }
 
-    public static IAEItemStack[] readStackArray(NBTTagList listTag) {
+    public static IAEStack<?>[] readStackArray(NBTTagList listTag) {
         // see note at top of class
-        IAEItemStack[] stacks = new IAEItemStack[listTag.tagCount()];
+        IAEStack<?>[] stacks = new IAEStack<?>[listTag.tagCount()];
         for (int i = 0; i < stacks.length; i++) {
-            stacks[i] = AEItemStack.loadItemStackFromNBT(listTag.getCompoundTagAt(i));
+            stacks[i] = readStackNBT(listTag.getCompoundTagAt(i), true);
         }
         return stacks;
     }
