@@ -1,10 +1,13 @@
 package com.glodblock.github.common.storage;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
+
+import org.jetbrains.annotations.NotNull;
 
 import appeng.api.config.Actionable;
 import appeng.api.exceptions.AppEngException;
@@ -109,7 +112,7 @@ public class FluidVoidStorageCellInventory extends FluidCellInventory {
     }
 
     @Override
-    public List<IAEFluidStack> getContents() {
-        return null;
+    public @NotNull List<IAEFluidStack> getContents() {
+        return Collections.emptyList();
     }
 }
