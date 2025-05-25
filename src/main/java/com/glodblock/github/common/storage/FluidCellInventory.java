@@ -13,6 +13,8 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.glodblock.github.common.item.ItemBaseInfinityStorageCell;
 import com.glodblock.github.common.item.ItemFluidVoidStorageCell;
 import com.glodblock.github.crossmod.extracells.storage.ProxyFluidCellInventory;
@@ -476,7 +478,7 @@ public class FluidCellInventory implements IFluidCellInventory {
     }
 
     @Override
-    public List<IAEFluidStack> getContents() {
+    public @NotNull List<IAEFluidStack> getContents() {
         List<IAEFluidStack> ret = new ArrayList<>();
         for (IAEFluidStack fluid : this.getCellFluids()) {
             ret.add(fluid);
