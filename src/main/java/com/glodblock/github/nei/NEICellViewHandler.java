@@ -85,7 +85,6 @@ public class NEICellViewHandler implements IUsageHandler {
             int count = 0;
             for (IAEFluidStack aeFluid : sortedStacks) {
                 FluidStack fluid = aeFluid.getFluidStack();
-                long amount = fluid.amount;
                 ItemStack fluidItemStack = ItemFluidDrop.newStack(fluid);
                 if (fluidItemStack != null) {
                     fluidItemStack.stackSize = 1;
@@ -93,7 +92,7 @@ public class NEICellViewHandler implements IUsageHandler {
                         fluidItemStack,
                         OFFSET_X + count % ROW_ITEM_NUM * 18 + 1,
                         ITEMS_OFFSET_Y + count / ROW_ITEM_NUM * 18 + 1);
-                    stacks.add(new ViewItemStack(positionedStack, amount, fluid.getFluid().getIcon(), fluid.getFluid().getColor()));
+                    stacks.add(new ViewItemStack(positionedStack, aeFluid.getStackSize(), fluid.getFluid().getIcon(), fluid.getFluid().getColor()));
                 count++;
                 }
             }
