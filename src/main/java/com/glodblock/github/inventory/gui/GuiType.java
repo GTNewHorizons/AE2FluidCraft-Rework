@@ -573,8 +573,7 @@ public enum GuiType {
         protected Object createClientGui(EntityPlayer player, TileSuperStockReplenisher inv) {
             return new GuiSuperStockReplenisher(player.inventory, inv);
         }
-    });
-
+    }),
 
     WIRELESS_MAGNET_FILTER(new ItemGuiFactory<>(ITerminalHost.class) {
 
