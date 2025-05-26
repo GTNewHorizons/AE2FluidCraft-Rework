@@ -39,7 +39,7 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
     private boolean useOreDict;
     private String oreDictFilter = "";
     protected Predicate<IAEItemStack> filterPredicate = null;
-    private WirelessMagnet.ListMode listMode = WirelessMagnet.ListMode.WhiteList;
+    private WirelessMagnet.ListMode listMode = WirelessMagnet.ListMode.BlackList;
     private final AppEngInternalInventory filterInventory;
     private final NBTTagCompound settingCache;
     private final NBTTagCompound filterCache;
