@@ -513,7 +513,10 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         boolean isPattern = definitions.items().encodedPattern().isSameAs(output);
         isPattern |= definitions.materials().blankPattern().isSameAs(output);
 
-        return !isPattern;
+        boolean isUltimatePattern = definitions.items().encodedUltimatePattern().isSameAs(output);
+        isUltimatePattern |= definitions.materials().blankPattern().isSameAs(output);
+
+        return !isPattern && !isUltimatePattern;
     }
 
     protected NBTBase createItemTag(final ItemStack i) {
