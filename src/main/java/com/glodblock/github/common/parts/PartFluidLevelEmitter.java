@@ -18,6 +18,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.api.registries.ILevelViewable;
+import com.glodblock.github.api.registries.LevelItemInfo;
+import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -585,5 +587,16 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
         }
 
         return super.getInventoryByName(name);
+    }
+
+    @Override
+    public LevelItemInfo[] getLevelItemInfoList() {
+        ItemStack stack = this.config.getStackInSlot(0);
+        if (stack == null) return new LevelItemInfo[] { null };
+        return new LevelItemInfo[] { new LevelItemInfo(
+                stack,
+                this.getReportingValue(),
+                -1,
+                this.isProvidingStrongPower() > 0 ? LevelState.Craft : LevelState.Idle) };
     }
 }

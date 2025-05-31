@@ -16,11 +16,13 @@ public interface ILevelViewable extends IGridHost, ISide, ISegmentedInventory, I
 
     TileEntity getTile();
 
+    @Deprecated
     default long getSortValue() {
         TileEntity te = getTile();
         return ((long) te.zCoord << 24) ^ ((long) te.xCoord << 8) ^ te.yCoord;
     }
 
+    @Deprecated
     default boolean shouldDisplay() {
         return true;
     }
@@ -39,6 +41,7 @@ public interface ILevelViewable extends IGridHost, ISide, ISegmentedInventory, I
         return 1;
     };
 
+    @Deprecated
     default ItemStack getSelfItemStack() {
         return null;
     }
@@ -46,8 +49,11 @@ public interface ILevelViewable extends IGridHost, ISide, ISegmentedInventory, I
     /**
      * "Target" Display representation
      */
+    @Deprecated
     default ItemStack getDisplayItemStack() {
         return null;
     }
+
+    LevelItemInfo[] getLevelItemInfoList();
 
 }
