@@ -1,28 +1,17 @@
 package com.glodblock.github.coremod.hooker;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.IGuiTooltipHandler;
-import appeng.util.InventoryAdaptor;
 
 public class CoreModHooks {
-
-    @Nullable
-    public static InventoryAdaptor wrapInventory(@Nullable TileEntity tile, ForgeDirection face) {
-        return tile != null ? FluidConvertingInventoryAdaptor.wrap(tile, face) : null;
-    }
 
     public static ItemStack displayFluid(IAEItemStack aeStack) {
         if (aeStack.getItemStack() != null && aeStack.getItemStack().getItem() instanceof ItemFluidDrop) {
