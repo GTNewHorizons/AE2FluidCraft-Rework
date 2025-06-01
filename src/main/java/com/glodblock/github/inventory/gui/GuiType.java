@@ -562,19 +562,6 @@ public enum GuiType {
         }
     }),
 
-    GUI_SUPER_STOCK_REPLENISHER(new TileGuiFactory<>(TileSuperStockReplenisher.class) {
-
-        @Override
-        protected Object createServerGui(EntityPlayer player, TileSuperStockReplenisher inv) {
-            return new ContainerSuperStockReplenisher(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(EntityPlayer player, TileSuperStockReplenisher inv) {
-            return new GuiSuperStockReplenisher(player.inventory, inv);
-        }
-    }),
-
     WIRELESS_MAGNET_FILTER(new ItemGuiFactory<>(ITerminalHost.class) {
 
         @Override
@@ -585,6 +572,19 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
             return new GuiMagnetFilter(player.inventory, inv);
+        }
+    }),
+
+    GUI_SUPER_STOCK_REPLENISHER(new TileGuiFactory<>(TileSuperStockReplenisher.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, TileSuperStockReplenisher inv) {
+            return new ContainerSuperStockReplenisher(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, TileSuperStockReplenisher inv) {
+            return new GuiSuperStockReplenisher(player.inventory, inv);
         }
     });
 
