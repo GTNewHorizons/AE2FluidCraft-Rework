@@ -1,5 +1,7 @@
 package com.glodblock.github.common.parts;
 
+import static appeng.util.Platform.stackConvertPacket;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -51,6 +53,7 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.util.IConfigManager;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
@@ -143,9 +146,9 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
                 }
             } else {
                 if (this.getWaitingToSend() != null) {
-                    for (final ItemStack is : this.getWaitingToSend()) {
+                    for (final IAEStack<?> is : this.getWaitingToSend()) {
                         if (is != null) {
-                            drops.add(is);
+                            drops.add(stackConvertPacket(is).getItemStack());
                         }
                     }
                 }
