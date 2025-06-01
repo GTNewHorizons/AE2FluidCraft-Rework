@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
@@ -25,6 +27,8 @@ import com.glodblock.github.inventory.item.WirelessCraftingTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessFluidTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessInterfaceTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
+import com.glodblock.github.inventory.item.WirelessMagnet;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalExInventory;
 import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.IRegister;
@@ -40,6 +44,7 @@ import appeng.core.features.AEFeature;
 import appeng.core.localization.PlayerMessages;
 import appeng.util.Platform;
 import baubles.api.BaubleType;
+import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -102,7 +107,9 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         try {
             IGridNode gridNode = Util.getWirelessGrid(stack);
             final GuiType gui;
-            if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z > 0) {
+            if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z == -1) {
+                gui = GuiType.WIRELESS_MAGNET_FILTER;
+            } else if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z > 0) {
                 gui = getGuis().get(Util.GuiHelper.decodeType(y).getRight());
             } else {
                 gui = readMode(stack);
@@ -121,6 +128,8 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 return new WirelessLevelTerminalInventory(stack, x, gridNode, player);
             } else if (gui == GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX) {
                 return new WirelessPatternTerminalExInventory(stack, x, gridNode, player);
+            } else if (gui == GuiType.WIRELESS_MAGNET_FILTER) {
+                return new WirelessMagnetCardFilterInventory(stack, x, gridNode, player);
             } else {
                 this.setMode(GuiType.WIRELESS_FLUID_TERMINAL, stack); // set as default mode
                 return new WirelessFluidTerminalInventory(stack, x, gridNode, player);
@@ -226,7 +235,21 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
 
     @Override
     public void onWornTick(ItemStack itemStack, EntityLivingBase entityLivingBase) {
-
+        if (Platform.isServer() && entityLivingBase instanceof EntityPlayer player) {
+            IInventory handler = BaublesApi.getBaubles(player);
+            if (handler != null) {
+                for (int i = 0; i < handler.getSizeInventory(); ++i) {
+                    if (handler.getStackInSlot(i) == itemStack) {
+                        onUpdate(
+                                itemStack,
+                                null,
+                                player,
+                                Util.GuiHelper.encodeType(i, Util.GuiHelper.InvType.PLAYER_BAUBLES),
+                                false);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -247,5 +270,14 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     @Override
     public boolean canUnequip(ItemStack itemStack, EntityLivingBase entityLivingBase) {
         return true;
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int slot, boolean p_77663_5_) {
+        if (Platform.isServer() && entityIn instanceof EntityPlayer player) {
+            if (WirelessMagnet.getMode(stack) != WirelessMagnet.Mode.Off) {
+                WirelessMagnet.doMagnet(stack, player.worldObj, player);
+            }
+        }
     }
 }
