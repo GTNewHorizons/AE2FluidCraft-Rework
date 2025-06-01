@@ -61,7 +61,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
             if (slot < 0 || slot >= TileLevelMaintainer.REQ_COUNT) {
                 throw new IllegalArgumentException("Invalid slot");
             }
-            return tileEntity.requests.isDone(slot);
+            return tileEntity.isDone(slot);
         }
 
         private boolean isEnable(Arguments args) {
@@ -69,7 +69,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
             if (slot < 0 || slot >= TileLevelMaintainer.REQ_COUNT) {
                 throw new IllegalArgumentException("Invalid slot");
             }
-            return tileEntity.requests.isEnable(slot);
+            return tileEntity.requests[slot].isEnable();
         }
 
         private boolean setEnable(Arguments args) {
@@ -81,7 +81,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
                     throw new IllegalArgumentException("Invalid slot");
                 }
                 boolean enable = args.checkBoolean(1);
-                tileEntity.requests.updateStatus(slot, enable);
+                tileEntity.updateStatus(slot, enable);
                 return true;
             }
         }
@@ -103,12 +103,12 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
                 result.put("label", stack.getDisplayName());
                 result.put("maxDamage", stack.getMaxDamage());
                 result.put("name", GameRegistry.findUniqueIdentifierFor(stack.getItem()).toString());
-                result.put("quantity", tileEntity.requests.getQuantity(slot));
-                result.put("batch", tileEntity.requests.getBatchSize(slot));
+                result.put("quantity", tileEntity.requests[slot].getQuantity());
+                result.put("batch", tileEntity.requests[slot].getBatchSize());
                 result.put("isFluid", ItemFluidDrop.isFluidStack(stack));
                 if (ItemFluidDrop.isFluidStack(stack)) result.put("fluid", ItemFluidDrop.getFluidStack(stack));
-                result.put("isEnable", tileEntity.requests.isEnable(slot));
-                result.put("isDone", tileEntity.requests.isDone(slot));
+                result.put("isEnable", tileEntity.requests[slot].isEnable());
+                result.put("isDone", tileEntity.isDone(slot));
                 return new Object[] { result };
             }
             return new Object[] { null };
@@ -122,7 +122,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
                     if (dbStack == null) {
                         throw new IllegalArgumentException("Invalid slot");
                     }
-                    tileEntity.requests.updateStack(slot, dbStack);
+                    tileEntity.updateStack(slot, dbStack);
                 } else {
                     throw new IllegalArgumentException("Not a database");
                 }

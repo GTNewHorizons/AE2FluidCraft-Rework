@@ -1,7 +1,5 @@
 package com.glodblock.github.coremod.registries.adapters;
 
-import static com.glodblock.github.coremod.registries.adapters.PartLevelEmitterAdapter.getPatchedInventory;
-
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -9,8 +7,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.api.registries.ILevelViewable;
 import com.glodblock.github.api.registries.ILevelViewableAdapter;
+import com.glodblock.github.api.registries.LevelItemInfo;
+import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
-import com.glodblock.github.common.tile.TileLevelMaintainer.State;
 
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -45,10 +44,7 @@ public class PartFluidLevelEmitterAdapter implements ILevelViewable, ILevelViewa
 
     @Override
     public IInventory getInventoryByName(String name) {
-        long value = delegate.getReportingValue();
-        State state = delegate.isProvidingStrongPower() > 0 ? State.Craft : State.Idle;
-
-        return getPatchedInventory(delegate.getInventoryByName(name), value, state);
+        return delegate.getInventoryByName(name);
     }
 
     @Override
@@ -82,7 +78,13 @@ public class PartFluidLevelEmitterAdapter implements ILevelViewable, ILevelViewa
     }
 
     @Override
-    public ItemStack getSelfItemStack() {
-        return delegate.getItemStack();
+    public LevelItemInfo[] getLevelItemInfoList() {
+        ItemStack stack = delegate.getInventoryByName("config").getStackInSlot(0);
+        if (stack == null) return new LevelItemInfo[] { null };
+        return new LevelItemInfo[] { new LevelItemInfo(
+                stack,
+                delegate.getReportingValue(),
+                -1,
+                delegate.isProvidingStrongPower() > 0 ? LevelState.Craft : LevelState.Idle) };
     }
 }

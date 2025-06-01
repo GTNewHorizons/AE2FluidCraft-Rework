@@ -1,23 +1,30 @@
 package com.glodblock.github.common.tile;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.Future;
-import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.glodblock.github.api.registries.ILevelViewable;
+import com.glodblock.github.api.registries.LevelItemInfo;
+import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.AeStackInventory;
-import com.glodblock.github.inventory.AeStackInventoryImpl;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.google.common.collect.ImmutableSet;
 
@@ -42,19 +49,16 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
-import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
-import appeng.helpers.NonNullArrayIterator;
 import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
-import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
@@ -62,10 +66,19 @@ public class TileLevelMaintainer extends AENetworkTile
         implements IAEAppEngInventory, IGridTickable, ICraftingRequester, IPowerChannelState, ILevelViewable {
 
     public static final int REQ_COUNT = 5;
-    public final InventoryRequest requests = new InventoryRequest(this);
+    public static final String NBT_REQUESTS = "Requests";
+    public static final String NBT_STACK = "stack";
+    public static final String NBT_QUANTITY = "quantity";
+    public static final String NBT_BATCH = "batch";
+    public static final String NBT_ENABLE = "enable";
+    public static final String NBT_STATE = "state";
+    public static final String NBT_LINK = "link";
+
+    public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
+    private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests, this);
     private int firstRequest = 0;
     private final BaseActionSource source;
-    private final IInventory inv = new AeItemStackHandler(requests.requestStacks);
+    private final IInventory inv = new AeItemStackHandler(inventory);
     private boolean isPowered = false;
 
     public TileLevelMaintainer() {
@@ -75,17 +88,23 @@ public class TileLevelMaintainer extends AENetworkTile
     }
 
     public AeStackInventory<IAEItemStack> getRequestSlots() {
-        return requests.requestStacks;
+        return inventory;
     }
 
     @Override
     public ImmutableSet<ICraftingLink> getRequestedJobs() {
-        return ImmutableSet.copyOf(new NonNullArrayIterator<>(requests.links));
+        return ImmutableSet.copyOf(
+                Arrays.stream(this.requests).filter(Objects::nonNull).map(info -> info.link).filter(Objects::nonNull)
+                        .iterator());
     }
 
     @Override
     public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
-        int idx = requests.getIdxByLink(link);
+        int idx = this.getRequestIndexByLink(link);
+        if (idx == -1) {
+            AELog.warn("Invalid crafting link: " + link);
+            return items;
+        } ;
         try {
             if (getProxy().isActive()) {
                 final IEnergyGrid energy = getProxy().getEnergy();
@@ -97,7 +116,7 @@ public class TileLevelMaintainer extends AENetworkTile
                                 .injectItems(ItemFluidDrop.getAeFluidStack(items), mode, source);
                         if (notInjectedItems != null) {
                             items.setStackSize(notInjectedItems.getStackSize());
-                            requests.updateState(idx, State.Export);
+                            this.updateState(idx, LevelState.Export);
 
                             return items;
                         } else {
@@ -117,10 +136,9 @@ public class TileLevelMaintainer extends AENetworkTile
 
     @Override
     public void jobStateChange(ICraftingLink link) {
-        for (int x = 0; x < REQ_COUNT; x++) {
-            if (requests.getLink(x) == link) {
-                requests.updateLink(x, link);
-                return;
+        for (int i = 0; i < REQ_COUNT; i++) {
+            if (requests[i] != null && requests[i].link == link) {
+                this.updateLink(i, null);
             }
         }
     }
@@ -164,92 +182,107 @@ public class TileLevelMaintainer extends AENetworkTile
 
             for (int j = 0; j < REQ_COUNT; ++j) {
                 int i = (firstRequest + j) % REQ_COUNT;
+                if (requests[i] == null) continue;
 
-                long quantity = requests.getQuantity(i);
-                long batchSize = requests.getBatchSize(i);
-                boolean isEnable = requests.isEnable(i);
-                if (!isEnable || batchSize == 0) requests.updateState(i, State.None);
-                if (batchSize > 0) {
-                    IAEItemStack craftItem = requests.getCraftItem(i);
+                final long quantity = requests[i].quantity;
+                final long batchSize = requests[i].batchSize;
+                final boolean isEnable = requests[i].enable;
 
-                    if (ModAndClassUtil.ThE) {
-                        if (craftItem != null && ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
-                            craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
-                        }
-                    }
+                if (!isEnable || quantity == 0 || batchSize == 0) {
+                    this.updateState(i, LevelState.None);
+                    continue;
+                }
 
-                    IAEItemStack aeItem = inv.findPrecise(craftItem);
+                IAEItemStack craftItem = requests[i].itemStack.copy();
+                craftItem.setStackSize(batchSize);
 
-                    long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
-
-                    if (ModAndClassUtil.ThE) {
-                        if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
-                            stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(aeItem, grid);
-                        }
-                    }
-
-                    boolean isDone = requests.isDone(i);
-                    boolean isCraftable = aeItem != null && aeItem.isCraftable();
-                    boolean shouldCraft = isCraftable && stackSize < quantity;
-
-                    if (isDone) requests.updateState(i, State.Idle);
-                    if (!isCraftable) requests.updateState(i, State.Error);
-
-                    if (allBusy || !isDone || !shouldCraft) {
-                        continue;
-                    }
-
-                    if (craftingGrid.canEmitFor(craftItem)) {
-                        continue;
-                    }
-
-                    if (craftingGrid.isRequesting(craftItem)) {
-                        continue;
-                    }
-
-                    // do crafting
-                    Future<ICraftingJob> jobTask = requests.getJob(i);
-
-                    if (jobTask == null) {
-                        if (itemToBegin == null) {
-                            itemToBegin = craftItem;
-                            itemToBeginIdx = i;
-                        }
-                    } else if (jobTask.isDone()) {
-                        requests.updateState(i, State.Craft);
-                        try {
-                            ICraftingJob job = jobTask.get();
-                            if (job != null) {
-                                if (jobToSubmit == null) {
-                                    jobToSubmit = job;
-                                    jobToSubmitIdx = i;
-                                }
-                            } else {
-                                requests.updateState(i, State.Error);
-                            }
-                        } catch (Exception ignored) {
-                            requests.updateState(i, State.Error);
-                        }
+                if (ModAndClassUtil.ThE) {
+                    if (ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
+                        craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
                     }
                 }
+
+                IAEItemStack aeItem = inv.findPrecise(craftItem);
+
+                long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
+
+                if (ModAndClassUtil.ThE) {
+                    if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
+                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(aeItem, grid);
+                    }
+                }
+
+                boolean isDone = this.isDone(i);
+                boolean isCraftable = aeItem != null && aeItem.isCraftable();
+                boolean shouldCraft = isCraftable && stackSize < quantity;
+
+                if (isDone) {
+                    if (this.requests[i].state != LevelState.Idle) {
+                        this.updateState(i, LevelState.Idle);
+                    }
+                    if (this.requests[i].link != null) {
+                        this.updateLink(i, null);
+                    }
+                    if (!isCraftable) {
+                        updateState(i, LevelState.Error);
+                    }
+                }
+
+                if (allBusy || !isDone || !shouldCraft) {
+                    continue;
+                }
+
+                if (craftingGrid.canEmitFor(craftItem)) {
+                    continue;
+                }
+
+                if (craftingGrid.isRequesting(craftItem)) {
+                    continue;
+                }
+
+                // do crafting
+                Future<ICraftingJob> jobTask = requests[i].job;
+
+                if (jobTask == null) {
+                    if (itemToBegin == null) {
+                        itemToBegin = craftItem;
+                        itemToBeginIdx = i;
+                    }
+                } else if (jobTask.isDone()) {
+                    this.updateState(i, LevelState.Craft);
+                    try {
+                        ICraftingJob job = jobTask.get();
+                        if (job != null) {
+                            if (jobToSubmit == null) {
+                                jobToSubmit = job;
+                                jobToSubmitIdx = i;
+                            }
+                        } else {
+                            this.updateState(i, LevelState.Error);
+                        }
+                    } catch (Exception ignored) {
+                        this.updateState(i, LevelState.Error);
+                    }
+                }
+
             }
 
             if (jobToSubmit != null) {
                 // Finished calculating a request, try to submit it.
                 ICraftingLink link = craftingGrid.submitJob(jobToSubmit, this, null, false, source);
-                requests.updateJob(jobToSubmitIdx, null);
+                requests[jobToSubmitIdx].job = null;
                 if (link != null) {
-                    requests.updateState(jobToSubmitIdx, State.Craft);
-                    requests.updateLink(jobToSubmitIdx, link);
+                    this.updateState(jobToSubmitIdx, LevelState.Craft);
+                    this.updateLink(jobToSubmitIdx, link);
                 } else {
-                    requests.updateState(jobToSubmitIdx, State.Error);
+                    this.updateState(jobToSubmitIdx, LevelState.Error);
                 }
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
-                requests.updateJob(
-                        itemToBeginIdx,
-                        craftingGrid.beginCraftingJob(getWorldObj(), grid, source, itemToBegin, null));
-                requests.updateState(itemToBeginIdx, State.Craft);
+
+                requests[itemToBeginIdx].job = craftingGrid
+                        .beginCraftingJob(getWorldObj(), grid, source, itemToBegin, null);
+                this.updateState(itemToBeginIdx, LevelState.Craft);
 
                 // Try the next item next time.
                 firstRequest = (firstRequest + 1) % REQ_COUNT;
@@ -285,9 +318,6 @@ public class TileLevelMaintainer extends AENetworkTile
     }
 
     @Override
-    public void gridChanged() {}
-
-    @Override
     public boolean isPowered() {
         return isPowered;
     }
@@ -297,118 +327,203 @@ public class TileLevelMaintainer extends AENetworkTile
         return isPowered;
     }
 
-    public InventoryRequest getRequestInventory() {
-        return requests;
-    }
-
     public IInventory getInventory() {
         return inv;
     }
 
     public IInventory getInventoryByName(String name) {
-        if (name == "config") return new AeItemStackHandler(requests.requestStacks);
+        if (Objects.equals(name, "config")) return new AeItemStackHandler(this.inventory);
 
         return null;
     }
 
+    @Override
+    public LevelItemInfo[] getLevelItemInfoList() {
+        return Arrays.stream(this.requests).map(request -> {
+            if (request == null) return null;
+            return new LevelItemInfo(
+                    request.itemStack.getItemStack(),
+                    request.getQuantity(),
+                    request.getBatchSize(),
+                    request.getState());
+        }).toArray(LevelItemInfo[]::new);
+    }
+
     public void updateQuantity(int idx, long size) {
-        requests.updateQuantity(idx, size);
+        if (requests[idx] == null) return;
+        requests[idx].quantity = size > 0 ? size : 0;
+        this.checkState(idx);
+        this.saveChanges();
     }
 
     public void updateBatchSize(int idx, long size) {
-        requests.updateBatchSize(idx, size);
+        if (requests[idx] == null) return;
+        requests[idx].batchSize = size > 0 ? size : 0;
+        this.checkState(idx);
+        this.saveChanges();
     }
 
     public void updateStatus(int idx, boolean enable) {
-        requests.updateStatus(idx, enable);
+        if (requests[idx] == null) return;
+        requests[idx].enable = enable;
+        this.checkState(idx);
+        this.saveChanges();
     }
 
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    private void readLinkFromNBT__old(NBTTagCompound data) {
-        try {
-            for (int i = 0; i < REQ_COUNT; i++) {
-                final NBTTagCompound link = data.getCompoundTag("links-" + i);
-                if (link != null && link.hasNoTags()) {
-                    requests.updateLink(i, null);
-                } else {
-                    requests.updateLink(i, AEApi.instance().storage().loadCraftingLink(link, this));
-                    if (!requests.isDone(i)) requests.updateState(i, State.Craft);
-                }
+    private void updateState(int idx, @NotNull LevelState state) {
+        if (requests[idx] == null) return;
+        requests[idx].state = state;
+        this.saveChanges();
+    }
+
+    public void updateStack(int idx, @Nullable ItemStack stack) {
+        if (stack == null) {
+            requests[idx] = null;
+        } else {
+            stack = this.removeRecursion(stack);
+            requests[idx] = new RequestInfo(stack, this);
+        }
+        this.saveChanges();
+    }
+
+    private void updateLink(int idx, @Nullable ICraftingLink link) {
+        if (requests[idx] == null) return;
+        requests[idx].link = link;
+        this.saveChanges();
+    }
+
+    private void checkState(int idx) {
+        if (!requests[idx].enable || requests[idx].quantity == 0 || requests[idx].batchSize == 0) {
+            this.updateState(idx, LevelState.None);
+        } else if (!this.isDone(idx)) {
+            this.updateState(idx, LevelState.Craft);
+        } else {
+            this.updateState(idx, LevelState.Idle);
+        }
+    }
+
+    public boolean isDone(int i) {
+        if (requests[i] == null) {
+            return true;
+        }
+        ICraftingLink link = requests[i].link;
+        return link == null || link.isDone() || link.isCanceled();
+    }
+
+    private int getRequestIndexByLink(ICraftingLink link) {
+        for (int i = 0; i < REQ_COUNT; i++) {
+            if (requests[i] != null && requests[i].link == link) {
+                return i;
             }
-        } catch (Exception ignore) {}
+        }
+        return -1;
     }
 
     @TileEvent(TileEventType.WORLD_NBT_WRITE)
     public void writeToNBTEvent(NBTTagCompound data) {
-        requests.requestStacks.writeToNbt(data, TLMTags.RequestStacks.tagName);
+        NBTTagList tagList = new NBTTagList();
+        for (int i = 0; i < REQ_COUNT; i++) {
+            if (this.requests[i] != null) {
+                tagList.appendTag(this.requests[i].writeToNBT());
+            } else {
+                tagList.appendTag(new NBTTagCompound());
+            }
+        }
+        data.setTag(NBT_REQUESTS, tagList);
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public void readFromNBTEvent(NBTTagCompound data) {
-        if (data.hasKey(TLMTags.RequestStacks.tagName)) {
-            requests.requestStacks.readFromNbt(data, TLMTags.RequestStacks.tagName);
-            if (Platform.isServer()) {
-                for (int i = 0; i < REQ_COUNT; i++) {
-                    if (requests.requestStacks.getStack(i) != null) {
-                        ItemStack storageStack = requests.requestStacks.getStack(i).getItemStack();
-                        ItemStack itemStack = loadItemStackFromTag(storageStack);
-                        ItemStack craftStack = removeRecursion(storageStack);
-                        if (!ItemStack.areItemStacksEqual(itemStack, craftStack)) {
-                            requests.updateStack(i, craftStack);
-                            AELog.info(
-                                    "[TileLevelMaintainer] Replace craft stack from: " + itemStack.toString()
-                                            + ":"
-                                            + (itemStack.hasTagCompound() ? itemStack.getTagCompound() : "{no tags}")
-                                            + "; with: "
-                                            + craftStack
-                                            + ":"
-                                            + (craftStack.hasTagCompound() ? craftStack.getTagCompound()
-                                                    : "{no tags}"));
-                        }
+        if (data.hasKey(NBT_REQUESTS)) {
+            NBTTagList tagList = data.getTagList(NBT_REQUESTS, Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < tagList.tagCount(); i++) {
+                NBTTagCompound tag = tagList.getCompoundTagAt(i);
+                if (tag == null || !tag.hasKey(NBT_STACK)) {
+                    this.requests[i] = null;
+                } else if (this.requests[i] == null) {
+                    try {
+                        this.requests[i] = new RequestInfo(tag, this);
+                    } catch (Exception ignored) {
+                        this.requests[i] = null;
                     }
+                } else {
+                    this.requests[i].loadFromNBT(tag);
+                }
+            }
+        } else if (data.hasKey("RequestStacks")) {
+            // Migration from old NBT
+            NBTTagList stacksTag = data.getCompoundTag("RequestStacks")
+                    .getTagList("Contents", Constants.NBT.TAG_COMPOUND);
+            IAEItemStack[] stacks = new IAEItemStack[REQ_COUNT];
+            for (int i = 0; i < REQ_COUNT; i++) {
+                NBTTagCompound stackTag = stacksTag.getCompoundTagAt(i);
+                if (stackTag == null) continue;
+                stacks[i] = AEItemStack.loadItemStackFromNBT(stackTag);
+                if (stacks[i] == null) continue;
+                ItemStack itemstack = stacks[i].getItemStack();
+                if (!itemstack.hasTagCompound()) continue;
+                NBTTagCompound itemTag = itemstack.getTagCompound();
+
+                ItemStack craftStack = ItemStack.loadItemStackFromNBT(itemTag.getCompoundTag("Stack"));
+                craftStack = removeRecursion(craftStack);
+                if (craftStack == null) continue;
+                requests[i] = new RequestInfo(craftStack, this);
+                if (itemTag.hasKey("Enable")) {
+                    requests[i].enable = itemTag.getBoolean("Enable");
+                }
+                if (itemTag.hasKey("Quantity")) {
+                    requests[i].quantity = itemTag.getLong("Quantity");
+                }
+                if (itemTag.hasKey("Batch")) {
+                    requests[i].batchSize = itemTag.getLong("Batch");
                 }
             }
         } else {
-            // Migration from old data storage
+            // Migration from old old data storage
+
             long[] batches = new long[REQ_COUNT];
             long[] quantyties = new long[REQ_COUNT];
-            requests.requestStacks.readFromNbt(data, "Batch");
+            ItemStack[] stacks = new ItemStack[REQ_COUNT];
+
+            NBTTagList batchTag = data.getCompoundTag("Batch").getTagList("Contents", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < REQ_COUNT; i++) {
-                IAEItemStack batchStack = requests.requestStacks.getStack(i);
-                batches[i] = batchStack != null ? batchStack.getStackSize() : 0;
+                NBTTagCompound stackTag = batchTag.getCompoundTagAt(i);
+                IAEItemStack stack = AEItemStack.loadItemStackFromNBT(stackTag);
+                batches[i] = stack != null ? stack.getStackSize() : 0;
             }
-            requests.requestStacks.readFromNbt(data, "Count");
+
+            NBTTagList quantityTag = data.getCompoundTag("Count").getTagList("Contents", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < REQ_COUNT; i++) {
-                IAEItemStack quantityStack = requests.requestStacks.getStack(i);
-                quantyties[i] = quantityStack != null ? quantityStack.getStackSize() : 0;
+                NBTTagCompound stackTag = quantityTag.getCompoundTagAt(i);
+                IAEItemStack stack = AEItemStack.loadItemStackFromNBT(stackTag);
+                quantyties[i] = stack != null ? stack.getStackSize() : 0;
             }
-            requests.requestStacks.readFromNbt(data, "Inventory");
+
+            NBTTagList inventoryTag = data.getCompoundTag("Count").getTagList("Contents", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < REQ_COUNT; i++) {
-                IAEItemStack requestsStack = requests.requestStacks.getStack(i);
-                if (requestsStack != null) {
-                    requests.updateStack(i, requestsStack.getItemStack());
-                    requests.updateBatchSize(i, batches[i]);
-                    requests.updateQuantity(i, quantyties[i]);
-                }
+                NBTTagCompound stackTag = inventoryTag.getCompoundTagAt(i);
+                IAEItemStack stack = AEItemStack.loadItemStackFromNBT(stackTag);
+                stacks[i] = stack != null ? stack.getItemStack() : null;
             }
-            readLinkFromNBT__old(data);
+
+            for (int i = 0; i < REQ_COUNT; i++) {
+                if (stacks[i] == null) continue;
+                this.requests[i] = new RequestInfo(stacks[i], this);
+                this.requests[i].batchSize = batches[i];
+                this.requests[i].quantity = quantyties[i];
+            }
         }
     }
 
+    // Remove old format NBT data from ItemStack
     private ItemStack removeRecursion(ItemStack itemStack) {
-        if (itemStack != null && itemStack.hasTagCompound()
-                && itemStack.getTagCompound().hasKey(TLMTags.Stack.tagName)) {
-            return removeRecursion(loadItemStackFromTag(itemStack));
+        if (itemStack == null || !itemStack.hasTagCompound()) return itemStack;
+
+        NBTTagCompound tag = itemStack.getTagCompound();
+        if (tag.hasKey("Stack") && tag.hasKey("Quantity")) {
+            return removeRecursion(ItemStack.loadItemStackFromNBT(itemStack.getTagCompound().getCompoundTag("Stack")));
         }
         return itemStack;
-    }
-
-    @Nullable
-    private static ItemStack loadItemStackFromTag(ItemStack itemStack) {
-        return ItemStack.loadItemStackFromNBT(itemStack.getTagCompound().getCompoundTag(TLMTags.Stack.tagName));
     }
 
     @TileEvent(TileEventType.NETWORK_READ)
@@ -449,7 +564,7 @@ public class TileLevelMaintainer extends AENetworkTile
     }
 
     @Override
-    public TileEntity getTile() {
+    public @NotNull TileEntity getTile() {
         return this;
     }
 
@@ -463,209 +578,140 @@ public class TileLevelMaintainer extends AENetworkTile
         return REQ_COUNT;
     }
 
-    @Override
-    public ItemStack getSelfItemStack() {
-        return getItemFromTile(this);
-    }
+    public static class RequestInfo {
 
-    public enum State {
-        None,
-        Idle,
-        Craft,
-        Export,
-        Error
-    }
+        private final TileLevelMaintainer tile;
+        private @NotNull IAEItemStack itemStack;
+        private long quantity;
+        private long batchSize;
+        private boolean enable;
+        private LevelState state;
+        @Nullable
+        private Future<ICraftingJob> job;
+        @Nullable
+        private ICraftingLink link;
 
-    public enum TLMTags {
-
-        RequestStacks("RequestStacks"),
-        Enable("Enable"),
-        Quantity("Quantity"),
-        Batch("Batch"),
-        Link("Link"),
-        State("State"),
-        Index("Index"),
-        Stack("Stack");
-
-        public final String tagName;
-
-        TLMTags(String tagName) {
-            this.tagName = tagName;
-        }
-    }
-
-    public static final class InventoryRequest {
-
-        private final AeStackInventoryImpl<IAEItemStack> requestStacks;
-        private final Future<ICraftingJob>[] jobs;
-        private final ICraftingLink[] links;
-        private final State[] state = new State[REQ_COUNT];
-
-        @SuppressWarnings("unchecked")
-        public InventoryRequest(TileLevelMaintainer tile) {
-            requestStacks = new AeStackInventoryImpl<>(StorageChannel.ITEMS, REQ_COUNT, tile);
-            jobs = new Future[REQ_COUNT];
-            links = new ICraftingLink[REQ_COUNT];
+        public RequestInfo(@NotNull ItemStack stack, TileLevelMaintainer tile) {
+            this.tile = tile;
+            itemStack = AEItemStack.create(stack);
+            quantity = 0;
+            batchSize = 0;
+            enable = false;
+            state = LevelState.None;
+            link = null;
+            job = null;
         }
 
-        public State getState(int idx) {
-            IAEItemStack ias = requestStacks.getStack(idx);
-            if (ias == null) {
-                return State.None;
-            } else {
-                return state[idx] == null ? State.Idle : state[idx];
+        public RequestInfo(NBTTagCompound tag, TileLevelMaintainer tile) throws IllegalArgumentException {
+            this.tile = tile;
+            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag(NBT_STACK));
+            if (itemStack == null) {
+                throw new IllegalArgumentException("ItemStack cannot be null!");
             }
-        }
-
-        public int getIdxByLink(ICraftingLink link) {
-            for (int i = 0; i < REQ_COUNT; i++) {
-                if (links[i] == link) {
-                    return i;
+            quantity = tag.getLong(NBT_QUANTITY);
+            batchSize = tag.getLong(NBT_BATCH);
+            enable = tag.getBoolean(NBT_ENABLE);
+            state = LevelState.values()[tag.getInteger(NBT_STATE)];
+            if (tag.hasKey(NBT_LINK)) {
+                try {
+                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag(NBT_LINK), this.tile);
+                } catch (Exception ignored) {
+                    this.link = null;
                 }
             }
-            return 0;
+            job = null;
         }
 
-        public boolean isEnable(int idx) {
-            IAEItemStack ias = requestStacks.getStack(idx);
-            if (ias == null) {
-                return true;
+        public void loadFromNBT(NBTTagCompound tag) {
+            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag(NBT_STACK));
+            quantity = tag.getLong(NBT_QUANTITY);
+            batchSize = tag.getLong(NBT_BATCH);
+            enable = tag.getBoolean(NBT_ENABLE);
+            state = LevelState.values()[tag.getInteger(NBT_STATE)];
+            if (tag.hasKey(NBT_LINK)) {
+                try {
+                    this.link = AEApi.instance().storage().loadCraftingLink(tag.getCompoundTag(NBT_LINK), this.tile);
+                } catch (Exception ignored) {
+                    this.link = null;
+                }
             }
-
-            ItemStack is = ias.getItemStack();
-            return is.hasTagCompound() ? is.getTagCompound().getBoolean(TLMTags.Enable.tagName) : true;
         }
 
-        public boolean isDone(int index) {
-            if (links[index] == null) {
-                return true;
+        public NBTTagCompound writeToNBT() {
+            NBTTagCompound tag = new NBTTagCompound();
+            NBTTagCompound stackTag = new NBTTagCompound();
+            itemStack.writeToNBT(stackTag);
+            tag.setTag(NBT_STACK, stackTag);
+            tag.setLong(NBT_QUANTITY, quantity);
+            tag.setLong(NBT_BATCH, batchSize);
+            tag.setBoolean(NBT_ENABLE, enable);
+            tag.setInteger(NBT_STATE, state.ordinal());
+            if (this.link != null) {
+                NBTTagCompound linkTag = new NBTTagCompound();
+                this.link.writeToNBT(linkTag);
+                tag.setTag(NBT_LINK, linkTag);
             }
-            return links[index].isDone() || links[index].isCanceled();
+            return tag;
         }
 
-        public Future<ICraftingJob> getJob(int idx) {
-            return jobs[idx];
+        public IAEItemStack getAEItemStack() {
+            return this.itemStack;
         }
 
-        public ICraftingLink getLink(int idx) {
-            return links[idx];
+        public long getQuantity() {
+            return quantity;
         }
 
-        public void updateJob(int idx, Future<ICraftingJob> job) {
-            jobs[idx] = job;
+        public long getBatchSize() {
+            return batchSize;
         }
 
-        private void updateField(int idx, UnaryOperator<NBTTagCompound> updater) {
-            IAEItemStack ias = requestStacks.getStack(idx);
-            if (ias == null) return;
-
-            ItemStack itemStack = ias.getItemStack();
-            NBTTagCompound data = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
-            data.setInteger(TLMTags.Index.tagName, idx);
-            itemStack.setTagCompound(updater.apply(data));
-            IAEItemStack newRequestStack = AEItemStack.create(itemStack);
-            newRequestStack.setStackSize(ias.getStackSize());
-            requestStacks.setStack(idx, newRequestStack);
-
+        public boolean isEnable() {
+            return enable;
         }
 
-        public void updateLink(int idx, ICraftingLink link) {
-            links[idx] = link;
+        public LevelState getState() {
+            return state;
+        }
+    }
 
-            updateField(idx, data -> {
-                NBTTagCompound linkData = new NBTTagCompound();
-                if (link != null) link.writeToNBT(linkData);
-                data.setTag(TLMTags.Link.tagName, linkData);
+    private static class LevelMaintainerInventory implements AeStackInventory<IAEItemStack> {
 
-                return data;
-            });
+        private final RequestInfo[] requests;
+        private final TileLevelMaintainer tile;
+
+        private LevelMaintainerInventory(RequestInfo[] requests, TileLevelMaintainer tile) {
+            this.requests = requests;
+            this.tile = tile;
         }
 
-        public void updateState(int idx, State nextState) {
-            state[idx] = nextState;
-
-            updateField(idx, data -> {
-                data.setInteger(TLMTags.State.tagName, nextState.ordinal());
-
-                return data;
-            });
+        @Override
+        public @NotNull Iterator<IAEItemStack> iterator() {
+            return Arrays.stream(requests).map(info -> info != null ? info.itemStack : null).iterator();
         }
 
-        public void updateStatus(int idx, boolean enable) {
-            updateField(idx, data -> {
-                State nextState = enable ? State.Idle : State.None;
-
-                data.setBoolean(TLMTags.Enable.tagName, enable);
-                data.setInteger(TLMTags.State.tagName, nextState.ordinal());
-                return data;
-            });
+        @Override
+        public int getSlotCount() {
+            return requests.length;
         }
 
-        public void updateQuantity(int idx, long quantity) {
-            updateField(idx, data -> {
-                data.setLong(TLMTags.Quantity.tagName, quantity);
-
-                return data;
-            });
+        @Override
+        public @Nullable IAEItemStack getStack(int slot) {
+            return requests[slot] != null ? requests[slot].itemStack : null;
         }
 
-        public void updateBatchSize(int idx, long batch) {
-            updateField(idx, data -> {
-                data.setLong(TLMTags.Batch.tagName, batch);
-                data.setBoolean(TLMTags.Enable.tagName, true);
-
-                return data;
-            });
+        @Override
+        public void setStack(int slot, @Nullable IAEItemStack stack) {
+            if (stack == null) {
+                this.tile.updateStack(slot, null);
+            } else {
+                this.tile.updateStack(slot, stack.getItemStack());
+            }
         }
 
-        public void updateStack(int idx, ItemStack itemStack) {
-            updateField(idx, data -> {
-                NBTTagCompound stackData = new NBTTagCompound();
-                if (itemStack != null) itemStack.writeToNBT(stackData);
-                data.setTag(TLMTags.Stack.tagName, stackData);
-
-                return data;
-            });
-        }
-
-        public IAEItemStack getAEItemStack(int idx) {
-            return requestStacks.getStack(idx);
-        }
-
-        public ItemStack getItemStack(int idx) {
-            return requestStacks.getStack(idx).getItemStack();
-        }
-
-        public long getQuantity(int idx) {
-            if (!isEnable(idx)) return 0;
-            IAEItemStack ias = requestStacks.getStack(idx);
-            if (ias == null) return 0;
-            ItemStack itemStack = ias.getItemStack();
-            if (!itemStack.hasTagCompound()) return 0;
-
-            return itemStack.getTagCompound().getLong(TLMTags.Quantity.tagName);
-        }
-
-        public long getBatchSize(int idx) {
-            if (!isEnable(idx)) return 0;
-            IAEItemStack ias = requestStacks.getStack(idx);
-            if (ias == null) return 0;
-            ItemStack itemStack = ias.getItemStack();
-            if (!itemStack.hasTagCompound()) return 0;
-
-            return itemStack.getTagCompound().getLong(TLMTags.Batch.tagName);
-        }
-
-        public IAEItemStack getCraftItem(int idx) {
-            IAEItemStack is = requestStacks.getStack(idx);
-            if (is == null) return null;
-            if (is.getItemStack() == null) return null;
-            ItemStack qis = loadItemStackFromTag(is.getItemStack());
-            if (qis == null) return null;
-            IAEItemStack qais = AEItemStack.create(qis);
-            qais.setStackSize(getBatchSize(idx));
-
-            return qais;
+        @Override
+        public Stream<IAEItemStack> stream() {
+            return Arrays.stream(requests).map(info -> info != null ? info.itemStack : null);
         }
     }
 }
