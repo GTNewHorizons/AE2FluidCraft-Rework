@@ -11,7 +11,6 @@ import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.base.FCSharedFluidBus;
-import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
 import com.google.common.collect.ImmutableSet;
 
 import appeng.api.config.Actionable;
@@ -270,7 +269,7 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
     }
 
     protected InventoryAdaptor getHandler(TileEntity target) {
-        return target != null ? FluidConvertingInventoryAdaptor.wrap(target, this.getSide().getOpposite()) : null;
+        return target != null ? InventoryAdaptor.getAdaptor(target, getSide().getOpposite()) : null;
     }
 
     @Override

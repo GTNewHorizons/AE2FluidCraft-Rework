@@ -598,7 +598,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
             for (Slot s : slots) {
                 ItemStack st = s.getStack();
                 if (st == null) continue;
-                final int count;
+                final long count;
                 if (st.getItem() instanceof ItemFluidPacket) {
                     count = ItemFluidPacket.getFluidAmount(st);
                 } else {
