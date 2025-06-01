@@ -5,6 +5,8 @@ import java.util.List;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import org.jetbrains.annotations.NotNull;
+
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.data.IAEFluidStack;
 
@@ -90,6 +92,7 @@ public interface IFluidCellInventory extends IMEInventory<IAEFluidStack> {
      */
     long getTotalFluidTypes();
 
+    @NotNull
     List<IAEFluidStack> getContents();
 
     /**
