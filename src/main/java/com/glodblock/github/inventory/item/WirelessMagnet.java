@@ -2,7 +2,6 @@ package com.glodblock.github.inventory.item;
 
 import static com.glodblock.github.common.Config.magnetRange;
 
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.item.EntityItem;
@@ -34,7 +33,7 @@ public class WirelessMagnet {
         BlackList
     }
 
-    public static List<?> getEntitiesInRange(Class<?> entityType, World world, int x, int y, int z, int distance) {
+    private static <T> List<T> getEntitiesInRange(Class<T> entityType, World world, int x, int y, int z, int distance) {
         return world.getEntitiesWithinAABB(
                 entityType,
                 AxisAlignedBB.getBoundingBox(
@@ -54,19 +53,16 @@ public class WirelessMagnet {
     public static void doMagnet(ItemStack wirelessTerm, World world, EntityPlayer player) {
         if (wirelessTerm == null || player == null || player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
 
-        Iterator<?> iterator = getEntitiesInRange(
+        final List<EntityItem> items = getEntitiesInRange(
                 EntityItem.class,
                 world,
                 (int) player.posX,
                 (int) player.posY,
                 (int) player.posZ,
-                magnetRange).iterator();
-
+                magnetRange);
         final boolean skipPlayerCheck = world.playerEntities.size() < 2;
 
-        while (iterator.hasNext()) {
-            EntityItem itemToGet = (EntityItem) iterator.next();
-
+        for (EntityItem itemToGet : items) {
             if (!skipPlayerCheck) {
                 EntityPlayer closestPlayer = world.getClosestPlayerToEntity(itemToGet, magnetRange);
                 if (closestPlayer == null || closestPlayer != player) continue;
@@ -88,16 +84,15 @@ public class WirelessMagnet {
         }
 
         // xp
-        iterator = getEntitiesInRange(
+        final List<EntityXPOrb> xpOrbs = getEntitiesInRange(
                 EntityXPOrb.class,
                 world,
                 (int) player.posX,
                 (int) player.posY,
                 (int) player.posZ,
-                magnetRange).iterator();
-        while (iterator.hasNext()) {
-            EntityXPOrb xpToGet = (EntityXPOrb) iterator.next();
+                magnetRange);
 
+        for (EntityXPOrb xpToGet : xpOrbs) {
             if (xpToGet.field_70532_c == 0 && xpToGet.isEntityAlive()) {
                 if (!skipPlayerCheck) {
                     EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
