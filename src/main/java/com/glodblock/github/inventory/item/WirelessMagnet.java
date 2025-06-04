@@ -52,9 +52,10 @@ public class WirelessMagnet {
         return data.hasKey(modeKey);
     }
 
-    public static void doMagnet(ItemStack wirelessTerm, World world, EntityPlayer player) {
-        if (wirelessTerm == null || player == null || player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
+    public static void doMagnet(ItemStack wirelessTerm, EntityPlayer player) {
+        if (player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
 
+        World world = player.worldObj;
         final List<EntityItem> items = getEntitiesInRange(
                 EntityItem.class,
                 world,
@@ -95,31 +96,33 @@ public class WirelessMagnet {
                     0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
         }
 
-        // xp
-        final List<EntityXPOrb> xpOrbs = getEntitiesInRange(
-                EntityXPOrb.class,
-                world,
-                (int) player.posX,
-                (int) player.posY,
-                (int) player.posZ,
-                magnetRange);
+        if (!world.isRemote) {
+            // xp
+            final List<EntityXPOrb> xpOrbs = getEntitiesInRange(
+                    EntityXPOrb.class,
+                    world,
+                    (int) player.posX,
+                    (int) player.posY,
+                    (int) player.posZ,
+                    magnetRange);
 
-        for (EntityXPOrb xpToGet : xpOrbs) {
-            if (xpToGet.field_70532_c == 0 && xpToGet.isEntityAlive()) {
-                if (!skipPlayerCheck) {
-                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
-                    if (closestPlayer == null || closestPlayer != player) continue;
+            for (EntityXPOrb xpToGet : xpOrbs) {
+                if (xpToGet.field_70532_c == 0 && xpToGet.isEntityAlive()) {
+                    if (!skipPlayerCheck) {
+                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
+                        if (closestPlayer == null || closestPlayer != player) continue;
+                    }
+
+                    if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, xpToGet))) continue;
+                    world.playSoundAtEntity(
+                            player,
+                            "random.orb",
+                            0.1F,
+                            0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                    player.onItemPickup(xpToGet, 1);
+                    player.addExperience(xpToGet.xpValue);
+                    xpToGet.setDead();
                 }
-
-                if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, xpToGet))) continue;
-                world.playSoundAtEntity(
-                        player,
-                        "random.orb",
-                        0.1F,
-                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
-                player.onItemPickup(xpToGet, 1);
-                player.addExperience(xpToGet.xpValue);
-                xpToGet.setDead();
             }
         }
     }
