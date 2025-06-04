@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 
@@ -99,17 +101,15 @@ public class WirelessMagnet {
                     if (closestPlayer == null || closestPlayer != player) continue;
                 }
 
-                int xpAmount = xpToGet.xpValue;
-                xpToGet.xpValue = 0;
-                player.xpCooldown = 0;
-                player.addExperience(xpAmount);
-                xpToGet.setDead();
-                xpToGet.setInvisible(true);
+                if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, xpToGet))) continue;
                 world.playSoundAtEntity(
                         player,
                         "random.orb",
-                        0.08F,
+                        0.1F,
                         0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                player.onItemPickup(xpToGet, 1);
+                player.addExperience(xpToGet.xpValue);
+                xpToGet.setDead();
             }
         }
     }
