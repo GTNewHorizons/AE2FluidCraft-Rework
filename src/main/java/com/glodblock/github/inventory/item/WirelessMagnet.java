@@ -64,30 +64,35 @@ public class WirelessMagnet {
                 (int) player.posZ,
                 magnetRange).iterator();
 
+        final boolean skipPlayerCheck = world.playerEntities.size() < 2;
+
         while (iterator.hasNext()) {
             EntityItem itemToGet = (EntityItem) iterator.next();
-            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(itemToGet, magnetRange);
 
-            if (closestPlayer != null && closestPlayer == player) {
-                NBTTagCompound itemNBT = new NBTTagCompound();
-                itemToGet.writeEntityToNBT(itemNBT);
+            if (!skipPlayerCheck) {
+                EntityPlayer closestPlayer = world.getClosestPlayerToEntity(itemToGet, magnetRange);
+                if (closestPlayer == null || closestPlayer != player) continue;
+            }
 
-                if (itemToGet.func_145800_j() == null
-                        || !itemToGet.func_145800_j().equals(player.getCommandSenderName()))
-                    itemToGet.delayBeforeCanPickup = 0;
+            NBTTagCompound itemNBT = new NBTTagCompound();
+            itemToGet.writeEntityToNBT(itemNBT);
 
-                if (itemToGet.delayBeforeCanPickup <= 0) {
-                    itemNBT.setBoolean("attractable", true);
-                    itemToGet.readEntityFromNBT(itemNBT);
-                }
+            if (itemToGet.func_145800_j() == null
+                || !itemToGet.func_145800_j().equals(player.getCommandSenderName())) {
+                itemToGet.delayBeforeCanPickup = 0;
+            }
 
-                if (itemNBT.getBoolean("attractable")) {
-                    itemToGet.motionX = itemToGet.motionY = itemToGet.motionZ = 0;
-                    itemToGet.setPosition(
-                            player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                            player.posY - 0.6,
-                            player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
-                }
+            if (itemToGet.delayBeforeCanPickup <= 0) {
+                itemNBT.setBoolean("attractable", true);
+                itemToGet.readEntityFromNBT(itemNBT);
+            }
+
+            if (itemNBT.getBoolean("attractable")) {
+                itemToGet.motionX = itemToGet.motionY = itemToGet.motionZ = 0;
+                itemToGet.setPosition(
+                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                        player.posY - 0.6,
+                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
             }
         }
 
@@ -101,9 +106,13 @@ public class WirelessMagnet {
                 magnetRange).iterator();
         while (iterator.hasNext()) {
             EntityXPOrb xpToGet = (EntityXPOrb) iterator.next();
-            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
 
-            if (!xpToGet.isDead && !xpToGet.isInvisible() && closestPlayer != null && closestPlayer == player) {
+            if (xpToGet.field_70532_c == 0 && xpToGet.isEntityAlive()) {
+                if (!skipPlayerCheck) {
+                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
+                    if (closestPlayer == null || closestPlayer != player) continue;
+                }
+
                 int xpAmount = xpToGet.xpValue;
                 xpToGet.xpValue = 0;
                 player.xpCooldown = 0;
