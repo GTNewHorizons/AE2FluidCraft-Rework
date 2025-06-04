@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 
+import appeng.entity.EntityFloatingItem;
 import appeng.util.Platform;
 
 public class WirelessMagnet {
@@ -74,6 +75,10 @@ public class WirelessMagnet {
         boolean playSound = false;
 
         for (EntityItem itemToGet : items) {
+            if (itemToGet.getEntityItem() == null || itemToGet instanceof EntityFloatingItem) {
+                continue;
+            }
+
             if (!skipPlayerCheck) {
                 EntityPlayer closestPlayer = world.getClosestPlayerToEntity(itemToGet, magnetRange);
                 if (closestPlayer == null || closestPlayer != player) continue;
