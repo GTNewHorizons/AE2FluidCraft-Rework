@@ -54,7 +54,7 @@ public class WirelessMagnet {
     }
 
     public static void doMagnet(ItemStack wirelessTerm, World world, EntityPlayer player) {
-        if (wirelessTerm == null || player == null || player.isSneaking() || !isConfigured(wirelessTerm)) return;
+        if (wirelessTerm == null || player == null || player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
 
         Iterator<?> iterator = getEntitiesInRange(
                 EntityItem.class,
