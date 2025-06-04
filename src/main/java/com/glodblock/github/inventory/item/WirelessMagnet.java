@@ -79,20 +79,17 @@ public class WirelessMagnet {
                 if (closestPlayer == null || closestPlayer != player) continue;
             }
 
-            if (itemToGet.func_145800_j() == null || !itemToGet.func_145800_j().equals(player.getCommandSenderName())) {
+            if (itemToGet.delayBeforeCanPickup > 0) {
                 itemToGet.delayBeforeCanPickup = 0;
             }
-
-            if (itemToGet.delayBeforeCanPickup <= 0) {
-                playSound = true;
-                itemToGet.motionX = 0;
-                itemToGet.motionY = 0;
-                itemToGet.motionZ = 0;
-                itemToGet.setPosition(
-                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                        player.posY - 0.6,
-                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
-            }
+            playSound = true;
+            itemToGet.motionX = 0;
+            itemToGet.motionY = 0;
+            itemToGet.motionZ = 0;
+            itemToGet.setPosition(
+                    player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                    player.posY - 0.6,
+                    player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
         }
 
         if (playSound) {
