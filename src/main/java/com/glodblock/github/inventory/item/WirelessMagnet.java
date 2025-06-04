@@ -63,6 +63,7 @@ public class WirelessMagnet {
                 (int) player.posZ,
                 magnetRange);
         final boolean skipPlayerCheck = world.playerEntities.size() < 2;
+        boolean playSound = false;
 
         for (EntityItem itemToGet : items) {
             if (!skipPlayerCheck) {
@@ -75,6 +76,7 @@ public class WirelessMagnet {
             }
 
             if (itemToGet.delayBeforeCanPickup <= 0) {
+                playSound = true;
                 itemToGet.motionX = 0;
                 itemToGet.motionY = 0;
                 itemToGet.motionZ = 0;
@@ -83,6 +85,14 @@ public class WirelessMagnet {
                         player.posY - 0.6,
                         player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
             }
+        }
+
+        if (playSound) {
+            world.playSoundAtEntity(
+                    player,
+                    "random.orb",
+                    0.1F,
+                    0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
         }
 
         // xp
