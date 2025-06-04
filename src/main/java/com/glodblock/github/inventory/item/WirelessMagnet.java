@@ -46,8 +46,6 @@ public class WirelessMagnet {
                         z + distance));
     }
 
-    @SuppressWarnings("unchecked")
-
     public static boolean isConfigured(ItemStack wirelessTerm) {
         NBTTagCompound data = Platform.openNbtData(wirelessTerm);
         return data.hasKey(modeKey);
@@ -74,21 +72,14 @@ public class WirelessMagnet {
                 if (closestPlayer == null || closestPlayer != player) continue;
             }
 
-            NBTTagCompound itemNBT = new NBTTagCompound();
-            itemToGet.writeEntityToNBT(itemNBT);
-
-            if (itemToGet.func_145800_j() == null
-                || !itemToGet.func_145800_j().equals(player.getCommandSenderName())) {
+            if (itemToGet.func_145800_j() == null || !itemToGet.func_145800_j().equals(player.getCommandSenderName())) {
                 itemToGet.delayBeforeCanPickup = 0;
             }
 
             if (itemToGet.delayBeforeCanPickup <= 0) {
-                itemNBT.setBoolean("attractable", true);
-                itemToGet.readEntityFromNBT(itemNBT);
-            }
-
-            if (itemNBT.getBoolean("attractable")) {
-                itemToGet.motionX = itemToGet.motionY = itemToGet.motionZ = 0;
+                itemToGet.motionX = 0;
+                itemToGet.motionY = 0;
+                itemToGet.motionZ = 0;
                 itemToGet.setPosition(
                         player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
                         player.posY - 0.6,
