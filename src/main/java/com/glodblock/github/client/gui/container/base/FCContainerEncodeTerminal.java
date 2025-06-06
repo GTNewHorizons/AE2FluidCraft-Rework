@@ -395,25 +395,27 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     }
 
     public void encode() {
-        fillPattern();
-        if (isCraftingMode()) {
-            encodeItemPattern();
-            return;
-        }
-        ItemStack stack = this.patternSlotOUT.getStack();
-        if (stack == null) {
-            stack = this.patternSlotIN.getStack();
-            if (notPattern(stack)) {
+        if (getInputs() != null && getOutputs() != null) {
+            fillPattern();
+            if (isCraftingMode()) {
+                encodeItemPattern();
                 return;
             }
-            if (stack.stackSize == 1) {
-                this.patternSlotIN.putStack(null);
-            } else {
-                stack.stackSize--;
+            ItemStack stack = this.patternSlotOUT.getStack();
+            if (stack == null) {
+                stack = this.patternSlotIN.getStack();
+                if (notPattern(stack)) {
+                    return;
+                }
+                if (stack.stackSize == 1) {
+                    this.patternSlotIN.putStack(null);
+                } else {
+                    stack.stackSize--;
+                }
+                encodeFluidPattern();
+            } else if (!notPattern(stack)) {
+                encodeFluidPattern();
             }
-            encodeFluidPattern();
-        } else if (!notPattern(stack)) {
-            encodeFluidPattern();
         }
     }
 
@@ -422,10 +424,6 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         final ItemStack[] in = this.getInputs();
         final ItemStack[] out = this.getOutputs();
 
-        // if there is no input, this would be silly.
-        if (in == null || out == null) {
-            return;
-        }
         // first check the output slots, should either be null, or a pattern
         if (output != null && this.notPattern(output)) {
             return;
