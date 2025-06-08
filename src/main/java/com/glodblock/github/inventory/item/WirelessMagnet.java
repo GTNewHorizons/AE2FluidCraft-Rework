@@ -62,7 +62,6 @@ public class WirelessMagnet {
 
     public static void doMagnet(ItemStack wirelessTerm, EntityPlayer player) {
         if (player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
-
         World world = player.worldObj;
         final List<EntityItem> items = getEntitiesInRange(
                 EntityItem.class,
@@ -91,9 +90,12 @@ public class WirelessMagnet {
             itemToGet.motionX = 0;
             itemToGet.motionY = 0;
             itemToGet.motionZ = 0;
+            // account for the server/client desync
+            double playerEyesPos = player.posY
+                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
             itemToGet.setPosition(
                     player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                    player.posY - 0.6,
+                    playerEyesPos - 0.62,
                     player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
         }
 
