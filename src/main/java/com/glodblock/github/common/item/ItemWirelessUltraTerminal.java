@@ -221,7 +221,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
 
     @Override
     public BaubleType getBaubleType(ItemStack itemStack) {
-        return BaubleType.RING;
+        return BaubleType.UNIVERSAL;
     }
 
     @Override
