@@ -60,6 +60,8 @@ public class WirelessMagnet {
         return data.hasKey(modeKey);
     }
 
+    // This method uses the same algorithm as the magnet from draconic evolution
+    // if changes are ever made, they should be made on both
     public static void doMagnet(ItemStack wirelessTerm, EntityPlayer player) {
         if (player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
         World world = player.worldObj;
