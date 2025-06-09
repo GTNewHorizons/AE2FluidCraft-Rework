@@ -76,7 +76,7 @@ public class WirelessMagnet {
         boolean playSound = false;
         // account for the server/client desync
         double playerEyesPos = player.posY
-            + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
+                + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
 
         for (EntityItem itemToGet : items) {
             if (itemToGet.getEntityItem() == null || itemToGet instanceof EntityFloatingItem) {
