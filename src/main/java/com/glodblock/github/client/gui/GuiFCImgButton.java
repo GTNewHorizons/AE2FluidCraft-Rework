@@ -22,6 +22,7 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
     private static Map<EnumPair, ButtonAppearance> appearances;
     private final String buttonSetting;
     private boolean halfSize = false;
+    private boolean threeFourths = false;
     private String fillVar;
     private String currentValue;
     private final boolean background;
@@ -66,6 +67,14 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             this.registerApp(22, "SWITCH", "DISABLE", "disable");
             this.registerApp(23, "CONFIG", "YES", "open_configuration");
             this.registerApp(24, "HIGHLIGHT", "YES", "block_highlight");
+            this.registerApp(30, "MAGNET_CARD", "INV", "magnet_card.inv");
+            this.registerApp(30, "MAGNET_CARD", "ME", "magnet_card.me");
+            this.registerApp(30, "MAGNET_CARD", "FILTER", "magnet_card.filter");
+            this.registerApp(31, "MAGNET_CARD", "OFF", "magnet_card.off");
+            this.registerApp(32, "ENABLE_12x", "ENABLE", "enable");
+            this.registerApp(33, "DISABLE_12x", "DISABLE", "disable");
+            this.registerApp(34, "RESTOCK", "ENABLE", "restock.on");
+            this.registerApp(35, "RESTOCK", "DISABLE", "restock.off");
         }
     }
 
@@ -135,6 +144,14 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
         this.halfSize = halfSize;
     }
 
+    public boolean isThreeFourths() {
+        return threeFourths;
+    }
+
+    public void setThreeFourths(boolean threeFourths) {
+        this.threeFourths = threeFourths;
+    }
+
     public String getFillVar() {
         return this.fillVar;
     }
@@ -155,12 +172,12 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
 
     @Override
     public int getWidth() {
-        return this.halfSize ? 8 : 16;
+        return this.halfSize ? 8 : threeFourths ? 12 : 16;
     }
 
     @Override
     public int getHeight() {
-        return this.halfSize ? 8 : 16;
+        return this.halfSize ? 8 : threeFourths ? 12 : 16;
     }
 
     @Override
@@ -217,79 +234,44 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
         if (this.visible) {
             final int iconIndex = this.getIconIndex();
             final int iconPage = this.getIconPage();
+            this.width = getWidth();
+            this.height = getHeight();
+            float scaleFactor = halfSize ? 3 : threeFourths ? 4.5f : 6;
 
-            if (this.halfSize) {
-                this.width = 8;
-                this.height = 8;
+            GL11.glPushMatrix();
+            GL11.glTranslatef(this.xPosition, this.yPosition, 0.0F);
+            GL11.glScalef(0.5f / 16 * scaleFactor, 0.5f / 16 * scaleFactor, 0.5f / 16 * scaleFactor);
 
-                GL11.glPushMatrix();
-                GL11.glTranslatef(this.xPosition, this.yPosition, 0.0F);
-                GL11.glScalef(0.5f / 16 * 3, 0.5f / 16 * 3, 0.5f / 16 * 3);
-
-                if (this.enabled) {
-                    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-                } else {
-                    GL11.glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
-                }
-
-                par1Minecraft.renderEngine.bindTexture(FluidCraft.resource("textures/gui/states" + iconPage + ".png"));
-                this.field_146123_n = par2 >= this.xPosition && par3 >= this.yPosition
-                        && par2 < this.xPosition + this.width
-                        && par3 < this.yPosition + this.height;
-
-                final int uv_y = (int) Math.floor(iconIndex / 3.0);
-                final int uv_x = iconIndex - uv_y * 3;
-                if (this.background) {
-                    this.drawTexturedModalRect(
-                            0,
-                            0,
-                            Math.round(32F * 16F / 3F),
-                            Math.round(32F * 16F / 3F),
-                            Math.round(16F * 16F / 3F),
-                            Math.round(16F * 16F / 3F));
-                }
-                this.drawTexturedModalRect(
-                        0,
-                        0,
-                        Math.round(uv_x * 16F * 16F / 3F),
-                        Math.round(uv_y * 16F * 16F / 3F),
-                        Math.round(16F * 16F / 3F),
-                        Math.round(16F * 16F / 3F));
-
+            if (this.enabled) {
+                GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             } else {
-                GL11.glPushMatrix();
-                GL11.glTranslatef(this.xPosition, this.yPosition, 0.0F);
-                GL11.glScalef(0.5f / 16 * 6, 0.5f / 16 * 6, 0.5f / 16 * 6);
-                if (this.enabled) {
-                    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-                } else {
-                    GL11.glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
-                }
+                GL11.glColor4f(0.5f, 0.5f, 0.5f, 1.0f);
+            }
 
-                par1Minecraft.renderEngine.bindTexture(FluidCraft.resource("textures/gui/states" + iconPage + ".png"));
-                this.field_146123_n = par2 >= this.xPosition && par3 >= this.yPosition
-                        && par2 < this.xPosition + this.width
-                        && par3 < this.yPosition + this.height;
+            par1Minecraft.renderEngine.bindTexture(FluidCraft.resource("textures/gui/states" + iconPage + ".png"));
+            this.field_146123_n = par2 >= this.xPosition && par3 >= this.yPosition
+                    && par2 < this.xPosition + this.width
+                    && par3 < this.yPosition + this.height;
 
-                final int uv_y = (int) Math.floor(iconIndex / 3.0);
-                final int uv_x = iconIndex - uv_y * 3;
-                if (this.background) {
-                    this.drawTexturedModalRect(
-                            0,
-                            0,
-                            Math.round(32F * 16F / 3F),
-                            Math.round(32F * 16F / 3F),
-                            Math.round(16F * 16F / 3F),
-                            Math.round(16F * 16F / 3F));
-                }
+            final int uv_y = (int) Math.floor(iconIndex / 3.0);
+            final int uv_x = iconIndex - uv_y * 3;
+            if (this.background) {
                 this.drawTexturedModalRect(
                         0,
                         0,
-                        Math.round(uv_x * 16F * 16F / 3F),
-                        Math.round(uv_y * 16F * 16F / 3F),
+                        Math.round(32F * 16F / 3F),
+                        Math.round(32F * 16F / 3F),
                         Math.round(16F * 16F / 3F),
                         Math.round(16F * 16F / 3F));
             }
+            this.drawTexturedModalRect(
+                    0,
+                    0,
+                    Math.round(uv_x * 16F * 16F / 3F),
+                    Math.round(uv_y * 16F * 16F / 3F),
+                    Math.round(16F * 16F / 3F),
+                    Math.round(16F * 16F / 3F));
+
             this.mouseDragged(par1Minecraft, par2, par3);
             GL11.glPopMatrix();
         }
