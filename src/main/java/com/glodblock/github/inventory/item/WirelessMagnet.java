@@ -74,6 +74,9 @@ public class WirelessMagnet {
                 magnetRange);
         final boolean skipPlayerCheck = world.playerEntities.size() < 2;
         boolean playSound = false;
+        // account for the server/client desync
+        double playerEyesPos = player.posY
+            + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
 
         for (EntityItem itemToGet : items) {
             if (itemToGet.getEntityItem() == null || itemToGet instanceof EntityFloatingItem) {
@@ -92,9 +95,6 @@ public class WirelessMagnet {
             itemToGet.motionX = 0;
             itemToGet.motionY = 0;
             itemToGet.motionZ = 0;
-            // account for the server/client desync
-            double playerEyesPos = player.posY
-                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
             itemToGet.setPosition(
                     player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
                     playerEyesPos - 0.62,
