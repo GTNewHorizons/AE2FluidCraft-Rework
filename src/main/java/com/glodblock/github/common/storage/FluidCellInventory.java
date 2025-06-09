@@ -200,7 +200,7 @@ public class FluidCellInventory implements IFluidCellInventory {
 
     @Override
     public long getRemainingFluidTypes() {
-        final long basedOnStorage = this.getFreeBytes() / this.getBytesPerType();
+        final long basedOnStorage = this.getFreeBytes() / Math.max(1, this.getBytesPerType());
         final long baseOnTotal = this.getTotalFluidTypes() - this.getStoredFluidTypes();
         return Math.min(basedOnStorage, baseOnTotal);
     }
