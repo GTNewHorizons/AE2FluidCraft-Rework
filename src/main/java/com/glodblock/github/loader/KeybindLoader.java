@@ -4,12 +4,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MovingObjectPosition;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
+import com.glodblock.github.network.CPacketPickBlockWithdraw;
 import com.glodblock.github.network.CPacketValueConfig;
 import com.glodblock.github.util.Util;
 
@@ -25,13 +28,16 @@ public class KeybindLoader implements Runnable {
 
     public static KeyBinding openTerminal;
     public static KeyBinding restock;
+    public static KeyBinding pickBlock;
 
     @Override
     public void run() {
         openTerminal = new KeyBinding(FluidCraft.MODID + ".key.OpenTerminal", Keyboard.CHAR_NONE, "itemGroup.ae2fc");
         restock = new KeyBinding(FluidCraft.MODID + ".key.Restock", Keyboard.CHAR_NONE, "itemGroup.ae2fc");
+        pickBlock = new KeyBinding(FluidCraft.MODID + ".key.PickBlock", Keyboard.CHAR_NONE, "itemGroup.ae2fc");
         ClientRegistry.registerKeyBinding(openTerminal);
         ClientRegistry.registerKeyBinding(restock);
+        ClientRegistry.registerKeyBinding(pickBlock);
         FMLCommonHandler.instance().bus().register(this);
     }
 
@@ -42,6 +48,8 @@ public class KeybindLoader implements Runnable {
             handleOpenTerminalKey();
         } else if (restock.isPressed()) {
             handleRestockKey();
+        } else if (pickBlock.isPressed()) {
+            handlePickBlockKey();
         }
     }
 
@@ -52,6 +60,8 @@ public class KeybindLoader implements Runnable {
             handleOpenTerminalKey();
         } else if (restock.isPressed()) {
             handleRestockKey();
+        } else if (pickBlock.isPressed()) {
+            handlePickBlockKey();
         }
     }
 
@@ -81,5 +91,36 @@ public class KeybindLoader implements Runnable {
         if (term != null) {
             FluidCraft.proxy.netHandler.sendToServer(new CPacketValueConfig(0, 1));
         }
+    }
+
+    private void handlePickBlockKey() {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        if (minecraft.currentScreen != null) return; // Don't act if a GUI is open
+
+        EntityClientPlayerMP player = minecraft.thePlayer;
+        if (player == null) return;
+
+        // Ensure the player has the wireless terminal
+        ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getUltraWirelessTerm(player);
+        if (terminalAndInventorySlot == null) {
+            player.addChatMessage(new ChatComponentText("Could not find wireless terminal."));
+            return;
+        }
+
+        ItemStack terminal = terminalAndInventorySlot.getRight();
+        if (terminal == null || !(terminal.getItem() instanceof ItemWirelessUltraTerminal)) {
+            player.addChatMessage(new ChatComponentText("Terminal must be universal version."));
+            return;
+        }
+
+        // Get the block the player is currently looking at
+        MovingObjectPosition movingObject = minecraft.objectMouseOver;
+        if (movingObject == null || movingObject.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
+            return;
+        }
+
+        // Send packet to server with block coordinates
+        FluidCraft.proxy.netHandler.sendToServer(
+                new CPacketPickBlockWithdraw(movingObject.blockX, movingObject.blockY, movingObject.blockZ));
     }
 }
