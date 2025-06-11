@@ -60,9 +60,10 @@ public class WirelessMagnet {
         return data.hasKey(modeKey);
     }
 
+    // This method uses the same algorithm as the magnet from draconic evolution
+    // if changes are ever made, they should be made on both
     public static void doMagnet(ItemStack wirelessTerm, EntityPlayer player) {
         if (player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
-
         World world = player.worldObj;
         final List<EntityItem> items = getEntitiesInRange(
                 EntityItem.class,
@@ -73,6 +74,9 @@ public class WirelessMagnet {
                 magnetRange);
         final boolean skipPlayerCheck = world.playerEntities.size() < 2;
         boolean playSound = false;
+        // account for the server/client desync
+        double playerEyesPos = player.posY
+                + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
 
         for (EntityItem itemToGet : items) {
             if (itemToGet.getEntityItem() == null || itemToGet instanceof EntityFloatingItem) {
@@ -93,7 +97,7 @@ public class WirelessMagnet {
             itemToGet.motionZ = 0;
             itemToGet.setPosition(
                     player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                    player.posY - 0.6,
+                    playerEyesPos - 0.62,
                     player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
         }
 
