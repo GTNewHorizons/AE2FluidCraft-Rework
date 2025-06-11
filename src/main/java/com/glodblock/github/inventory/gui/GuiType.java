@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 
 import com.glodblock.github.client.gui.GuiCraftingStatus;
 import com.glodblock.github.client.gui.GuiDualInterface;
@@ -39,6 +40,7 @@ import com.glodblock.github.client.gui.GuiPatternItemRenamer;
 import com.glodblock.github.client.gui.GuiPatternMulti;
 import com.glodblock.github.client.gui.GuiPatternValueAmount;
 import com.glodblock.github.client.gui.GuiRenamer;
+import com.glodblock.github.client.gui.GuiSuperStockReplenisher;
 import com.glodblock.github.client.gui.container.ContainerCraftingWireless;
 import com.glodblock.github.client.gui.container.ContainerDualInterface;
 import com.glodblock.github.client.gui.container.ContainerEssentiaMonitor;
@@ -68,6 +70,7 @@ import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
 import com.glodblock.github.client.gui.container.ContainerPatternMulti;
 import com.glodblock.github.client.gui.container.ContainerPatternValueAmount;
 import com.glodblock.github.client.gui.container.ContainerRenamer;
+import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
 import com.glodblock.github.common.parts.PartFluidStorageBus;
 import com.glodblock.github.common.parts.base.FCPart;
@@ -79,6 +82,7 @@ import com.glodblock.github.common.tile.TileIngredientBuffer;
 import com.glodblock.github.common.tile.TileLargeIngredientBuffer;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.common.tile.TileOCPatternEditor;
+import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.inventory.item.IFluidPortableCell;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
@@ -519,6 +523,18 @@ public enum GuiType {
             return new GuiPatternValueAmount(player.inventory, inv);
         }
     }),
+    PATTERN_VALUE_SET_TILE(new TileGuiFactory<>(TileEntity.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, TileEntity inv) {
+            return new ContainerPatternValueAmount(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, TileEntity inv) {
+            return new GuiPatternValueAmount(player.inventory, inv);
+        }
+    }),
 
     GUI_PATTERN_MULTI(new PartOrItemGuiFactory<>(ITerminalHost.class) {
 
@@ -556,6 +572,19 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, ITerminalHost inv) {
             return new GuiMagnetFilter(player.inventory, inv);
+        }
+    }),
+
+    GUI_SUPER_STOCK_REPLENISHER(new TileGuiFactory<>(TileSuperStockReplenisher.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, TileSuperStockReplenisher inv) {
+            return new ContainerSuperStockReplenisher(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, TileSuperStockReplenisher inv) {
+            return new GuiSuperStockReplenisher(player.inventory, inv);
         }
     });
 
