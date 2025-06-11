@@ -26,6 +26,7 @@ import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerPatternItemRenamer;
 import appeng.helpers.InventoryAction;
+import appeng.tile.networking.TileCableBus;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -131,12 +132,21 @@ public class CPacketInventoryAction implements IMessage {
                     if (context != null && message.stack != null) {
                         final TileEntity te = context.getTile();
                         if (te != null) {
-                            InventoryHandler.openGui(
+                            if (te instanceof TileCableBus) {
+                                InventoryHandler.openGui(
                                     sender,
                                     te.getWorldObj(),
                                     new BlockPos(te),
                                     Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
                                     GuiType.PATTERN_VALUE_SET);
+                            } else {
+                                InventoryHandler.openGui(
+                                    sender,
+                                    te.getWorldObj(),
+                                    new BlockPos(te),
+                                    Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
+                                    GuiType.PATTERN_VALUE_SET_TILE);
+                            }
                         } else if (target instanceof IWirelessTerminal wt) {
                             InventoryHandler.openGui(
                                     sender,
