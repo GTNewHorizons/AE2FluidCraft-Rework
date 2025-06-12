@@ -47,6 +47,7 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
     public BaseWirelessInventory(final ItemStack is, final int slot, IGridNode gridNode, EntityPlayer player,
             StorageChannel channel) {
         super(Objects.requireNonNull(Util.getWirelessInv(is, player, channel)));
+        this.player = player;
         this.ips = (ToolWirelessTerminal) is.getItem();
         this.grid = gridNode;
         this.target = is;
@@ -60,6 +61,7 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
     public BaseWirelessInventory(final ItemStack is, final int slot, IGridNode gridNode, EntityPlayer player,
             StorageChannel channel, boolean nullInventory) {
         super(new NullInventory<>());
+        this.player = player;
         this.ips = (ToolWirelessTerminal) is.getItem();
         this.grid = gridNode;
         this.target = is;
