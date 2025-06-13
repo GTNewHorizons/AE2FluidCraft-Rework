@@ -20,6 +20,7 @@ import com.glodblock.github.common.storage.IFluidCellInventory;
 import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
+import com.glodblock.github.inventory.FluidCellConfig;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IItemInventory;
@@ -37,7 +38,6 @@ import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.GuiText;
-import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
 import appeng.items.tools.powered.powersink.AEBasePoweredItem;
 import appeng.util.Platform;
@@ -163,7 +163,7 @@ public class ItemPortableFluidCell extends AEBasePoweredItem
 
     @Override
     public IInventory getConfigInventory(final ItemStack is) {
-        return new CellConfig(is);
+        return new FluidCellConfig(is);
     }
 
     @Override

@@ -6,10 +6,10 @@ import net.minecraft.item.ItemStack;
 import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.crossmod.extracells.ProxyItem;
+import com.glodblock.github.inventory.FluidCellConfig;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
 import appeng.util.Platform;
 
@@ -88,7 +88,7 @@ public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCel
 
     @Override
     public IInventory getConfigInventory(ItemStack is) {
-        return new CellConfig(is);
+        return new FluidCellConfig(is);
     }
 
     @Override

@@ -8,12 +8,12 @@ import net.minecraft.item.ItemStack;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
+import com.glodblock.github.inventory.FluidCellConfig;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.config.FuzzyMode;
 import appeng.core.features.AEFeature;
-import appeng.items.contents.CellConfig;
 import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -30,7 +30,7 @@ public class ItemCreativeFluidStorageCell extends ItemBaseInfinityStorageCell
 
     @Override
     public IInventory getConfigInventory(ItemStack is) {
-        return new CellConfig(is);
+        return new FluidCellConfig(is);
     }
 
     @Override
