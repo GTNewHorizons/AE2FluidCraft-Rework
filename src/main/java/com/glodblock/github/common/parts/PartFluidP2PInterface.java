@@ -65,6 +65,7 @@ import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import appeng.util.inv.IInventoryDestination;
+import appeng.util.inv.WrapperInvSlot;
 
 public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInterface>
         implements IGridTickable, IStorageMonitorable, IInventoryDestination, IDualHost, ISidedInventory,
@@ -77,12 +78,12 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.updateCraftingList();
                 try {
-                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.updateCraftingList();
+                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.updateCraftingList();
                 } catch (GridAccessException e) {
                     // ?
                 }
             } else {
-                PartP2PInterface p2p = getInput();
+                PartFluidP2PInterface p2p = getInput();
                 if (p2p != null) {
                     this.craftingList = p2p.duality.craftingList;
                     try {
@@ -99,15 +100,13 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         public boolean updateStorage() {
             boolean didSomething = false;
 
-            boolean didSomething = false;
-
             if (!isOutput()) {
                 didSomething = super.updateStorage();
 
                 didSomething = super.updateStorage();
 
                 try {
-                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.updateStorage();
+                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.updateStorage();
                 } catch (GridAccessException e) {
 
                 }
@@ -135,12 +134,12 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.readConfig();
                 try {
-                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.readConfig();
+                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.readConfig();
                 } catch (GridAccessException e) {
 
                 }
             } else {
-                PartP2PInterface p2p = getInput();
+                PartFluidP2PInterface p2p = getInput();
                 this.setHasConfig(false);
 
                 if (p2p != null) {
@@ -158,7 +157,7 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.addDrops(drops);
                 try {
-                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.addDrops(drops);
+                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.addDrops(drops);
                 } catch (GridAccessException e) {
 
                 }
