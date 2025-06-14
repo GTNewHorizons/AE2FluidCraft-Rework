@@ -77,12 +77,12 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.updateCraftingList();
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.updateCraftingList();
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.updateCraftingList();
                 } catch (GridAccessException e) {
                     // ?
                 }
             } else {
-                PartFluidP2PInterface p2p = getInput();
+                PartP2PInterface p2p = getInput();
                 if (p2p != null) {
                     this.craftingList = p2p.duality.craftingList;
                     try {
@@ -99,11 +99,15 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         public boolean updateStorage() {
             boolean didSomething = false;
 
+            boolean didSomething = false;
+
             if (!isOutput()) {
                 didSomething = super.updateStorage();
 
+                didSomething = super.updateStorage();
+
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.updateStorage();
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.updateStorage();
                 } catch (GridAccessException e) {
 
                 }
@@ -131,17 +135,19 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.readConfig();
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.readConfig();
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.readConfig();
                 } catch (GridAccessException e) {
 
                 }
             } else {
-                PartFluidP2PInterface p2p = getInput();
+                PartP2PInterface p2p = getInput();
                 this.setHasConfig(false);
 
                 if (p2p != null) {
                     if (!p2p.duality.getConfig().isEmpty()) this.setHasConfig(p2p.duality.hasConfig());
                 }
+
+                this.notifyNeighbors();
 
                 this.notifyNeighbors();
             }
@@ -152,7 +158,7 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.addDrops(drops);
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.addDrops(drops);
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.addDrops(drops);
                 } catch (GridAccessException e) {
 
                 }
