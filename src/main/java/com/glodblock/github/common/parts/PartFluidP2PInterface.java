@@ -77,12 +77,12 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.updateCraftingList();
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.updateCraftingList();
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.updateCraftingList();
                 } catch (GridAccessException e) {
                     // ?
                 }
             } else {
-                PartFluidP2PInterface p2p = getInput();
+                PartP2PInterface p2p = getInput();
                 if (p2p != null) {
                     this.craftingList = p2p.duality.craftingList;
                     try {
@@ -97,19 +97,33 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
 
         @Override
         public boolean updateStorage() {
+            boolean didSomething = false;
+
             if (!isOutput()) {
-                super.updateStorage();
+                didSomething = super.updateStorage();
+
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.updateStorage();
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.updateStorage();
                 } catch (GridAccessException e) {
 
                 }
             } else {
-                PartFluidP2PInterface p2p = getInput();
-                if ((p2p != null)) this.setStorage(p2p.duality.getStorage());
-                this.readConfig();
+                PartP2PInterface p2p = getInput();
+                if (p2p != null && (!this.inputProxy)) {
+                    this.setStorage(p2p.duality.getStorage());
+                    this.inputProxy = true;
+                }
+                if ((p2p == null) && (this.inputProxy)) {
+                    this.setStorage(new AppEngInternalInventory(this, NUMBER_OF_STORAGE_SLOTS));
+                    this.setSlotInv(new WrapperInvSlot(this.getStorage()));
+                    this.inputProxy = false;
+                }
+                if ((p2p == null) && (!this.inputProxy)) {
+                    didSomething = super.updateStorage();
+                }
             }
-            return true;
+
+            return didSomething;
         }
 
         @Override
@@ -117,18 +131,19 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.readConfig();
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.readConfig();
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.readConfig();
                 } catch (GridAccessException e) {
 
                 }
             } else {
-                PartFluidP2PInterface p2p = getInput();
+                PartP2PInterface p2p = getInput();
                 this.setHasConfig(false);
 
                 if (p2p != null) {
                     if (!p2p.duality.getConfig().isEmpty()) this.setHasConfig(p2p.duality.hasConfig());
-                    this.notifyNeighbors();
                 }
+
+                this.notifyNeighbors();
             }
         }
 
@@ -137,7 +152,7 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 super.addDrops(drops);
                 try {
-                    for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.addDrops(drops);
+                    for (PartP2PInterface p2p : getOutputs()) p2p.duality.addDrops(drops);
                 } catch (GridAccessException e) {
 
                 }
