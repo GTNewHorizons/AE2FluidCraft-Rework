@@ -17,6 +17,7 @@ import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.config.AdvancedBlockingMode;
+import appeng.api.config.FuzzyMode;
 import appeng.api.config.InsertionMode;
 import appeng.api.config.LockCraftingMode;
 import appeng.api.config.Settings;
@@ -43,6 +44,7 @@ public class GuiDualInterface extends GuiUpgradeable {
     private GuiTabButton switcher;
     private GuiImgButton BlockMode;
     private GuiImgButton SmartBlockMode;
+    private GuiImgButton fuzzyMode;
     private GuiToggleButton interfaceMode;
     private GuiImgButton insertionMode;
     private GuiImgButton sidelessMode;
@@ -152,6 +154,16 @@ public class GuiDualInterface extends GuiUpgradeable {
                 LockCraftingMode.NONE);
         this.lockCraftingMode.visible = this.bc.getInstalledUpgrades(Upgrades.LOCK_CRAFTING) > 0;
         this.buttonList.add(lockCraftingMode);
+
+        offset += 18;
+
+        this.fuzzyMode = new GuiImgButton(
+                this.guiLeft - 18,
+                this.guiTop + offset,
+                Settings.FUZZY_MODE,
+                FuzzyMode.IGNORE_ALL);
+        this.fuzzyMode.visible = this.bc.getInstalledUpgrades(Upgrades.FUZZY) > 0;
+        this.buttonList.add(fuzzyMode);
     }
 
     @Override
@@ -187,6 +199,9 @@ public class GuiDualInterface extends GuiUpgradeable {
         if (this.lockCraftingMode != null) {
             this.lockCraftingMode.set(((ContainerInterface) this.cvb).getLockCraftingMode());
         }
+        if (this.fuzzyMode != null) {
+            this.fuzzyMode.set(((ContainerInterface) this.cvb).getFuzzyMode());
+        }
         this.fontRendererObj.drawString(
                 getGuiDisplayName(StatCollector.translateToLocal(NameConst.GUI_FLUID_INTERFACE)),
                 8,
@@ -198,7 +213,7 @@ public class GuiDualInterface extends GuiUpgradeable {
     protected String getBackground() {
         if (!ModAndClassUtil.isBigInterface) return "guis/interface.png";
         return switch (((ContainerInterface) this.cvb).getPatternCapacityCardsInstalled()) {
-            case -1 -> "guis/interfacenone.png";
+            case -1 -> "guis/interfacenonenoconfig.png";
             case 1 -> "guis/interface2.png";
             case 2 -> "guis/interface3.png";
             case 3 -> "guis/interface4.png";
@@ -240,6 +255,8 @@ public class GuiDualInterface extends GuiUpgradeable {
                     .sendToServer(new PacketConfigButton(this.advancedBlockingMode.getSetting(), backwards));
         } else if (btn == this.lockCraftingMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.lockCraftingMode.getSetting(), backwards));
+        } else if (btn == this.fuzzyMode) {
+            NetworkHandler.instance.sendToServer(new PacketConfigButton(this.fuzzyMode.getSetting(), backwards));
         }
     }
 
@@ -255,6 +272,9 @@ public class GuiDualInterface extends GuiUpgradeable {
         }
         if (this.lockCraftingMode != null) {
             this.lockCraftingMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.LOCK_CRAFTING) > 0);
+        }
+        if (this.fuzzyMode != null) {
+            this.fuzzyMode.setVisibility(this.bc.getInstalledUpgrades(Upgrades.FUZZY) > 0);
         }
     }
 }
