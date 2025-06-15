@@ -1,20 +1,15 @@
 package com.glodblock.github.client.gui.container;
 
-import java.util.Objects;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.common.tile.TileLevelMaintainer.State;
-import com.glodblock.github.common.tile.TileLevelMaintainer.TLMTags;
 import com.glodblock.github.inventory.AeItemStackHandler;
 import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
-import com.glodblock.github.util.Util;
+import com.glodblock.github.network.SPacketLevelMaintainerGuiUpdate;
 
 import appeng.api.config.SecurityPermissions;
 import appeng.container.AEBaseContainer;
@@ -25,6 +20,10 @@ public class ContainerLevelMaintainer extends AEBaseContainer {
 
     private final TileLevelMaintainer tile;
     private final SlotFluidConvertingFake[] requestSlots = new SlotFluidConvertingFake[TileLevelMaintainer.REQ_COUNT];
+
+    private static final int UPDATE_INTERVAL = 20;
+    private boolean isFirstUpdate = true;
+    private int updateCount = UPDATE_INTERVAL;
 
     public ContainerLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(ipl, tile);
@@ -48,49 +47,14 @@ public class ContainerLevelMaintainer extends AEBaseContainer {
 
     @Override
     public void doAction(EntityPlayerMP player, InventoryAction action, int slotId, long id) {
-        Slot slot = getSlot(slotId);
-        if (slot instanceof SlotFluidConvertingFake) {
+        if (getSlot(slotId) instanceof SlotFluidConvertingFake slot) {
             final ItemStack stack = player.inventory.getItemStack();
             switch (action) {
-                case PICKUP_OR_SET_DOWN -> {
+                case PICKUP_OR_SET_DOWN, PLACE_SINGLE, SPLIT_OR_PLACE_SINGLE -> {
                     if (stack == null) {
                         slot.putStack(null);
                     } else {
-                        ((SlotFluidConvertingFake) slot).putConvertedStack(createLevelValues(stack.copy()));
-                    }
-                }
-                case PLACE_SINGLE -> {
-                    if (stack != null) {
-                        ((SlotFluidConvertingFake) slot).putConvertedStack(
-                                createLevelValues(Objects.requireNonNull(Util.copyStackWithSize(stack, 1))));
-                    }
-                }
-                case SPLIT_OR_PLACE_SINGLE -> {
-                    ItemStack inSlot = slot.getStack();
-                    if (inSlot != null) {
-                        if (stack == null) {
-                            slot.putStack(
-                                    createLevelValues(
-                                            Objects.requireNonNull(
-                                                    Util.copyStackWithSize(
-                                                            inSlot,
-                                                            Math.max(1, inSlot.stackSize - 1)))));
-                        } else if (stack.isItemEqual(inSlot)) {
-                            slot.putStack(
-                                    createLevelValues(
-                                            Objects.requireNonNull(
-                                                    Util.copyStackWithSize(
-                                                            inSlot,
-                                                            Math.min(
-                                                                    inSlot.getMaxStackSize(),
-                                                                    inSlot.stackSize + 1)))));
-                        } else {
-                            ((SlotFluidConvertingFake) slot).putConvertedStack(
-                                    createLevelValues(Objects.requireNonNull(Util.copyStackWithSize(stack, 1))));
-                        }
-                    } else if (stack != null) {
-                        ((SlotFluidConvertingFake) slot).putConvertedStack(
-                                createLevelValues(Objects.requireNonNull(Util.copyStackWithSize(stack, 1))));
+                        slot.putConvertedStack(stack);
                     }
                 }
                 default -> {}
@@ -109,10 +73,8 @@ public class ContainerLevelMaintainer extends AEBaseContainer {
         for (int i = 0; i < this.getRequestSlots().length; i++) {
             SlotFluidConvertingFake slot = this.getRequestSlots()[i];
             if (!slot.getHasStack()) {
-                ItemStack itemStack = ((Slot) this.inventorySlots.get(idx)).getStack();
-                ItemStack configuration = createLevelValues(itemStack.copy());
-                configuration.getTagCompound().setInteger(TLMTags.Index.tagName, i);
-                slot.putConvertedStack(configuration);
+                ItemStack itemStack = this.inventorySlots.get(idx).getStack();
+                tile.updateStack(i, itemStack.copy());
                 break;
             }
         }
@@ -123,35 +85,23 @@ public class ContainerLevelMaintainer extends AEBaseContainer {
 
     @Override
     public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        if (Platform.isClient()) {
+            return;
+        }
+
         this.verifyPermissions(SecurityPermissions.BUILD, false);
 
-        super.detectAndSendChanges();
+        if (this.updateCount++ >= UPDATE_INTERVAL) {
+            this.updateGui();
+        }
     }
 
-    public static ItemStack createLevelValues(ItemStack itemStack) {
-        var data = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
-        if (!data.hasKey(TLMTags.Stack.tagName)) {
-            var itemStackTag = new NBTTagCompound();
-            itemStack.copy().writeToNBT(itemStackTag);
-            data.setTag(TLMTags.Stack.tagName, itemStackTag);
-        }
-        if (!data.hasKey(TLMTags.Quantity.tagName)) {
-            data.setLong(TLMTags.Quantity.tagName, itemStack.stackSize > 0 ? itemStack.stackSize : 1);
-        }
-        if (!data.hasKey(TLMTags.Batch.tagName)) {
-            data.setLong(TLMTags.Batch.tagName, 1);
-        }
-        if (!data.hasKey(TLMTags.Enable.tagName)) {
-            data.setBoolean(TLMTags.Enable.tagName, false);
-        }
-        if (data.hasKey(TLMTags.Index.tagName)) {
-            data.removeTag(TLMTags.Index.tagName);
-        }
-
-        data.setInteger(TLMTags.State.tagName, State.None.ordinal());
-        itemStack.setTagCompound(data);
-
-        return itemStack;
+    public void updateGui() {
+        FluidCraft.proxy.netHandler.sendTo(
+                new SPacketLevelMaintainerGuiUpdate(this.tile.requests, !this.isFirstUpdate),
+                (EntityPlayerMP) this.getInventoryPlayer().player);
+        this.isFirstUpdate = false;
+        this.updateCount = 0;
     }
-
 }

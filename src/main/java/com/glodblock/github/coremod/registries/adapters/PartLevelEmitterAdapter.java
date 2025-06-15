@@ -2,54 +2,29 @@ package com.glodblock.github.coremod.registries.adapters;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.glodblock.github.api.registries.ILevelViewable;
 import com.glodblock.github.api.registries.ILevelViewableAdapter;
-import com.glodblock.github.common.tile.TileLevelMaintainer.State;
-import com.glodblock.github.common.tile.TileLevelMaintainer.TLMTags;
-import com.glodblock.github.inventory.AeItemStackHandler;
-import com.glodblock.github.inventory.AeStackInventoryImpl;
+import com.glodblock.github.api.registries.LevelItemInfo;
+import com.glodblock.github.api.registries.LevelState;
 
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
-import appeng.api.storage.StorageChannel;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
 import appeng.parts.automation.PartLevelEmitter;
-import appeng.util.item.AEItemStack;
 
 public class PartLevelEmitterAdapter implements ILevelViewable, ILevelViewableAdapter {
 
     private PartLevelEmitter delegate;
-
-    private static final int SLOT_IN = 0;
 
     public PartLevelEmitterAdapter() {}
 
     public ILevelViewable adapt(IGridHost gridHost) {
         if (gridHost instanceof PartLevelEmitter levelEmitter) this.delegate = levelEmitter;
         return this;
-    }
-
-    @NotNull
-    static public IInventory getPatchedInventory(IInventory inventory, long quantity, State state) {
-        ItemStack itemStack = inventory.getStackInSlot(SLOT_IN);
-        if (itemStack == null) return inventory;
-        NBTTagCompound data = !itemStack.hasTagCompound() ? new NBTTagCompound() : itemStack.getTagCompound();
-        data.setLong(TLMTags.Quantity.tagName, quantity);
-        data.setInteger(TLMTags.State.tagName, state.ordinal());
-        itemStack.setTagCompound(data);
-
-        AeStackInventoryImpl<IAEItemStack> inv = new AeStackInventoryImpl<>(StorageChannel.ITEMS, 1);
-        inv.setStack(SLOT_IN, AEItemStack.create(itemStack));
-
-        return new AeItemStackHandler(inv);
     }
 
     @Override
@@ -64,10 +39,7 @@ public class PartLevelEmitterAdapter implements ILevelViewable, ILevelViewableAd
 
     @Override
     public IInventory getInventoryByName(String name) {
-        long value = delegate.getReportingValue();
-        State state = delegate.isProvidingStrongPower() > 0 ? State.Craft : State.Idle;
-
-        return getPatchedInventory(delegate.getInventoryByName(name), value, state);
+        return delegate.getInventoryByName(name);
     }
 
     @Override
@@ -106,12 +78,13 @@ public class PartLevelEmitterAdapter implements ILevelViewable, ILevelViewableAd
     }
 
     @Override
-    public ItemStack getSelfItemStack() {
-        return delegate.getItemStack();
-    }
-
-    @Override
-    public ItemStack getDisplayItemStack() {
-        return delegate.getCrafterIcon();
+    public LevelItemInfo[] getLevelItemInfoList() {
+        ItemStack stack = delegate.getInventoryByName("config").getStackInSlot(0);
+        if (stack == null) return new LevelItemInfo[] { null };
+        return new LevelItemInfo[] { new LevelItemInfo(
+                stack,
+                delegate.getReportingValue(),
+                -1,
+                delegate.isProvidingStrongPower() > 0 ? LevelState.Craft : LevelState.Idle) };
     }
 }
