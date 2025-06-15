@@ -219,6 +219,7 @@ error.unknown=Unknown
 
 ae2fc.key.OpenTerminal=Open Wireless Universal Terminal
 ae2fc.key.Restock=Toggle Restock
+ae2fc.key.SelectBlock=Select Block
 
 itemGroup.ae2fc=Fluid Craft For AE2
 
