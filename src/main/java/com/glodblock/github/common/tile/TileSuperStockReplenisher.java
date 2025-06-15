@@ -68,6 +68,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         getProxy().setIdlePowerUsage(4D);
         getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
         this.source = new MachineSource(this);
+        invItems.setMaxStackSize(Integer.MAX_VALUE);
     }
 
     private TickRateModulation doWork() {
