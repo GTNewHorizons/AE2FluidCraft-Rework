@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import codechicken.nei.api.API;
+import com.glodblock.github.util.ModAndClassUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -38,6 +40,10 @@ public class ProxyItem extends FCBaseItem {
     @Override
     public FCBaseItem register() {
         GameRegistry.registerItem(this, "ec2placeholder." + name, FluidCraft.MODID);
+        if (!ModAndClassUtil.EC2) {
+            API.hideItem("ec2placeholder." + name);
+        }
+
         return this;
     }
 
