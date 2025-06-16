@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import codechicken.nei.api.API;
-import com.glodblock.github.util.ModAndClassUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -16,7 +14,9 @@ import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.FCBaseItem;
+import com.glodblock.github.util.ModAndClassUtil;
 
+import codechicken.nei.api.API;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
