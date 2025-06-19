@@ -14,7 +14,9 @@ import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.FCBaseItem;
+import com.glodblock.github.util.ModAndClassUtil;
 
+import codechicken.nei.api.API;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
@@ -38,6 +40,10 @@ public class ProxyItem extends FCBaseItem {
     @Override
     public FCBaseItem register() {
         GameRegistry.registerItem(this, "ec2placeholder." + name, FluidCraft.MODID);
+        if (!ModAndClassUtil.EC2) {
+            API.hideItem("ec2placeholder." + name);
+        }
+
         return this;
     }
 
