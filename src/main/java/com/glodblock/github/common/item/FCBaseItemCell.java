@@ -20,6 +20,7 @@ import com.glodblock.github.common.storage.CellType;
 import com.glodblock.github.common.storage.FluidCellInventory;
 import com.glodblock.github.common.storage.FluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IStorageFluidCell;
+import com.glodblock.github.inventory.FluidCellConfig;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
 import com.google.common.base.Optional;
@@ -36,7 +37,6 @@ import appeng.core.features.AEFeature;
 import appeng.core.localization.GuiText;
 import appeng.helpers.ICellRestriction;
 import appeng.items.AEBaseItem;
-import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
 import appeng.util.InventoryAdaptor;
 import appeng.util.IterationCounter;
@@ -208,7 +208,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
 
     @Override
     public IInventory getConfigInventory(ItemStack is) {
-        return new CellConfig(is);
+        return new FluidCellConfig(is);
     }
 
     @Override
