@@ -103,8 +103,6 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
             if (!isOutput()) {
                 didSomething = super.updateStorage();
 
-                didSomething = super.updateStorage();
-
                 try {
                     for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.updateStorage();
                 } catch (GridAccessException e) {
@@ -124,6 +122,9 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
                 if ((p2p == null) && (!this.inputProxy)) {
                     didSomething = super.updateStorage();
                 }
+
+                // This must be called here for outputs to update properly...
+                this.readConfig();
             }
 
             return didSomething;
@@ -140,13 +141,12 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
                 }
             } else {
                 PartFluidP2PInterface p2p = getInput();
-                this.setHasConfig(false);
 
                 if (p2p != null) {
                     if (!p2p.duality.getConfig().isEmpty()) this.setHasConfig(p2p.duality.hasConfig());
+                } else if ((p2p == null) && (this.hasConfig())) {
+                    this.setHasConfig(false);
                 }
-
-                this.notifyNeighbors();
 
                 this.notifyNeighbors();
             }
@@ -228,12 +228,18 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
 
     @Override
     public boolean onPartActivate(final EntityPlayer player, final Vec3 pos) {
-        AppEngInternalInventory patterns = (AppEngInternalInventory) duality.getPatterns();
-        if (super.onPartActivate(player, pos)) {
+        AppEngInternalInventory patterns = (AppEngInternalInventory) this.duality.getPatterns();
+        AppEngInternalInventory storageAppEng = this.duality.getStorage();
+
+        if (super.onPartActivate(p, pos)) {
             ArrayList<ItemStack> drops = new ArrayList<>();
             for (int i = 0; i < patterns.getSizeInventory(); i++) {
                 if (patterns.getStackInSlot(i) == null) continue;
                 drops.add(patterns.getStackInSlot(i));
+            }
+            for (int i = 0; i < DualityInterface.NUMBER_OF_STORAGE_SLOTS; i++) {
+                if (storageAppEng.getStackInSlot(i) == null) continue;
+                drops.add(storageAppEng.getStackInSlot(i));
             }
             final IPart tile = this.getHost().getPart(this.getSide());
             if (tile instanceof PartFluidP2PInterface dualTile) {
@@ -274,6 +280,22 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         }
 
         return true;
+    }
+
+    @Override
+    public boolean onPartShiftActivate(final EntityPlayer player, final Vec3 pos) {
+        boolean storageReset = false;
+        if (isOutput()) storageReset = true;
+        if (super.onPartShiftActivate(player, pos)) {
+            if (storageReset) {
+                this.duality.setStorage(new AppEngInternalInventory(this, DualityInterface.NUMBER_OF_STORAGE_SLOTS));
+                this.duality.setSlotInv(new WrapperInvSlot(this.duality.getStorage()));
+                this.duality.readConfig();
+            }
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -336,6 +358,13 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     @Override
     public void onTunnelNetworkChange() {
         duality.updateCraftingList();
+
+        if (isOutput()) {
+            PartP2PInterface input = getInput();
+            if (input == null) {
+                duality.updateStorage();
+            }
+        }
     }
 
     @Override
@@ -355,8 +384,13 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     }
 
     @Override
-    public ItemStack getStackInSlot(int slotIn) {
-        return duality.getStorage().getStackInSlot(slotIn);
+    public ItemStack getStackInSlot(final int i) {
+        if (isOutput()) {
+            PartP2PInterface input = getInput();
+            if (input != null) return input.getStackInSlot(i);
+            return duality.getStorage().getStackInSlot(i);
+        }
+        return duality.getStorage().getStackInSlot(i);
     }
 
     @Override
