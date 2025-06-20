@@ -231,7 +231,7 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         AppEngInternalInventory patterns = (AppEngInternalInventory) this.duality.getPatterns();
         AppEngInternalInventory storageAppEng = this.duality.getStorage();
 
-        if (super.onPartActivate(p, pos)) {
+        if (super.onPartActivate(player, pos)) {
             ArrayList<ItemStack> drops = new ArrayList<>();
             for (int i = 0; i < patterns.getSizeInventory(); i++) {
                 if (patterns.getStackInSlot(i) == null) continue;
@@ -360,7 +360,7 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         duality.updateCraftingList();
 
         if (isOutput()) {
-            PartP2PInterface input = getInput();
+            PartFluidP2PInterface input = getInput();
             if (input == null) {
                 duality.updateStorage();
             }
@@ -386,7 +386,7 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     @Override
     public ItemStack getStackInSlot(final int i) {
         if (isOutput()) {
-            PartP2PInterface input = getInput();
+            PartFluidP2PInterface input = getInput();
             if (input != null) return input.getStackInSlot(i);
             return duality.getStorage().getStackInSlot(i);
         }
