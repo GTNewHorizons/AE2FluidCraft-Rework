@@ -14,6 +14,7 @@ import com.glodblock.github.common.storage.IFluidCellInventory;
 import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
+import com.glodblock.github.inventory.FluidCellConfig;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 
@@ -25,7 +26,6 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.GuiText;
 import appeng.items.AEBaseItem;
-import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
 import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -116,7 +116,7 @@ public class ItemFluidVoidStorageCell extends AEBaseItem
 
     @Override
     public IInventory getConfigInventory(ItemStack is) {
-        return new CellConfig(is);
+        return new FluidCellConfig(is);
     }
 
     @Override
