@@ -1,5 +1,7 @@
 package com.glodblock.github.client.gui.container.base;
 
+import static appeng.util.Platform.writeStackNBT;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -25,13 +27,12 @@ import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.IPatternConsumer;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
-import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.container.guisync.GuiSync;
@@ -43,11 +44,11 @@ import appeng.container.slot.SlotPatternTerm;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.helpers.IContainerCraftingPacket;
 import appeng.helpers.InventoryAction;
-import appeng.items.misc.ItemEncodedPattern;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
+import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 
 public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
@@ -172,7 +173,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         ItemStack is = clickSlot.getStack();
         if (is != null && !patternSlotOUT.getHasStack()
                 && is.stackSize == 1
-                && (is.getItem() instanceof ItemFluidEncodedPattern || is.getItem() instanceof ItemEncodedPattern)) {
+                && is.getItem() instanceof ICraftingPatternItem) {
             ItemStack output = is.copy();
             patternSlotOUT.putStack(output);
             p.inventory.setInventorySlotContents(clickSlot.getSlotIndex(), null);
@@ -243,20 +244,6 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         return object > 0;
     }
 
-    protected boolean checkHasFluidPattern() {
-        if (this.craftingMode) {
-            return false;
-        }
-        boolean hasFluid = containsFluid(this.craftingSlots);
-        boolean search = nonNullSlot(this.craftingSlots);
-        if (!search) { // search=false -> inputs were empty
-            return false;
-        }
-        hasFluid |= containsFluid(this.outputSlots);
-        search = nonNullSlot(this.outputSlots);
-        return hasFluid && search; // search=false -> outputs were empty
-    }
-
     protected ItemStack stampAuthor(ItemStack patternStack) {
         if (patternStack.stackTagCompound == null) {
             patternStack.stackTagCompound = new NBTTagCompound();
@@ -266,13 +253,52 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     }
 
     protected void encodeFluidPattern() {
-        ItemStack patternStack = new ItemStack(ItemAndBlockHolder.PATTERN);
-        FluidPatternDetails pattern = new FluidPatternDetails(patternStack);
-        pattern.setInputs(collectInventory(this.craftingSlots));
-        pattern.setOutputs(collectInventory(this.outputSlots));
-        pattern.setCanBeSubstitute(this.beSubstitute ? 1 : 0);
-        pattern.setCombine(this.combine ? 1 : 0);
-        patternSlotOUT.putStack(stampAuthor(pattern.writeToStack()));
+        ItemStack patternStack = AEApi.instance().definitions().items().encodedUltimatePattern().maybeStack(1).orNull();
+        if (patternStack != null) {
+            final NBTTagCompound encodedValue = new NBTTagCompound();
+
+            final ItemStack[] in = this.getInputs();
+            final ItemStack[] out = this.getOutputs();
+
+            final NBTTagList tagIn = new NBTTagList();
+            final NBTTagList tagOut = new NBTTagList();
+
+            for (final ItemStack i : in) {
+                if (i != null) {
+                    if (i.getItem() instanceof ItemFluidPacket) {
+                        tagIn.appendTag(
+                                writeStackNBT(
+                                        AEFluidStack.create(ItemFluidPacket.getFluidStack(i)),
+                                        new NBTTagCompound(),
+                                        true));
+                    } else {
+                        tagIn.appendTag(writeStackNBT(AEItemStack.create(i), new NBTTagCompound(), true));
+                    }
+                }
+            }
+
+            for (final ItemStack i : out) {
+                if (i != null) {
+                    if (i.getItem() instanceof ItemFluidPacket) {
+                        tagOut.appendTag(
+                                writeStackNBT(
+                                        AEFluidStack.create(ItemFluidPacket.getFluidStack(i)),
+                                        new NBTTagCompound(),
+                                        true));
+                    } else {
+                        tagOut.appendTag(writeStackNBT(AEItemStack.create(i), new NBTTagCompound(), true));
+                    }
+                }
+            }
+
+            encodedValue.setTag("in", tagIn);
+            encodedValue.setTag("out", tagOut);
+            encodedValue.setBoolean("substitute", substitute);
+            encodedValue.setBoolean("beSubstitute", beSubstitute);
+            encodedValue.setString("author", this.getPlayerInv().player.getCommandSenderName());
+            patternStack.setTagCompound(encodedValue);
+            patternSlotOUT.putStack(patternStack);
+        }
     }
 
     protected static IAEItemStack[] collectInventory(Slot[] slots) {
@@ -369,25 +395,27 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
     }
 
     public void encode() {
-        fillPattern();
-        if (!checkHasFluidPattern()) {
-            encodeItemPattern();
-            return;
-        }
-        ItemStack stack = this.patternSlotOUT.getStack();
-        if (stack == null) {
-            stack = this.patternSlotIN.getStack();
-            if (notPattern(stack)) {
+        if (getInputs() != null && getOutputs() != null) {
+            fillPattern();
+            if (isCraftingMode()) {
+                encodeItemPattern();
                 return;
             }
-            if (stack.stackSize == 1) {
-                this.patternSlotIN.putStack(null);
-            } else {
-                stack.stackSize--;
+            ItemStack stack = this.patternSlotOUT.getStack();
+            if (stack == null) {
+                stack = this.patternSlotIN.getStack();
+                if (notPattern(stack)) {
+                    return;
+                }
+                if (stack.stackSize == 1) {
+                    this.patternSlotIN.putStack(null);
+                } else {
+                    stack.stackSize--;
+                }
+                encodeFluidPattern();
+            } else if (!notPattern(stack)) {
+                encodeFluidPattern();
             }
-            encodeFluidPattern();
-        } else if (!notPattern(stack)) {
-            encodeFluidPattern();
         }
     }
 
@@ -396,10 +424,6 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         final ItemStack[] in = this.getInputs();
         final ItemStack[] out = this.getOutputs();
 
-        // if there is no input, this would be silly.
-        if (in == null || out == null) {
-            return;
-        }
         // first check the output slots, should either be null, or a pattern
         if (output != null && this.notPattern(output)) {
             return;
@@ -487,7 +511,10 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
         boolean isPattern = definitions.items().encodedPattern().isSameAs(output);
         isPattern |= definitions.materials().blankPattern().isSameAs(output);
 
-        return !isPattern;
+        boolean isUltimatePattern = definitions.items().encodedUltimatePattern().isSameAs(output);
+        isUltimatePattern |= definitions.materials().blankPattern().isSameAs(output);
+
+        return !isPattern && !isUltimatePattern;
     }
 
     protected NBTBase createItemTag(final ItemStack i) {
@@ -569,7 +596,7 @@ public abstract class FCContainerEncodeTerminal extends ContainerItemMonitor
             for (Slot s : slots) {
                 ItemStack st = s.getStack();
                 if (st == null) continue;
-                final int count;
+                final long count;
                 if (st.getItem() instanceof ItemFluidPacket) {
                     count = ItemFluidPacket.getFluidAmount(st);
                 } else {
