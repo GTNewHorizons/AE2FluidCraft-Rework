@@ -23,6 +23,7 @@ import appeng.container.slot.IOptionalSlotHost;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.items.storage.ItemBasicStorageCell;
+import appeng.util.item.AEItemStack;
 
 public class ContainerSuperStockReplenisher extends AEBaseContainer implements IOptionalSlotHost {
 
@@ -96,7 +97,7 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
             }
 
             for (int i = 0; i < tile.getInternalInventory().getSizeInventory(); i++) {
-                tmp.put(i + 100, tile.getInternalAEInventory().getAEStackInSlot(i));
+                tmp.put(i + 100, AEItemStack.create(tile.getInternalInventory().getStackInSlot(i)));
             }
 
             for (final Object g : this.crafters) {

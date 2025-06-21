@@ -48,14 +48,15 @@ import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.item.AEFluidStack;
+import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
 public class TileSuperStockReplenisher extends AENetworkInvTile
         implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
-    private final AppEngInternalAEInventory invItems = new AppEngInternalAEInventory(this, 63);
-    private final AEFluidInventory invFluids = new AEFluidInventory(this, 9, Long.MAX_VALUE);
+    private final AppEngInternalInventory invItems = new AppEngInternalInventory(this, 63);
+    private final AEFluidInventory invFluids = new AEFluidInventory(this, 9, Integer.MAX_VALUE);
     private final AppEngInternalAEInventory configFluids = new AppEngInternalAEInventory(this, 9);
     private final AppEngInternalAEInventory configItems = new AppEngInternalAEInventory(this, 63);
     private final BaseActionSource source;
@@ -96,26 +97,25 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         }
 
         for (int i = 0; i < 63; i++) {
-            IAEItemStack invItem = invItems.getAEStackInSlot(i);
+            ItemStack invItem = invItems.getStackInSlot(i);
             IAEItemStack configItem = configItems.getAEStackInSlot(i);
 
             if (configItem != null) {
                 IAEItemStack is = configItem.copy();
                 if (invItem == null) requestItem(is, i);
-                else if (invItem.equals(is)) {
-                    long invSize = invItem.getStackSize();
-                    long confSize = is.getStackSize();
-                    if (invSize < confSize / 2f) {
-                        is.setStackSize(confSize - invSize);
+                else if (is.equals(invItem)) {
+                    int confSize = (int) is.getStackSize();
+                    if (invItem.stackSize < confSize / 2f) {
+                        is.setStackSize(confSize - invItem.stackSize);
                         requestItem(is, i);
-                    } else if (invSize > confSize) {
-                        returnItem(i, invSize - confSize);
+                    } else if (invItem.stackSize > confSize) {
+                        returnItem(i, invItem.stackSize - confSize);
                     }
                 } else {
-                    returnItem(i, Long.MAX_VALUE);
+                    returnItem(i, Integer.MAX_VALUE);
                 }
             } else if (invItem != null) {
-                returnItem(i, Long.MAX_VALUE);
+                returnItem(i, Integer.MAX_VALUE);
             }
         }
 
@@ -149,26 +149,23 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         } catch (final GridAccessException ignored) {}
     }
 
-    private void returnItem(int index, long amount) {
+    private void returnItem(int index, int amount) {
         try {
-            IAEItemStack ais = invItems.getAEStackInSlot(index);
-            long originalSize = ais.getStackSize();
-            if (amount != Long.MAX_VALUE) {
-                ais.decStackSize(amount);
-                ais = ais.copy();
-                ais.setStackSize(amount);
+            ItemStack is = invItems.getStackInSlot(index);
+            if (amount != Integer.MAX_VALUE) {
+                is.stackSize = is.stackSize - amount;
+                is = is.copy();
+                is.stackSize = amount;
             } else {
-                amount = ais.getStackSize();
                 invItems.setInventorySlotContents(index, null);
             }
-            storedItemCount -= amount;
+
             IAEItemStack notInserted = this.getProxy().getStorage().getItemInventory()
-                    .injectItems(ais, Actionable.MODULATE, this.source);
+                    .injectItems(AEItemStack.create(is), Actionable.MODULATE, this.source);
             if (notInserted != null) {
-                long notInsertedAmount = notInserted.getStackSize();
-                invItems.setInventorySlotContents(index, notInserted.getItemStack());
-                invItems.getAEStackInSlot(index).setStackSize(originalSize - (amount - notInsertedAmount));
-                storedItemCount += notInsertedAmount;
+                ItemStack tempStack = invItems.getStackInSlot(index);
+                if (tempStack != null) tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
+                else invItems.setInventorySlotContents(index, notInserted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -181,12 +178,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
             IAEItemStack extracted = this.getProxy().getStorage().getItemInventory()
                     .extractItems(is, Actionable.MODULATE, this.source);
             if (extracted != null) {
-                if (invItems.getAEStackInSlot(index) != null) invItems.getAEStackInSlot(index).add(extracted);
-                else {
-                    invItems.setInventorySlotContents(index, extracted.getItemStack());
-                    invItems.getAEStackInSlot(index).setStackSize(extracted.getStackSize());
-                }
-                storedItemCount += extracted.getStackSize();
+                ItemStack tempStack = invItems.getStackInSlot(index);
+                if (tempStack != null) tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
+                else invItems.setInventorySlotContents(index, extracted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -199,10 +193,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Nonnull
     @Override
     public IInventory getInternalInventory() {
-        return invItems;
-    }
-
-    public AppEngInternalAEInventory getInternalAEInventory() {
         return invItems;
     }
 
@@ -257,13 +247,26 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removed, ItemStack added) {
         switch (mc) {
             case setInventorySlotContents -> {
-                if (inv == cell && added != null) {
-                    if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
-                        totalBytes = ibsc.getBytesLong(added);
-                    } else if (added.getItem() instanceof FCBaseItemCell fcbic) {
-                        totalBytes = fcbic.getBytes(added);
+                if (added != null) {
+                    if (inv == cell) {
+                        if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
+                            totalBytes = ibsc.getBytesLong(added);
+                        } else if (added.getItem() instanceof FCBaseItemCell fcbic) {
+                            totalBytes = fcbic.getBytes(added);
+                        }
+                        getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
+                    } else if (inv == invItems) {
+                        storedItemCount += added.stackSize;
                     }
-                    getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
+                }
+
+                if (removed != null) {
+                    if (inv == cell) {
+                        totalBytes = 0;
+                        getProxy().setIdlePowerUsage(4d);
+                    } else if (inv == invItems) {
+                        storedItemCount -= removed.stackSize;
+                    }
                 }
             }
             case decreaseStackSize -> {
@@ -271,8 +274,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     totalBytes = 0;
                     getProxy().setIdlePowerUsage(4d);
                 }
-                if (inv == invItems && invItems.getAEStackInSlot(slot) != null)
-                    invItems.getAEStackInSlot(slot).decStackSize(removed.stackSize);
+                if (inv == invItems && invItems.getStackInSlot(slot) != null) storedItemCount -= removed.stackSize;
             }
             case markDirty -> {}
         }
@@ -294,8 +296,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         }
 
         for (int i = 0; i < 63; i++) {
-            if (invItems.getAEStackInSlot(i) != null) {
-                returnItem(i, Long.MAX_VALUE);
+            if (invItems.getStackInSlot(i) != null) {
+                returnItem(i, Integer.MAX_VALUE);
             }
         }
     }
@@ -322,12 +324,16 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-        return invFluids.drain(from, resource, doDrain);
+        FluidStack fs = invFluids.drain(from, resource, doDrain);
+        if (doDrain && fs != null) storedFluidCount -= fs.amount;
+        return fs;
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-        return invFluids.drain(from, maxDrain, doDrain);
+        FluidStack fs = invFluids.drain(from, maxDrain, doDrain);
+        if (doDrain && fs != null) storedFluidCount -= fs.amount;
+        return fs;
     }
 
     @Override

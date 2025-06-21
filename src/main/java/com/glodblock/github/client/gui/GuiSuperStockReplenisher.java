@@ -28,14 +28,10 @@ import appeng.util.item.AEItemStack;
 public class GuiSuperStockReplenisher extends AEBaseGui {
 
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/superStockReplenisher.png");
-    private final ContainerSuperStockReplenisher cont;
-    private final TileSuperStockReplenisher tile;
     private Map<Integer, IAEStack<?>> list = new HashMap<>();
 
     public GuiSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(new ContainerSuperStockReplenisher(ipl, tile));
-        this.tile = tile;
-        this.cont = (ContainerSuperStockReplenisher) inventorySlots;
         this.ySize = 251;
         this.xSize = 216;
     }

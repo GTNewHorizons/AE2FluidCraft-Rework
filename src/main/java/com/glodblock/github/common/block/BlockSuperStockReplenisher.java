@@ -21,8 +21,8 @@ public class BlockSuperStockReplenisher extends FCBaseBlock {
     public BlockSuperStockReplenisher() {
         super(Material.web, NameConst.BLOCK_SUPER_STOCK_REPLENISHER);
         setTileEntity(TileSuperStockReplenisher.class);
-        setOpaque(false);
-        setFullBlock(false);
+        setOpaque(true);
+        setFullBlock(true);
         this.lightOpacity = 4;
     }
 
