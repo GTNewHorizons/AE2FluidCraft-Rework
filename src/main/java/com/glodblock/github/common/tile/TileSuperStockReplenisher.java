@@ -160,12 +160,16 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 invItems.setInventorySlotContents(index, null);
             }
 
+            storedItemCount -= is.stackSize;
+
             IAEItemStack notInserted = this.getProxy().getStorage().getItemInventory()
                     .injectItems(AEItemStack.create(is), Actionable.MODULATE, this.source);
             if (notInserted != null) {
                 ItemStack tempStack = invItems.getStackInSlot(index);
-                if (tempStack != null) tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
-                else invItems.setInventorySlotContents(index, notInserted.getItemStack());
+                if (tempStack != null) {
+                    tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
+                    storedItemCount += notInserted.getStackSize();
+                } else invItems.setInventorySlotContents(index, notInserted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -179,8 +183,10 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     .extractItems(is, Actionable.MODULATE, this.source);
             if (extracted != null) {
                 ItemStack tempStack = invItems.getStackInSlot(index);
-                if (tempStack != null) tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
-                else invItems.setInventorySlotContents(index, extracted.getItemStack());
+                if (tempStack != null) {
+                    tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
+                    storedItemCount += extracted.getStackSize();
+                } else invItems.setInventorySlotContents(index, extracted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
     }
