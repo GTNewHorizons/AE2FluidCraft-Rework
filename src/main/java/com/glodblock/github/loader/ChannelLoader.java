@@ -16,6 +16,7 @@ import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.network.CPacketPatternMultiSet;
 import com.glodblock.github.network.CPacketPatternValueSet;
 import com.glodblock.github.network.CPacketRenamer;
+import com.glodblock.github.network.CPacketSelectBlockWithdraw;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.network.CPacketTransferRecipe;
 import com.glodblock.github.network.CPacketValueConfig;
@@ -93,6 +94,11 @@ public class ChannelLoader implements Runnable {
                 SPacketLevelMaintainerGuiUpdate.class,
                 id++,
                 Side.CLIENT);
+        netHandler.registerMessage(
+                new CPacketSelectBlockWithdraw.Handler(),
+                CPacketSelectBlockWithdraw.class,
+                id++,
+                Side.SERVER);
     }
 
     public static void sendPacketToAllPlayers(Packet packet, World world) {
