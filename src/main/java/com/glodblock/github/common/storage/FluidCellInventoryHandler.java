@@ -6,6 +6,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.Util;
 
@@ -42,6 +43,12 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
                     AEFluidStack stack = AEFluidStack.create(fluid);
                     stack.setStackSize(1);
                     priorityList.add(stack);
+
+                    // convert partition on cells in network
+                    if (!(is.getItem() instanceof ItemFluidPacket)) {
+                        config.setInventorySlotContents(x, ItemFluidPacket.newDisplayStack(fluid));
+                        config.markDirty();
+                    }
                 }
             }
             if (!priorityList.isEmpty()) {
