@@ -110,16 +110,16 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
                 }
             } else {
                 PartFluidP2PInterface p2p = getInput();
-                if (p2p != null && (!this.inputProxy)) {
+                if (p2p != null && (!this.sharedInventory)) {
                     this.setStorage(p2p.duality.getStorage());
-                    this.inputProxy = true;
+                    this.sharedInventory = true;
                 }
-                if ((p2p == null) && (this.inputProxy)) {
+                if ((p2p == null) && (this.sharedInventory)) {
                     this.setStorage(new AppEngInternalInventory(this, NUMBER_OF_STORAGE_SLOTS));
                     this.setSlotInv(new WrapperInvSlot(this.getStorage()));
-                    this.inputProxy = false;
+                    this.sharedInventory = false;
                 }
-                if ((p2p == null) && (!this.inputProxy)) {
+                if ((p2p == null) && (!this.sharedInventory)) {
                     didSomething = super.updateStorage();
                 }
 
