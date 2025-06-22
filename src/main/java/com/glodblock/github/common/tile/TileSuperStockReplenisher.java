@@ -156,11 +156,10 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 is.stackSize = is.stackSize - amount;
                 is = is.copy();
                 is.stackSize = amount;
+                storedItemCount -= is.stackSize;
             } else {
                 invItems.setInventorySlotContents(index, null);
             }
-
-            storedItemCount -= is.stackSize;
 
             IAEItemStack notInserted = this.getProxy().getStorage().getItemInventory()
                     .injectItems(AEItemStack.create(is), Actionable.MODULATE, this.source);
@@ -280,7 +279,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     totalBytes = 0;
                     getProxy().setIdlePowerUsage(4d);
                 }
-                if (inv == invItems && invItems.getStackInSlot(slot) != null) storedItemCount -= removed.stackSize;
+                if (inv == invItems) {
+                    storedItemCount -= removed.stackSize;
+                }
             }
             case markDirty -> {}
         }
