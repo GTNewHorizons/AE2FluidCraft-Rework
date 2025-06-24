@@ -1,7 +1,6 @@
 package com.glodblock.github.common.item;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -23,6 +22,7 @@ import com.glodblock.github.util.NameConst;
 
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -40,9 +40,32 @@ public class ItemFluidPacket extends FCBaseItem {
         if (stack == null || !stack.hasTagCompound()) {
             return null;
         }
-        FluidStack fluid = FluidStack
-                .loadFluidStackFromNBT(Objects.requireNonNull(stack.getTagCompound()).getCompoundTag("FluidStack"));
+        NBTTagCompound tag = stack.getTagCompound().getCompoundTag("FluidStack");
+        FluidStack fluid = FluidStack.loadFluidStackFromNBT(tag);
+        if (fluid != null && tag.getLong("Amount") > Integer.MAX_VALUE) fluid.amount = Integer.MAX_VALUE;
         return (fluid != null && fluid.amount > 0) ? fluid : null;
+    }
+
+    @Nullable
+    public static FluidStack getFluidStack(@Nullable IAEItemStack stack) {
+        return stack != null ? getFluidStack(stack.getItemStack()) : null;
+    }
+
+    @Nullable
+    public static IAEFluidStack getFluidAEStack(ItemStack stack) {
+        if (stack != null && stack.hasTagCompound()) {
+            NBTTagCompound tag = stack.getTagCompound().getCompoundTag("FluidStack");
+            IAEFluidStack ifs = AEFluidStack.create(FluidStack.loadFluidStackFromNBT(tag));
+            if (ifs != null && tag.hasKey("Amount")) ifs.setStackSize(tag.getLong("Amount"));
+            return ifs;
+
+        }
+        return null;
+    }
+
+    @Nullable
+    public static IAEFluidStack getFluidAEStack(@Nullable IAEItemStack stack) {
+        return stack != null ? getFluidAEStack(stack.getItemStack()) : null;
     }
 
     @Override
@@ -83,25 +106,20 @@ public class ItemFluidPacket extends FCBaseItem {
         }
     }
 
-    @Nullable
-    public static FluidStack getFluidStack(@Nullable IAEItemStack stack) {
-        return stack != null ? getFluidStack(stack.getItemStack()) : null;
-    }
-
-    public static void setFluidAmount(ItemStack stack, int amount) {
+    public static void setFluidAmount(ItemStack stack, long amount) {
         if (stack == null || !stack.hasTagCompound()
                 || !stack.getTagCompound().hasKey("FluidStack", Constants.NBT.TAG_COMPOUND)) {
             return;
         }
-        stack.getTagCompound().getCompoundTag("FluidStack").setInteger("Amount", amount);
+        stack.getTagCompound().getCompoundTag("FluidStack").setLong("Amount", amount);
     }
 
-    public static int getFluidAmount(ItemStack stack) {
+    public static long getFluidAmount(ItemStack stack) {
         if (stack == null || !stack.hasTagCompound()) {
             return 0;
         }
         // Default to 0 if no tag exists
-        return stack.getTagCompound().getCompoundTag("FluidStack").getInteger("Amount");
+        return stack.getTagCompound().getCompoundTag("FluidStack").getLong("Amount");
     }
 
     @Nullable
@@ -120,10 +138,22 @@ public class ItemFluidPacket extends FCBaseItem {
 
     @Nullable
     public static ItemStack newStack(@Nullable IAEFluidStack fluid) {
-        if (fluid == null || fluid.getStackSize() == 0) {
-            return null;
+        if (fluid != null && fluid.getStackSize() > 0) {
+            ItemStack stack = new ItemStack(ItemAndBlockHolder.PACKET);
+            NBTTagCompound tag = new NBTTagCompound();
+            NBTTagCompound fluidTag = new NBTTagCompound();
+            fluid.getFluidStack().writeToNBT(fluidTag);
+            fluidTag.setLong("Amount", fluid.getStackSize());
+            tag.setTag("FluidStack", fluidTag);
+            stack.setTagCompound(tag);
+            return stack;
         }
-        return newStack(fluid.getFluidStack());
+        return null;
+    }
+
+    @Nullable
+    public static IAEItemStack newAeStack(@Nullable FluidStack fluid) {
+        return AEItemStack.create(newStack(fluid));
     }
 
     @Nullable
@@ -141,11 +171,6 @@ public class ItemFluidPacket extends FCBaseItem {
         tag.setBoolean("DisplayOnly", true);
         stack.setTagCompound(tag);
         return stack;
-    }
-
-    @Nullable
-    public static IAEItemStack newAeStack(@Nullable FluidStack fluid) {
-        return AEItemStack.create(newStack(fluid));
     }
 
     @Override
