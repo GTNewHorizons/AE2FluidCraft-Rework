@@ -112,10 +112,9 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
         this.didSomething = false;
         this.fluidToSend = this.calculateAmountToSend();
         final TileEntity te = this.getConnectedTE();
-
-        if (te instanceof IFluidHandler) {
+        InventoryAdaptor destination;
+        if (te instanceof IFluidHandler && (destination = this.getHandler(te)) != null) {
             try {
-                final InventoryAdaptor destination = this.getHandler(te);
                 final ICraftingGrid cg = this.getProxy().getCrafting();
                 final IFluidHandler fh = (IFluidHandler) te;
                 final IMEMonitor<IAEFluidStack> inv = this.getProxy().getStorage().getFluidInventory();
