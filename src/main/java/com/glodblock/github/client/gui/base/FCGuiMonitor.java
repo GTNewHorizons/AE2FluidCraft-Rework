@@ -17,6 +17,7 @@ import org.lwjgl.input.Mouse;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.FCGuiTextField;
+import com.glodblock.github.client.gui.GuiFluidMonitor;
 import com.glodblock.github.client.gui.GuiItemMonitor;
 import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -26,12 +27,14 @@ import com.glodblock.github.util.Ae2ReflectClient;
 import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.config.CraftingStatus;
+import appeng.api.config.PinsState;
 import appeng.api.config.SearchBoxMode;
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
 import appeng.api.implementations.tiles.IViewCellStorage;
 import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.ITerminalPins;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IDisplayRepo;
@@ -43,6 +46,8 @@ import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.IDropToFillTextField;
 import appeng.client.gui.widgets.ISortSource;
 import appeng.client.me.InternalSlotME;
+import appeng.client.me.ItemRepo;
+import appeng.client.me.PinSlotME;
 import appeng.client.me.SlotDisconnected;
 import appeng.client.me.SlotME;
 import appeng.container.AEBaseContainer;
@@ -60,7 +65,9 @@ import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketInventoryAction;
+import appeng.core.sync.packets.PacketPinsUpdate;
 import appeng.core.sync.packets.PacketValueConfig;
+import appeng.helpers.IPinsHandler;
 import appeng.helpers.InventoryAction;
 import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
@@ -72,7 +79,7 @@ import codechicken.nei.util.TextHistory;
 
 // TODO why is this copy pasting all the UI code from AE2 instead of reusing it ???
 public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
-        implements ISortSource, IConfigManagerHost, IDropToFillTextField {
+        implements ISortSource, IConfigManagerHost, IDropToFillTextField, IPinsHandler {
 
     public static int craftingGridOffsetX;
     public static int craftingGridOffsetY;
@@ -102,7 +109,10 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected GuiImgButton terminalStyleBox;
     protected GuiImgButton searchStringSave;
     protected GuiImgButton typeFilter;
+    protected GuiImgButton pinsStateButton;
     protected boolean hasShiftKeyDown = false;
+    private PinsState pinsState;
+    public final boolean hasPinHost;
 
     @SuppressWarnings("unchecked")
     public FCGuiMonitor(final InventoryPlayer inventoryPlayer, final ITerminalHost te, final FCContainerMonitor<T> c) {
@@ -115,6 +125,8 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         this.configSrc = ((IConfigurableObject) this.inventorySlots).getConfigManager();
         (this.monitorableContainer = (FCContainerMonitor<T>) this.inventorySlots).setGui(this);
         this.viewCell = te instanceof IViewCellStorage;
+        pinsState = (PinsState) configSrc.getSetting(Settings.PINS_STATE);
+        hasPinHost = te instanceof ITerminalPins && !(this instanceof GuiFluidMonitor);
     }
 
     public int getOffsetY() {
@@ -131,7 +143,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         this.getScrollBar().setTop(18).setLeft(175).setHeight(this.rows * 18 - 2);
         this.getScrollBar().setRange(
                 0,
-                (this.repo.size() + this.perRow - 1) / this.perRow - this.rows,
+                (this.repo.size() + pinsState.ordinal() * 9 + this.perRow - 1) / this.perRow - this.rows,
                 Math.max(1, this.rows / 6));
     }
 
@@ -151,6 +163,15 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                     AEConfig.instance.settings.putSetting(iBtn.getSetting(), next);
                 } else if (ModAndClassUtil.isSaveText && btn == this.searchStringSave) {
                     AEConfig.instance.preserveSearchBar = next == YesNo.YES;
+                } else if (btn == this.pinsStateButton) {
+                    try {
+                        if (next.ordinal() >= rows) return; // ignore to avoid hiding terminal inventory
+
+                        final PacketPinsUpdate p = new PacketPinsUpdate((PinsState) next);
+                        NetworkHandler.instance.sendToServer(p);
+                    } catch (final IOException e) {
+                        AELog.debug(e);
+                    }
                 } else {
                     try {
                         NetworkHandler.instance
@@ -167,6 +188,19 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
             }
         }
         super.actionPerformed(btn);
+    }
+
+    private void adjustPinsSize() {
+        final int pinMaxSize = rows - 1;
+        if (pinsState.ordinal() <= pinMaxSize) return;
+
+        try {
+            PinsState newState = PinsState.fromOrdinal(pinMaxSize);
+            final PacketPinsUpdate p = new PacketPinsUpdate(newState);
+            NetworkHandler.instance.sendToServer(p);
+        } catch (final IOException e) {
+            AELog.debug(e);
+        }
     }
 
     @Override
@@ -199,10 +233,26 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         }
 
         this.getMeSlots().clear();
-        for (int y = 0; y < this.rows; y++) {
+
+        // make sure we have space at least for one row of normal slots, because pins not adjusted by scroll bar
+        adjustPinsSize();
+
+        int pinsRows = pinsState.ordinal();
+        for (int y = 0; y < pinsRows; y++) {
             for (int x = 0; x < this.perRow; x++) {
                 this.getMeSlots()
-                        .add(new InternalSlotME(this.repo, x + y * this.perRow, this.offsetX + x * 18, 18 + y * 18));
+                        .add(new PinSlotME(this.repo, x + y * this.perRow, this.offsetX + x * 18, y * 18 + 18));
+            }
+        }
+
+        for (int y = 0; y < this.rows - pinsRows; y++) {
+            for (int x = 0; x < this.perRow; x++) {
+                this.getMeSlots().add(
+                        new InternalSlotME(
+                                this.repo,
+                                x + y * this.perRow,
+                                this.offsetX + x * 18,
+                                18 + y * 18 + pinsRows * 18));
             }
         }
 
@@ -224,6 +274,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
         this.offsetY = this.guiTop + 8;
 
+        buttonList.clear();
         if (this.customSortOrder) {
             this.buttonList.add(
                     this.SortByBox = new GuiImgButton(
@@ -321,6 +372,15 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                                 itemRender));
                 this.craftingStatusBtn.setHideEdge(13); // GuiTabButton implementation //
             }
+        }
+
+        if (hasPinHost) {
+            this.buttonList.add(
+                    this.pinsStateButton = new GuiImgButton(
+                            this.guiLeft + 177,
+                            this.guiTop + 18 + (rows * 18) + 26,
+                            Settings.PINS_STATE,
+                            configSrc.getSetting(Settings.PINS_STATE)));
         }
 
         final Enum<?> setting = AEConfig.instance.settings.getSetting(Settings.SEARCH_MODE);
@@ -527,13 +587,22 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
             return;
         }
 
-        if (slot instanceof SlotME) {
+        if (slot instanceof SlotME sme) {
             InventoryAction action = null;
             IAEItemStack stack = null;
             switch (mouseButton) {
                 case 0: // pickup / set-down.
                     action = ctrlDown == 1 ? InventoryAction.SPLIT_OR_PLACE_SINGLE : InventoryAction.PICKUP_OR_SET_DOWN;
-                    stack = ((SlotME) slot).getAEStack();
+                    if (sme.isPin() && player.inventory.getItemStack() != null) {
+                        final PacketInventoryAction p = new PacketInventoryAction(
+                                InventoryAction.SET_PIN,
+                                sme.getPinIndex(),
+                                0);
+                        NetworkHandler.instance.sendToServer(p);
+                        return;
+                    }
+
+                    stack = sme.getAEStack();
                     if (stack != null && action == InventoryAction.PICKUP_OR_SET_DOWN
                             && stack.getStackSize() == 0
                             && player.inventory.getItemStack() == null) {
@@ -541,6 +610,15 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                     }
                     break;
                 case 1:
+                    if (sme.isPin() && ctrlDown == 1) { // clear pin
+                        final PacketInventoryAction p = new PacketInventoryAction(
+                                InventoryAction.SET_PIN,
+                                sme.getPinIndex(),
+                                -1);
+                        NetworkHandler.instance.sendToServer(p);
+                        return;
+                    }
+
                     action = ctrlDown == 1 ? InventoryAction.PICKUP_SINGLE : InventoryAction.SHIFT_CLICK;
                     stack = ((SlotME) slot).getAEStack();
                     break;
@@ -721,6 +799,13 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
             this.typeFilter.set(this.configSrc.getSetting(Settings.TYPE_FILTER));
         }
 
+        if (this.pinsStateButton != null) {
+            pinsState = (PinsState) this.configSrc.getSetting(Settings.PINS_STATE);
+            this.pinsStateButton.set(pinsState);
+
+            initGui();
+        }
+
         this.repo.updateView();
     }
 
@@ -785,5 +870,15 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     @Override
     public boolean isOverTextField(int mousex, int mousey) {
         return searchField.isMouseIn(mousex, mousey);
+    }
+
+    @Override
+    public void setAEPins(IAEItemStack[] pins) {
+        if (repo instanceof ItemRepo) repo.setAEPins(pins);
+    }
+
+    @Override
+    public void setPinsState(PinsState state) {
+        configSrc.putSetting(Settings.PINS_STATE, state);
     }
 }

@@ -16,20 +16,25 @@ import com.glodblock.github.util.Util;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.items.IAEItemPowerStorage;
+import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.PlayerSource;
 import appeng.api.networking.storage.IStorageGrid;
+import appeng.api.storage.ITerminalPins;
 import appeng.api.storage.MEMonitorHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
+import appeng.items.contents.PinsHandler;
+import appeng.items.contents.PinsHolder;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.me.storage.NullInventory;
 import appeng.util.Platform;
 
-public abstract class BaseWirelessInventory extends MEMonitorHandler implements IWirelessTerminal, IWirelessExtendCard {
+public abstract class BaseWirelessInventory extends MEMonitorHandler
+        implements IWirelessTerminal, IWirelessExtendCard, ITerminalPins {
 
     protected final ItemStack target;
     protected final IAEItemPowerStorage ips;
@@ -42,6 +47,7 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
     protected WirelessMagnet.Mode magnetMode = WirelessMagnet.Mode.Off;
     protected EntityPlayer player;
     protected boolean restock;
+    private final PinsHolder pinsInv;
 
     @SuppressWarnings("unchecked")
     public BaseWirelessInventory(final ItemStack is, final int slot, IGridNode gridNode, EntityPlayer player,
@@ -54,6 +60,7 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
         this.inventorySlot = slot;
         this.channel = channel;
         this.source = new PlayerSource(player, this);
+        pinsInv = new PinsHolder(is);
         this.readFromNBT();
     }
 
@@ -68,6 +75,7 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
         this.inventorySlot = slot;
         this.channel = channel;
         this.source = new PlayerSource(player, this);
+        pinsInv = new PinsHolder(is);
         this.readFromNBT();
     }
 
@@ -183,5 +191,15 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler implements 
         NBTTagCompound data = Platform.openNbtData(this.target);
         data.setBoolean(restockItems, this.restock);
         data.setInteger(modeKey, this.getMagnetCardMode().ordinal());
+    }
+
+    @Override
+    public PinsHandler getPinsHandler(EntityPlayer player) {
+        return pinsInv.getHandler(player);
+    }
+
+    @Override
+    public IGrid getGrid() {
+        return grid != null ? grid.getGrid() : null;
     }
 }
