@@ -3,6 +3,7 @@ package com.glodblock.github.common.parts.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,14 +11,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
 
+import appeng.api.networking.IGrid;
+import appeng.api.storage.ITerminalPins;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.items.contents.PinsHandler;
+import appeng.items.contents.PinsHolder;
 import appeng.tile.inventory.AppEngInternalInventory;
 
-public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatternTerminal {
+public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatternTerminal, ITerminalPins {
 
     protected AppEngInternalInventory crafting;
     protected AppEngInternalInventory output;
     protected final AppEngInternalInventory pattern = new AppEngInternalInventory(this, 2);
+    private final PinsHolder pinsInv = new PinsHolder(this);
 
     protected boolean craftingMode = true;
     protected boolean substitute = false;
@@ -56,6 +62,7 @@ public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatte
         this.pattern.readFromNBT(data, "pattern");
         this.output.readFromNBT(data, "outputList");
         this.crafting.readFromNBT(data, "craftingGrid");
+        pinsInv.readFromNBT(data, "pins");
     }
 
     @Override
@@ -72,6 +79,7 @@ public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatte
         this.pattern.writeToNBT(data, "pattern");
         this.output.writeToNBT(data, "outputList");
         this.crafting.writeToNBT(data, "craftingGrid");
+        pinsInv.writeToNBT(data, "pins");
     }
 
     @Override
@@ -216,5 +224,15 @@ public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatte
     @Override
     public void setAutoFillPattern(boolean canFill) {
         this.autoFillPattern = canFill;
+    }
+
+    @Override
+    public PinsHandler getPinsHandler(EntityPlayer player) {
+        return pinsInv.getHandler(player);
+    }
+
+    @Override
+    public IGrid getGrid() {
+        return getGridNode().getGrid();
     }
 }
