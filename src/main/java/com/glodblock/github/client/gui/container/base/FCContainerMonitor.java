@@ -12,6 +12,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.item.ItemStack;
 
+import com.glodblock.github.inventory.item.BaseWirelessInventory;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.google.common.collect.ImmutableList;
@@ -36,6 +37,7 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.ITerminalPins;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.IConfigManager;
@@ -88,7 +90,8 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
         this.clientCM.registerSetting(Settings.PINS_STATE, PinsState.DISABLED); // use for GUI
 
         if (Platform.isServer()) {
-            if (monitorable instanceof ITerminalPins t) {
+            if (monitorable instanceof ITerminalPins t && !(monitorable instanceof BaseWirelessInventory bwi
+                    && bwi.getChannel() == StorageChannel.FLUIDS)) {
                 pinsHandler = t.getPinsHandler(ip.player);
             }
         }

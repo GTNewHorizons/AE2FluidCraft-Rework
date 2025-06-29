@@ -17,6 +17,7 @@ import org.lwjgl.input.Mouse;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.FCGuiTextField;
+import com.glodblock.github.client.gui.GuiFluidMonitor;
 import com.glodblock.github.client.gui.GuiItemMonitor;
 import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -45,6 +46,7 @@ import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.IDropToFillTextField;
 import appeng.client.gui.widgets.ISortSource;
 import appeng.client.me.InternalSlotME;
+import appeng.client.me.ItemRepo;
 import appeng.client.me.PinSlotME;
 import appeng.client.me.SlotDisconnected;
 import appeng.client.me.SlotME;
@@ -124,7 +126,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         (this.monitorableContainer = (FCContainerMonitor<T>) this.inventorySlots).setGui(this);
         this.viewCell = te instanceof IViewCellStorage;
         pinsState = (PinsState) configSrc.getSetting(Settings.PINS_STATE);
-        hasPinHost = te instanceof ITerminalPins;
+        hasPinHost = te instanceof ITerminalPins && !(this instanceof GuiFluidMonitor);
     }
 
     public int getOffsetY() {
@@ -272,6 +274,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
         this.offsetY = this.guiTop + 8;
 
+        buttonList.clear();
         if (this.customSortOrder) {
             this.buttonList.add(
                     this.SortByBox = new GuiImgButton(
@@ -871,7 +874,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     public void setAEPins(IAEItemStack[] pins) {
-        repo.setAEPins(pins);
+        if (repo instanceof ItemRepo) repo.setAEPins(pins);
     }
 
     @Override
