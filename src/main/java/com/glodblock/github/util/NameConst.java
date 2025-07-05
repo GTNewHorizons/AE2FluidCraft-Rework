@@ -93,6 +93,10 @@ public class NameConst {
     public static final String TT_LEVEL_MAINTAINER_EXPORT_DESC = TT_LEVEL_MAINTAINER + "export_desc";
     public static final String TT_LEVEL_MAINTAINER_ERROR = TT_LEVEL_MAINTAINER + "error";
     public static final String TT_LEVEL_MAINTAINER_ERROR_DESC = TT_LEVEL_MAINTAINER + "error_desc";
+    public static final String TT_LEVEL_MAINTAINER_NOT_FOUND = TT_LEVEL_MAINTAINER + "not_found";
+    public static final String TT_LEVEL_MAINTAINER_NOT_FOUND_DESC = TT_LEVEL_MAINTAINER + "not_found_desc";
+    public static final String TT_LEVEL_MAINTAINER_CANT_CRAFT = TT_LEVEL_MAINTAINER + "cant_craft";
+    public static final String TT_LEVEL_MAINTAINER_CANT_CRAFT_DESC = TT_LEVEL_MAINTAINER + "cant_craft_desc";
     public static final String TT_CELL_CONTENTS = TT_KEY + "cell_contents";
     public static final String TT_CELL_EMPTY = TT_KEY + "cell_empty";
     public static final String TT_CELL_PORTABLE = TT_KEY + "cell_portable";

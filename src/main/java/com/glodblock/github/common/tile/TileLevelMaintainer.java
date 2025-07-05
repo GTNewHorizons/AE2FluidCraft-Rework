@@ -104,7 +104,7 @@ public class TileLevelMaintainer extends AENetworkTile
         if (idx == -1) {
             AELog.warn("Invalid crafting link: " + link);
             return items;
-        } ;
+        }
         try {
             if (getProxy().isActive()) {
                 final IEnergyGrid energy = getProxy().getEnergy();
@@ -227,7 +227,7 @@ public class TileLevelMaintainer extends AENetworkTile
                         this.updateLink(i, null);
                     }
                     if (!isCraftable) {
-                        updateState(i, LevelState.Error);
+                        updateState(i, LevelState.NotFound);
                     }
                 }
 
@@ -278,7 +278,7 @@ public class TileLevelMaintainer extends AENetworkTile
                     this.updateState(jobToSubmitIdx, LevelState.Craft);
                     this.updateLink(jobToSubmitIdx, link);
                 } else {
-                    this.updateState(jobToSubmitIdx, LevelState.Error);
+                    this.updateState(jobToSubmitIdx, LevelState.CantCraft);
                 }
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
