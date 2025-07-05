@@ -137,8 +137,11 @@ public class TileLevelMaintainer extends AENetworkTile
     @Override
     public void jobStateChange(ICraftingLink link) {
         for (int i = 0; i < REQ_COUNT; i++) {
-            if (requests[i] != null && requests[i].link == link) {
-                this.updateLink(i, null);
+            if (requests[i] != null && link != null) {
+                ICraftingLink prevLink = requests[i].link;
+                if (prevLink != null && prevLink.getCraftingID().equals(link.getCraftingID())) {
+                    this.updateLink(i, null);
+                }
             }
         }
     }
@@ -410,10 +413,13 @@ public class TileLevelMaintainer extends AENetworkTile
         return link == null || link.isDone() || link.isCanceled();
     }
 
-    private int getRequestIndexByLink(ICraftingLink link) {
+    private int getRequestIndexByLink(ICraftingLink targetLink) {
         for (int i = 0; i < REQ_COUNT; i++) {
-            if (requests[i] != null && requests[i].link == link) {
-                return i;
+            if (requests[i] != null && targetLink != null) {
+                ICraftingLink link = requests[i].link;
+                if (link != null && link.getCraftingID().equals(targetLink.getCraftingID())) {
+                    return i;
+                }
             }
         }
         return -1;
