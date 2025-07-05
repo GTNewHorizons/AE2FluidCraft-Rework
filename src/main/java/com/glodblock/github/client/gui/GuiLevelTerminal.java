@@ -577,7 +577,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         case Idle -> FCGuiColors.StateIdle.getColor();
                         case Craft -> FCGuiColors.StateCraft.getColor();
                         case Export -> FCGuiColors.StateExport.getColor();
-                        case Error -> FCGuiColors.StateError.getColor();
+                        case Error, NotFound, CantCraft -> FCGuiColors.StateError.getColor();
                         case None -> FCGuiColors.StateNone.getColor();
                     };
                     int offset = 0;

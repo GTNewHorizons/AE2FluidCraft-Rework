@@ -474,6 +474,18 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_ERROR));
                 }
+                case NotFound -> {
+                    this.line.setColor(FCGuiColors.StateError.getColor());
+                    message.add(
+                            NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
+                                    + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_NOT_FOUND));
+                }
+                case CantCraft -> {
+                    this.line.setColor(FCGuiColors.StateError.getColor());
+                    message.add(
+                            NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
+                                    + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CANT_CRAFT));
+                }
                 default -> {
                     this.line.setColor(FCGuiColors.StateNone.getColor());
                     message.add(
@@ -490,7 +502,11 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                 message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_EXPORT));
                 message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_EXPORT_DESC) + "\n");
                 message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_ERROR));
-                message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_ERROR_DESC));
+                message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_ERROR_DESC) + "\n");
+                message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_NOT_FOUND));
+                message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_NOT_FOUND_DESC) + "\n");
+                message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CANT_CRAFT));
+                message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CANT_CRAFT_DESC));
             } else {
                 message.add(NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE));
             }

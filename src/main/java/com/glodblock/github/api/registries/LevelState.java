@@ -5,5 +5,7 @@ public enum LevelState {
     Idle,
     Craft,
     Export,
-    Error
+    Error,
+    NotFound,
+    CantCraft
 }
