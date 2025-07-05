@@ -38,7 +38,7 @@ dependencies {
     api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-652-GTNH:dev')
     api('curse.maven:cofh-core-69162:2388751')
     api('com.github.GTNewHorizons:waila:1.8.10:dev')
-    api("com.github.GTNewHorizons:GTNHLib:0.6.32:dev")
+    api("com.github.GTNewHorizons:GTNHLib:0.6.34:dev")
 
     implementation("com.github.GTNewHorizons:WirelessCraftingTerminal:1.12.6:dev") {
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
