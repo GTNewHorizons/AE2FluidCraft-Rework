@@ -1260,8 +1260,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     BlockPosHighlighter.highlightBlocks(
                             mc.thePlayer,
                             Collections.singletonList(blockPos),
-                            PlayerMessages.LevelEmitterHighlighted.getName(),
-                            PlayerMessages.LevelEmitterInAnotherDim.getName());
+                            PlayerMessages.LevelEmitterHighlighted.getUnlocalized(),
+                            PlayerMessages.LevelEmitterInAnotherDim.getUnlocalized());
                     mc.thePlayer.closeScreen();
                 }
                 return true;

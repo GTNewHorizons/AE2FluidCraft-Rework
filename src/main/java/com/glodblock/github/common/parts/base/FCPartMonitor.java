@@ -148,7 +148,7 @@ public abstract class FCPartMonitor extends AbstractPartDisplay implements IPart
 
         if (Platform.isWrench(player, eq, te.xCoord, te.yCoord, te.zCoord)) {
             this.isLocked = !this.isLocked;
-            player.addChatMessage((this.isLocked ? PlayerMessages.isNowLocked : PlayerMessages.isNowUnlocked).get());
+            player.addChatMessage((this.isLocked ? PlayerMessages.isNowLocked : PlayerMessages.isNowUnlocked).toChat());
             this.getHost().markForUpdate();
         } else if (!this.isLocked) {
             this.configuredFluid = AEFluidStack.create(Util.FluidUtil.getFluidFromContainer(eq));
