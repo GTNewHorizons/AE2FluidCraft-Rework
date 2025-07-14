@@ -135,7 +135,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 return new WirelessFluidTerminalInventory(stack, x, gridNode, player);
             }
         } catch (Exception e) {
-            player.addChatMessage(PlayerMessages.OutOfRange.get());
+            player.addChatMessage(PlayerMessages.OutOfRange.toChat());
         }
         return null;
     }
