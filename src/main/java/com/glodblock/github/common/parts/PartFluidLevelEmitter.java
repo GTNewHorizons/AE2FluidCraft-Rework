@@ -316,9 +316,10 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     @SideOnly(Side.CLIENT)
     public void renderInventory(final IPartRenderHelper rh, final RenderBlocks renderer) {
         rh.setTexture(this.getItemStack().getIconIndex());
-        Tessellator.instance.startDrawingQuads();
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
         this.renderTorchAtAngle(0, -0.5, 0);
-        Tessellator.instance.draw();
+        tess.draw();
     }
 
     private void renderTorchAtAngle(double baseX, double baseY, double baseZ) {
