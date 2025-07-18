@@ -94,7 +94,7 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
-        FMLCommonHandler.instance().bus().register(SPacketMEUpdateBuffer.class);
+        FMLCommonHandler.instance().bus().register(new SPacketMEUpdateBuffer());
         if (ModAndClassUtil.ThE) {
             AspectUtil.init();
         }
