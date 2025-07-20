@@ -344,7 +344,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         /* Draws the top part. */
         drawTexturedModalRect(offsetX, offsetY, 0, 0, xSize, HEADER_HEIGHT);
         /* Draws the middle part. */
-        Tessellator.instance.startDrawingQuads();
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
         addTexturedRectToTesselator(
                 offsetX,
                 offsetY + HEADER_HEIGHT,
@@ -355,7 +356,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 (HEADER_HEIGHT + LevelTerminalSection.TITLE_HEIGHT + 1.0f) / 256.0f,
                 xSize / 256.0f,
                 (HEADER_HEIGHT + 106.0f) / 256.0f);
-        Tessellator.instance.draw();
+        tess.draw();
         /* Draw the bottom part */
         drawTexturedModalRect(offsetX, offsetY + HEADER_HEIGHT + viewHeight, 0, 158, xSize, INV_HEIGHT);
         if (online) {
@@ -483,7 +484,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     private int drawEntry(LevelTerminalEntry entry, int viewY, int titleBottom, int relMouseX, int relMouseY) {
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         mc.getTextureManager().bindTexture(TEX_BG);
-        Tessellator.instance.startDrawingQuads();
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
         int relY = 0;
         final int slotLeftMargin = (VIEW_WIDTH - entry.rowSize * 18);
         float lastZLevel = renderItem.zLevel;
@@ -512,7 +514,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         (173 + 18) / 256f);
             }
         }
-        Tessellator.instance.draw();
+        tess.draw();
         /* Draw button */
         if (viewY + entry.highlightButton.height > 0 && viewY < viewHeight) {
             entry.highlightButton.yPosition = viewY + 1;
