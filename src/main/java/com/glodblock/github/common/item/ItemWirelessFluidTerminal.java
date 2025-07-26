@@ -44,7 +44,7 @@ public class ItemWirelessFluidTerminal extends ItemBaseWirelessTerminal
             IGridNode gridNode = Util.getWirelessGrid(stack);
             return new WirelessFluidTerminalInventory(stack, x, gridNode, player);
         } catch (Exception e) {
-            player.addChatMessage(PlayerMessages.OutOfRange.get());
+            player.addChatMessage(PlayerMessages.OutOfRange.toChat());
         }
         return null;
     }

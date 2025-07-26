@@ -44,7 +44,7 @@ public class ItemWirelessLevelTerminal extends ItemBaseWirelessTerminal
             IGridNode gridNode = Util.getWirelessGrid(stack);
             return new WirelessLevelTerminalInventory(stack, x, gridNode, player);
         } catch (Exception e) {
-            player.addChatMessage(PlayerMessages.OutOfRange.get());
+            player.addChatMessage(PlayerMessages.OutOfRange.toChat());
         }
         return null;
     }
