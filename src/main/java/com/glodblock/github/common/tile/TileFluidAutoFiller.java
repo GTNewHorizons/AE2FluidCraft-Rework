@@ -30,6 +30,7 @@ import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import appeng.api.networking.events.MENetworkBootingStatusChange;
+import appeng.api.networking.events.MENetworkCellArrayUpdate;
 import appeng.api.networking.events.MENetworkCraftingPatternChange;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
@@ -239,6 +240,11 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     @MENetworkEventSubscribe
     public void stateChange(final MENetworkPowerStatusChange p) {
         this.updatePowerState();
+    }
+
+    @MENetworkEventSubscribe
+    public void cellUpdate(final MENetworkCellArrayUpdate ev) {
+        postEvent();
     }
 
     @MENetworkEventSubscribe
