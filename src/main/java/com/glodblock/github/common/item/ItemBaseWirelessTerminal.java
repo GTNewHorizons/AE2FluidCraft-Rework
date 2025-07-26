@@ -54,19 +54,19 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
             }
             IWirelessTermRegistry term = AEApi.instance().registries().wireless();
             if (!term.isWirelessTerminal(item)) {
-                player.addChatMessage(PlayerMessages.DeviceNotWirelessTerminal.get());
+                player.addChatMessage(PlayerMessages.DeviceNotWirelessTerminal.toChat());
                 return item;
             }
             final IWirelessTermHandler handler = term.getWirelessTerminalHandler(item);
             final String unparsedKey = handler.getEncryptionKey(item);
             if (unparsedKey.isEmpty()) {
-                player.addChatMessage(PlayerMessages.DeviceNotLinked.get());
+                player.addChatMessage(PlayerMessages.DeviceNotLinked.toChat());
                 return item;
             }
             final long parsedKey = Long.parseLong(unparsedKey);
             final ILocatable securityStation = AEApi.instance().registries().locatable().getLocatableBy(parsedKey);
             if (securityStation == null) {
-                player.addChatMessage(PlayerMessages.StationCanNotBeLocated.get());
+                player.addChatMessage(PlayerMessages.StationCanNotBeLocated.toChat());
                 return item;
             }
             if (handler.hasPower(player, 0.5, item)) {
@@ -77,7 +77,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
                         ForgeDirection.UNKNOWN,
                         this.guiGuiType(item));
             } else {
-                player.addChatMessage(PlayerMessages.DeviceNotPowered.get());
+                player.addChatMessage(PlayerMessages.DeviceNotPowered.toChat());
             }
         }
 
