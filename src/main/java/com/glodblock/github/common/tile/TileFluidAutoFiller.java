@@ -30,7 +30,6 @@ import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import appeng.api.networking.events.MENetworkBootingStatusChange;
-import appeng.api.networking.events.MENetworkCellArrayUpdate;
 import appeng.api.networking.events.MENetworkCraftingPatternChange;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
@@ -283,8 +282,7 @@ public class TileFluidAutoFiller extends AENetworkInvTile
         if (!initilized) { // run postEvent on AE network is ready
             initilized = true;
             postEvent();
-            if (this.returnStack == null)
-                return TickRateModulation.SLEEP;
+            if (this.returnStack == null) return TickRateModulation.SLEEP;
         }
 
         if (this.getStorageGrid() == null) {
