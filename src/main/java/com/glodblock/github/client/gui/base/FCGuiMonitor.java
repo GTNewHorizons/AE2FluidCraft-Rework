@@ -501,7 +501,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                     action = InventoryAction.PICKUP_SINGLE;
                 }
             }
-            if (Ae2ReflectClient.getDragClick(this).size() > 1) {
+            if (this.drag_click.size() > 1) {
                 return;
             }
             final PacketInventoryAction p = new PacketInventoryAction(action, slotIdx, 0);
@@ -552,7 +552,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         }
 
         if (slot instanceof SlotDisconnected) {
-            if (Ae2ReflectClient.getDragClick(this).size() > 1) {
+            if (this.drag_click.size() > 1) {
                 return;
             }
             InventoryAction action = null;
