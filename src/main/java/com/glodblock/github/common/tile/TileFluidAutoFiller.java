@@ -275,12 +275,12 @@ public class TileFluidAutoFiller extends AENetworkInvTile
         return new TickingRequest(1, 5, false, true);
     }
 
-    boolean initilized = false;
+    boolean initialized = false;
 
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
-        if (!initilized) { // run postEvent on AE network is ready
-            initilized = true;
+        if (!initialized) { // run postEvent on AE network is ready
+            initialized = true;
             postEvent();
             if (this.returnStack == null) return TickRateModulation.SLEEP;
         }
