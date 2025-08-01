@@ -84,16 +84,15 @@ public class FluidCellInventory implements IFluidCellInventory {
         }
 
         final IInventory upgrades = this.getUpgradesInventory();
+        Upgrades u;
         for (int x = 0; x < upgrades.getSizeInventory(); x++) {
             final ItemStack is = upgrades.getStackInSlot(x);
-            if (is != null && is.getItem() instanceof IUpgradeModule) {
-                final Upgrades u = ((IUpgradeModule) is.getItem()).getType(is);
-                if (u != null) {
-                    switch (u) {
-                        case VOID_OVERFLOW -> cardVoidOverflow = true;
-                        case DISTRIBUTION -> cardDistribution = true;
-                        default -> {}
-                    }
+            if (is == null) continue;
+            if (is.getItem() instanceof IUpgradeModule upgradeItem && (u = upgradeItem.getType(is)) != null) {
+                switch (u) {
+                    case VOID_OVERFLOW -> cardVoidOverflow = true;
+                    case DISTRIBUTION -> cardDistribution = true;
+                    default -> {}
                 }
             }
         }

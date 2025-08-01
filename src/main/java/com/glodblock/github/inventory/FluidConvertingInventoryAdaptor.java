@@ -24,7 +24,6 @@ import com.glodblock.github.common.parts.PartFluidExportBus;
 import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.common.parts.PartFluidP2PInterface;
 import com.glodblock.github.common.tile.TileFluidInterface;
-import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
@@ -428,7 +427,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                             checkedInput = true;
                         }
                         if (p2p == invFluidsP2P || p2p == null) continue;
-                        IFluidHandler target = Ae2Reflect.getP2PLiquidTarget(p2p);
+                        IFluidHandler target = p2p.getTarget();
                         if (target == null) continue;
                         FluidTankInfo[] info = target.getTankInfo(p2p.getSide().getOpposite());
                         if (info != null) {
@@ -493,8 +492,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
             DualityInterface other = target.getInterfaceDuality();
             DualityInterface self = this.selfInterface.getInterfaceDuality();
             try {
-                AENetworkProxy proxy1 = Ae2Reflect.getInterfaceProxy(other);
-                AENetworkProxy proxy2 = Ae2Reflect.getInterfaceProxy(self);
+                AENetworkProxy proxy1 = other.getProxy();
+                AENetworkProxy proxy2 = self.getProxy();
                 if (proxy1.getGrid() == proxy2.getGrid()) {
                     return false;
                 }
@@ -528,7 +527,7 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
                 ItemSlot slot = new ItemSlot();
                 slot.setSlot(nextSlotIndex++);
                 slot.setItemStack(fluid != null ? ItemFluidPacket.newStack(fluid) : null);
-                Ae2Reflect.setItemSlotExtractable(slot, false);
+                slot.setExtractable(false);
                 return slot;
             } else {
                 ItemSlot slot = itemSlots.next();
