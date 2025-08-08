@@ -22,13 +22,11 @@ import com.glodblock.github.util.Ae2ReflectClient;
 
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.client.gui.widgets.GuiTabButton;
 import appeng.container.AEBaseContainer;
 import appeng.helpers.InventoryAction;
 
 public class GuiCraftingStatus extends appeng.client.gui.implementations.GuiCraftingStatus {
 
-    private GuiTabButton originalGuiBtn;
     private final ITerminalHost host;
 
     public GuiCraftingStatus(InventoryPlayer inventoryPlayer, ITerminalHost te) {
@@ -38,26 +36,21 @@ public class GuiCraftingStatus extends appeng.client.gui.implementations.GuiCraf
 
     @Override
     public void initGui() {
-        if (host instanceof PartFluidPatternTerminal)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.FLUID_TERMINAL.stack());
-        else if (host instanceof PartFluidPatternTerminalEx)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.FLUID_TERMINAL_EX.stack());
-        else if (host instanceof PartFluidTerminal)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.FLUID_TERM.stack());
-        else if (host instanceof PartLevelTerminal)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.LEVEL_TERMINAL.stack());
+        if (host instanceof PartFluidPatternTerminal) this.myIcon = ItemAndBlockHolder.FLUID_TERMINAL.stack();
+        else if (host instanceof PartFluidPatternTerminalEx) this.myIcon = ItemAndBlockHolder.FLUID_TERMINAL_EX.stack();
+        else if (host instanceof PartFluidTerminal) this.myIcon = ItemAndBlockHolder.FLUID_TERM.stack();
+        else if (host instanceof PartLevelTerminal) this.myIcon = ItemAndBlockHolder.LEVEL_TERMINAL.stack();
         else if (host instanceof IWirelessTerminal terminal && terminal.isUniversal(host))
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.WIRELESS_ULTRA_TERM.stack());
+            this.myIcon = ItemAndBlockHolder.WIRELESS_ULTRA_TERM.stack();
         else if (host instanceof WirelessFluidTerminalInventory)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.WIRELESS_FLUID_TERM.stack());
+            this.myIcon = ItemAndBlockHolder.WIRELESS_FLUID_TERM.stack();
         else if (host instanceof WirelessPatternTerminalInventory)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.WIRELESS_PATTERN_TERM.stack());
+            this.myIcon = ItemAndBlockHolder.WIRELESS_PATTERN_TERM.stack();
         else if (host instanceof WirelessInterfaceTerminalInventory)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.WIRELESS_INTERFACE_TERM.stack());
+            this.myIcon = ItemAndBlockHolder.WIRELESS_INTERFACE_TERM.stack();
         else if (host instanceof WirelessLevelTerminalInventory)
-            Ae2ReflectClient.rewriteIcon(this, ItemAndBlockHolder.WIRELESS_LEVEL_TERM.stack());
+            this.myIcon = ItemAndBlockHolder.WIRELESS_LEVEL_TERM.stack();
         super.initGui();
-        originalGuiBtn = Ae2ReflectClient.getOriginalGuiButton(this);
     }
 
     @Override
