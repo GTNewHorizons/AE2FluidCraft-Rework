@@ -11,5 +11,9 @@ public interface IFluidCellInventoryHandler {
 
     boolean isPreformatted();
 
+    /** use {@link IFluidCellInventoryHandler#getWhitelist} instead */
+    @Deprecated
     IncludeExclude getIncludeExcludeMode();
+
+    IncludeExclude getWhitelist();
 }

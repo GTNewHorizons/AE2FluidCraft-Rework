@@ -14,7 +14,6 @@ import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
 import com.glodblock.github.network.SPacketFluidUpdate;
-import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.Util;
 
 import appeng.api.config.Upgrades;
@@ -64,7 +63,7 @@ public abstract class FCContainerFluidConfigurable extends ContainerUpgradeable 
     protected void setupConfig() {
         this.setupUpgrades();
 
-        final IInventory inv = Ae2Reflect.getUpgradeList(this).getInventoryByName("config");
+        final IInventory inv = getUpgradeable().getInventoryByName("config");
         final int y = 40;
         final int x = 80;
         this.addSlotToContainer(new OptionalFluidSlotFakeTypeOnly(inv, null, this, 0, x, y, 0, 0, 0));
@@ -84,7 +83,7 @@ public abstract class FCContainerFluidConfigurable extends ContainerUpgradeable 
     protected boolean isValidForConfig(int slot, IAEFluidStack fs) {
         if (this.supportCapacity()) {
             // assumes 4 slots per upgrade
-            final int upgrades = Ae2Reflect.getUpgradeList(this).getInstalledUpgrades(Upgrades.CAPACITY);
+            final int upgrades = getUpgradeable().getInstalledUpgrades(Upgrades.CAPACITY);
 
             if (slot > 0 && upgrades < 1) {
                 return false;
