@@ -272,11 +272,19 @@ public class TileFluidAutoFiller extends AENetworkInvTile
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(1, 5, this.returnStack == null, true);
+        return new TickingRequest(1, 5, false, true);
     }
+
+    boolean initialized = false;
 
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
+        if (!initialized) { // run postEvent on AE network is ready
+            initialized = true;
+            postEvent();
+            if (this.returnStack == null) return TickRateModulation.SLEEP;
+        }
+
         if (this.getStorageGrid() == null) {
             return TickRateModulation.SLOWER;
         }
