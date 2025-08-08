@@ -9,7 +9,6 @@ import appeng.core.AEConfig;
 import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
 import cpw.mods.fml.common.Loader;
-import gregtech.api.enums.Mods;
 
 public final class ModAndClassUtil {
 
@@ -150,6 +149,6 @@ public final class ModAndClassUtil {
         if (Loader.isModLoaded("Waila")) WAILA = true;
         if (Loader.isModLoaded("Avaritia")) AVARITIA = true;
         if (Loader.isModLoaded("hodgepodge")) HODGEPODGE = true;
-        if (Loader.isModLoaded(Mods.Names.NEW_HORIZONS_CORE_MOD)) NEW_HORIZONS_CORE_MOD = true;
+        if (Loader.isModLoaded("dreamcraft")) NEW_HORIZONS_CORE_MOD = true;
     }
 }
