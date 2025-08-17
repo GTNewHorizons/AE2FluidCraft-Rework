@@ -1,7 +1,6 @@
 package com.glodblock.github.client.gui.base;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
@@ -12,6 +11,7 @@ import com.glodblock.github.inventory.gui.GuiType;
 
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiTabButton;
+import appeng.client.gui.widgets.MEGuiTextField;
 import appeng.container.AEBaseContainer;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
@@ -20,7 +20,7 @@ import appeng.util.calculators.Calculator;
 
 public abstract class FCGuiAmount extends AEBaseGui {
 
-    protected GuiTextField amountBox;
+    protected MEGuiTextField amountBox;
     protected GuiTabButton originalGuiBtn;
     protected GuiButton submit;
     protected GuiButton plus1;
@@ -72,16 +72,10 @@ public abstract class FCGuiAmount extends AEBaseGui {
             this.originalGuiBtn.setHideEdge(13);
         }
 
-        this.amountBox = new GuiTextField(
-                this.fontRendererObj,
-                this.guiLeft + 62,
-                this.guiTop + 57,
-                59,
-                this.fontRendererObj.FONT_HEIGHT);
-        this.amountBox.setEnableBackgroundDrawing(false);
+        this.amountBox = new MEGuiTextField(61, 12);
+        this.amountBox.x = this.guiLeft + 60;
+        this.amountBox.y = this.guiTop + 55;
         this.amountBox.setMaxStringLength(16);
-        this.amountBox.setTextColor(0xFFFFFF);
-        this.amountBox.setVisible(true);
         this.amountBox.setFocused(true);
     }
 
