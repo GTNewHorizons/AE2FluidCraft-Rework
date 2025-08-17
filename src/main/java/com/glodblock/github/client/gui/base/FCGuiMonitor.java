@@ -149,6 +149,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     protected void actionPerformed(final GuiButton btn) {
+        memoryText = this.searchField.getText();
         if (btn == this.craftingStatusBtn || btn == this.craftingStatusImgBtn) {
             InventoryHandler.switchGui(GuiType.CRAFTING_STATUS);
         }
