@@ -183,7 +183,6 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                 }
                 iBtn.set(next);
                 if (next.getClass() == SearchBoxMode.class || next.getClass() == TerminalStyle.class) {
-                    memoryText = this.searchField.getText();
                     super.scheduleGuiResize();
                 }
             }
