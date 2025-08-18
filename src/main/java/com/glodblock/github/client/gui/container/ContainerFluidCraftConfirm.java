@@ -13,11 +13,9 @@ import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.BlockPos;
 
 import appeng.api.networking.IGrid;
-import appeng.api.networking.crafting.ICraftingJob;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.storage.ITerminalHost;
 import appeng.container.implementations.ContainerCraftConfirm;
@@ -71,8 +69,8 @@ public class ContainerFluidCraftConfirm extends ContainerCraftConfirm {
     @Override
     public void optimizePatterns() {
         // only V2 supported
-        IGrid grid = Ae2Reflect.getGrid(this);
-        ICraftingJob result = Ae2Reflect.getResult(this);
+        IGrid grid = this.getGrid();
+
         if (result instanceof CraftingJobV2 && !this.isSimulation()
                 && grid != null
                 && !grid.getMachines(TilePatternOptimizationMatrix.class).isEmpty()) {

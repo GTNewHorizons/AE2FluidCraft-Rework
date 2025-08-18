@@ -45,18 +45,22 @@ public class Ae2ReflectClient {
         }
     }
 
+    @Deprecated
     public static void rewriteIcon(GuiCraftingStatus gui, ItemStack icon) {
         Ae2Reflect.writeField(gui, fGuiCPUStatus_icon, icon);
     }
 
+    @Deprecated
     public static Set<Slot> getDragClick(AEBaseGui gui) {
         return Ae2Reflect.readField(gui, fGui_drag);
     }
 
+    @Deprecated
     public static AppEngRenderItem getStackSizeRenderer(AEBaseGui gui) {
         return Ae2Reflect.readField(gui, fAEBaseGui_stackSizeRenderer);
     }
 
+    @Deprecated
     public static GuiTabButton getOriginalGuiButton(GuiCraftingStatus gui) {
         return Ae2Reflect.readField(gui, fGuiCraftingStatus_originalGuiBtn);
     }
