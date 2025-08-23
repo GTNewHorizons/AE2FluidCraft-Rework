@@ -86,7 +86,7 @@ public class GuiFluidLevelEmitter extends GuiUpgradeable {
                         ForgeDirection.UNKNOWN,
                         "");
             } else if (target instanceof WirelessLevelTerminalInventory terminal) {
-                originalGuiIcon = ItemAndBlockHolder.LEVEL_TERMINAL.stack();
+                originalGuiIcon = ItemAndBlockHolder.WIRELESS_LEVEL_TERM.stack();
                 originalGui = GuiType.WIRELESS_LEVEL_TERMINAL;
                 originalBlockPos = new Util.DimensionalCoordSide(
                         terminal.getInventorySlot(),
