@@ -79,6 +79,10 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     boolean needUpdateOnNetworkBooted = false;
     boolean lastPowerStart = false;
 
+    public PartFluidP2PInterface(ItemStack is) {
+        super(is);
+    }
+
     private final DualityInterface duality = new DualityInterface(this.getProxy(), this) {
 
         @Override
@@ -203,10 +207,6 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     private final DualityFluidInterface dualityFluid = new DualityFluidInterface(this.getProxy(), this);
     private final AppEngInternalAEInventory config = new AppEngInternalAEInventory(this, 6);
 
-    public PartFluidP2PInterface(ItemStack is) {
-        super(is);
-    }
-
     private void updateSharingInventory() {
         if (isOutput()) {
             PartFluidP2PInterface p2p = getInput();
@@ -243,9 +243,66 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     }
 
     @Override
+    public int getInstalledUpgrades(Upgrades u) {
+        return duality.getInstalledUpgrades(u);
+    }
+
+    @Override
+    public IIcon getTypeTexture() {
+        return ItemAndBlockHolder.INTERFACE.getBlockTextureFromSide(0);
+    }
+
+    @Override
     public void gridChanged() {
         super.gridChanged();
         dualityFluid.gridChanged();
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound data) {
+        super.readFromNBT(data);
+        duality.readFromNBT(data);
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound data) {
+        super.writeToNBT(data);
+        duality.writeToNBT(data);
+    }
+
+    @Override
+    public NBTTagCompound getMemoryCardData() {
+        final NBTTagCompound output = super.getMemoryCardData();
+        this.duality.getConfigManager().writeToNBT(output);
+        return output;
+    }
+
+    @Override
+    public void pasteMemoryCardData(PartP2PTunnel<?> newTunnel, NBTTagCompound data) throws GridAccessException {
+        this.duality.getConfigManager().readFromNBT(data);
+        super.pasteMemoryCardData(newTunnel, data);
+    }
+
+    @Override
+    public void addToWorld() {
+        super.addToWorld();
+        this.duality.initialize();
+    }
+
+    @Override
+    public void getDrops(List<ItemStack> drops, boolean wrenched) {
+        super.getDrops(drops, wrenched);
+        duality.addDrops(drops);
+    }
+
+    @Override
+    public IConfigManager getConfigManager() {
+        return duality.getConfigManager();
+    }
+
+    @Override
+    public IInventory getInventoryByName(String name) {
+        return duality.getInventoryByName(name);
     }
 
     @Override
@@ -333,13 +390,23 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     }
 
     @Override
-    public IIcon getTypeTexture() {
-        return ItemAndBlockHolder.INTERFACE.getBlockTextureFromSide(0);
+    public IIcon getBreakingTexture() {
+        return getItemStack().getIconIndex();
     }
 
     @Override
-    public IStorageMonitorable getMonitorable(ForgeDirection side, BaseActionSource src) {
-        return duality.getMonitorable(side, src, this);
+    public boolean canInsert(ItemStack stack) {
+        return duality.canInsert(stack);
+    }
+
+    @Override
+    public IMEMonitor<IAEItemStack> getItemInventory() {
+        return duality.getItemInventory();
+    }
+
+    @Override
+    public IMEMonitor<IAEFluidStack> getFluidInventory() {
+        return duality.getFluidInventory();
     }
 
     @Override
@@ -365,47 +432,6 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     }
 
     @Override
-    public int getInstalledUpgrades(Upgrades u) {
-        return duality.getInstalledUpgrades(u);
-    }
-
-    @Override
-    public IMEMonitor<IAEItemStack> getItemInventory() {
-        return duality.getItemInventory();
-    }
-
-    @Override
-    public IMEMonitor<IAEFluidStack> getFluidInventory() {
-        return duality.getFluidInventory();
-    }
-
-    @Override
-    public int getPriority() {
-        return duality.getPriority();
-    }
-
-    @Override
-    public void setPriority(int newValue) {
-        duality.setPriority(newValue);
-    }
-
-    @Override
-    public void onTunnelNetworkChange() {
-        duality.updateCraftingList();
-    }
-
-    @Override
-    public void onChangeInventory(IInventory inv, int slot, InvOperation op, ItemStack removedStack,
-            ItemStack newStack) {
-        duality.onChangeInventory(inv, slot, op, removedStack, newStack);
-    }
-
-    @Override
-    public boolean canInsert(ItemStack stack) {
-        return duality.canInsert(stack);
-    }
-
-    @Override
     public int getSizeInventory() {
         return duality.getStorage().getSizeInventory();
     }
@@ -428,21 +454,6 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         duality.getStorage().setInventorySlotContents(index, stack);
-    }
-
-    @Override
-    public IInventory getInventoryByName(String name) {
-        return duality.getInventoryByName(name);
-    }
-
-    @Override
-    public IConfigManager getConfigManager() {
-        return duality.getConfigManager();
-    }
-
-    @Override
-    public IIcon getBreakingTexture() {
-        return getItemStack().getIconIndex();
     }
 
     @Override
@@ -498,6 +509,130 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     @Override
     public boolean canExtractItem(int p_102008_1_, ItemStack p_102008_2_, int p_102008_3_) {
         return true;
+    }
+
+    @Override
+    public void onChangeInventory(IInventory inv, int slot, InvOperation op, ItemStack removedStack,
+            ItemStack newStack) {
+        duality.onChangeInventory(inv, slot, op, removedStack, newStack);
+    }
+
+    @Override
+    public DualityInterface getInterfaceDuality() {
+        return duality;
+    }
+
+    @Override
+    public EnumSet<ForgeDirection> getTargets() {
+        return EnumSet.of(this.getSide());
+    }
+
+    @Override
+    public TileEntity getTileEntity() {
+        return super.getHost().getTile();
+    }
+
+    @Override
+    public IStorageMonitorable getMonitorable(ForgeDirection side, BaseActionSource src) {
+        return duality.getMonitorable(side, src, this);
+    }
+
+    @Override
+    public boolean pushPattern(ICraftingPatternDetails patternDetails, InventoryCrafting table) {
+        return duality.pushPattern(patternDetails, table);
+    }
+
+    @Override
+    public boolean isBusy() {
+        return duality.isBusy();
+    }
+
+    @Override
+    public void provideCrafting(ICraftingProviderHelper craftingTracker) {
+        duality.provideCrafting(craftingTracker);
+    }
+
+    @Override
+    public ImmutableSet<ICraftingLink> getRequestedJobs() {
+        return duality.getRequestedJobs();
+    }
+
+    @Override
+    public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
+        return duality.injectCraftedItems(link, items, mode);
+    }
+
+    @Override
+    public void jobStateChange(ICraftingLink link) {
+        duality.jobStateChange(link);
+    }
+
+    @Override
+    public int getPriority() {
+        return duality.getPriority();
+    }
+
+    @Override
+    public void setPriority(int newValue) {
+        duality.setPriority(newValue);
+    }
+
+    @Override
+    public void onTunnelNetworkChange() {
+        duality.updateCraftingList();
+    }
+
+    @Override
+    public IInventory getPatterns() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.getPatterns();
+            }
+            return IInterfaceHost.super.getPatterns();
+        }
+        return IInterfaceHost.super.getPatterns();
+    }
+
+    @Override
+    public int rows() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.rows();
+            }
+            return IInterfaceHost.super.rows();
+        }
+        return IInterfaceHost.super.rows();
+    }
+
+    @Override
+    public int rowSize() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.rowSize();
+            }
+            return IInterfaceHost.super.rowSize();
+        }
+        return IInterfaceHost.super.rowSize();
+    }
+
+    @Override
+    public String getName() {
+        if (isOutput()) {
+            PartFluidP2PInterface input = getInput();
+            if (input != null) {
+                return input.getName();
+            }
+            return IInterfaceHost.super.getName();
+        }
+        return IInterfaceHost.super.getName();
+    }
+
+    @Override
+    public ItemStack getSelfRep() {
+        return this.getItemStack();
     }
 
     @Override
@@ -571,137 +706,8 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
     }
 
     @Override
-    public DualityInterface getInterfaceDuality() {
-        return duality;
-    }
-
-    @Override
-    public EnumSet<ForgeDirection> getTargets() {
-        return EnumSet.of(this.getSide());
-    }
-
-    @Override
-    public TileEntity getTileEntity() {
-        return super.getHost().getTile();
-    }
-
-    @Override
-    public void provideCrafting(ICraftingProviderHelper craftingTracker) {
-        duality.provideCrafting(craftingTracker);
-    }
-
-    @Override
-    public boolean pushPattern(ICraftingPatternDetails patternDetails, InventoryCrafting table) {
-        return duality.pushPattern(patternDetails, table);
-    }
-
-    @Override
-    public boolean isBusy() {
-        return duality.isBusy();
-    }
-
-    @Override
-    public ImmutableSet<ICraftingLink> getRequestedJobs() {
-        return duality.getRequestedJobs();
-    }
-
-    @Override
-    public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
-        return duality.injectCraftedItems(link, items, mode);
-    }
-
-    @Override
-    public void jobStateChange(ICraftingLink link) {
-        duality.jobStateChange(link);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound data) {
-        super.readFromNBT(data);
-        duality.readFromNBT(data);
-    }
-
-    @Override
-    public void writeToNBT(NBTTagCompound data) {
-        super.writeToNBT(data);
-        duality.writeToNBT(data);
-    }
-
-    @Override
-    public NBTTagCompound getMemoryCardData() {
-        final NBTTagCompound output = super.getMemoryCardData();
-        this.duality.getConfigManager().writeToNBT(output);
-        return output;
-    }
-
-    @Override
-    public void pasteMemoryCardData(PartP2PTunnel<?> newTunnel, NBTTagCompound data) throws GridAccessException {
-        this.duality.getConfigManager().readFromNBT(data);
-        super.pasteMemoryCardData(newTunnel, data);
-    }
-
-    @Override
-    public void addToWorld() {
-        super.addToWorld();
-        this.duality.initialize();
-    }
-
-    @Override
-    public void getDrops(List<ItemStack> drops, boolean wrenched) {
-        super.getDrops(drops, wrenched);
-        duality.addDrops(drops);
-    }
-
-    @Override
     public boolean shouldDisplay() {
         return IInterfaceHost.super.shouldDisplay();
     }
 
-    @Override
-    public IInventory getPatterns() {
-        if (isOutput()) {
-            PartFluidP2PInterface input = getInput();
-            if (input != null) {
-                return input.getPatterns();
-            }
-            return IInterfaceHost.super.getPatterns();
-        }
-        return IInterfaceHost.super.getPatterns();
-    }
-
-    @Override
-    public int rows() {
-        if (isOutput()) {
-            PartFluidP2PInterface input = getInput();
-            if (input != null) {
-                return input.rows();
-            }
-            return IInterfaceHost.super.rows();
-        }
-        return IInterfaceHost.super.rows();
-    }
-
-    @Override
-    public int rowSize() {
-        if (isOutput()) {
-            PartFluidP2PInterface input = getInput();
-            if (input != null) {
-                return input.rowSize();
-            }
-            return IInterfaceHost.super.rowSize();
-        }
-        return IInterfaceHost.super.rowSize();
-    }
-
-    @Override
-    public String getName() {
-        if (isOutput()) {
-            PartFluidP2PInterface input = getInput();
-            if (input != null) {
-                return input.getName();
-            }
-            return IInterfaceHost.super.getName();
-        }
-        return IInterfaceHost.super.getName();
-    }
 }
