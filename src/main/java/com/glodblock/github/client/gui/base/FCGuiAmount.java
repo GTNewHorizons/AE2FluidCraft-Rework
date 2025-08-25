@@ -128,6 +128,7 @@ public abstract class FCGuiAmount extends AEBaseGui {
             }
             String out = Long.toString(resultI);
             this.amountBox.setText(out);
+            this.amountBox.setCursorPositionEnd();
         } catch (final NumberFormatException ignore) {}
     }
 
