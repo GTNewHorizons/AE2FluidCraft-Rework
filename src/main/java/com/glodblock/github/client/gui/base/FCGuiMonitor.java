@@ -149,6 +149,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     protected void actionPerformed(final GuiButton btn) {
+        memoryText = this.searchField.getText();
         if (btn == this.craftingStatusBtn || btn == this.craftingStatusImgBtn) {
             InventoryHandler.switchGui(GuiType.CRAFTING_STATUS);
         }
@@ -182,7 +183,6 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                 }
                 iBtn.set(next);
                 if (next.getClass() == SearchBoxMode.class || next.getClass() == TerminalStyle.class) {
-                    memoryText = this.searchField.getText();
                     super.scheduleGuiResize();
                 }
             }
