@@ -39,11 +39,6 @@ public class GuiItemMonitor extends FCGuiMonitor<IAEItemStack> {
     }
 
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float btn) {
-        super.drawScreen(mouseX, mouseY, btn);
-    }
-
-    @Override
     public void setTextFieldValue(String displayName, int mousex, int mousey, ItemStack stack) {
         setSearchString(displayName, true);
     }
