@@ -224,7 +224,6 @@ public class TileFluidInterface extends TileInterface implements IDualHost {
     @Override
     public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
         this.fluidDuality.addDrops(drops);
-        this.fluidDuality.convertDrops(drops, this.getInterfaceDuality().getWaitingToSend());
         super.getDrops(w, x, y, z, drops);
     }
 }
