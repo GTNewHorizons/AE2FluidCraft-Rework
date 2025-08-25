@@ -25,7 +25,6 @@ import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.storage.StorageChannel;
 import appeng.client.gui.AEBaseMEGui;
-import appeng.client.me.SlotME;
 
 public abstract class FCBaseMEGui extends AEBaseMEGui {
 
@@ -262,15 +261,5 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
 
     protected boolean isPortableCell() {
         return false;
-    }
-
-    // Moving items via hotbar keys in terminals isn't working anyway.
-    // Let's disable hotbar keys processing for terminal slots to allow proper input of numbers in the search field
-    @Override
-    protected boolean checkHotbarKeys(int keyCode) {
-        if (theSlot instanceof SlotME) {
-            return false;
-        }
-        return super.checkHotbarKeys(keyCode);
     }
 }

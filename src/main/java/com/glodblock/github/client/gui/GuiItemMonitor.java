@@ -7,12 +7,10 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.client.gui.base.FCGuiMonitor;
 import com.glodblock.github.client.gui.container.ContainerItemMonitor;
-import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.me.ItemRepo;
-import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 
 public class GuiItemMonitor extends FCGuiMonitor<IAEItemStack> {
@@ -43,8 +41,6 @@ public class GuiItemMonitor extends FCGuiMonitor<IAEItemStack> {
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float btn) {
         super.drawScreen(mouseX, mouseY, btn);
-        if (ModAndClassUtil.isSearchBar && AEConfig.instance.preserveSearchBar && searchField != null)
-            handleTooltip(mouseX, mouseY, searchField.new TooltipProvider());
     }
 
     @Override
