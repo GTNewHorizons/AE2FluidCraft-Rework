@@ -55,6 +55,7 @@ public class GuiFCPriority extends FCGuiAmount {
     protected void addQty(final int i) {
         try {
             this.amountBox.setText(Long.toString(getAmount() + i));
+            this.amountBox.setCursorPositionEnd();
         } catch (final NumberFormatException ignore) {}
         try {
             NetworkHandler.instance
