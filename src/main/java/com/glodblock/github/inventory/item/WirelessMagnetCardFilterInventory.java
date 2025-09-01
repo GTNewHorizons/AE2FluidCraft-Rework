@@ -214,7 +214,6 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         IAEItemStack ais = (IAEItemStack) injectItems(is);
         if (ais != null) {
             player.onItemPickup(itemToGet, ais.getItemStack().stackSize);
-            player.inventory.addItemStackToInventory(ais.getItemStack());
             world.playSoundAtEntity(
                     player,
                     "random.pop",
