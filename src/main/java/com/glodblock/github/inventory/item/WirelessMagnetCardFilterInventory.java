@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 
 import com.glodblock.github.inventory.ItemBiggerAppEngInventory;
 
@@ -210,18 +209,11 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         return null;
     }
 
-    public boolean doInject(IAEItemStack is, EntityItem itemToGet, World world) {
+    public boolean doInject(IAEItemStack is, EntityItem itemToGet) {
         IAEItemStack ais = (IAEItemStack) injectItems(is);
-        if (ais != null) {
-            player.onItemPickup(itemToGet, ais.getItemStack().stackSize);
-            world.playSoundAtEntity(
-                    player,
-                    "random.pop",
-                    0.15F,
-                    ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-            return false;
-        }
-        return true;
+        if (ais == null) return true;
+        itemToGet.getEntityItem().stackSize = (int) ais.getStackSize();
+        return false;
     }
 
     public boolean isItemFiltered(ItemStack inputItemStack) {
