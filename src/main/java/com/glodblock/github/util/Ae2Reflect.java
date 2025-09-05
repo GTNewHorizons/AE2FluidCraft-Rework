@@ -116,14 +116,17 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static IPartitionList<?> getPartitionList(MEInventoryHandler<?> me) {
         return Ae2Reflect.readField(me, fAEInv_partitionList);
     }
 
+    @Deprecated
     public static IMEInventory<?> getInternal(MEPassThrough<?> me) {
         return Ae2Reflect.readField(me, fAEPass_internal);
     }
 
+    @Deprecated
     public static void setItemSlotExtractable(ItemSlot slot, boolean extractable) {
         try {
             mItemSlot_setExtractable.invoke(slot, extractable);
@@ -132,26 +135,32 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static ICraftingCPU getCPU(CraftingCPURecord cpu) {
         return Ae2Reflect.readField(cpu, fCPU_cpu);
     }
 
+    @Deprecated
     public static String getName(CraftingCPURecord cpu) {
         return Ae2Reflect.readField(cpu, fCPU_myName);
     }
 
+    @Deprecated
     public static int getProcessors(CraftingCPURecord cpu) {
         return Ae2Reflect.readField(cpu, fCPU_processors);
     }
 
+    @Deprecated
     public static long getSize(CraftingCPURecord cpu) {
         return Ae2Reflect.readField(cpu, fCPU_size);
     }
 
+    @Deprecated
     public static IUpgradeableHost getUpgradeList(ContainerUpgradeable container) {
         return Ae2Reflect.readField(container, fInventory_containerUpgrade);
     }
 
+    @Deprecated
     public static IGrid getGrid(CraftingCPUCluster cpu) {
         try {
             return (IGrid) mCPU_getGrid.invoke(cpu);
@@ -160,6 +169,7 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static IGrid getGrid(ContainerCraftConfirm ccc) {
         try {
             return (IGrid) mCraftConfirm_getGrid.invoke(ccc);
@@ -168,10 +178,12 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static ICraftingJob getResult(ContainerCraftConfirm ccc) {
         return Ae2Reflect.readField(ccc, fCraftConfirm_result);
     }
 
+    @Deprecated
     public static MECraftingInventory getCPUInventory(CraftingCPUCluster cpu) {
         return Ae2Reflect.readField(cpu, fCPU_inventory);
     }
@@ -180,14 +192,17 @@ public class Ae2Reflect {
         Ae2Reflect.writeField(cpu, fCPU_inventory, value);
     }
 
+    @Deprecated
     public static MachineSource getCPUSource(CraftingCPUCluster cpu) {
         return Ae2Reflect.readField(cpu, fCPU_machineSrc);
     }
 
+    @Deprecated
     public static IUpgradeableHost getUpgradeableHost(ContainerUpgradeable owner) {
         return Ae2Reflect.readField(owner, fContainerUpgradeable_upgradeable);
     }
 
+    @Deprecated
     public static AENetworkProxy getInterfaceProxy(DualityInterface owner) {
         return Ae2Reflect.readField(owner, fDualInterface_gridProxy);
     }
@@ -200,6 +215,7 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static void markCPUDirty(CraftingCPUCluster cpu) {
         try {
             mCPU_markDirty.invoke(cpu);
@@ -208,6 +224,7 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static IFluidHandler getP2PLiquidTarget(PartP2PLiquids p2p) {
         try {
             return (IFluidHandler) mP2PLiquids_getTarget.invoke(p2p);
