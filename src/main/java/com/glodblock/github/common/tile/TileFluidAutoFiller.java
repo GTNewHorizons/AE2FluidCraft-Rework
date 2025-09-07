@@ -282,8 +282,9 @@ public class TileFluidAutoFiller extends AENetworkInvTile
         if (!initialized) { // run postEvent on AE network is ready
             initialized = true;
             postEvent();
-            if (this.returnStack == null) return TickRateModulation.SLEEP;
         }
+
+        if (this.returnStack == null) return TickRateModulation.SLEEP;
 
         if (this.getStorageGrid() == null) {
             return TickRateModulation.SLOWER;
