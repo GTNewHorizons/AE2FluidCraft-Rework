@@ -428,6 +428,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     public void setSearchString(String memoryText, boolean updateView) {
         this.searchField.setText(memoryText);
+        this.searchField.setCursorPositionEnd();
         this.repo.setSearchString(memoryText);
         if (updateView) {
             this.repo.updateView();
