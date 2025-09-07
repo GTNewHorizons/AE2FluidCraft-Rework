@@ -70,10 +70,7 @@ public class CommonProxy {
                                     .getFilter(wirelessTerm, result.getLeft(), gridNode, player);
 
                             if (inv.isPassFilter(stack)) {
-                                if (inv.doInject(
-                                        AEApi.instance().storage().createItemStack(stack),
-                                        itemEntity,
-                                        world)) {
+                                if (inv.doInject(AEApi.instance().storage().createItemStack(stack), itemEntity)) {
                                     itemEntity.setDead();
                                     e.setCanceled(true);
                                 }
