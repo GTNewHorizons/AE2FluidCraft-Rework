@@ -281,28 +281,28 @@ public final class Util {
     }
 
     public static FluidStack getFluidFromItem(ItemStack stack) {
-        if (stack != null) {
-            FluidStack fluid = null;
+        if (stack == null) return null;
 
-            if (stack.getItem() instanceof IFluidContainerItem) {
-                fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
-            } else if (FluidContainerRegistry.isContainer(stack)) {
-                fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
-            } else if (stack.getItem() instanceof ItemFluidPacket) {
-                fluid = ItemFluidPacket.getFluidStack(stack);
-            } else if (stack.getItem() instanceof ItemFluidDrop) {
-                fluid = ItemFluidDrop.getFluidStack(Util.copyStackWithSize(stack, 1));
-            }
+        FluidStack fluid = null;
 
-            if (fluid == null) {
-                fluid = StackInfo.getFluid(Util.copyStackWithSize(stack, 1));
-            }
+        if (stack.getItem() instanceof IFluidContainerItem) {
+            fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
+        } else if (FluidContainerRegistry.isContainer(stack)) {
+            fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
+        } else if (stack.getItem() instanceof ItemFluidPacket) {
+            fluid = ItemFluidPacket.getFluidStack(stack);
+        } else if (stack.getItem() instanceof ItemFluidDrop) {
+            fluid = ItemFluidDrop.getFluidStack(Util.copyStackWithSize(stack, 1));
+        }
 
-            if (fluid != null) {
-                FluidStack fluid0 = fluid.copy();
-                fluid0.amount *= stack.stackSize;
-                return fluid0;
-            }
+        if (fluid == null) {
+            fluid = StackInfo.getFluid(Util.copyStackWithSize(stack, 1));
+        }
+
+        if (fluid != null) {
+            FluidStack fluid0 = fluid.copy();
+            fluid0.amount *= stack.stackSize;
+            return fluid0;
         }
         return null;
     }
