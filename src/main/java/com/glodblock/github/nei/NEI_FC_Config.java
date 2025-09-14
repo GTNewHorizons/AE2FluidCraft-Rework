@@ -11,6 +11,7 @@ import com.glodblock.github.util.ModAndClassUtil;
 
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
+import codechicken.nei.recipe.StackInfo;
 
 @SuppressWarnings("unused")
 public class NEI_FC_Config implements IConfigureNEI {
@@ -21,6 +22,8 @@ public class NEI_FC_Config implements IConfigureNEI {
         API.addSearchProvider(new NEISearchFilter());
         API.registerStackStringifyHandler(new FCStackStringifyHandler());
         API.registerUsageHandler(new NEICellViewHandler());
+
+        StackInfo.stackStringifyHandlers.add(new FCEncodedPatternStringifyHandler());
 
         if (ModAndClassUtil.AVARITIA) {
             API.registerGuiOverlay(GuiFluidPatternWireless.class, "extreme", null);
