@@ -95,7 +95,6 @@ public class SPacketPatternItemRenamer implements IMessage {
                     Slot slot = player.openContainer.getSlot(message.valueIndex);
                     if (slot != null && slot.getHasStack()) {
                         ItemStack nextStack = slot.getStack().copy();
-                        nextStack.setRepairCost(2);
                         nextStack.setStackDisplayName(message.name);
                         slot.putStack(nextStack);
                     }
