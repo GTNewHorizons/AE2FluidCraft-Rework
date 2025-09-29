@@ -16,7 +16,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.FCGuiTextField;
 import com.glodblock.github.client.gui.GuiFluidMonitor;
 import com.glodblock.github.client.gui.GuiItemMonitor;
 import com.glodblock.github.client.gui.container.base.FCContainerMonitor;
@@ -28,6 +27,7 @@ import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.config.CraftingStatus;
 import appeng.api.config.PinsState;
+import appeng.api.config.SearchBoxFocusPriority;
 import appeng.api.config.SearchBoxMode;
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
@@ -45,6 +45,7 @@ import appeng.client.gui.widgets.GuiScrollbar;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.IDropToFillTextField;
 import appeng.client.gui.widgets.ISortSource;
+import appeng.client.gui.widgets.MEGuiTextField;
 import appeng.client.me.InternalSlotME;
 import appeng.client.me.ItemRepo;
 import appeng.client.me.PinSlotME;
@@ -93,7 +94,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     public GuiTabButton craftingStatusBtn;
     protected IDisplayRepo repo;
     protected GuiImgButton craftingStatusImgBtn;
-    protected FCGuiTextField searchField;
+    protected MEGuiTextField searchField;
     protected int perRow = 9;
     protected int reservedSpace = 0;
     protected boolean customSortOrder = true;
@@ -113,6 +114,10 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     protected boolean hasShiftKeyDown = false;
     private PinsState pinsState;
     public final boolean hasPinHost;
+    private boolean canBeAutoFocused;
+    private boolean isAutoFocused;
+    protected int currentMouseY;
+    protected int currentMouseX;
 
     @SuppressWarnings("unchecked")
     public FCGuiMonitor(final InventoryPlayer inventoryPlayer, final ITerminalHost te, final FCContainerMonitor<T> c) {
@@ -337,18 +342,19 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
                         AEConfig.instance.settings.getSetting(Settings.TERMINAL_STYLE)));
         this.offsetY += 20;
 
-        // Right now 80 > offsetX, but that can be changed later.
-        // noinspection DataFlowIssue
-        this.searchField = new FCGuiTextField(
-                this.fontRendererObj,
-                this.guiLeft + Math.max(80, this.offsetX),
-                this.guiTop + 4,
-                90,
-                12);
-        this.searchField.setEnableBackgroundDrawing(false);
+        this.searchField = new MEGuiTextField(90, 12) {
+
+            @Override
+            public void onTextChange(final String oldText) {
+                final String text = getText();
+                repo.setSearchString(text);
+                repo.updateView();
+                setScrollBar();
+            }
+        };
+        this.searchField.x = this.guiLeft + Math.max(80, this.offsetX);
+        this.searchField.y = this.guiTop + 4;
         this.searchField.setMaxStringLength(25);
-        this.searchField.setTextColor(0xFFFFFF);
-        this.searchField.setVisible(true);
         if (ModAndClassUtil.isSearchStringTooltip)
             searchField.setMessage(ButtonToolTips.SearchStringTooltip.getLocal());
 
@@ -384,7 +390,9 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         }
 
         final Enum<?> setting = AEConfig.instance.settings.getSetting(Settings.SEARCH_MODE);
-        this.searchField.setFocused(SearchBoxMode.AUTOSEARCH == setting || SearchBoxMode.NEI_AUTOSEARCH == setting);
+        this.canBeAutoFocused = SearchBoxMode.AUTOSEARCH == setting || SearchBoxMode.NEI_AUTOSEARCH == setting;
+        this.searchField.setFocused(this.canBeAutoFocused);
+        this.isAutoFocused = this.canBeAutoFocused;
 
         if (ModAndClassUtil.isSearchBar && (AEConfig.instance.preserveSearchBar || this.isSubGui())) {
             setSearchString(memoryText, false);
@@ -420,6 +428,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     public void setSearchString(String memoryText, boolean updateView) {
         this.searchField.setText(memoryText);
+        this.searchField.setCursorPositionEnd();
         this.repo.setSearchString(memoryText);
         if (updateView) {
             this.repo.updateView();
@@ -429,13 +438,8 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
-        final Enum<?> searchMode = AEConfig.instance.settings.getSetting(Settings.SEARCH_MODE);
-        if (searchMode != SearchBoxMode.AUTOSEARCH && searchMode != SearchBoxMode.NEI_AUTOSEARCH) {
-            this.searchField.mouseClicked(xCoord, yCoord, btn);
-        }
-        if (btn == 1 && this.searchField.isMouseIn(xCoord, yCoord)) {
-            setSearchString("", true);
-        }
+        this.searchField.mouseClicked(xCoord, yCoord, btn);
+        isAutoFocused = false;
         super.mouseClicked(xCoord, yCoord, btn);
     }
 
@@ -718,6 +722,9 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         if (this.searchField != null) {
             this.searchField.drawTextBox();
         }
+
+        this.currentMouseX = mouseX;
+        this.currentMouseY = mouseY;
     }
 
     protected String getBackground() {
@@ -740,18 +747,29 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
 
     @Override
     protected void keyTyped(final char character, final int key) {
-        if (!this.checkHotbarKeys(key)) {
-            if (character == ' ' && this.searchField.getText().isEmpty()) {
-                return;
-            }
+        if (character == ' ' && this.searchField.getText().isEmpty()) {
+            return;
+        }
 
-            if (this.searchField.textboxKeyTyped(character, key)) {
-                this.repo.setSearchString(this.searchField.getText());
-                this.repo.updateView();
-                this.setScrollBar();
-            } else {
-                super.keyTyped(character, key);
-            }
+        boolean skipHotbarCheck = searchField.isFocused()
+                && (AEConfig.instance.searchBoxFocusPriority == SearchBoxFocusPriority.ALWAYS
+                        || (AEConfig.instance.searchBoxFocusPriority == SearchBoxFocusPriority.NO_AUTOSEARCH
+                                && !isAutoFocused));
+
+        if (!skipHotbarCheck && checkHotbarKeys(key)) {
+            return;
+        }
+
+        final boolean mouseInGui = this
+                .isPointInRegion(0, 0, this.xSize, this.ySize, this.currentMouseX, this.currentMouseY);
+
+        if (this.canBeAutoFocused && !searchField.isFocused() && mouseInGui) {
+            searchField.setFocused(true);
+            isAutoFocused = true;
+        }
+
+        if (!searchField.textboxKeyTyped(character, key)) {
+            super.keyTyped(character, key);
         }
     }
 
@@ -833,13 +851,6 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
         this.standardSize = standardSize;
     }
 
-    @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float btn) {
-        super.drawScreen(mouseX, mouseY, btn);
-        if (ModAndClassUtil.isSearchBar && AEConfig.instance.preserveSearchBar && searchField != null)
-            handleTooltip(mouseX, mouseY, searchField.new TooltipProvider());
-    }
-
     public boolean isOverSearchField(int x, int y) {
         return searchField.isMouseIn(x, y);
     }
@@ -880,5 +891,24 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     @Override
     public void setPinsState(PinsState state) {
         configSrc.putSetting(Settings.PINS_STATE, state);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    protected boolean isPointInRegion(int rectX, int rectY, int rectWidth, int rectHeight, int pointX, int pointY) {
+        pointX -= this.guiLeft;
+        pointY -= this.guiTop;
+        return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1
+                && pointY >= rectY - 1
+                && pointY < rectY + rectHeight + 1;
+    }
+
+    // Moving items via hotbar keys in terminals isn't working anyway.
+    // Let's disable hotbar keys processing for terminal slots to allow proper input of numbers in the search field
+    @Override
+    protected boolean checkHotbarKeys(int keyCode) {
+        if (theSlot instanceof SlotME) {
+            return false;
+        }
+        return super.checkHotbarKeys(keyCode);
     }
 }
