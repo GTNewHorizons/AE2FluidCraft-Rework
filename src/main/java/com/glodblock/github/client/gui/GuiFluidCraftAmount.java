@@ -45,9 +45,7 @@ public class GuiFluidCraftAmount extends FCGuiAmount {
                         this.guiTop + 53,
                         Settings.CRAFTING_MODE,
                         CraftingMode.STANDARD));
-
-        this.amountBox.setText("1");
-        this.amountBox.setSelectionPos(0);
+        ((ContainerCraftAmount) this.inventorySlots).setAmountField(this.amountBox);
     }
 
     @Override
