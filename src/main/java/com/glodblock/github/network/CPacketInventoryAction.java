@@ -43,7 +43,7 @@ public class CPacketInventoryAction implements IMessage {
 
     public CPacketInventoryAction() {}
 
-    public CPacketInventoryAction(final InventoryAction action, final int slot, final int id) {
+    public CPacketInventoryAction(final InventoryAction action, final int slot, final long id) {
         this.action = action;
         this.slot = slot;
         this.id = id;
@@ -51,7 +51,7 @@ public class CPacketInventoryAction implements IMessage {
         this.isEmpty = true;
     }
 
-    public CPacketInventoryAction(final InventoryAction action, final int slot, final int id, IAEItemStack stack) {
+    public CPacketInventoryAction(final InventoryAction action, final int slot, final long id, IAEItemStack stack) {
         this.action = action;
         this.slot = slot;
         this.id = id;
@@ -123,6 +123,9 @@ public class CPacketInventoryAction implements IMessage {
                             if (baseContainer.getTargetStack() != null) {
                                 cca.getCraftingItem().putStack(baseContainer.getTargetStack().getItemStack());
                                 cca.setItemToCraft(baseContainer.getTargetStack());
+                                if (message.id > 0) {
+                                    cca.setInitialCraftAmount(message.id);
+                                }
                             }
                             cca.detectAndSendChanges();
                         }

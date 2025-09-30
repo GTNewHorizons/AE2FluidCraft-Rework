@@ -85,7 +85,7 @@ public class GuiCraftingStatus extends appeng.client.gui.implementations.GuiCraf
                     new CPacketInventoryAction(
                             InventoryAction.AUTO_CRAFT,
                             Ae2ReflectClient.getInventorySlots(this).size(),
-                            0,
+                            hoveredAEStack.getStackSize(),
                             hoveredAEStack));
             return;
         }
