@@ -70,10 +70,7 @@ public class CommonProxy {
                                     .getFilter(wirelessTerm, result.getLeft(), gridNode, player);
 
                             if (inv.isPassFilter(stack)) {
-                                if (inv.doInject(
-                                        AEApi.instance().storage().createItemStack(stack),
-                                        itemEntity,
-                                        world)) {
+                                if (inv.doInject(AEApi.instance().storage().createItemStack(stack), itemEntity)) {
                                     itemEntity.setDead();
                                     e.setCanceled(true);
                                 }
@@ -94,7 +91,7 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
-        FMLCommonHandler.instance().bus().register(SPacketMEUpdateBuffer.class);
+        FMLCommonHandler.instance().bus().register(new SPacketMEUpdateBuffer());
         if (ModAndClassUtil.ThE) {
             AspectUtil.init();
         }
@@ -120,6 +117,9 @@ public class CommonProxy {
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 1);
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 1);
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 1);
+        Upgrades.FUZZY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 3);
+        Upgrades.FUZZY.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 3);
+        Upgrades.FUZZY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 3);
         Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 5);
         Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);

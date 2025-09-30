@@ -27,20 +27,21 @@ public final class RenderUtil {
         if (icon == null) {
             return;
         }
-        Tessellator.instance.startDrawingQuads();
-        Tessellator.instance.setNormal(nx, ny, nz);
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.setNormal(nx, ny, nz);
         if (nz > 0.0F) {
-            Tessellator.instance.addVertexWithUV(xStart, yStart, z, icon.getMinU(), icon.getMinV());
-            Tessellator.instance.addVertexWithUV(xEnd, yStart, z, icon.getMaxU(), icon.getMinV());
-            Tessellator.instance.addVertexWithUV(xEnd, yEnd, z, icon.getMaxU(), icon.getMaxV());
-            Tessellator.instance.addVertexWithUV(xStart, yEnd, z, icon.getMinU(), icon.getMaxV());
+            tess.addVertexWithUV(xStart, yStart, z, icon.getMinU(), icon.getMinV());
+            tess.addVertexWithUV(xEnd, yStart, z, icon.getMaxU(), icon.getMinV());
+            tess.addVertexWithUV(xEnd, yEnd, z, icon.getMaxU(), icon.getMaxV());
+            tess.addVertexWithUV(xStart, yEnd, z, icon.getMinU(), icon.getMaxV());
         } else {
-            Tessellator.instance.addVertexWithUV(xStart, yEnd, z, icon.getMinU(), icon.getMaxV());
-            Tessellator.instance.addVertexWithUV(xEnd, yEnd, z, icon.getMaxU(), icon.getMaxV());
-            Tessellator.instance.addVertexWithUV(xEnd, yStart, z, icon.getMaxU(), icon.getMinV());
-            Tessellator.instance.addVertexWithUV(xStart, yStart, z, icon.getMinU(), icon.getMinV());
+            tess.addVertexWithUV(xStart, yEnd, z, icon.getMinU(), icon.getMaxV());
+            tess.addVertexWithUV(xEnd, yEnd, z, icon.getMaxU(), icon.getMaxV());
+            tess.addVertexWithUV(xEnd, yStart, z, icon.getMaxU(), icon.getMinV());
+            tess.addVertexWithUV(xStart, yStart, z, icon.getMinU(), icon.getMinV());
         }
-        Tessellator.instance.draw();
+        tess.draw();
     }
 
     public static void renderFluidIntoGui(Gui gui, int x, int y, int width, int height,

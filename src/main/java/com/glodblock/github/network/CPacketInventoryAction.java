@@ -26,6 +26,7 @@ import appeng.container.ContainerOpenContext;
 import appeng.container.implementations.ContainerCraftAmount;
 import appeng.container.implementations.ContainerPatternItemRenamer;
 import appeng.helpers.InventoryAction;
+import appeng.tile.networking.TileCableBus;
 import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -42,7 +43,7 @@ public class CPacketInventoryAction implements IMessage {
 
     public CPacketInventoryAction() {}
 
-    public CPacketInventoryAction(final InventoryAction action, final int slot, final int id) {
+    public CPacketInventoryAction(final InventoryAction action, final int slot, final long id) {
         this.action = action;
         this.slot = slot;
         this.id = id;
@@ -50,7 +51,7 @@ public class CPacketInventoryAction implements IMessage {
         this.isEmpty = true;
     }
 
-    public CPacketInventoryAction(final InventoryAction action, final int slot, final int id, IAEItemStack stack) {
+    public CPacketInventoryAction(final InventoryAction action, final int slot, final long id, IAEItemStack stack) {
         this.action = action;
         this.slot = slot;
         this.id = id;
@@ -122,6 +123,9 @@ public class CPacketInventoryAction implements IMessage {
                             if (baseContainer.getTargetStack() != null) {
                                 cca.getCraftingItem().putStack(baseContainer.getTargetStack().getItemStack());
                                 cca.setItemToCraft(baseContainer.getTargetStack());
+                                if (message.id > 0) {
+                                    cca.setInitialCraftAmount(message.id);
+                                }
                             }
                             cca.detectAndSendChanges();
                         }
@@ -131,12 +135,21 @@ public class CPacketInventoryAction implements IMessage {
                     if (context != null && message.stack != null) {
                         final TileEntity te = context.getTile();
                         if (te != null) {
-                            InventoryHandler.openGui(
+                            if (te instanceof TileCableBus) {
+                                InventoryHandler.openGui(
                                     sender,
                                     te.getWorldObj(),
                                     new BlockPos(te),
                                     Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
                                     GuiType.PATTERN_VALUE_SET);
+                            } else {
+                                InventoryHandler.openGui(
+                                    sender,
+                                    te.getWorldObj(),
+                                    new BlockPos(te),
+                                    Objects.requireNonNull(baseContainer.getOpenContext().getSide()),
+                                    GuiType.PATTERN_VALUE_SET_TILE);
+                            }
                         } else if (target instanceof IWirelessTerminal wt) {
                             InventoryHandler.openGui(
                                     sender,

@@ -67,7 +67,7 @@ public class CPacketValueConfig implements IMessage {
                             player.addChatMessage(
                                     new ChatComponentText(
                                             StatCollector.translateToLocal(
-                                                    !Util.isRestock(wirelessTerm)
+                                                    Util.isRestock(wirelessTerm)
                                                             ? NameConst.TT_ULTRA_TERMINAL_RESTOCK_ON
                                                             : NameConst.TT_ULTRA_TERMINAL_RESTOCK_OFF)));
                         } else {

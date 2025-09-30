@@ -135,7 +135,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 return new WirelessFluidTerminalInventory(stack, x, gridNode, player);
             }
         } catch (Exception e) {
-            player.addChatMessage(PlayerMessages.OutOfRange.get());
+            player.addChatMessage(PlayerMessages.OutOfRange.toChat());
         }
         return null;
     }
@@ -274,9 +274,9 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
 
     @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int slot, boolean p_77663_5_) {
-        if (Platform.isServer() && entityIn instanceof EntityPlayer player) {
+        if (entityIn instanceof EntityPlayer player) {
             if (WirelessMagnet.getMode(stack) != WirelessMagnet.Mode.Off) {
-                WirelessMagnet.doMagnet(stack, player.worldObj, player);
+                WirelessMagnet.doMagnet(stack, player);
             }
         }
     }

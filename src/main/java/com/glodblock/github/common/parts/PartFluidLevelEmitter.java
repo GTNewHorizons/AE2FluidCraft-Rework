@@ -18,6 +18,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.api.registries.ILevelViewable;
+import com.glodblock.github.api.registries.LevelItemInfo;
+import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -314,9 +316,10 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     @SideOnly(Side.CLIENT)
     public void renderInventory(final IPartRenderHelper rh, final RenderBlocks renderer) {
         rh.setTexture(this.getItemStack().getIconIndex());
-        Tessellator.instance.startDrawingQuads();
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
         this.renderTorchAtAngle(0, -0.5, 0);
-        Tessellator.instance.draw();
+        tess.draw();
     }
 
     private void renderTorchAtAngle(double baseX, double baseY, double baseZ) {
@@ -585,5 +588,16 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
         }
 
         return super.getInventoryByName(name);
+    }
+
+    @Override
+    public LevelItemInfo[] getLevelItemInfoList() {
+        ItemStack stack = this.config.getStackInSlot(0);
+        if (stack == null) return new LevelItemInfo[] { null };
+        return new LevelItemInfo[] { new LevelItemInfo(
+                stack,
+                this.getReportingValue(),
+                -1,
+                this.isProvidingStrongPower() > 0 ? LevelState.Craft : LevelState.Idle) };
     }
 }
