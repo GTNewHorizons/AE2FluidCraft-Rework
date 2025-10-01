@@ -39,7 +39,7 @@ public class ContainerFluidLevelEmitter extends FCContainerFluidConfigurable {
         return this.lvlEmitter;
     }
 
-    protected IUpgradeableHost getUpgradeable() {
+    public IUpgradeableHost getUpgradeable() {
         return Ae2Reflect.getUpgradeableHost(this);
     }
 
