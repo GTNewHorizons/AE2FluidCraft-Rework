@@ -44,7 +44,7 @@ dependencies {
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
     }
 
-    compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.1.15-GTNH:dev')
+    compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.2.0-GTNH:dev')
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.35:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ForestryMC:4.10.17:dev')
     compileOnly('com.github.GTNewHorizons:EnderIO:2.9.26:dev')
