@@ -9,7 +9,6 @@ import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurab
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.PartFluidStorageBus;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
-import com.glodblock.github.util.Ae2Reflect;
 
 import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
@@ -51,8 +50,8 @@ public class ContainerFluidStorageBus extends FCContainerFluidConfigurable {
     protected void setupConfig() {
         final int xo = 8;
         final int yo = 23 + 6;
-        final IInventory upgrades = Ae2Reflect.getUpgradeList(this).getInventoryByName("upgrades");
-        final IInventory config = Ae2Reflect.getUpgradeList(this).getInventoryByName("config");
+        final IInventory upgrades = getUpgradeable().getInventoryByName("upgrades");
+        final IInventory config = getUpgradeable().getInventoryByName("config");
         for (int y = 0; y < 7; y++) {
             for (int x = 0; x < 9; x++) {
                 this.addSlotToContainer(
@@ -104,7 +103,7 @@ public class ContainerFluidStorageBus extends FCContainerFluidConfigurable {
     @Override
     protected boolean isValidForConfig(int slot, IAEFluidStack fs) {
         if (this.supportCapacity()) {
-            final int upgrades = Ae2Reflect.getUpgradeList(this).getInstalledUpgrades(Upgrades.CAPACITY);
+            final int upgrades = getUpgradeable().getInstalledUpgrades(Upgrades.CAPACITY);
             final int y = slot / 9;
             return y < upgrades + 2;
         }
@@ -126,11 +125,9 @@ public class ContainerFluidStorageBus extends FCContainerFluidConfigurable {
         this.verifyPermissions(SecurityPermissions.BUILD, false);
 
         if (Platform.isServer()) {
-            this.setReadWriteMode(
-                    (AccessRestriction) Ae2Reflect.getUpgradeList(this).getConfigManager().getSetting(Settings.ACCESS));
+            this.setReadWriteMode((AccessRestriction) getUpgradeable().getConfigManager().getSetting(Settings.ACCESS));
             this.setStorageFilter(
-                    (StorageFilter) Ae2Reflect.getUpgradeList(this).getConfigManager()
-                            .getSetting(Settings.STORAGE_FILTER));
+                    (StorageFilter) getUpgradeable().getConfigManager().getSetting(Settings.STORAGE_FILTER));
         }
 
         this.standardDetectAndSendChanges();
@@ -138,8 +135,8 @@ public class ContainerFluidStorageBus extends FCContainerFluidConfigurable {
 
     @Override
     public boolean isSlotEnabled(final int idx) {
-        if (Ae2Reflect.getUpgradeList(this).getInstalledUpgrades(Upgrades.ORE_FILTER) > 0) return false;
-        final int upgrades = Ae2Reflect.getUpgradeList(this).getInstalledUpgrades(Upgrades.CAPACITY);
+        if (getUpgradeable().getInstalledUpgrades(Upgrades.ORE_FILTER) > 0) return false;
+        final int upgrades = getUpgradeable().getInstalledUpgrades(Upgrades.CAPACITY);
         return upgrades > (idx - 2);
     }
 

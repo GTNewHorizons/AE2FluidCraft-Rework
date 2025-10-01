@@ -145,7 +145,7 @@ public abstract class FCBaseItemCell extends AEBaseItem implements IStorageFluid
                 }
 
                 if (handler.isPreformatted()) {
-                    final String list = (handler.getIncludeExcludeMode() == IncludeExclude.WHITELIST ? GuiText.Included
+                    final String list = (handler.getWhitelist() == IncludeExclude.WHITELIST ? GuiText.Included
                         : GuiText.Excluded).getLocal();
                     lines.add(GuiText.Partitioned.getLocal() + " - " + list + ' ' + GuiText.Precise.getLocal());
 

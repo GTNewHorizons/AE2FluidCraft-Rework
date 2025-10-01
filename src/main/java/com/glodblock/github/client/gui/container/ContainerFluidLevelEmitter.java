@@ -7,12 +7,10 @@ import net.minecraft.inventory.IInventory;
 import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurable;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
-import com.glodblock.github.util.Ae2Reflect;
 
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.SecurityPermissions;
 import appeng.api.config.Settings;
-import appeng.api.implementations.IUpgradeableHost;
 import appeng.client.gui.widgets.MEGuiTextField;
 import appeng.container.guisync.GuiSync;
 import appeng.tile.inventory.AppEngInternalAEInventory;
@@ -37,10 +35,6 @@ public class ContainerFluidLevelEmitter extends FCContainerFluidConfigurable {
 
     public PartFluidLevelEmitter getBus() {
         return this.lvlEmitter;
-    }
-
-    public IUpgradeableHost getUpgradeable() {
-        return Ae2Reflect.getUpgradeableHost(this);
     }
 
     public AppEngInternalAEInventory getFakeFluidInv() {
@@ -84,8 +78,7 @@ public class ContainerFluidLevelEmitter extends FCContainerFluidConfigurable {
         if (Platform.isServer()) {
             this.EmitterValue = this.lvlEmitter.getReportingValue();
             this.setRedStoneMode(
-                    (RedstoneMode) Ae2Reflect.getUpgradeableHost(this).getConfigManager()
-                            .getSetting(Settings.REDSTONE_EMITTER));
+                    (RedstoneMode) this.getUpgradeable().getConfigManager().getSetting(Settings.REDSTONE_EMITTER));
         }
 
         this.standardDetectAndSendChanges();

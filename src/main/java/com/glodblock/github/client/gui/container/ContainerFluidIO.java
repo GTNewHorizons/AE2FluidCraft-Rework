@@ -5,7 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurable;
 import com.glodblock.github.common.parts.PartFluidExportBus;
 import com.glodblock.github.common.parts.base.FCSharedFluidBus;
-import com.glodblock.github.util.Ae2Reflect;
 
 import appeng.api.config.SchedulingMode;
 import appeng.api.config.Settings;
@@ -34,7 +33,7 @@ public class ContainerFluidIO extends FCContainerFluidConfigurable {
     @Override
     protected void loadSettingsFromHost(IConfigManager cm) {
         super.loadSettingsFromHost(cm);
-        if (Ae2Reflect.getUpgradeableHost(this) instanceof PartFluidExportBus) {
+        if (this.getUpgradeable() instanceof PartFluidExportBus) {
             this.setCraftingMode((YesNo) cm.getSetting(Settings.CRAFT_ONLY));
             this.setSchedulingMode((SchedulingMode) cm.getSetting(Settings.SCHEDULING_MODE));
         }
