@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
@@ -78,8 +77,8 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
     @Override
     public IFluidCellInventory getCellInv() {
         Object o = this.getInternal();
-        if (o instanceof MEPassThrough) {
-            o = Ae2Reflect.getInternal((MEPassThrough<?>) o);
+        if (o instanceof MEPassThrough<?>pt) {
+            o = pt.getInternal();
         }
         return (IFluidCellInventory) (o instanceof IFluidCellInventory ? o : null);
     }
@@ -87,16 +86,22 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
     @Override
     @SuppressWarnings("unchecked")
     public Iterable<IAEFluidStack> getPartitionInv() {
-        return (Iterable<IAEFluidStack>) Ae2Reflect.getPartitionList(this).getItems();
+        return getPartitionList().getItems();
     }
 
     @Override
     public boolean isPreformatted() {
-        return !Ae2Reflect.getPartitionList(this).isEmpty();
+        return !getPartitionList().isEmpty();
     }
 
     @Override
+    @Deprecated
     public IncludeExclude getIncludeExcludeMode() {
+        return getWhitelist();
+    }
+
+    @Override
+    public IncludeExclude getWhitelist() {
         return IncludeExclude.WHITELIST;
     }
 
@@ -113,11 +118,7 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
     @Override
     public boolean canGetInv() {
         IFluidCellInventory cellInv = this.getCellInv();
-        if (cellInv instanceof CreativeFluidCellInventory) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(cellInv instanceof CreativeFluidCellInventory);
     }
 
     @Override
@@ -164,7 +165,6 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
         IFluidCellInventory cellInventory = this.getCellInv();
         if (cellInventory instanceof FluidCellInventory ci) {
             return ci.getRestriction();
-
         }
         return null;
     }
