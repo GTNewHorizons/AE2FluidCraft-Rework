@@ -5,10 +5,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.common.parts.PartFluidLevelEmitter;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 
+import appeng.api.parts.IPart;
+import appeng.api.parts.IPartHost;
+import appeng.parts.automation.PartLevelEmitter;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -110,12 +114,33 @@ public class CPacketLevelTerminalCommands implements IMessage {
                 case EDIT -> {
                     TileEntity tile = DimensionManager.getWorld(message.dim)
                             .getTileEntity(message.x, message.y, message.z);
-                    InventoryHandler.openGui(
-                            player,
-                            player.worldObj,
-                            new BlockPos(tile),
-                            message.side,
-                            GuiType.LEVEL_MAINTAINER);
+
+                    if (tile instanceof IPartHost host) {
+                        IPart part = host.getPart(message.side);
+                        if (part instanceof PartLevelEmitter) {
+                            InventoryHandler.openGui(
+                                    player,
+                                    tile.getWorldObj(),
+                                    new BlockPos(tile),
+                                    message.side,
+                                    GuiType.LEVEL_EMITTER_PROXY);
+                        } else if (part instanceof PartFluidLevelEmitter) {
+                            InventoryHandler.openGui(
+                                    player,
+                                    tile.getWorldObj(),
+                                    new BlockPos(tile),
+                                    message.side,
+                                    GuiType.FLUID_LEVEL_EMITTER);
+                        }
+                    } else {
+
+                        InventoryHandler.openGui(
+                                player,
+                                tile.getWorldObj(),
+                                new BlockPos(tile),
+                                message.side,
+                                GuiType.LEVEL_MAINTAINER);
+                    }
                 }
                 case BACK -> {
                     GuiType originalGui = GuiType.getByOrdinal(message.originalGui);
