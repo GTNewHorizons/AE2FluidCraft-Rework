@@ -212,7 +212,7 @@ public class TileLevelMaintainer extends AENetworkTile
 
                 if (craftItem.getItem() instanceof ItemFluidDrop) {
                     IAEFluidStack ifs = invFluid.findPrecise(ItemFluidDrop.getAeFluidStack(craftItem));
-                    stackSize = aeItem == null ? 0 : ifs.getStackSize();
+                    stackSize = ifs == null ? 0 : ifs.getStackSize();
                 } else {
                     stackSize = aeItem == null ? 0 : aeItem.getStackSize();
                 }
