@@ -53,6 +53,7 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.util.IConfigManager;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.IInterfaceHost;
@@ -173,10 +174,13 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
                     for (PartFluidP2PInterface p2p : getOutputs()) p2p.duality.addDrops(drops);
                 } catch (GridAccessException ignored) {}
             } else {
-                if (this.getWaitingToSend() != null) {
-                    for (final ItemStack is : this.getWaitingToSend()) {
-                        if (is != null) {
-                            drops.add(is);
+                List<IAEStack<?>> waitingList = this.getWaitingToSend();
+                if (waitingList != null) {
+                    for (final IAEStack<?> as : waitingList) {
+                        if (as instanceof IAEItemStack ais) {
+                            drops.add(ais.getItemStack());
+                        } else if (as instanceof IAEFluidStack afs) {
+                            drops.add(ItemFluidPacket.newStack(afs));
                         }
                     }
                 }
