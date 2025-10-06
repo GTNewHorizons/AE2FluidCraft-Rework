@@ -163,7 +163,8 @@ public class TileLevelMaintainer extends AENetworkTile
         try {
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
             final IGrid grid = getProxy().getGrid();
-            final IItemList<IAEItemStack> inv = getProxy().getStorage().getItemInventory().getStorageList();
+            final IItemList<IAEItemStack> invItems = getProxy().getStorage().getItemInventory().getStorageList();
+            final IItemList<IAEFluidStack> invFluid = getProxy().getStorage().getFluidInventory().getStorageList();
 
             // Check there are available crafting CPUs before doing any work.
             // This hopefully stops level maintainers busy-looping calculating
@@ -205,9 +206,16 @@ public class TileLevelMaintainer extends AENetworkTile
                     }
                 }
 
-                IAEItemStack aeItem = inv.findPrecise(craftItem);
+                IAEItemStack aeItem = invItems.findPrecise(craftItem);
 
-                long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
+                long stackSize;
+
+                if (craftItem.getItem() instanceof ItemFluidDrop) {
+                    IAEFluidStack ifs = invFluid.findPrecise(ItemFluidDrop.getAeFluidStack(craftItem));
+                    stackSize = ifs == null ? 0 : ifs.getStackSize();
+                } else {
+                    stackSize = aeItem == null ? 0 : aeItem.getStackSize();
+                }
 
                 if (ModAndClassUtil.ThE) {
                     if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {

@@ -1,5 +1,8 @@
 package com.glodblock.github.common.parts;
 
+import static appeng.util.Platform.convertStack;
+import static appeng.util.Platform.stackConvert;
+
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -11,11 +14,11 @@ import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.base.FCSharedFluidBus;
-import com.glodblock.github.inventory.FluidConvertingInventoryAdaptor;
 import com.google.common.collect.ImmutableSet;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
+import appeng.api.config.InsertionMode;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.SchedulingMode;
@@ -43,7 +46,6 @@ import appeng.me.GridAccessException;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
-import appeng.util.item.AEItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -269,7 +271,7 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
     }
 
     protected InventoryAdaptor getHandler(TileEntity target) {
-        return target != null ? FluidConvertingInventoryAdaptor.wrap(target, this.getSide().getOpposite()) : null;
+        return target != null ? InventoryAdaptor.getAdaptor(target, getSide().getOpposite()) : null;
     }
 
     @Override
@@ -282,17 +284,15 @@ public class PartFluidExportBus extends FCSharedFluidBus implements ICraftingReq
                 final double power = Math.ceil(items.getStackSize() / 1000D);
 
                 if (energy.extractAEPower(power, mode, PowerMultiplier.CONFIG) > power - 0.01) {
-                    ItemStack inputStack = items.getItemStack();
-
-                    ItemStack remaining;
+                    IAEItemStack remaining;
 
                     if (mode == Actionable.SIMULATE) {
-                        remaining = d.simulateAdd(inputStack);
+                        remaining = stackConvert(d.simulateAddStack(convertStack(items), InsertionMode.DEFAULT));
                     } else {
-                        remaining = d.addItems(inputStack);
+                        remaining = stackConvert(d.addStack(convertStack(items), InsertionMode.DEFAULT));
                     }
 
-                    return AEItemStack.create(remaining);
+                    return remaining;
                 }
             }
         } catch (final GridAccessException e) {
