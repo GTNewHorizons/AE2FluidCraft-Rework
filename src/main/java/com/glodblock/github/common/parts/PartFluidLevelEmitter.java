@@ -272,7 +272,7 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     }
 
     @Override
-    public void postChange(final IBaseMonitor<IAEFluidStack> monitor, final Iterable<IAEFluidStack> change,
+    public void postChange(final IBaseMonitor monitor, final Iterable<IAEStack<?>> change,
             final BaseActionSource actionSource) {
         if (canDoWork()) {
             if (delayedUpdatesQueued) {

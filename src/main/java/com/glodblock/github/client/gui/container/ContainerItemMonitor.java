@@ -3,6 +3,7 @@ package com.glodblock.github.client.gui.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import appeng.api.storage.data.IAEStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -138,9 +139,9 @@ public class ContainerItemMonitor extends FCContainerMonitor<IAEItemStack> {
     }
 
     @Override
-    public void postChange(final IBaseMonitor<IAEItemStack> monitor, final Iterable<IAEItemStack> change,
+    public void postChange(final IBaseMonitor monitor, final Iterable<IAEStack<?>> change,
             final BaseActionSource source) {
-        for (final IAEItemStack is : change) {
+        for (final IAEItemStack is : (Iterable<? extends IAEItemStack>) change) {
             this.items.add(is);
         }
     }

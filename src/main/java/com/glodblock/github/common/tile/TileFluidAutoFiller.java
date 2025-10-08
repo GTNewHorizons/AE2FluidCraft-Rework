@@ -5,6 +5,7 @@ import static com.glodblock.github.loader.RecipeLoader.BUCKET;
 
 import javax.annotation.Nonnull;
 
+import appeng.api.storage.data.IAEStack;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -59,7 +60,7 @@ import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TileFluidAutoFiller extends AENetworkInvTile
-        implements ICraftingProvider, IMEMonitorHandlerReceiver<IAEFluidStack>, IGridTickable {
+        implements ICraftingProvider, IMEMonitorHandlerReceiver, IGridTickable {
 
     private final AppEngInternalInventory inventory = new AppEngInternalInventory(this, 1);
     private final BaseActionSource source = new MachineSource(this);
@@ -214,11 +215,11 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     }
 
     @Override
-    public void postChange(IBaseMonitor<IAEFluidStack> monitor, Iterable<IAEFluidStack> change,
+    public void postChange(IBaseMonitor monitor, Iterable<IAEStack<?>> change,
             BaseActionSource source) {
         if (this.getProxy().isActive() && this.getStorageGrid() != null) {
             boolean hasChanged = false;
-            for (IAEFluidStack tmp : change) {
+            for (IAEFluidStack tmp : (Iterable<? extends IAEFluidStack>) change) {
                 if (this.fluids.findPrecise(tmp) == null) {
                     hasChanged = true;
                     this.fluids.add(tmp);

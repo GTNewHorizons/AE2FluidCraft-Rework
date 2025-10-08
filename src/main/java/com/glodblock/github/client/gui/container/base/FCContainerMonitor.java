@@ -55,7 +55,7 @@ import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
 
 public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseContainer
-        implements IConfigManagerHost, IConfigurableObject, IMEMonitorHandlerReceiver<T>, IPinsHandler {
+        implements IConfigManagerHost, IConfigurableObject, IMEMonitorHandlerReceiver, IPinsHandler {
 
     protected final SlotRestrictedInput[] cellView = new SlotRestrictedInput[5];
     protected final IConfigManager clientCM;

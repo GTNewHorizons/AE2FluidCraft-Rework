@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import appeng.api.storage.data.IAEStack;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.server.MinecraftServer;
@@ -39,7 +40,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     private final IFluidHandler handler;
     private final ForgeDirection side;
     private IItemList<IAEFluidStack> cache = AEApi.instance().storage().createFluidList();
-    private final HashMap<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> listeners = new HashMap<>();
+    private final HashMap<IMEMonitorHandlerReceiver, Object> listeners = new HashMap<>();
     private BaseActionSource mySource;
     private StorageFilter mode;
 
@@ -55,11 +56,11 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         this.side = ForgeDirection.UNKNOWN;
     }
 
-    public void addListener(IMEMonitorHandlerReceiver<IAEFluidStack> l, Object verificationToken) {
+    public void addListener(IMEMonitorHandlerReceiver l, Object verificationToken) {
         this.listeners.put(l, verificationToken);
     }
 
-    public void removeListener(IMEMonitorHandlerReceiver<IAEFluidStack> l) {
+    public void removeListener(IMEMonitorHandlerReceiver l) {
         this.listeners.remove(l);
     }
 
@@ -181,14 +182,13 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         return TickRateModulation.SLOWER;
     }
 
-    private void postDifference(Iterable<IAEFluidStack> a) {
+    private void postDifference(Iterable<Sta> a) {
         if (a != null) {
-            Iterator<Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object>> i = this.listeners.entrySet()
-                    .iterator();
+            Iterator<Map.Entry<IMEMonitorHandlerReceiver, Object>> i = this.listeners.entrySet().iterator();
 
             while (i.hasNext()) {
-                Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> l = i.next();
-                IMEMonitorHandlerReceiver<IAEFluidStack> key = l.getKey();
+                Map.Entry<IMEMonitorHandlerReceiver, Object> l = i.next();
+                IMEMonitorHandlerReceiver key = l.getKey();
                 if (key.isValid(l.getValue())) {
                     key.postChange(this, a, this.getActionSource());
                 } else {

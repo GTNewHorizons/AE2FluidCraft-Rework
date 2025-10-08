@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import appeng.api.storage.data.IAEStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -165,9 +166,9 @@ public class ContainerFluidMonitor extends FCContainerMonitor<IAEFluidStack> {
     }
 
     @Override
-    public void postChange(IBaseMonitor<IAEFluidStack> monitor, Iterable<IAEFluidStack> change,
+    public void postChange(IBaseMonitor monitor, Iterable<IAEStack<?>> change,
             BaseActionSource actionSource) {
-        for (final IAEFluidStack is : change) {
+        for (final IAEFluidStack is : (Iterable<? extends IAEFluidStack>) change) {
             this.fluids.add(is);
         }
     }
