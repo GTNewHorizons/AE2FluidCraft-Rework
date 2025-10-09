@@ -30,9 +30,9 @@ import com.glodblock.github.util.Util;
 import appeng.api.AEApi;
 import appeng.api.config.SearchBoxMode;
 import appeng.api.config.Settings;
-import appeng.api.config.SortOrder;
 import appeng.api.config.ViewItems;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IDisplayRepo;
 import appeng.api.storage.data.IItemList;
 import appeng.client.gui.widgets.IScrollSource;
@@ -44,9 +44,9 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class FluidRepo implements IDisplayRepo {
 
-    protected final IItemList<IAEItemStack> list = AEApi.instance().storage().createItemList();
-    protected final ArrayList<IAEItemStack> view = new ArrayList<>();
-    protected final ArrayList<ItemStack> dsp = new ArrayList<>();
+    protected final IItemList<IAEStack<?>> list = AEApi.instance().storage().createAEStackList();
+    protected final ArrayList<IAEStack<?>> view = new ArrayList<>();
+    protected final ArrayList<IAEStack<?>> dsp = new ArrayList<>();
     protected final IScrollSource src;
     protected final ISortSource sortSrc;
 
@@ -70,22 +70,23 @@ public class FluidRepo implements IDisplayRepo {
         if (idx >= this.view.size()) {
             return null;
         }
-        return this.view.get(idx);
+        return this.view.get(idx) instanceof IAEItemStack ais ? ais : null;
     }
 
     @Override
     public ItemStack getItem(int idx) {
-        idx += this.src.getCurrentScroll() * this.rowSize;
-
-        if (idx >= this.dsp.size()) {
-            return null;
-        }
-        return this.dsp.get(idx);
+        IAEStack<?> stack = getReferenceStack(idx);
+        return stack instanceof IAEItemStack ais ? ais.getItemStack() : null;
     }
 
     @Override
-    public void postUpdate(final IAEItemStack is) {
-        final IAEItemStack st = this.list.findPrecise(is);
+    public void postUpdate(IAEItemStack stack) {
+        this.postUpdate((IAEStack<?>) stack);
+    }
+
+    @Override
+    public void postUpdate(final IAEStack<?> is) {
+        final IAEStack st = this.list.findPrecise(is);
         if (st != null) {
             st.reset();
             st.add(is);
@@ -106,28 +107,21 @@ public class FluidRepo implements IDisplayRepo {
         if (this.paused) {
             // Update existing view with new data
             for (int i = 0; i < this.view.size(); i++) {
-                IAEItemStack entry = this.view.get(i);
-                IAEItemStack serverEntry = this.list.findPrecise(entry);
-                if (serverEntry == null) {
-                    entry.setStackSize(0);
-                } else {
-                    this.view.set(i, serverEntry);
-                }
+                IAEStack<?> entry = this.view.get(i);
+                IAEStack<?> serverEntry = this.list.findPrecise(entry);
             }
 
             // Append newly added item stacks to the end of the view
-            Set<IAEItemStack> viewSet = new HashSet<>(this.view);
-            ArrayList<IAEItemStack> entriesToAdd = new ArrayList<>();
-            for (IAEItemStack serverEntry : this.list) {
+            Set<IAEStack<?>> viewSet = new HashSet<>(this.view);
+            ArrayList<IAEStack<?>> entriesToAdd = new ArrayList<>();
+            for (IAEStack<?> serverEntry : this.list) {
                 if (!viewSet.contains(serverEntry)) {
                     entriesToAdd.add(serverEntry);
                 }
             }
-            addEntriesToView(entriesToAdd);
         } else {
             this.view.clear();
             this.view.ensureCapacity(this.list.size());
-            addEntriesToView(this.list);
         }
 
         // Do not sort if paused
@@ -138,22 +132,21 @@ public class FluidRepo implements IDisplayRepo {
             FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
             FluidSorters.init();
 
-            if (SortBy == SortOrder.MOD) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
-            } else if (SortBy == SortOrder.AMOUNT) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
-            } else if (SortBy == SortOrder.INVTWEAKS) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
-            } else {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
-            }
         }
 
         this.dsp.clear();
         this.dsp.ensureCapacity(this.list.size());
-        for (final IAEItemStack is : this.view) {
-            this.dsp.add(is.getItemStack());
+
+    }
+
+    @Override
+    public IAEStack<?> getReferenceStack(int idx) {
+        idx += this.src.getCurrentScroll() * this.rowSize;
+
+        if (idx >= this.view.size()) {
+            return null;
         }
+        return this.view.get(idx);
     }
 
     private void addEntriesToView(Iterable<IAEItemStack> entries) {

@@ -12,13 +12,15 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.item.IItemPatternTerminal;
 
 import appeng.api.networking.IGrid;
+import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.ITerminalPins;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.items.contents.PinsHandler;
 import appeng.items.contents.PinsHolder;
 import appeng.tile.inventory.AppEngInternalInventory;
 
-public abstract class FCFluidEncodeTerminal extends FCPart implements IItemPatternTerminal, ITerminalPins {
+public abstract class FCFluidEncodeTerminal extends FCPart
+        implements IItemPatternTerminal, ITerminalPins, ITerminalHost {
 
     protected AppEngInternalInventory crafting;
     protected AppEngInternalInventory output;

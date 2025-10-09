@@ -6,7 +6,8 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import appeng.api.storage.data.IAEStack;
+import net.minecraftforge.fluids.FluidStack;
+
 import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.item.ItemFluidDrop;
 
@@ -31,12 +32,12 @@ import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.helpers.IPriorityHost;
 import appeng.me.GridAccessException;
 import appeng.me.storage.MEInventoryHandler;
 import appeng.tile.grid.AENetworkTile;
-import net.minecraftforge.fluids.FluidStack;
 
 public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost, ICellContainer {
 
@@ -130,8 +131,7 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
         updateState();
     }
 
-    private class FluidDiscretizingInventory
-            implements IMEInventory<IAEItemStack>, IMEMonitorHandlerReceiver {
+    private class FluidDiscretizingInventory implements IMEInventory<IAEItemStack>, IMEMonitorHandlerReceiver {
 
         private final MEInventoryHandler<IAEItemStack> invHandler = new MEInventoryHandler<>(this, getChannel());
         private IItemList<IAEItemStack> itemCache = null;
@@ -233,15 +233,14 @@ public class TileFluidDiscretizer extends AENetworkTile implements IPriorityHost
         }
 
         @Override
-        public void postChange(IBaseMonitor monitor, Iterable<IAEStack<?>> change,
-                BaseActionSource actionSource) {
+        public void postChange(IBaseMonitor monitor, Iterable<IAEStack<?>> change, BaseActionSource actionSource) {
             itemCache = null;
             try {
                 List<IAEItemStack> mappedChanges = new ArrayList<>();
                 for (IAEStack<?> fluidStack : change) {
                     IAEItemStack itemStack = ItemFluidDrop.newAeStack((FluidStack) fluidStack);
-                    if (itemStack != null
-                            && !FluidCraftAPI.instance().isBlacklistedInDisplay(((IAEFluidStack) fluidStack).getFluid().getClass())) {
+                    if (itemStack != null && !FluidCraftAPI.instance()
+                            .isBlacklistedInDisplay(((IAEFluidStack) fluidStack).getFluid().getClass())) {
                         mappedChanges.add(itemStack);
                     }
                 }

@@ -1,8 +1,5 @@
 package com.glodblock.github.client.me;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.minecraftforge.fluids.Fluid;
@@ -13,7 +10,6 @@ import com.glodblock.github.util.FluidSorters;
 
 import appeng.api.config.SearchBoxMode;
 import appeng.api.config.Settings;
-import appeng.api.config.SortOrder;
 import appeng.api.config.ViewItems;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.widgets.IScrollSource;
@@ -31,29 +27,12 @@ public class EssentiaRepo extends FluidRepo {
     public void updateView() {
         if (this.paused) {
             // Update existing view with new data
-            for (int i = 0; i < this.view.size(); i++) {
-                IAEItemStack entry = this.view.get(i);
-                IAEItemStack serverEntry = this.list.findPrecise(entry);
-                if (serverEntry == null) {
-                    entry.setStackSize(0);
-                } else {
-                    this.view.set(i, serverEntry);
-                }
-            }
+            for (int i = 0; i < this.view.size(); i++) {}
 
             // Append newly added item stacks to the end of the view
-            Set<IAEItemStack> viewSet = new HashSet<>(this.view);
-            ArrayList<IAEItemStack> entriesToAdd = new ArrayList<>();
-            for (IAEItemStack serverEntry : this.list) {
-                if (!viewSet.contains(serverEntry)) {
-                    entriesToAdd.add(serverEntry);
-                }
-            }
-            addEntriesToView(entriesToAdd);
         } else {
             this.view.clear();
             this.view.ensureCapacity(this.list.size());
-            addEntriesToView(this.list);
         }
 
         // Do not sort if paused
@@ -64,23 +43,11 @@ public class EssentiaRepo extends FluidRepo {
             FluidSorters.setDirection((appeng.api.config.SortDir) SortDir);
             FluidSorters.init();
 
-            if (SortBy == SortOrder.MOD) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_MOD);
-            } else if (SortBy == SortOrder.AMOUNT) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_SIZE);
-            } else if (SortBy == SortOrder.INVTWEAKS) {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_INV_TWEAKS);
-            } else {
-                this.view.sort(FluidSorters.CONFIG_BASED_SORT_BY_NAME);
-            }
         }
 
         // Update the display
         this.dsp.clear();
         this.dsp.ensureCapacity(this.list.size());
-        for (final IAEItemStack is : this.view) {
-            this.dsp.add(is.getItemStack());
-        }
     }
 
     private void addEntriesToView(Iterable<IAEItemStack> entries) {

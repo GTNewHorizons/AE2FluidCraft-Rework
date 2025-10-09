@@ -94,9 +94,7 @@ public class SPacketMEItemInvUpdate implements IMessage {
             final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
             if (gs instanceof GuiItemMonitor) {
                 ((GuiItemMonitor) gs).postUpdate(message.list, message.resort);
-            } else if (gs instanceof GuiFluidCraftConfirm) {
-                ((GuiFluidCraftConfirm) gs).postUpdate(message.list, message.ref);
-            }
+            } else if (gs instanceof GuiFluidCraftConfirm) {}
             return null;
         }
     }

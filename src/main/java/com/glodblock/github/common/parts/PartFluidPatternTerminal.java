@@ -8,11 +8,11 @@ import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.base.FCFluidEncodeTerminal;
-import com.glodblock.github.inventory.gui.GuiType;
 
 import appeng.api.implementations.ICraftingPatternItem;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.core.sync.GuiBridge;
 import appeng.tile.inventory.BiggerAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 
@@ -32,8 +32,8 @@ public class PartFluidPatternTerminal extends FCFluidEncodeTerminal {
     }
 
     @Override
-    public GuiType getGui() {
-        return GuiType.FLUID_PATTERN_TERMINAL;
+    public GuiBridge getGui() {
+        return GuiBridge.GUI_PATTERN_TERMINAL;
     }
 
     @Override

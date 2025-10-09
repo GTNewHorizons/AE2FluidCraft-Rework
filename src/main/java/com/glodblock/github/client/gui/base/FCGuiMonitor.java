@@ -884,7 +884,7 @@ public abstract class FCGuiMonitor<T extends IAEStack<T>> extends FCBaseMEGui
     }
 
     @Override
-    public void setAEPins(IAEItemStack[] pins) {
+    public void setAEPins(IAEStack<?>[] pins) {
         if (repo instanceof ItemRepo) repo.setAEPins(pins);
     }
 

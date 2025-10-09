@@ -65,8 +65,8 @@ import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatcherHost, ICraftingWatcherHost,
-        IMEMonitorHandlerReceiver<IAEFluidStack>, IGridTickable, ILevelViewable {
+public class PartFluidLevelEmitter extends PartUpgradeable
+        implements IStackWatcherHost, ICraftingWatcherHost, IMEMonitorHandlerReceiver, IGridTickable, ILevelViewable {
 
     private static final int FLAG_ON = 8;
 

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import appeng.core.sync.GuiBridge;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -56,7 +57,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         implements IBauble, IRegister<ItemWirelessUltraTerminal> {
 
     public final static String MODE = "mode_main";
-    private final static List<GuiType> guis = new ArrayList<>();
+    private final static List<Object> guis = new ArrayList<>();
 
     public ItemWirelessUltraTerminal() {
         super(null);
@@ -64,11 +65,10 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         this.setFeature(EnumSet.of(AEFeature.WirelessAccessTerminal, AEFeature.PoweredTools));
         setUnlocalizedName(NameConst.ITEM_WIRELESS_ULTRA_TERMINAL);
         setTextureName(FluidCraft.resource(NameConst.ITEM_WIRELESS_ULTRA_TERMINAL).toString());
-        guis.add(GuiType.WIRELESS_CRAFTING_TERMINAL);
-        guis.add(GuiType.WIRELESS_FLUID_PATTERN_TERMINAL);
-        guis.add(GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX);
-        guis.add(GuiType.WIRELESS_FLUID_TERMINAL);
-        guis.add(GuiType.WIRELESS_INTERFACE_TERMINAL);
+        guis.add(GuiBridge.GUI_CRAFTING_TERMINAL);
+        guis.add(GuiBridge.GUI_PATTERN_TERMINAL);
+        guis.add(GuiBridge.GUI_PATTERN_TERMINAL_EX);
+        guis.add(GuiBridge.GUI_INTERFACE_TERMINAL);
         guis.add(GuiType.WIRELESS_LEVEL_TERMINAL);
         if (ModAndClassUtil.ThE) {
             guis.add(GuiType.WIRELESS_ESSENTIA_TERMINAL);

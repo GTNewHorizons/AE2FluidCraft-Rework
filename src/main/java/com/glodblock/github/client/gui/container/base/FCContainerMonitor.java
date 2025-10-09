@@ -38,7 +38,6 @@ import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.ITerminalPins;
 import appeng.api.storage.StorageChannel;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
@@ -170,7 +169,7 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
             final ICraftingGrid cc = itp.getGrid().getCache(ICraftingGrid.class);
             final ImmutableList<ICraftingCPU> cpuList = cc.getCpus().asList();
 
-            List<IAEItemStack> craftedItems = new ArrayList<>();
+            List<IAEStack<?>> craftedItems = new ArrayList<>();
 
             // fetch the first available crafting output
             for (int i = 0; i < cpuList.size(); i++) {
@@ -193,7 +192,7 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
     }
 
     @Override
-    public void setPin(ItemStack is, int idx) {
+    public void setPin(IAEStack<?> is, int idx) {
         if (pinsHandler == null || !(host instanceof ITerminalPins itp)) return;
 
         if (is == null) {
@@ -215,7 +214,7 @@ public abstract class FCContainerMonitor<T extends IAEStack<T>> extends FCBaseCo
     }
 
     @Override
-    public ItemStack getPin(int idx) {
+    public IAEStack<?> getPin(int idx) {
         if (pinsHandler == null) return null;
         return pinsHandler.getPin(idx);
     }

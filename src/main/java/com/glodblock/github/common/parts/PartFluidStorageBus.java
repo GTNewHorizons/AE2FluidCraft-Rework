@@ -56,6 +56,7 @@ import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.IConfigManager;
 import appeng.client.texture.CableBusTextures;
@@ -76,7 +77,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartFluidStorageBus extends PartUpgradeable
-        implements IGridTickable, ICellContainer, IMEMonitorHandlerReceiver<IAEFluidStack>, IPriorityHost {
+        implements IGridTickable, ICellContainer, IMEMonitorHandlerReceiver, IPriorityHost {
 
     private final BaseActionSource source;
     private final AppEngInternalAEInventory config = new AppEngInternalAEInventory(this, 63);
@@ -251,7 +252,7 @@ public class PartFluidStorageBus extends PartUpgradeable
     }
 
     @Override
-    public void postChange(final IBaseMonitor<IAEFluidStack> monitor, final Iterable<IAEFluidStack> change,
+    public void postChange(final IBaseMonitor monitor, final Iterable<IAEStack<?>> change,
             final BaseActionSource source) {
         try {
             if (this.getProxy().isActive()) {
@@ -262,7 +263,7 @@ public class PartFluidStorageBus extends PartUpgradeable
                         return;
                     }
                 }
-                Iterable<IAEFluidStack> filteredChanges = this.filterChanges(change, this.readOncePass);
+                Iterable<IAEStack<?>> filteredChanges = this.filterChanges(change, this.readOncePass);
                 this.readOncePass = false;
                 if (filteredChanges == null) return;
                 this.getProxy().getStorage()
@@ -276,17 +277,17 @@ public class PartFluidStorageBus extends PartUpgradeable
      * changes match the filter.
      */
     @Nullable
-    private Iterable<IAEFluidStack> filterChanges(final Iterable<IAEFluidStack> change, final boolean readOncePass) {
+    private Iterable<IAEStack<?>> filterChanges(final Iterable<IAEStack<?>> change, final boolean readOncePass) {
         if (readOncePass) {
             return change;
         }
 
         if (this.handler != null && this.handler.isExtractFilterActive()
                 && !this.handler.getExtractPartitionList().isEmpty()) {
-            List<IAEFluidStack> filteredChanges = new ArrayList<>();
+            List<IAEStack<?>> filteredChanges = new ArrayList<>();
             Predicate<IAEFluidStack> extractFilterCondition = this.handler.getExtractFilterCondition();
-            for (final IAEFluidStack changedFluid : change) {
-                if (extractFilterCondition.test(changedFluid)) {
+            for (final IAEStack<?> changedFluid : change) {
+                if (extractFilterCondition.test((IAEFluidStack) changedFluid)) {
                     filteredChanges.add(changedFluid);
                 }
             }

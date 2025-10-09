@@ -5,9 +5,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.parts.base.FCPart;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IClickableInTerminal;
 import com.glodblock.github.util.Util;
+
+import appeng.core.sync.GuiBridge;
 
 public class PartLevelTerminal extends FCPart implements IClickableInTerminal {
 
@@ -66,8 +67,8 @@ public class PartLevelTerminal extends FCPart implements IClickableInTerminal {
     }
 
     @Override
-    public GuiType getGui() {
-        return GuiType.LEVEL_TERMINAL;
+    public GuiBridge getGui() {
+        return GuiBridge.GUI_ME;
     }
 
     @Override
