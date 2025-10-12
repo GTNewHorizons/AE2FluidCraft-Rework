@@ -23,7 +23,6 @@ import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory.FilterCache;
 import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.network.wrapper.FCNetworkWrapper;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
@@ -91,7 +90,6 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
-        FMLCommonHandler.instance().bus().register(new SPacketMEUpdateBuffer());
         if (ModAndClassUtil.ThE) {
             AspectUtil.init();
         }

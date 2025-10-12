@@ -39,12 +39,8 @@ import com.glodblock.github.api.registries.LevelItemInfo;
 import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.base.FCBaseMEGui;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.network.CPacketLevelTerminalCommands.Action;
-import com.glodblock.github.network.CPacketRenamer;
 import com.glodblock.github.network.SPacketLevelTerminalUpdate;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -320,7 +316,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             searchStringSave.set(next);
 
         } else if (btn == craftingStatusBtn) {
-            InventoryHandler.switchGui(GuiType.CRAFTING_STATUS);
         } else if (btn instanceof final GuiImgButton iBtn) {
             if (iBtn.getSetting() != Settings.ACTIONS) {
                 final Enum<?> cv = iBtn.getCurrentValue();
@@ -1251,13 +1246,10 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                                     blockPos.getDimension(),
                                     blockPos.getSide()));
                 } else if (isShiftKeyDown()) {
-                    FluidCraft.proxy.netHandler.sendToServer(
-                            new CPacketRenamer(
-                                    blockPos.x,
-                                    blockPos.y,
-                                    blockPos.z,
-                                    blockPos.getDimension(),
-                                    blockPos.getSide()));
+                    /*
+                     * FluidCraft.proxy.netHandler.sendToServer( new CPacketRenamer( blockPos.x, blockPos.y, blockPos.z,
+                     * blockPos.getDimension(), blockPos.getSide()));
+                     */
                 } else {
                     BlockPosHighlighter.highlightBlocks(
                             mc.thePlayer,
@@ -1296,7 +1288,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 if (action != null && this.infoList[slotIdx] != null) {
                     AEItemStack aeStack = AEItemStack.create(this.infoList[slotIdx].stack);
                     ((AEBaseContainer) inventorySlots).setTargetStack(aeStack);
-                    FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, slotIdx, 0, aeStack));
+                    // FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, slotIdx, 0,
+                    // aeStack));
                 }
 
                 return true;

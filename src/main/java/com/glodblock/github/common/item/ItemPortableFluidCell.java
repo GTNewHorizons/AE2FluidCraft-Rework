@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.api.FluidCraftAPI;
@@ -21,12 +20,9 @@ import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
 import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.inventory.FluidCellConfig;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IItemInventory;
 import com.glodblock.github.inventory.item.PortableFluidCellInventory;
 import com.glodblock.github.loader.IRegister;
-import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 import com.google.common.base.Optional;
@@ -57,12 +53,10 @@ public class ItemPortableFluidCell extends AEBasePoweredItem
 
     @Override
     public ItemStack onItemRightClick(final ItemStack item, final World w, final EntityPlayer player) {
-        InventoryHandler.openGui(
-                player,
-                w,
-                new BlockPos(player.inventory.currentItem, 0, 0),
-                ForgeDirection.UNKNOWN,
-                GuiType.PORTABLE_FLUID_CELL);
+        /*
+         * InventoryHandler.openGui( player, w, new BlockPos(player.inventory.currentItem, 0, 0),
+         * ForgeDirection.UNKNOWN, GuiType.PORTABLE_FLUID_CELL);
+         */
         return item;
     }
 

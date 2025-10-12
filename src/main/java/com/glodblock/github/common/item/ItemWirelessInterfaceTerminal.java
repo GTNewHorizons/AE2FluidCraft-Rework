@@ -8,7 +8,6 @@ import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.WirelessInterfaceTerminalInventory;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
@@ -18,13 +17,14 @@ import appeng.api.AEApi;
 import appeng.api.networking.IGridNode;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.PlayerMessages;
+import appeng.core.sync.GuiBridge;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemWirelessInterfaceTerminal extends ItemBaseWirelessTerminal
         implements IRegister<ItemWirelessInterfaceTerminal> {
 
     public ItemWirelessInterfaceTerminal() {
-        super(GuiType.WIRELESS_INTERFACE_TERMINAL);
+        super(GuiBridge.GUI_INTERFACE_TERMINAL);
         AEApi.instance().registries().wireless().registerWirelessHandler(this);
         this.setFeature(EnumSet.of(AEFeature.WirelessAccessTerminal, AEFeature.PoweredTools));
         setUnlocalizedName(NameConst.ITEM_WIRELESS_INTERFACE_TERMINAL);

@@ -8,12 +8,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.GuiEssentiaTerminal;
 import com.glodblock.github.client.gui.GuiFCImgButton;
-import com.glodblock.github.client.gui.GuiFluidCraftingWireless;
-import com.glodblock.github.client.gui.GuiFluidPatternExWireless;
-import com.glodblock.github.client.gui.GuiFluidPatternWireless;
-import com.glodblock.github.client.gui.GuiFluidPortableCell;
 import com.glodblock.github.client.gui.GuiLevelWireless;
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
@@ -21,10 +16,10 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
-import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.storage.StorageChannel;
 import appeng.client.gui.AEBaseMEGui;
+import appeng.core.sync.GuiBridge;
 
 public abstract class FCBaseMEGui extends AEBaseMEGui {
 
@@ -125,42 +120,6 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
                             "RESTOCK",
                             "DISABLE"));
         }
-        if (!(this instanceof GuiFluidCraftingWireless)) {
-            this.buttonList.add(
-                    this.CraftingTerminal = new GuiFCImgButton(
-                            this.guiLeft - 18,
-                            this.getOffsetY(),
-                            "CRAFT_TEM",
-                            "YES"));
-            this.setOffsetY(this.getOffsetY() + 20);
-            termBtns.add(this.CraftingTerminal);
-        }
-        if (!(this instanceof GuiFluidPatternWireless)) {
-            this.buttonList.add(
-                    this.PatternTerminal = new GuiFCImgButton(
-                            this.guiLeft - 18,
-                            this.getOffsetY(),
-                            "PATTERN_TEM",
-                            "YES"));
-            this.setOffsetY(this.getOffsetY() + 20);
-            termBtns.add(this.PatternTerminal);
-        }
-        if (!(this instanceof GuiFluidPatternExWireless)) {
-            this.buttonList.add(
-                    this.PatternTerminalEx = new GuiFCImgButton(
-                            this.guiLeft - 18,
-                            this.getOffsetY(),
-                            "PATTERN_EX_TEM",
-                            "YES"));
-            this.setOffsetY(this.getOffsetY() + 20);
-            termBtns.add(this.PatternTerminalEx);
-        }
-        if (!(this instanceof GuiFluidPortableCell)) {
-            this.buttonList.add(
-                    this.FluidTerminal = new GuiFCImgButton(this.guiLeft - 18, this.getOffsetY(), "FLUID_TEM", "YES"));
-            this.setOffsetY(this.getOffsetY() + 20);
-            termBtns.add(this.FluidTerminal);
-        }
         this.buttonList.add(
                 this.InterfaceTerminal = new GuiFCImgButton(
                         this.guiLeft - 18,
@@ -174,16 +133,6 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
                     this.LevelTerminal = new GuiFCImgButton(this.guiLeft - 18, this.getOffsetY(), "LEVEL_TEM", "YES"));
             this.setOffsetY(this.getOffsetY() + 20);
             termBtns.add(this.LevelTerminal);
-        }
-        if (ModAndClassUtil.ThE && !(this instanceof GuiEssentiaTerminal)) {
-            this.buttonList.add(
-                    this.EssentiaTerminal = new GuiFCImgButton(
-                            this.guiLeft - 18,
-                            this.getOffsetY(),
-                            "ESSENTIA_TEM",
-                            "YES"));
-            this.setOffsetY(this.getOffsetY() + 20);
-            termBtns.add(this.EssentiaTerminal);
         }
     }
 
@@ -232,20 +181,14 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
     @Override
     protected void actionPerformed(final GuiButton btn) {
         if (btn instanceof GuiFCImgButton) {
-            if (btn == this.FluidTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_FLUID_TERMINAL);
-            } else if (btn == this.CraftingTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_CRAFTING_TERMINAL);
-            } else if (btn == this.EssentiaTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_ESSENTIA_TERMINAL);
+            if (btn == this.CraftingTerminal) {
+                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiBridge.GUI_CRAFTING_TERMINAL);
             } else if (btn == this.PatternTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_FLUID_PATTERN_TERMINAL);
+                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiBridge.GUI_PATTERN_TERMINAL);
             } else if (btn == this.InterfaceTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_INTERFACE_TERMINAL);
+                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiBridge.GUI_INTERFACE_TERMINAL);
             } else if (btn == this.LevelTerminal) {
                 ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_LEVEL_TERMINAL);
-            } else if (btn == this.PatternTerminalEx) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX);
             } else if (btn == this.magnetOff || btn == this.magnetME || btn == this.magnetInv) {
                 FluidCraft.proxy.netHandler.sendToServer(
                         new CPacketFluidPatternTermBtns("WirelessTerminal.MagnetMode", this.getMagnetMode().ordinal()));

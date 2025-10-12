@@ -11,6 +11,7 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.util.BlockPos;
 
+import appeng.core.sync.GuiBridge;
 import appeng.util.Platform;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -18,21 +19,26 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class InventoryHandler implements IGuiHandler {
 
-    public static void switchGui(GuiType guiType) {
+    public static void switchGui(Object guiType) {
         FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(guiType));
     }
 
-    public static void openGui(EntityPlayer player, World world, BlockPos pos, ForgeDirection face, GuiType guiType) {
+    public static void openGui(EntityPlayer player, World world, BlockPos pos, ForgeDirection face, Object guiType) {
         if (Platform.isClient()) {
             return;
         }
-        player.openGui(
-                FluidCraft.INSTANCE,
-                (guiType.ordinal() << 3) | face.ordinal(),
-                world,
-                pos.getX(),
-                pos.getY(),
-                pos.getZ());
+
+        if (guiType instanceof GuiType gt) {
+            player.openGui(
+                    FluidCraft.INSTANCE,
+                    (gt.ordinal() << 3) | face.ordinal(),
+                    world,
+                    pos.getX(),
+                    pos.getY(),
+                    pos.getZ());
+        } else if (guiType instanceof GuiBridge gb) {
+            Platform.openGUI(player, world.getTileEntity(pos.getX(), pos.getY(), pos.getZ()), face, gb);
+        }
     }
 
     @Nullable

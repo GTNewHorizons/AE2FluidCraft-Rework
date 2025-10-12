@@ -6,7 +6,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
-import com.glodblock.github.client.gui.container.base.FCContainerEncodeTerminal;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IItemTerminal;
@@ -93,14 +92,14 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                         break;
                     case "WirelessTerminal.OpenMagnet":
                         InventoryHandler.openGui(
-                            player,
-                            player.worldObj,
-                            new BlockPos(
-                                cpt.getPortableCell().getInventorySlot(),
-                                Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
-                                -1),
-                            ForgeDirection.UNKNOWN,
-                            GuiType.WIRELESS_MAGNET_FILTER);
+                                player,
+                                player.worldObj,
+                                new BlockPos(
+                                        cpt.getPortableCell().getInventorySlot(),
+                                        Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
+                                        -1),
+                                ForgeDirection.UNKNOWN,
+                                GuiType.WIRELESS_MAGNET_FILTER);
                         break;
                     case "WirelessTerminal.magnet.NBT":
                         ((IWirelessMagnetFilter) itemTerminal).setNBTMode(Value.equals("1"));
@@ -119,42 +118,14 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                         break;
                     case "WirelessTerminal.magnet.FilterMode":
                         ((IWirelessMagnetFilter) itemTerminal).setListMode(
-                            Value.equals("1") ? WirelessMagnet.ListMode.WhiteList
-                                : WirelessMagnet.ListMode.BlackList);
+                                Value.equals("1") ? WirelessMagnet.ListMode.WhiteList
+                                        : WirelessMagnet.ListMode.BlackList);
                         break;
                     case "WirelessTerminal.magnet.clear":
                         ((IWirelessMagnetFilter) itemTerminal).clearConfig();
                         break;
                 }
                 itemTerminal.saveSettings();
-            } else if (Name.startsWith("PatternTerminal.") && (c instanceof final FCContainerEncodeTerminal cpt)) {
-                switch (Name) {
-                    case "PatternTerminal.CraftMode" -> cpt.getPatternTerminal().setCraftingRecipe(Value.equals("1"));
-                    case "PatternTerminal.Encode" -> {
-                        switch (Value) {
-                            case "0" -> cpt.encode();
-                            case "1" -> cpt.encodeAndMoveToInventory();
-                            case "3" -> cpt.encodeAllItemAndMoveToInventory();
-                        }
-                    }
-                    case "PatternTerminal.Clear" -> cpt.clear();
-                    case "PatternTerminal.Substitute" -> cpt.getPatternTerminal().setSubstitution(Value.equals("1"));
-                    case "PatternTerminal.Invert" -> cpt.getPatternTerminal().setInverted(Value.equals("1"));
-                    case "PatternTerminal.Double" -> cpt.doubleStacks(Integer.parseInt(message.Value));
-                    case "PatternTerminal.Combine" -> cpt.getPatternTerminal().setCombineMode(Value.equals("1"));
-                    case "PatternTerminal.beSubstitute" -> cpt.getPatternTerminal().setBeSubstitute(Value.equals("1"));
-                    case "PatternTerminal.ActivePage" ->
-                        cpt.getPatternTerminal().setActivePage(Integer.parseInt(Value));
-                    case "PatternTerminal.Prioritize" -> {
-                        switch (Value) {
-                            case "0", "1" -> cpt.getPatternTerminal().setPrioritization(Value.equals("1"));
-                            case "2" -> cpt.getPatternTerminal().sortCraftingItems();
-                        }
-                    }
-                    case "PatternTerminal.AutoFillerPattern" ->
-                        cpt.getPatternTerminal().setAutoFillPattern(Value.equals("1"));
-                }
-                cpt.getPatternTerminal().saveSettings();
             } else if (Name.startsWith("StorageBus.") && c instanceof ContainerFluidStorageBus ccw) {
                 if (Name.equals("StorageBus.Action")) {
                     if (Value.equals("Partition")) {

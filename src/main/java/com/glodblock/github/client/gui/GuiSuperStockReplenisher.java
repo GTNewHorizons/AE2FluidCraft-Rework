@@ -14,7 +14,6 @@ import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
-import com.glodblock.github.network.CPacketInventoryAction;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
@@ -46,7 +45,8 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
                     ((AEBaseContainer) this.inventorySlots).setTargetStack(stack);
                     for (int i = 0; i < this.inventorySlots.inventorySlots.size(); i++) {
                         if (slot.equals(this.inventorySlots.inventorySlots.get(i))) {
-                            FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, i, 0, stack));
+                            // FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, i, 0,
+                            // stack));
                         }
                     }
                     return;

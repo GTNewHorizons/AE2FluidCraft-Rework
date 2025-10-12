@@ -42,7 +42,6 @@ import com.glodblock.github.common.item.ItemPartFluidTerminal;
 import com.glodblock.github.common.item.ItemPartLevelTerminal;
 import com.glodblock.github.common.item.ItemPortableFluidCell;
 import com.glodblock.github.common.item.ItemQuantumBridgeCard;
-import com.glodblock.github.common.item.ItemWirelessFluidTerminal;
 import com.glodblock.github.common.item.ItemWirelessInterfaceTerminal;
 import com.glodblock.github.common.item.ItemWirelessLevelTerminal;
 import com.glodblock.github.common.item.ItemWirelessPatternTerminal;
@@ -82,7 +81,6 @@ public class ItemAndBlockHolder {
     public static ItemFluidStorageMonitor FLUID_STORAGE_MONITOR = new ItemFluidStorageMonitor().register();
     public static ItemFluidConversionMonitor FLUID_CONVERSION_MONITOR = new ItemFluidConversionMonitor().register();
     public static ItemPortableFluidCell PORTABLE_FLUID_CELL = new ItemPortableFluidCell().register();
-    public static ItemWirelessFluidTerminal WIRELESS_FLUID_TERM = new ItemWirelessFluidTerminal().register();
     public static ItemWirelessLevelTerminal WIRELESS_LEVEL_TERM = new ItemWirelessLevelTerminal().register();
     public static ItemWirelessPatternTerminal WIRELESS_PATTERN_TERM = new ItemWirelessPatternTerminal().register();
     public static ItemWirelessUltraTerminal WIRELESS_ULTRA_TERM = new ItemWirelessUltraTerminal().register();

@@ -7,6 +7,8 @@ import static com.glodblock.github.util.Util.hasInfinityBoosterCard;
 
 import java.util.List;
 
+import appeng.api.implementations.guiobjects.IGuiItem;
+import appeng.api.implementations.guiobjects.IGuiItemObject;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -27,6 +29,7 @@ import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
 import appeng.api.features.IWirelessTermRegistry;
 import appeng.core.localization.PlayerMessages;
+import appeng.core.sync.GuiBridge;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
@@ -34,12 +37,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements IItemInventory {
 
-    protected GuiType type;
+    protected Object type;
     public static String infinityBoosterCard = "infinityBoosterCard";
     public static String infinityEnergyCard = "InfinityEnergyCard";
     public static String restockItems = "restock";
 
-    public ItemBaseWirelessTerminal(GuiType t) {
+    public ItemBaseWirelessTerminal(Object t) {
         super();
         this.type = t;
     }
@@ -70,12 +73,17 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
                 return item;
             }
             if (handler.hasPower(player, 0.5, item)) {
-                InventoryHandler.openGui(
-                        player,
-                        w,
-                        new BlockPos(player.inventory.currentItem, 0, 0),
-                        ForgeDirection.UNKNOWN,
-                        this.guiGuiType(item));
+                Object gui = this.guiGuiType(item);
+                if (gui instanceof GuiType gt) {
+                    InventoryHandler.openGui(
+                            player,
+                            w,
+                            new BlockPos(player.inventory.currentItem, 0, 0),
+                            ForgeDirection.UNKNOWN,
+                            gt);
+                } else if (gui instanceof GuiBridge gb) {
+                    Platform.openGUI(player, null, null, gb);
+                }
             } else {
                 player.addChatMessage(PlayerMessages.DeviceNotPowered.toChat());
             }
@@ -129,7 +137,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         return null;
     }
 
-    public GuiType guiGuiType(ItemStack stack) {
+    public Object guiGuiType(ItemStack stack) {
         return this.type;
     }
 

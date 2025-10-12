@@ -5,10 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
-
 import appeng.api.implementations.tiles.IChestOrDrive;
 import appeng.api.storage.ICellHandler;
 import appeng.api.storage.IMEInventory;
@@ -55,8 +51,8 @@ public class FluidCellHandler implements ICellHandler {
             final StorageChannel chan) {
         if (chan == StorageChannel.FLUIDS) {
             if (chest instanceof TileEntity te) {
-                InventoryHandler
-                        .openGui(player, te.getWorldObj(), new BlockPos(te), chest.getUp(), GuiType.FLUID_TERMINAL);
+                // InventoryHandler.openGui(player, te.getWorldObj(), new BlockPos(te), chest.getUp(),
+                // GuiType.FLUID_TERMINAL);
             }
         }
     }
