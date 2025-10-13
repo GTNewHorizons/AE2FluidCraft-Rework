@@ -7,8 +7,6 @@ import static com.glodblock.github.util.Util.hasInfinityBoosterCard;
 
 import java.util.List;
 
-import appeng.api.implementations.guiobjects.IGuiItem;
-import appeng.api.implementations.guiobjects.IGuiItemObject;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -82,7 +80,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
                             ForgeDirection.UNKNOWN,
                             gt);
                 } else if (gui instanceof GuiBridge gb) {
-                    Platform.openGUI(player, null, null, gb);
+                    Platform.openGUI(player, null, null, GuiBridge.GUI_PATTERN_TERMINAL);
                 }
             } else {
                 player.addChatMessage(PlayerMessages.DeviceNotPowered.toChat());
