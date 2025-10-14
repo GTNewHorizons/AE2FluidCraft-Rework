@@ -190,11 +190,9 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
             } else if (btn == this.LevelTerminal) {
                 ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_LEVEL_TERMINAL);
             } else if (btn == this.magnetOff || btn == this.magnetME || btn == this.magnetInv) {
-                FluidCraft.proxy.netHandler.sendToServer(
-                        new CPacketFluidPatternTermBtns("WirelessTerminal.MagnetMode", this.getMagnetMode().ordinal()));
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.MagnetMode", this.getMagnetMode().ordinal()));
             } else if (btn == this.magnetFilter) {
-                FluidCraft.proxy.netHandler
-                        .sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.OpenMagnet", 0));
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.OpenMagnet", 0));
             } else if (btn == this.restockDisableBtn || btn == this.restockEnableBtn) {
                 FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.Stock", 1));
             }

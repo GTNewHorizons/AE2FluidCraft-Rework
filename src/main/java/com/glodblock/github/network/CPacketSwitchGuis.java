@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import com.glodblock.github.util.UltraTerminalModes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
@@ -24,17 +25,19 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
+import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
+
 public class CPacketSwitchGuis implements IMessage {
 
-    private Object guiType;
+    private UltraTerminalModes mode;
     private boolean switchTerminal;
 
-    public CPacketSwitchGuis(Object guiType) {
-        this(guiType, false);
+    public CPacketSwitchGuis(UltraTerminalModes mode) {
+        this(mode, false);
     }
 
-    public CPacketSwitchGuis(Object guiType, boolean switchTerminal) {
-        this.guiType = guiType;
+    public CPacketSwitchGuis(UltraTerminalModes mode, boolean switchTerminal) {
+        this.mode = mode;
         this.switchTerminal = switchTerminal;
     }
 
@@ -44,25 +47,13 @@ public class CPacketSwitchGuis implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf byteBuf) {
-        switch (byteBuf.readByte()) {
-            case 0 -> {
-                guiType = GuiType.getByOrdinal(byteBuf.readByte());
-            }
-            case 1 -> {
-                guiType = GuiBridge.values()[(byteBuf.readByte())];
-            }
-        }
+        mode = UltraTerminalModes.values()[byteBuf.readInt()];
         switchTerminal = byteBuf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf byteBuf) {
-        if (guiType instanceof GuiType) {
-            byteBuf.writeByte(0);
-        } else if (guiType instanceof GuiBridge) {
-            byteBuf.writeByte(1);
-        }
-        byteBuf.writeByte(guiType != null ? ((Enum<?>) guiType).ordinal() : 0);
+        byteBuf.writeInt(mode.ordinal());
         byteBuf.writeBoolean(this.switchTerminal);
     }
 
@@ -71,50 +62,41 @@ public class CPacketSwitchGuis implements IMessage {
         @Nullable
         @Override
         public IMessage onMessage(CPacketSwitchGuis message, MessageContext ctx) {
-            if (message.guiType == null) {
-                return null;
-            }
+            if (message.mode == null) return null;
 
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             Container cont = player.openContainer;
 
             // switch terminal
-            if (message.switchTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(player, message.guiType);
-                return null;
-            }
-
-            // open new terminal
-            if (cont instanceof AEBaseContainer) {
-                ContainerOpenContext context = ((AEBaseContainer) cont).getOpenContext();
-                if (context == null) {
-                    return null;
-                }
-                TileEntity te = context.getTile();
-                if (te != null) {
-                    if (message.guiType instanceof GuiType gt) {
-                        InventoryHandler.openGui(
+            if (message.switchTerminal) switchTerminal(player, message.mode);
+            else {
+                // open new terminal //TODO in world stuff
+                if (cont instanceof AEBaseContainer aeBaseContainer) {
+                    ContainerOpenContext context = aeBaseContainer.getOpenContext();
+                    if (context == null) return null;
+                    TileEntity te = context.getTile();
+                    Object guiType = GuiType.GUI_SUPER_STOCK_REPLENISHER;
+                    if (te != null) {
+                        if (guiType instanceof GuiType gt) {
+                            InventoryHandler.openGui(
                                 player,
                                 player.worldObj,
                                 new BlockPos(te),
                                 Objects.requireNonNull(context.getSide()),
                                 gt);
-                    } else if (message.guiType instanceof GuiBridge gb) {
-                        Platform.openGUI(player, te, context.getSide(), gb);
-                    }
-                } else if (((AEBaseContainer) cont).getTarget() instanceof IWirelessTerminal) {
-                    if (message.guiType instanceof GuiType gt) {
-                        InventoryHandler.openGui(
+                        } else if (guiType instanceof GuiBridge gb) Platform.openGUI(player, te, context.getSide(), gb);
+                    } else if (aeBaseContainer.getTarget() instanceof IWirelessTerminal wt) {
+                        if (guiType instanceof GuiType gt) {
+                            InventoryHandler.openGui(
                                 player,
                                 player.worldObj,
                                 new BlockPos(
-                                        ((IWirelessTerminal) ((AEBaseContainer) cont).getTarget()).getInventorySlot(),
-                                        Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
-                                        0),
+                                    wt.getInventorySlot(),
+                                    Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
+                                    0),
                                 Objects.requireNonNull(context.getSide()),
                                 gt);
-                    } else if (message.guiType instanceof GuiBridge gb) {
-                        Platform.openGUI(player, null, null, gb);
+                        } else if (guiType instanceof GuiBridge gb) Platform.openGUI(player, null, null, gb);
                     }
                 }
             }

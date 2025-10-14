@@ -2,6 +2,12 @@ package com.glodblock.github.common.item;
 
 import java.util.EnumSet;
 
+import appeng.api.features.IWirelessTermHandler;
+import appeng.api.implementations.guiobjects.IGuiItemObject;
+import appeng.helpers.WirelessInterfaceTerminalGuiObject;
+import appeng.helpers.WirelessPatternTerminalGuiObject;
+import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
+import com.glodblock.github.util.UltraTerminalModes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -38,13 +44,9 @@ public class ItemWirelessPatternTerminal extends ItemBaseWirelessTerminal
     }
 
     @Override
-    public Object getInventory(ItemStack stack, World world, int x, int y, int z, EntityPlayer player) {
-        try {
-            IGridNode gridNode = Util.getWirelessGrid(stack);
-            // return new WirelessPatternTerminalInventory(stack, x, gridNode, player);
-        } catch (Exception e) {
-            player.addChatMessage(PlayerMessages.OutOfRange.toChat());
-        }
-        return null;
+    public IGuiItemObject getGuiObject(ItemStack is, World world, int x, int y, int z) {
+        final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
+        if (wh == null) return null;
+        return new WirelessPatternTerminalGuiObject(wh, is, world.getClosestPlayer(x, y, z, 1), world, x, y, z);
     }
 }

@@ -1,5 +1,6 @@
 package com.glodblock.github.common.item;
 
+import static appeng.util.Platform.nextEnum;
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
 
 import java.util.ArrayList;
@@ -7,6 +8,11 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
+import com.glodblock.github.inventory.item.WirelessPatternTerminalExInventory;
+import com.glodblock.github.util.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,10 +32,6 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.network.CPacketSwitchGuis;
-import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.ModAndClassUtil;
-import com.glodblock.github.util.NameConst;
-import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
 import appeng.api.features.IWirelessTermHandler;
@@ -49,12 +51,9 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Optional.Interface(iface = "baubles.api.IBauble", modid = "Baubles")
-public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
-        implements IBauble, IRegister<ItemWirelessUltraTerminal>, IGuiItem {
+public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal implements IRegister<ItemWirelessUltraTerminal>, IGuiItem {
 
-    public final static String MODE = "mode_main";
-    private final static List<Object> guis = new ArrayList<>();
+    public final static String MODE = "mode";
 
     public ItemWirelessUltraTerminal() {
         super(null);
@@ -62,14 +61,6 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         this.setFeature(EnumSet.of(AEFeature.WirelessAccessTerminal, AEFeature.PoweredTools));
         setUnlocalizedName(NameConst.ITEM_WIRELESS_ULTRA_TERMINAL);
         setTextureName(FluidCraft.resource(NameConst.ITEM_WIRELESS_ULTRA_TERMINAL).toString());
-        guis.add(GuiBridge.GUI_CRAFTING_TERMINAL);
-        guis.add(GuiBridge.GUI_PATTERN_TERMINAL);
-        guis.add(GuiBridge.GUI_PATTERN_TERMINAL_EX);
-        guis.add(GuiBridge.GUI_INTERFACE_TERMINAL);
-        guis.add(GuiType.WIRELESS_LEVEL_TERMINAL);
-        if (ModAndClassUtil.ThE) {
-            // guis.add(GuiType.WIRELESS_ESSENTIA_TERMINAL);
-        }
     }
 
     @Override
@@ -86,7 +77,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         super.addCheckedInformation(stack, player, lines, displayMoreInfo);
         if (isShiftKeyDown()) {
             lines.add(StatCollector.translateToLocal(NameConst.TT_ULTRA_TERMINAL));
-            lines.add(StatCollector.translateToLocal(NameConst.TT_ULTRA_TERMINAL + "." + guiGuiType(stack)));
+            lines.add(StatCollector.translateToLocal(NameConst.TT_ULTRA_TERMINAL + "." + getMode(stack)));
             lines.add(NameConst.i18n(NameConst.TT_ULTRA_TERMINAL_TIPS));
             lines.addAll(Arrays.asList(NameConst.i18n(NameConst.TT_ULTRA_TERMINAL_TIPS_DESC).split("\\\\n")));
         } else {
@@ -96,37 +87,22 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        return StatCollector.translateToLocalFormatted("item.wireless_ultra_terminal." + guiGuiType(stack) + ".name");
+        return StatCollector.translateToLocalFormatted("item.wireless_ultra_terminal." + getMode(stack) + ".name");
     }
 
     @Override
     public Object getInventory(ItemStack stack, World world, int x, int y, int z, EntityPlayer player) {
         try {
-            IGridNode gridNode = Util.getWirelessGrid(stack);
-            final Object gui;
+            final IGridNode gridNode = Util.getWirelessGrid(stack);
+
+            //wireless magnet
             if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z == -1) {
-                gui = GuiType.WIRELESS_MAGNET_FILTER;
-            } else if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z > 0) {
-                gui = getGuis().get(Util.GuiHelper.decodeType(y).getRight());
-            } else {
-                gui = readMode(stack);
+                return new WirelessMagnetCardFilterInventory(stack, x, gridNode, player);
             }
-            /*
-             * if (gui == GuiType.WIRELESS_FLUID_PATTERN_TERMINAL) { return new WirelessPatternTerminalInventory(stack,
-             * x, gridNode, player); } else if (gui == GuiType.WIRELESS_CRAFTING_TERMINAL) { return new
-             * WirelessCraftingTerminalInventory(stack, x, gridNode, player); } else if (ModAndClassUtil.ThE && gui ==
-             * GuiType.WIRELESS_ESSENTIA_TERMINAL) { return new WirelessFluidTerminalInventory(stack, x, gridNode,
-             * player); } else if (gui == GuiType.WIRELESS_FLUID_TERMINAL) { return new
-             * WirelessFluidTerminalInventory(stack, x, gridNode, player); } else if (gui ==
-             * GuiType.WIRELESS_INTERFACE_TERMINAL) { return new WirelessInterfaceTerminalInventory(stack, x, gridNode,
-             * player); } else if (gui == GuiType.WIRELESS_LEVEL_TERMINAL) { return new
-             * WirelessLevelTerminalInventory(stack, x, gridNode, player); } else if (gui ==
-             * GuiType.WIRELESS_FLUID_PATTERN_TERMINAL_EX) { return new WirelessPatternTerminalExInventory(stack, x,
-             * gridNode, player); } else if (gui == GuiType.WIRELESS_MAGNET_FILTER) { return new
-             * WirelessMagnetCardFilterInventory(stack, x, gridNode, player); } else {
-             * this.setMode(GuiType.WIRELESS_FLUID_TERMINAL, stack); // set as default mode return new
-             * WirelessFluidTerminalInventory(stack, x, gridNode, player); }
-             */
+
+            if (getMode(stack) == UltraTerminalModes.LEVEL) {
+                return new WirelessLevelTerminalInventory(stack, x, gridNode, player);
+            }
         } catch (Exception e) {
             player.addChatMessage(PlayerMessages.OutOfRange.toChat());
         }
@@ -134,76 +110,24 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     }
 
     @Override
-    public ItemStack onItemRightClick(final ItemStack item, final World w, final EntityPlayer player) {
+    public ItemStack onItemRightClick(final ItemStack is, final World w, final EntityPlayer player) {
         if (player.isSneaking()) {
-            setNext(readMode(item), item);
-            return item;
+            setMode(is, nextEnum(getMode(is)));
+            return is;
         }
-        readMode(item);
-        return super.onItemRightClick(item, w, player);
+        return super.onItemRightClick(is, w, player);
     }
 
-    public static Object readMode(ItemStack stack) {
-        NBTTagCompound data = Platform.openNbtData(stack);
-        if (data.hasKey(MODE)) {
-            String GUI = data.getString(MODE);
-            try {
-                return GuiType.valueOf(GUI);
-            } catch (IllegalArgumentException e) {
-                return GuiBridge.GUI_ME;
-            }
-        } else {
-            return GuiBridge.GUI_ME;
-        }
-    }
+    public static void switchTerminal(EntityPlayer player, UltraTerminalModes mode) {
+        ImmutablePair<Integer, ItemStack> temp = Util.getUltraWirelessTerm(player);
+        if (temp == null) return;
+        ItemStack term = temp.getRight();
+        if (term != null && term.getItem() instanceof ItemWirelessUltraTerminal) {
+            if (mode != null) setMode(term, mode);
+            else mode = getMode(term);
 
-    public void setNext(Object type, ItemStack stack) {
-        boolean f = false;
-        for (Object g : guis) {
-            if (f) {
-                setMode(g.toString(), stack);
-                return;
-            }
-            if (g == type) {
-                f = true;
-            }
-        }
-        setMode(guis.get(0).toString(), stack);
-    }
-
-    public void setMode(String mode, ItemStack stack) {
-        NBTTagCompound data = Platform.openNbtData(stack);
-        data.setString(MODE, mode);
-    }
-
-    public void setMode(Object mode, ItemStack stack) {
-        this.setMode(mode.toString(), stack);
-    }
-
-    public static void switchTerminal(EntityPlayer player, Object guiType) {
-        ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(player);
-        if (term == null) return;
-        if (term.getRight().getItem() instanceof ItemWirelessUltraTerminal) {
-            ((ItemWirelessUltraTerminal) term.getRight().getItem()).setMode(guiType, term.getRight());
-        }
-        if (Platform.isClient()) {
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(guiType, true));
-        } else {
-            if (guiType instanceof GuiType gt) {
-                InventoryHandler.openGui(
-                        player,
-                        player.worldObj,
-                        new BlockPos(
-                                term.getLeft(),
-                                Util.GuiHelper.encodeType(
-                                        guis.indexOf(GuiType.valueOf(guiType.toString())),
-                                        Util.GuiHelper.GuiType.ITEM),
-                                1),
-                        ForgeDirection.UNKNOWN,
-                        gt);
-            } else if (guiType instanceof GuiBridge gb) {
-                Platform.openGUI(player, null, null, GuiBridge.GUI_PATTERN_TERMINAL);
-            }
+            if (Platform.isClient()) FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(mode, true));
+            else openGui(term, player.worldObj, player);
         }
     }
 
@@ -214,20 +138,6 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
             return Util.hasInfinityBoosterCard(term.getRight());
         }
         return false;
-    }
-
-    public static List<Object> getGuis() {
-        return guis;
-    }
-
-    @Override
-    public Object guiGuiType(ItemStack stack) {
-        return readMode(stack);
-    }
-
-    @Override
-    public BaubleType getBaubleType(ItemStack itemStack) {
-        return BaubleType.RING;
     }
 
     @Override
@@ -247,26 +157,6 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 }
             }
         }
-    }
-
-    @Override
-    public void onEquipped(ItemStack itemStack, EntityLivingBase entityLivingBase) {
-
-    }
-
-    @Override
-    public void onUnequipped(ItemStack itemStack, EntityLivingBase entityLivingBase) {
-
-    }
-
-    @Override
-    public boolean canEquip(ItemStack itemStack, EntityLivingBase entityLivingBase) {
-        return true;
-    }
-
-    @Override
-    public boolean canUnequip(ItemStack itemStack, EntityLivingBase entityLivingBase) {
-        return true;
     }
 
     @Override

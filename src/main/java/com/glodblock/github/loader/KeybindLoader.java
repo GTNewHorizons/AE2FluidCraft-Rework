@@ -20,6 +20,9 @@ import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.getMode;
+import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
+
 @SideOnly(Side.CLIENT)
 public class KeybindLoader implements Runnable {
 
@@ -58,16 +61,7 @@ public class KeybindLoader implements Runnable {
     private void handleOpenTerminalKey() {
         if (Minecraft.getMinecraft().currentScreen != null) return;
         EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-        if (player.openContainer == null) {
-            return;
-        }
-
-        ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(player);
-        if (term != null && term.getRight().getItem() instanceof ItemWirelessUltraTerminal) {
-            ItemWirelessUltraTerminal.switchTerminal(
-                    player,
-                    ((ItemWirelessUltraTerminal) term.getRight().getItem()).guiGuiType(term.getRight()));
-        }
+        if (player.openContainer != null) switchTerminal(player, null);
     }
 
     private void handleRestockKey() {
