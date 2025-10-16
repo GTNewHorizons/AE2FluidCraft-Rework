@@ -8,8 +8,6 @@ import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
-import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.util.NameConst;
@@ -202,7 +200,7 @@ public class GuiMagnetFilter extends AEBaseMEGui {
                             "WirelessTerminal.magnet.FilterMode",
                             this.cont.listMode != WirelessMagnet.ListMode.WhiteList));
         } else if (btn == this.originalGuiBtn) {
-            InventoryHandler.switchGui(ItemWirelessUltraTerminal.readMode(this.cont.getPortableCell().getItemStack()));
+            // InventoryHandler.switchGui(ItemWirelessUltraTerminal.readMode(this.cont.getPortableCell().getItemStack()));
         } else if (btn == this.clearBtn) {
             FluidCraft.proxy.netHandler
                     .sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.magnet.clear", 1));

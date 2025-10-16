@@ -2,7 +2,6 @@ package com.glodblock.github.common.item;
 
 import java.util.EnumSet;
 
-import com.glodblock.github.util.UltraTerminalModes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

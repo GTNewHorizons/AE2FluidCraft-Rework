@@ -1,6 +1,5 @@
 package com.glodblock.github.common.parts;
 
-import java.util.Objects;
 import java.util.Random;
 
 import net.minecraft.client.renderer.RenderBlocks;
@@ -21,9 +20,6 @@ import com.glodblock.github.api.registries.ILevelViewable;
 import com.glodblock.github.api.registries.LevelItemInfo;
 import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
 import appeng.api.config.RedstoneMode;
@@ -520,13 +516,10 @@ public class PartFluidLevelEmitter extends PartUpgradeable
         if (!player.isSneaking()) {
             if (Platform.isClient()) {
                 return true;
-            }
-            InventoryHandler.openGui(
-                    player,
-                    this.getHost().getTile().getWorldObj(),
-                    new BlockPos(this.getHost().getTile()),
-                    Objects.requireNonNull(getSide()),
-                    GuiType.FLUID_LEVEL_EMITTER);
+            } /*
+               * InventoryHandler.openGui( player, this.getHost().getTile().getWorldObj(), new
+               * BlockPos(this.getHost().getTile()), Objects.requireNonNull(getSide()), GuiType.FLUID_LEVEL_EMITTER);
+               */
             return true;
         }
 

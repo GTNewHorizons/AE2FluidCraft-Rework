@@ -20,7 +20,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class InventoryHandler implements IGuiHandler {
 
     public static void switchGui(Object guiType) {
-        FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(guiType));
+        FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis());
     }
 
     public static void openGui(EntityPlayer player, World world, BlockPos pos, ForgeDirection face, Object guiType) {

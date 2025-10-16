@@ -226,7 +226,7 @@ public class GuiDualInterface extends GuiUpgradeable {
         super.actionPerformed(btn);
         final boolean backwards = Mouse.isButtonDown(1);
         if (btn == this.priority) {
-            InventoryHandler.switchGui(GuiType.PRIORITY);
+            // InventoryHandler.switchGui(GuiType.PRIORITY);
         } else if (btn == this.switcher) {
             InventoryHandler.switchGui(GuiType.DUAL_INTERFACE_FLUID);
         } else if (btn == this.interfaceMode) {

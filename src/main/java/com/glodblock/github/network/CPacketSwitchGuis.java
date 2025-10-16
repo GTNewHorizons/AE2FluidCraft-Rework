@@ -1,19 +1,20 @@
 package com.glodblock.github.network;
 
+import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
+
 import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.glodblock.github.util.UltraTerminalModes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
 
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.UltraTerminalModes;
 import com.glodblock.github.util.Util;
 
 import appeng.container.AEBaseContainer;
@@ -24,8 +25,6 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-
-import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
 
 public class CPacketSwitchGuis implements IMessage {
 
@@ -79,23 +78,23 @@ public class CPacketSwitchGuis implements IMessage {
                     if (te != null) {
                         if (guiType instanceof GuiType gt) {
                             InventoryHandler.openGui(
-                                player,
-                                player.worldObj,
-                                new BlockPos(te),
-                                Objects.requireNonNull(context.getSide()),
-                                gt);
+                                    player,
+                                    player.worldObj,
+                                    new BlockPos(te),
+                                    Objects.requireNonNull(context.getSide()),
+                                    gt);
                         } else if (guiType instanceof GuiBridge gb) Platform.openGUI(player, te, context.getSide(), gb);
                     } else if (aeBaseContainer.getTarget() instanceof IWirelessTerminal wt) {
                         if (guiType instanceof GuiType gt) {
                             InventoryHandler.openGui(
-                                player,
-                                player.worldObj,
-                                new BlockPos(
-                                    wt.getInventorySlot(),
-                                    Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
-                                    0),
-                                Objects.requireNonNull(context.getSide()),
-                                gt);
+                                    player,
+                                    player.worldObj,
+                                    new BlockPos(
+                                            wt.getInventorySlot(),
+                                            Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
+                                            0),
+                                    Objects.requireNonNull(context.getSide()),
+                                    gt);
                         } else if (guiType instanceof GuiBridge gb) Platform.openGUI(player, null, null, gb);
                     }
                 }

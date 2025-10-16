@@ -1,6 +1,5 @@
 package com.glodblock.github.common.item;
 
-import static appeng.util.Platform.openGUI;
 import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.MODE;
 import static com.glodblock.github.loader.recipe.WirelessTerminalEnergyRecipe.getEnergyCard;
 import static com.glodblock.github.loader.recipe.WirelessTerminalRecipe.getInfinityBoosterCard;
@@ -9,10 +8,6 @@ import static com.glodblock.github.util.Util.hasInfinityBoosterCard;
 
 import java.util.List;
 
-import appeng.api.implementations.guiobjects.IGuiItem;
-import appeng.api.implementations.guiobjects.IGuiItemObject;
-import appeng.helpers.WirelessPatternTerminalGuiObject;
-import com.glodblock.github.util.UltraTerminalModes;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -22,24 +17,27 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.p455w0rd.wirelesscraftingterminal.helpers.WirelessTerminalGuiObject;
 
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IItemInventory;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.NameConst;
+import com.glodblock.github.util.UltraTerminalModes;
 
 import appeng.api.AEApi;
 import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
 import appeng.api.features.IWirelessTermRegistry;
+import appeng.api.implementations.guiobjects.IGuiItem;
+import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.core.localization.PlayerMessages;
 import appeng.core.sync.GuiBridge;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.p455w0rd.wirelesscraftingterminal.helpers.WirelessTerminalGuiObject;
 
 public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements IItemInventory, IGuiItem {
 
@@ -144,7 +142,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         Item item = is.getItem();
         if (item instanceof ItemWirelessUltraTerminal) {
             return UltraTerminalModes.values()[is.getTagCompound().getInteger(MODE)];
-        } else if (item instanceof  ItemWirelessPatternTerminal) {
+        } else if (item instanceof ItemWirelessPatternTerminal) {
             return UltraTerminalModes.PATTERN;
         } else if (item instanceof ItemWirelessInterfaceTerminal) {
             return UltraTerminalModes.INTERFACE;
@@ -168,16 +166,16 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
             case INTERFACE -> aeGui = GuiBridge.GUI_INTERFACE_TERMINAL;
             case LEVEL -> {
                 InventoryHandler.openGui(
-                    player,
-                    w,
-                    new BlockPos(player.inventory.currentItem, 0, 0),
-                    ForgeDirection.UNKNOWN,
-                    GuiType.WIRELESS_LEVEL_TERMINAL);
+                        player,
+                        w,
+                        new BlockPos(player.inventory.currentItem, 0, 0),
+                        ForgeDirection.UNKNOWN,
+                        GuiType.WIRELESS_LEVEL_TERMINAL);
                 return;
             }
             default -> aeGui = GuiBridge.GUI_ME;
         }
-        Platform.openGUI(player, null,null, aeGui);
+        Platform.openGUI(player, null, null, aeGui);
     }
 
     @Override

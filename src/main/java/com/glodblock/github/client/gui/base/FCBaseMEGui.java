@@ -12,14 +12,12 @@ import com.glodblock.github.client.gui.GuiFCImgButton;
 import com.glodblock.github.client.gui.GuiLevelWireless;
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
 import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 
 import appeng.api.storage.StorageChannel;
 import appeng.client.gui.AEBaseMEGui;
-import appeng.core.sync.GuiBridge;
 
 public abstract class FCBaseMEGui extends AEBaseMEGui {
 
@@ -181,18 +179,12 @@ public abstract class FCBaseMEGui extends AEBaseMEGui {
     @Override
     protected void actionPerformed(final GuiButton btn) {
         if (btn instanceof GuiFCImgButton) {
-            if (btn == this.CraftingTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiBridge.GUI_CRAFTING_TERMINAL);
-            } else if (btn == this.PatternTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiBridge.GUI_PATTERN_TERMINAL);
-            } else if (btn == this.InterfaceTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiBridge.GUI_INTERFACE_TERMINAL);
-            } else if (btn == this.LevelTerminal) {
-                ItemWirelessUltraTerminal.switchTerminal(this.mc.thePlayer, GuiType.WIRELESS_LEVEL_TERMINAL);
-            } else if (btn == this.magnetOff || btn == this.magnetME || btn == this.magnetInv) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.MagnetMode", this.getMagnetMode().ordinal()));
+            if (btn == this.magnetOff || btn == this.magnetME || btn == this.magnetInv) {
+                FluidCraft.proxy.netHandler.sendToServer(
+                        new CPacketFluidPatternTermBtns("WirelessTerminal.MagnetMode", this.getMagnetMode().ordinal()));
             } else if (btn == this.magnetFilter) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.OpenMagnet", 0));
+                FluidCraft.proxy.netHandler
+                        .sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.OpenMagnet", 0));
             } else if (btn == this.restockDisableBtn || btn == this.restockEnableBtn) {
                 FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.Stock", 1));
             }

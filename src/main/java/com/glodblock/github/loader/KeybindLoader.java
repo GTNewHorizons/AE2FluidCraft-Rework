@@ -1,5 +1,7 @@
 package com.glodblock.github.loader;
 
+import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
@@ -9,7 +11,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.network.CPacketValueConfig;
 import com.glodblock.github.util.Util;
 
@@ -19,9 +20,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.getMode;
-import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
 
 @SideOnly(Side.CLIENT)
 public class KeybindLoader implements Runnable {

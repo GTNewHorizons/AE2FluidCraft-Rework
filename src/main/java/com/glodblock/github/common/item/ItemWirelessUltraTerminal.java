@@ -3,35 +3,30 @@ package com.glodblock.github.common.item;
 import static appeng.util.Platform.nextEnum;
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
-import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
-import com.glodblock.github.inventory.item.WirelessPatternTerminalExInventory;
-import com.glodblock.github.util.*;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessMagnet;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.network.CPacketSwitchGuis;
+import com.glodblock.github.util.NameConst;
+import com.glodblock.github.util.UltraTerminalModes;
+import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
 import appeng.api.features.IWirelessTermHandler;
@@ -40,18 +35,15 @@ import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.api.networking.IGridNode;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.PlayerMessages;
-import appeng.core.sync.GuiBridge;
 import appeng.helpers.WirelessPatternTerminalGuiObject;
 import appeng.util.Platform;
-import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
-import baubles.api.IBauble;
-import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal implements IRegister<ItemWirelessUltraTerminal>, IGuiItem {
+public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
+        implements IRegister<ItemWirelessUltraTerminal>, IGuiItem {
 
     public final static String MODE = "mode";
 
@@ -95,7 +87,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal implemen
         try {
             final IGridNode gridNode = Util.getWirelessGrid(stack);
 
-            //wireless magnet
+            // wireless magnet
             if (Util.GuiHelper.decodeType(y).getLeft() == Util.GuiHelper.GuiType.ITEM && z == -1) {
                 return new WirelessMagnetCardFilterInventory(stack, x, gridNode, player);
             }
@@ -172,6 +164,6 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal implemen
     public IGuiItemObject getGuiObject(ItemStack is, World world, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return new WirelessPatternTerminalGuiObject(wh, is, world.getClosestPlayer(x, y, z, 1), world, x, y, z);
+        return new WirelessPatternTerminalGuiObject(wh, is, world.getClosestPlayer(x, y, z, 2), world, x, y, z);
     }
 }
