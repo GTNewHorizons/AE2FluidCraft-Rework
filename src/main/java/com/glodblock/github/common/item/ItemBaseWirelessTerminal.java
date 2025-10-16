@@ -179,9 +179,9 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     }
 
     @Override
-    public IGuiItemObject getGuiObject(ItemStack is, World world, int x, int y, int z) {
+    public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return new WirelessTerminalGuiObject(wh, is, world.getClosestPlayer(x, y, z, 1), world, x, y, z);
+        return new WirelessTerminalGuiObject(wh, is, p, world, x, y, z);
     }
 }

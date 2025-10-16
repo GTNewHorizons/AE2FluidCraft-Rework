@@ -2,6 +2,7 @@ package com.glodblock.github.common.item;
 
 import java.util.EnumSet;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
@@ -37,7 +38,7 @@ public class ItemWirelessInterfaceTerminal extends ItemBaseWirelessTerminal
     }
 
     @Override
-    public IGuiItemObject getGuiObject(ItemStack is, World world, int x, int y, int z) {
+    public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
         return new WirelessInterfaceTerminalGuiObject(wh, is);

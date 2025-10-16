@@ -161,9 +161,9 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     }
 
     @Override
-    public IGuiItemObject getGuiObject(ItemStack is, World world, int x, int y, int z) {
+    public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return new WirelessPatternTerminalGuiObject(wh, is, world.getClosestPlayer(x, y, z, 2), world, x, y, z);
+        return new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
     }
 }
