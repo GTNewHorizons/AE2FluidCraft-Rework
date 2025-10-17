@@ -35,6 +35,8 @@ import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.api.networking.IGridNode;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.PlayerMessages;
+import appeng.helpers.WirelessCraftingTerminalGuiObject;
+import appeng.helpers.WirelessInterfaceTerminalGuiObject;
 import appeng.helpers.WirelessPatternTerminalGuiObject;
 import appeng.util.Platform;
 import baubles.api.BaublesApi;
@@ -164,6 +166,11 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
+        return switch (getMode(is)) {
+            case CRAFTING -> new WirelessCraftingTerminalGuiObject(wh, is, p, world, x, y, z);
+            case PATTERN, PATTERN_EX -> new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
+            case INTERFACE -> new WirelessInterfaceTerminalGuiObject(wh, is);
+            default -> super.getGuiObject(is, world, p, x, y, z);
+        };
     }
 }

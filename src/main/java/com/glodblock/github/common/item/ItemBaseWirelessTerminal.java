@@ -121,7 +121,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         if (is == null) {
             return false;
         }
-        return is.getItem() instanceof ItemBaseWirelessTerminal;
+        return is.getItem() == this;
     }
 
     public ItemStack stack() {
