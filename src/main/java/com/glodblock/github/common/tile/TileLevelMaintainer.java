@@ -59,6 +59,7 @@ import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.InvOperation;
+import appeng.util.SettingsFrom;
 import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
@@ -101,10 +102,7 @@ public class TileLevelMaintainer extends AENetworkTile
     @Override
     public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
         int idx = this.getRequestIndexByLink(link);
-        if (idx == -1) {
-            AELog.warn("Invalid crafting link: " + link);
-            return items;
-        }
+
         try {
             if (getProxy().isActive()) {
                 final IEnergyGrid energy = getProxy().getEnergy();
@@ -116,7 +114,9 @@ public class TileLevelMaintainer extends AENetworkTile
                                 .injectItems(ItemFluidDrop.getAeFluidStack(items), mode, source);
                         if (notInjectedItems != null) {
                             items.setStackSize(notInjectedItems.getStackSize());
-                            this.updateState(idx, LevelState.Export);
+                            if (idx != -1) {
+                                this.updateState(idx, LevelState.Export);
+                            }
 
                             return items;
                         } else {
@@ -163,7 +163,8 @@ public class TileLevelMaintainer extends AENetworkTile
         try {
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
             final IGrid grid = getProxy().getGrid();
-            final IItemList<IAEItemStack> inv = getProxy().getStorage().getItemInventory().getStorageList();
+            final IItemList<IAEItemStack> invItems = getProxy().getStorage().getItemInventory().getStorageList();
+            final IItemList<IAEFluidStack> invFluid = getProxy().getStorage().getFluidInventory().getStorageList();
 
             // Check there are available crafting CPUs before doing any work.
             // This hopefully stops level maintainers busy-looping calculating
@@ -205,9 +206,16 @@ public class TileLevelMaintainer extends AENetworkTile
                     }
                 }
 
-                IAEItemStack aeItem = inv.findPrecise(craftItem);
+                IAEItemStack aeItem = invItems.findPrecise(craftItem);
 
-                long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
+                long stackSize;
+
+                if (craftItem.getItem() instanceof ItemFluidDrop) {
+                    IAEFluidStack ifs = invFluid.findPrecise(ItemFluidDrop.getAeFluidStack(craftItem));
+                    stackSize = ifs == null ? 0 : ifs.getStackSize();
+                } else {
+                    stackSize = aeItem == null ? 0 : aeItem.getStackSize();
+                }
 
                 if (ModAndClassUtil.ThE) {
                     if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
@@ -430,7 +438,7 @@ public class TileLevelMaintainer extends AENetworkTile
         NBTTagList tagList = new NBTTagList();
         for (int i = 0; i < REQ_COUNT; i++) {
             if (this.requests[i] != null) {
-                tagList.appendTag(this.requests[i].writeToNBT());
+                tagList.appendTag(this.requests[i].writeToNBT(true));
             } else {
                 tagList.appendTag(new NBTTagCompound());
             }
@@ -544,6 +552,42 @@ public class TileLevelMaintainer extends AENetworkTile
         data.writeBoolean(isActive());
     }
 
+    @Override
+    public void uploadSettings(SettingsFrom from, NBTTagCompound compound) {
+        super.uploadSettings(from, compound);
+        NBTTagList tagList = compound.getTagList(NBT_REQUESTS, Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < tagList.tagCount(); i++) {
+            NBTTagCompound tag = tagList.getCompoundTagAt(i);
+            if (tag == null || !tag.hasKey(NBT_STACK)) {
+                this.requests[i] = null;
+            } else {
+                try {
+                    this.requests[i] = new RequestInfo(tag, this);
+                    this.requests[i].state = LevelState.None;
+                } catch (Exception ignored) {
+                    this.requests[i] = null;
+                }
+            }
+        }
+        this.saveChanges();
+    }
+
+    @Override
+    public NBTTagCompound downloadSettings(SettingsFrom from) {
+        NBTTagCompound compound = super.downloadSettings(from);
+        compound = compound == null ? new NBTTagCompound() : compound;
+        NBTTagList tagList = new NBTTagList();
+        for (int i = 0; i < REQ_COUNT; i++) {
+            if (this.requests[i] != null) {
+                tagList.appendTag(this.requests[i].writeToNBT(false));
+            } else {
+                tagList.appendTag(new NBTTagCompound());
+            }
+        }
+        compound.setTag(NBT_REQUESTS, tagList);
+        return compound;
+    }
+
     @MENetworkEventSubscribe
     public void stateChange(final MENetworkPowerStatusChange p) {
         updatePowerState();
@@ -643,7 +687,7 @@ public class TileLevelMaintainer extends AENetworkTile
             }
         }
 
-        public NBTTagCompound writeToNBT() {
+        public NBTTagCompound writeToNBT(boolean includeLink) {
             NBTTagCompound tag = new NBTTagCompound();
             NBTTagCompound stackTag = new NBTTagCompound();
             itemStack.writeToNBT(stackTag);
@@ -652,7 +696,7 @@ public class TileLevelMaintainer extends AENetworkTile
             tag.setLong(NBT_BATCH, batchSize);
             tag.setBoolean(NBT_ENABLE, enable);
             tag.setInteger(NBT_STATE, state.ordinal());
-            if (this.link != null) {
+            if (this.link != null && includeLink) {
                 NBTTagCompound linkTag = new NBTTagCompound();
                 this.link.writeToNBT(linkTag);
                 tag.setTag(NBT_LINK, linkTag);
