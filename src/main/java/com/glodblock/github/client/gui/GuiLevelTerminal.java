@@ -1224,7 +1224,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         dim,
                         ForgeDirection.getOrientation(side),
                         "");
-                if (isCtrlKeyDown() && isShiftKeyDown() && hasInfinityBoosterCard(mc.thePlayer)) {
+                if (isCtrlKeyDown() && isShiftKeyDown()) {
                     FluidCraft.proxy.netHandler.sendToServer(
                             new CPacketLevelTerminalCommands(
                                     Action.EDIT,

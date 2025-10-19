@@ -16,6 +16,7 @@ import com.glodblock.github.client.gui.GuiFluidPatternEncoder;
 import com.glodblock.github.client.gui.GuiFluidStorageBus;
 import com.glodblock.github.client.gui.GuiIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
+import com.glodblock.github.client.gui.GuiLevelEmitterProxy;
 import com.glodblock.github.client.gui.GuiLevelMaintainer;
 import com.glodblock.github.client.gui.GuiLevelTerminal;
 import com.glodblock.github.client.gui.GuiLevelWireless;
@@ -55,6 +56,14 @@ import com.google.common.collect.ImmutableList;
 
 import appeng.api.storage.ITerminalHost;
 import appeng.helpers.IInterfaceHost;
+import appeng.container.implementations.ContainerCraftAmount;
+import appeng.container.implementations.ContainerCraftingStatus;
+import appeng.container.implementations.ContainerLevelEmitter;
+import appeng.container.implementations.ContainerPatternItemRenamer;
+import appeng.container.implementations.ContainerPriority;
+import appeng.helpers.IInterfaceHost;
+import appeng.helpers.IPriorityHost;
+import appeng.parts.automation.PartLevelEmitter;
 
 public enum GuiType {
 
@@ -68,6 +77,19 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, TileFluidAutoFiller inv) {
             return new GuiFluidAutoFiller(player.inventory, inv);
+        }
+    }),
+
+    LEVEL_EMITTER_PROXY(new PartGuiFactory<>(PartLevelEmitter.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, PartLevelEmitter inv) {
+            return new ContainerLevelEmitter(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, PartLevelEmitter inv) {
+            return new GuiLevelEmitterProxy(player.inventory, inv);
         }
     }),
 
