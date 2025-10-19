@@ -8,7 +8,10 @@ import net.minecraft.inventory.IInventory;
 import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurable;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.parts.PartFluidStorageBus;
+import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.FluidPrimaryGui;
 
 import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
@@ -19,6 +22,8 @@ import appeng.api.config.Upgrades;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
+import appeng.container.ContainerOpenContext;
+import appeng.container.PrimaryGui;
 import appeng.container.guisync.GuiSync;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.tile.inventory.AppEngInternalAEInventory;
@@ -187,5 +192,16 @@ public class ContainerFluidStorageBus extends FCContainerFluidConfigurable {
 
     private void setStorageFilter(final StorageFilter storageFilter) {
         this.storageFilter = storageFilter;
+    }
+
+    @Override
+    public PrimaryGui getPrimaryGui() {
+
+        ContainerOpenContext context = getOpenContext();
+        return new FluidPrimaryGui(
+                GuiType.FLUID_STORAGE_BUS,
+                ItemAndBlockHolder.FLUID_STORAGE_BUS.stack(),
+                context.getTile(),
+                context.getSide());
     }
 }

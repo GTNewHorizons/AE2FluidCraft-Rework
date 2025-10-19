@@ -66,6 +66,9 @@ import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.PlayerMessages;
+import appeng.core.sync.GuiBridge;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.PacketSwitchGuis;
 import appeng.helpers.InventoryAction;
 import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
@@ -82,7 +85,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     public static final int VIEW_LEFT = 8;
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_terminal.png");
     private static final RenderItem renderItem = new RenderItem();
-    protected int offsetY;
     private static final int offsetX = 21;
     protected static String searchFieldOutputsText = "";
     protected static String searchFieldNamesText = "";
@@ -143,16 +145,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         this(inventoryPlayer, new ContainerLevelTerminal(inventoryPlayer, te));
     }
 
-    @Override
-    public int getOffsetY() {
-        return offsetY;
-    }
-
-    @Override
-    public void setOffsetY(int y) {
-        offsetY = y;
-    }
-
     private void setScrollBar() {
         int maxScroll = masterList.getHeight() - viewHeight - 1;
         if (maxScroll <= 0) {
@@ -170,7 +162,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         final int unusedSpace = height - ySize;
         guiTop = (int) Math.floor(unusedSpace / (unusedSpace < 0 ? 3.8f : 2.0f));
 
-        offsetY = guiTop + 8;
+        int offsetY = guiTop + 8;
         terminalStyleBox = new GuiImgButton(
                 guiLeft - 18,
                 offsetY,
@@ -209,7 +201,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
         setScrollBar();
         repositionSlots();
-        initGuiDone();
+        initCustomButtons(0, offsetY);
     }
 
     @Override
@@ -270,12 +262,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     public void drawScreen(final int mouseX, final int mouseY, final float btn) {
         terminalStyleBox.set(AEConfig.instance.settings.getSetting(Settings.TERMINAL_STYLE));
 
-        buttonList.clear();
-        buttonList.add(terminalStyleBox);
-        buttonList.add(searchStringSave);
-        buttonList.add(craftingStatusBtn);
-        addSwitchGuiBtns();
-
         super.drawScreen(mouseX, mouseY, btn);
 
         handleTooltip(mouseX, mouseY, searchFieldOutputs);
@@ -305,7 +291,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
     @Override
     protected void actionPerformed(final GuiButton btn) {
-            if (ModAndClassUtil.isSaveText && btn == searchStringSave) {
+        if (actionPerformedCustomButtons(btn)) return;
+        if (ModAndClassUtil.isSaveText && btn == searchStringSave) {
 
             final boolean backwards = Mouse.isButtonDown(1);
             final GuiImgButton iBtn = (GuiImgButton) btn;
@@ -316,6 +303,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             searchStringSave.set(next);
 
         } else if (btn == craftingStatusBtn) {
+            NetworkHandler.instance.sendToServer(new PacketSwitchGuis(GuiBridge.GUI_CRAFTING_STATUS));
         } else if (btn instanceof final GuiImgButton iBtn) {
             if (iBtn.getSetting() != Settings.ACTIONS) {
                 final Enum<?> cv = iBtn.getCurrentValue();

@@ -1,15 +1,18 @@
 package com.glodblock.github.network;
 
-import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
-
 import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
@@ -20,6 +23,7 @@ import com.glodblock.github.util.Util;
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
 import appeng.core.sync.GuiBridge;
+import appeng.helpers.ICustomButtonProvider;
 import appeng.util.Platform;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -46,13 +50,14 @@ public class CPacketSwitchGuis implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf byteBuf) {
-        mode = UltraTerminalModes.values()[byteBuf.readInt()];
+        final int ord = byteBuf.readInt();
+        mode = ord != -1 ? UltraTerminalModes.values()[ord] : null;
         switchTerminal = byteBuf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf byteBuf) {
-        byteBuf.writeInt(mode.ordinal());
+        byteBuf.writeInt(mode != null ? mode.ordinal() : -1);
         byteBuf.writeBoolean(this.switchTerminal);
     }
 
@@ -61,14 +66,27 @@ public class CPacketSwitchGuis implements IMessage {
         @Nullable
         @Override
         public IMessage onMessage(CPacketSwitchGuis message, MessageContext ctx) {
-            if (message.mode == null) return null;
-
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             Container cont = player.openContainer;
 
             // switch terminal
-            if (message.switchTerminal) switchTerminal(player, message.mode);
-            else {
+
+            if (message.switchTerminal) {
+                ImmutablePair<Integer, ItemStack> temp = Util.getUltraWirelessTerm(player);
+                if (temp != null && temp.getRight().getItem() instanceof ItemWirelessUltraTerminal iwut) {
+                    if (message.mode != null && cont instanceof AEBaseContainer abc) {
+                        abc.setSwitchAbleGuiNext(message.mode.ordinal());
+
+                    }
+                    iwut.switchTerminal(player, temp.getRight(), message.mode);
+                    if (player.openContainer instanceof AEBaseContainer abc) {
+                        if (abc.getTarget() instanceof ICustomButtonProvider icbp) {
+                            FluidCraft.proxy.netHandler
+                                    .sendTo(new SPacketCustomButtonUpdate(icbp.getDataObject()), player);
+                        }
+                    }
+                }
+            } else {
                 // open new terminal //TODO in world stuff
                 if (cont instanceof AEBaseContainer aeBaseContainer) {
                     ContainerOpenContext context = aeBaseContainer.getOpenContext();

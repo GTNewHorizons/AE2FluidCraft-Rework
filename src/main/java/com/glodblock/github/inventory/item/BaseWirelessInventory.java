@@ -1,6 +1,7 @@
 package com.glodblock.github.inventory.item;
 
-import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.restockItems;
+import static appeng.util.Platform.nextEnum;
+import static com.glodblock.github.inventory.UltraTerminalButtons.restockItems;
 import static com.glodblock.github.inventory.item.WirelessMagnet.modeKey;
 
 import java.util.Objects;
@@ -10,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
 import com.glodblock.github.util.Util;
 
 import appeng.api.config.Actionable;
@@ -33,8 +33,7 @@ import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.me.storage.NullInventory;
 import appeng.util.Platform;
 
-public abstract class BaseWirelessInventory extends MEMonitorHandler
-        implements IWirelessTerminal, IWirelessExtendCard, ITerminalPins {
+public abstract class BaseWirelessInventory extends MEMonitorHandler implements IWirelessTerminal, ITerminalPins {
 
     protected final ItemStack target;
     protected final IAEItemPowerStorage ips;
@@ -81,8 +80,8 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler
 
     private void readFromNBT() {
         NBTTagCompound data = Platform.openNbtData(this.target);
-        this.setMagnetCardMode(WirelessMagnet.Mode.getModes()[data.getInteger(modeKey)]);
-        this.setRestock(data.getBoolean(ItemBaseWirelessTerminal.restockItems));
+        this.setMagnetCardMode(WirelessMagnet.Mode.values()[data.getInteger(modeKey)]);
+        this.setRestock(data.getBoolean(restockItems));
     }
 
     public StorageChannel getChannel() {
@@ -131,24 +130,20 @@ public abstract class BaseWirelessInventory extends MEMonitorHandler
         return this.grid;
     }
 
-    @Override
     public PlayerSource getActionSource() {
         return this.source;
     }
 
-    @Override
     public void setMagnetCardMode(WirelessMagnet.Mode mode) {
         this.magnetMode = mode;
     }
 
-    @Override
     public WirelessMagnet.Mode getMagnetCardMode() {
         return this.magnetMode;
     }
 
     public void setMagnetCardNextMode() {
-        final WirelessMagnet.Mode[] MODES = WirelessMagnet.Mode.getModes();
-        setMagnetCardMode(MODES[(getMagnetCardMode().ordinal() + 1) % MODES.length]);
+        setMagnetCardMode(nextEnum(getMagnetCardMode()));
     }
 
     public void setRestock(boolean val) {

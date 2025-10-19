@@ -1,20 +1,23 @@
 package com.glodblock.github.network;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
-import com.glodblock.github.client.gui.container.base.FCBaseContainer;
+import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.UltraTerminalButtons;
 import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.inventory.item.IItemTerminal;
-import com.glodblock.github.inventory.item.IWirelessExtendCard;
 import com.glodblock.github.inventory.item.IWirelessMagnetFilter;
-import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
+import appeng.container.AEBaseContainer;
+import appeng.container.IContainerSubGui;
+import appeng.container.PrimaryGui;
+import appeng.container.interfaces.IInventorySlotAware;
+import appeng.helpers.ICustomButtonProvider;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -22,21 +25,34 @@ import io.netty.buffer.ByteBuf;
 
 public class CPacketFluidPatternTermBtns implements IMessage {
 
-    private String Name = "";
-    private String Value = "";
+    private Command command;
+    private String value = "";
 
-    public CPacketFluidPatternTermBtns(final String name, final String value) {
-        Name = name;
-        Value = value;
+    public enum Command {
+        RESTOCK,
+        MAGNET_MODE,
+        MAGNET_OPEN_FILTER,
+        MAGNET_FILTER_NBT,
+        MAGNET_FILTER_META,
+        MAGNET_FILTER_ORE,
+        MAGNET_FILTER_OREDICT_STATE,
+        MAGNET_FILTER_OREDICT_FILTER,
+        MAGNET_FILTER_MODE,
+        MAGNET_FILTER_CLEAR
     }
 
-    public CPacketFluidPatternTermBtns(final String name, final Integer value) {
-        Name = name;
-        Value = value.toString();
+    public CPacketFluidPatternTermBtns(final Command command, final String value) {
+        this.command = command;
+        this.value = value;
     }
 
-    public CPacketFluidPatternTermBtns(final String name, final boolean value) {
-        this(name, value ? 1 : 0);
+    public CPacketFluidPatternTermBtns(final Command command, final Integer value) {
+        this.command = command;
+        this.value = value.toString();
+    }
+
+    public CPacketFluidPatternTermBtns(final Command command, final boolean value) {
+        this(command, value ? 1 : 0);
     }
 
     public CPacketFluidPatternTermBtns() {
@@ -45,29 +61,23 @@ public class CPacketFluidPatternTermBtns implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        int leName = buf.readInt();
+        this.command = Command.values()[buf.readInt()];
+
         int leVal = buf.readInt();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < leName; i++) {
-            sb.append(buf.readChar());
-        }
-        Name = sb.toString();
-        sb = new StringBuilder();
         for (int i = 0; i < leVal; i++) {
             sb.append(buf.readChar());
         }
-        Value = sb.toString();
+        this.value = sb.toString();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(Name.length());
-        buf.writeInt(Value.length());
-        for (int i = 0; i < Name.length(); i++) {
-            buf.writeChar(Name.charAt(i));
-        }
-        for (int i = 0; i < Value.length(); i++) {
-            buf.writeChar(Value.charAt(i));
+        buf.writeInt(this.command.ordinal());
+
+        buf.writeInt(this.value.length());
+        for (int i = 0; i < this.value.length(); i++) {
+            buf.writeChar(this.value.charAt(i));
         }
     }
 
@@ -75,65 +85,62 @@ public class CPacketFluidPatternTermBtns implements IMessage {
 
         @Override
         public IMessage onMessage(CPacketFluidPatternTermBtns message, MessageContext ctx) {
-            String Name = message.Name;
-            String Value = message.Value;
+            final Command command = message.command;
+            final String value = message.value;
             final Container c = ctx.getServerHandler().playerEntity.openContainer;
-            final EntityPlayer player = ctx.getServerHandler().playerEntity;
-            if (Name.startsWith("WirelessTerminal.") && (c instanceof FCBaseContainer)) {
-                final FCBaseContainer cpt = (FCBaseContainer) c;
-                final IItemTerminal itemTerminal = (IItemTerminal) cpt.getHost();
-                final IWirelessExtendCard iwt = (IWirelessExtendCard) itemTerminal;
-                switch (Name) {
-                    case "WirelessTerminal.Stock":
-                        iwt.setRestock(!iwt.isRestock());
-                        break;
-                    case "WirelessTerminal.MagnetMode":
-                        iwt.setMagnetCardNextMode();
-                        break;
-                    case "WirelessTerminal.OpenMagnet":
+            final EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+
+            if (c instanceof ContainerMagnetFilter cmf && cmf.getTarget() instanceof IWirelessMagnetFilter iwmf) {
+                switch (command) {
+                    case MAGNET_FILTER_NBT -> iwmf.setNBTMode(value.equals("1"));
+                    case MAGNET_FILTER_META -> iwmf.setMetaMode(value.equals("1"));
+                    case MAGNET_FILTER_ORE -> iwmf.setOreMode(value.equals("1"));
+                    case MAGNET_FILTER_OREDICT_STATE -> iwmf.setOreDictMode(value.equals("1"));
+                    case MAGNET_FILTER_OREDICT_FILTER -> iwmf.setOreDictFilter(value);
+                    case MAGNET_FILTER_MODE -> iwmf.setListMode(value.equals("1"));
+                    case MAGNET_FILTER_CLEAR -> iwmf.clearConfig();
+                }
+                iwmf.saveSettings();
+            } else if (c instanceof AEBaseContainer abc && abc.getTarget() instanceof ICustomButtonProvider icbp) {
+
+                switch (command) {
+                    case RESTOCK -> {
+                        if (icbp.getDataObject() instanceof UltraTerminalButtons utb) {
+                            utb.toggleRestock();
+                        }
+                    }
+                    case MAGNET_MODE -> {
+                        if (icbp.getDataObject() instanceof UltraTerminalButtons utb) {
+                            utb.toggleMagnetMode();
+                        }
+                    }
+                    case MAGNET_OPEN_FILTER -> {
+                        final PrimaryGui pGui = abc.getPrimaryGui();
+                        final int nextGui = abc.getSwitchAbleGuiNext();
+
                         InventoryHandler.openGui(
                                 player,
                                 player.worldObj,
                                 new BlockPos(
-                                        cpt.getPortableCell().getInventorySlot(),
+                                        ((IInventorySlotAware) abc.getTarget()).getInventorySlot(),
                                         Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
                                         -1),
                                 ForgeDirection.UNKNOWN,
                                 GuiType.WIRELESS_MAGNET_FILTER);
-                        break;
-                    case "WirelessTerminal.magnet.NBT":
-                        ((IWirelessMagnetFilter) itemTerminal).setNBTMode(Value.equals("1"));
-                        break;
-                    case "WirelessTerminal.magnet.Meta":
-                        ((IWirelessMagnetFilter) itemTerminal).setMetaMode(Value.equals("1"));
-                        break;
-                    case "WirelessTerminal.magnet.Ore":
-                        ((IWirelessMagnetFilter) itemTerminal).setOreMode(Value.equals("1"));
-                        break;
-                    case "WirelessTerminal.magnet.OreDictState":
-                        ((IWirelessMagnetFilter) itemTerminal).setOreDictMode(Value.equals("1"));
-                        break;
-                    case "WirelessTerminal.magnet.OreDictFilter":
-                        ((IWirelessMagnetFilter) itemTerminal).setOreDictFilter(Value);
-                        break;
-                    case "WirelessTerminal.magnet.FilterMode":
-                        ((IWirelessMagnetFilter) itemTerminal).setListMode(
-                                Value.equals("1") ? WirelessMagnet.ListMode.WhiteList
-                                        : WirelessMagnet.ListMode.BlackList);
-                        break;
-                    case "WirelessTerminal.magnet.clear":
-                        ((IWirelessMagnetFilter) itemTerminal).clearConfig();
-                        break;
-                }
-                itemTerminal.saveSettings();
-            } else if (Name.startsWith("StorageBus.") && c instanceof ContainerFluidStorageBus ccw) {
-                if (Name.equals("StorageBus.Action")) {
-                    if (Value.equals("Partition")) {
-                        ccw.partition();
-                    } else if (Value.equals("Clear")) {
-                        ccw.clear();
+
+                        if (player.openContainer instanceof IContainerSubGui sg) {
+                            sg.setPrimaryGui(pGui);
+                        }
+
+                        if (player.openContainer instanceof AEBaseContainer ab) {
+                            ab.setSwitchAbleGuiNext(nextGui);
+                        }
                     }
                 }
+
+                icbp.writeCustomButtonData();
+
+                FluidCraft.proxy.netHandler.sendTo(new SPacketCustomButtonUpdate(icbp.getDataObject()), player);
             }
             return null;
         }

@@ -11,6 +11,7 @@ import com.glodblock.github.network.CPacketLevelMaintainer;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.network.CPacketValueConfig;
+import com.glodblock.github.network.SPacketCustomButtonUpdate;
 import com.glodblock.github.network.SPacketFluidUpdate;
 import com.glodblock.github.network.SPacketLevelMaintainerGuiUpdate;
 import com.glodblock.github.network.SPacketLevelTerminalUpdate;
@@ -57,6 +58,11 @@ public class ChannelLoader implements Runnable {
         netHandler.registerMessage(
                 new SPacketLevelMaintainerGuiUpdate.Handler(),
                 SPacketLevelMaintainerGuiUpdate.class,
+                id++,
+                Side.CLIENT);
+        netHandler.registerMessage(
+                new SPacketCustomButtonUpdate.Handler(),
+                SPacketCustomButtonUpdate.class,
                 id++,
                 Side.CLIENT);
     }

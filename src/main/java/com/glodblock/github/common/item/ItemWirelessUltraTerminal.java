@@ -14,16 +14,20 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.UltraTerminalButtons;
+import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.loader.IRegister;
-import com.glodblock.github.network.CPacketSwitchGuis;
+import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.UltraTerminalModes;
 import com.glodblock.github.util.Util;
@@ -33,8 +37,13 @@ import appeng.api.features.IWirelessTermHandler;
 import appeng.api.implementations.guiobjects.IGuiItem;
 import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.api.networking.IGridNode;
+import appeng.container.AEBaseContainer;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.PlayerMessages;
+import appeng.core.sync.GuiBridge;
+import appeng.helpers.ICustomButtonDataObject;
+import appeng.helpers.ICustomButtonProvider;
+import appeng.helpers.ICustomButtonSource;
 import appeng.helpers.WirelessCraftingTerminalGuiObject;
 import appeng.helpers.WirelessInterfaceTerminalGuiObject;
 import appeng.helpers.WirelessPatternTerminalGuiObject;
@@ -45,7 +54,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
-        implements IRegister<ItemWirelessUltraTerminal>, IGuiItem {
+        implements IRegister<ItemWirelessUltraTerminal>, IGuiItem, ICustomButtonSource {
 
     public final static String MODE = "mode";
 
@@ -94,7 +103,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 return new WirelessMagnetCardFilterInventory(stack, x, gridNode, player);
             }
 
-            if (getMode(stack) == UltraTerminalModes.LEVEL) {
+            if (z != 0 ? z == UltraTerminalModes.LEVEL.ordinal() : getMode(stack) == UltraTerminalModes.LEVEL) {
                 return new WirelessLevelTerminalInventory(stack, x, gridNode, player);
             }
         } catch (Exception e) {
@@ -112,17 +121,37 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         return super.onItemRightClick(is, w, player);
     }
 
-    public static void switchTerminal(EntityPlayer player, UltraTerminalModes mode) {
-        ImmutablePair<Integer, ItemStack> temp = Util.getUltraWirelessTerm(player);
-        if (temp == null) return;
-        ItemStack term = temp.getRight();
+    public void switchTerminal(EntityPlayer player, ItemStack term, UltraTerminalModes mode) {
         if (term != null && term.getItem() instanceof ItemWirelessUltraTerminal) {
             if (mode != null) setMode(term, mode);
             else mode = getMode(term);
-
-            if (Platform.isClient()) FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(mode, true));
-            else openGui(term, player.worldObj, player);
+            openGui(term, player.worldObj, player, mode);
         }
+    }
+
+    @Override
+    public void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode) {
+        final GuiBridge aeGui;
+        switch (mode instanceof UltraTerminalModes utm ? utm : getMode(is)) {
+            case CRAFTING -> aeGui = GuiBridge.GUI_CRAFTING_TERMINAL;
+            case PATTERN -> aeGui = GuiBridge.GUI_PATTERN_TERMINAL;
+            case PATTERN_EX -> aeGui = GuiBridge.GUI_PATTERN_TERMINAL_EX;
+            case INTERFACE -> aeGui = GuiBridge.GUI_INTERFACE_TERMINAL;
+            case LEVEL -> {
+                InventoryHandler.openGui(
+                        player,
+                        w,
+                        new BlockPos(
+                                player.inventory.currentItem,
+                                0,
+                                player.openContainer instanceof AEBaseContainer abc ? abc.getSwitchAbleGuiNext() : 0),
+                        ForgeDirection.UNKNOWN,
+                        GuiType.WIRELESS_LEVEL_TERMINAL);
+                return;
+            }
+            default -> aeGui = GuiBridge.GUI_ME;
+        }
+        Platform.openGUI(player, null, null, aeGui);
     }
 
     public static boolean hasInfinityBoosterCard(EntityPlayer player) {
@@ -166,11 +195,16 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return switch (getMode(is)) {
+        return switch (y != -1 ? UltraTerminalModes.values()[y] : getMode(is)) {
             case CRAFTING -> new WirelessCraftingTerminalGuiObject(wh, is, p, world, x, y, z);
             case PATTERN, PATTERN_EX -> new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
             case INTERFACE -> new WirelessInterfaceTerminalGuiObject(wh, is);
             default -> super.getGuiObject(is, world, p, x, y, z);
         };
+    }
+
+    @Override
+    public ICustomButtonDataObject getCustomDataObject(ICustomButtonProvider provider) {
+        return new UltraTerminalButtons();
     }
 }

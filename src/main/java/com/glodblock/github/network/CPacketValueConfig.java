@@ -1,5 +1,7 @@
 package com.glodblock.github.network;
 
+import static com.glodblock.github.util.Util.toggleRestock;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerPlayer;
@@ -10,14 +12,16 @@ import net.minecraft.util.StatCollector;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
-import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
-import com.glodblock.github.inventory.item.WirelessCraftingTerminalInventory;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
+import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.PlayerSource;
+import appeng.api.networking.storage.IStorageGrid;
+import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEItemStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -62,8 +66,7 @@ public class CPacketValueConfig implements IMessage {
                     if (result != null) {
                         final ItemStack wirelessTerm = result.getRight();
                         if (message.valueIndex == 1) {
-                            ItemBaseWirelessTerminal
-                                    .toggleRestockItemsMode(wirelessTerm, !Util.isRestock(wirelessTerm));
+                            toggleRestock(wirelessTerm);
                             player.addChatMessage(
                                     new ChatComponentText(
                                             StatCollector.translateToLocal(
@@ -85,25 +88,31 @@ public class CPacketValueConfig implements IMessage {
 
         @SuppressWarnings("unchecked")
         private void restockItems(ItemStack terminal, IGridNode gridNode, int slot, EntityPlayer player) {
-            WirelessCraftingTerminalInventory inv = new WirelessCraftingTerminalInventory(
-                    terminal,
-                    slot,
-                    gridNode,
-                    player);
+            IGrid targetGrid = gridNode.getGrid();
+            IMEMonitor<IAEItemStack> itemStorage = null;
 
-            for (int i = 0; i < 9; i++) {
-                ItemStack is = player.inventory.mainInventory[i];
-                if (is != null) {
-                    int maxSize = is.getMaxStackSize();
-                    if (is.stackSize < maxSize) {
-                        int fillSize = maxSize - is.stackSize;
-                        IAEItemStack ias = AEApi.instance().storage().createItemStack(is);
-                        ias.setStackSize(fillSize);
+            if (targetGrid != null) {
+                IStorageGrid sg = targetGrid.getCache(IStorageGrid.class);
+                if (sg != null) {
+                    itemStorage = sg.getItemInventory();
+                }
+            }
 
-                        IAEItemStack extractedItem = (IAEItemStack) inv
-                                .extractItems(ias, Actionable.MODULATE, inv.getActionSource());
-                        if (extractedItem != null) {
-                            player.inventory.addItemStackToInventory(extractedItem.getItemStack());
+            if (itemStorage != null) {
+                for (int i = 0; i < 9; i++) {
+                    ItemStack is = player.inventory.mainInventory[i];
+                    if (is != null) {
+                        int maxSize = is.getMaxStackSize();
+                        if (is.stackSize < maxSize) {
+                            int fillSize = maxSize - is.stackSize;
+                            IAEItemStack ias = AEApi.instance().storage().createItemStack(is);
+                            ias.setStackSize(fillSize);
+
+                            IAEItemStack extractedItem = itemStorage
+                                    .extractItems(ias, Actionable.MODULATE, new PlayerSource(player, null));
+                            if (extractedItem != null) {
+                                player.inventory.addItemStackToInventory(extractedItem.getItemStack());
+                            }
                         }
                     }
                 }

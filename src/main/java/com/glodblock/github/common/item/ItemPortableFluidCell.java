@@ -21,7 +21,6 @@ import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.inventory.FluidCellConfig;
 import com.glodblock.github.inventory.item.IItemInventory;
-import com.glodblock.github.inventory.item.PortableFluidCellInventory;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
@@ -184,7 +183,7 @@ public class ItemPortableFluidCell extends AEBasePoweredItem
 
     @Override
     public Object getInventory(ItemStack stack, World world, int x, int y, int z, EntityPlayer player) {
-        return new PortableFluidCellInventory(stack, x);
+        return null;// new PortableFluidCellInventory(stack, x);
     }
 
     public ItemStack stack() {

@@ -8,9 +8,12 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import com.glodblock.github.client.gui.GuiDualInterface;
 import com.glodblock.github.client.gui.GuiFluidAutoFiller;
+import com.glodblock.github.client.gui.GuiFluidIO;
 import com.glodblock.github.client.gui.GuiFluidInterface;
+import com.glodblock.github.client.gui.GuiFluidLevelEmitter;
 import com.glodblock.github.client.gui.GuiFluidPacketDecoder;
 import com.glodblock.github.client.gui.GuiFluidPatternEncoder;
+import com.glodblock.github.client.gui.GuiFluidStorageBus;
 import com.glodblock.github.client.gui.GuiIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLevelMaintainer;
@@ -21,9 +24,12 @@ import com.glodblock.github.client.gui.GuiOCPatternEditor;
 import com.glodblock.github.client.gui.GuiSuperStockReplenisher;
 import com.glodblock.github.client.gui.container.ContainerDualInterface;
 import com.glodblock.github.client.gui.container.ContainerFluidAutoFiller;
+import com.glodblock.github.client.gui.container.ContainerFluidIO;
 import com.glodblock.github.client.gui.container.ContainerFluidInterface;
+import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
 import com.glodblock.github.client.gui.container.ContainerFluidPacketDecoder;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternEncoder;
+import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
 import com.glodblock.github.client.gui.container.ContainerIngredientBuffer;
 import com.glodblock.github.client.gui.container.ContainerLargeIngredientBuffer;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
@@ -32,6 +38,9 @@ import com.glodblock.github.client.gui.container.ContainerLevelWireless;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
 import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
+import com.glodblock.github.common.parts.PartFluidLevelEmitter;
+import com.glodblock.github.common.parts.PartFluidStorageBus;
+import com.glodblock.github.common.parts.base.FCSharedFluidBus;
 import com.glodblock.github.common.tile.TileFluidAutoFiller;
 import com.glodblock.github.common.tile.TileFluidPacketDecoder;
 import com.glodblock.github.common.tile.TileFluidPatternEncoder;
@@ -59,6 +68,19 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, TileFluidAutoFiller inv) {
             return new GuiFluidAutoFiller(player.inventory, inv);
+        }
+    }),
+
+    FLUID_LEVEL_EMITTER(new PartGuiFactory<>(PartFluidLevelEmitter.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, PartFluidLevelEmitter inv) {
+            return new ContainerFluidLevelEmitter(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, PartFluidLevelEmitter inv) {
+            return new GuiFluidLevelEmitter(player.inventory, inv);
         }
     }),
 
@@ -111,6 +133,32 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, IDualHost inv) {
             return new GuiFluidInterface(player.inventory, inv);
+        }
+    }),
+
+    FLUID_BUS_IO(new PartGuiFactory<>(FCSharedFluidBus.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, FCSharedFluidBus inv) {
+            return new ContainerFluidIO(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, FCSharedFluidBus inv) {
+            return new GuiFluidIO(player.inventory, inv);
+        }
+    }),
+
+    FLUID_STORAGE_BUS(new PartGuiFactory<>(PartFluidStorageBus.class) {
+
+        @Override
+        protected Object createServerGui(EntityPlayer player, PartFluidStorageBus inv) {
+            return new ContainerFluidStorageBus(player.inventory, inv);
+        }
+
+        @Override
+        protected Object createClientGui(EntityPlayer player, PartFluidStorageBus inv) {
+            return new GuiFluidStorageBus(player.inventory, inv);
         }
     }),
 

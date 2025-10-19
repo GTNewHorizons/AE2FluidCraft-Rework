@@ -6,12 +6,17 @@ import net.minecraft.inventory.IInventory;
 
 import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurable;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
+import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.FluidPrimaryGui;
 
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.SecurityPermissions;
 import appeng.api.config.Settings;
 import appeng.client.gui.widgets.MEGuiTextField;
+import appeng.container.ContainerOpenContext;
+import appeng.container.PrimaryGui;
 import appeng.container.guisync.GuiSync;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
@@ -95,5 +100,16 @@ public class ContainerFluidLevelEmitter extends FCContainerFluidConfigurable {
                 }
             }
         }
+    }
+
+    @Override
+    public PrimaryGui getPrimaryGui() {
+
+        ContainerOpenContext context = getOpenContext();
+        return new FluidPrimaryGui(
+                GuiType.FLUID_LEVEL_EMITTER,
+                ItemAndBlockHolder.FLUID_LEVEL_EMITTER.stack(),
+                context.getTile(),
+                context.getSide());
     }
 }

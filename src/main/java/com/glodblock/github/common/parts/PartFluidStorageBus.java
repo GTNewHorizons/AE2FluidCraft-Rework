@@ -3,6 +3,7 @@ package com.glodblock.github.common.parts;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -17,7 +18,9 @@ import net.minecraft.util.Vec3;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.MEMonitorIFluidHandler;
+import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 
 import appeng.api.AEApi;
@@ -315,11 +318,14 @@ public class PartFluidStorageBus extends PartUpgradeable
         if (player.isSneaking()) {
             return false;
         }
-        if (Platform.isServer()) {/*
-                                   * InventoryHandler.openGui( player, this.getHost().getTile().getWorldObj(), new
-                                   * BlockPos(this.getHost().getTile()), Objects.requireNonNull(this.getSide()),
-                                   * GuiType.FLUID_STORAGE_BUS);
-                                   */
+        if (Platform.isServer()) {
+            InventoryHandler.openGui(
+                    player,
+                    this.getHost().getTile().getWorldObj(),
+                    new BlockPos(this.getHost().getTile()),
+                    Objects.requireNonNull(this.getSide()),
+                    GuiType.FLUID_STORAGE_BUS);
+
         }
         return true;
     }

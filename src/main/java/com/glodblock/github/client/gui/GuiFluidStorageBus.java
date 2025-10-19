@@ -6,10 +6,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 
 import org.lwjgl.input.Mouse;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
 import com.glodblock.github.common.parts.PartFluidStorageBus;
-import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.config.AccessRestriction;
@@ -21,8 +19,10 @@ import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
+import appeng.core.sync.GuiBridge;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketConfigButton;
+import appeng.core.sync.packets.PacketSwitchGuis;
 
 public class GuiFluidStorageBus extends GuiUpgradeable {
 
@@ -86,11 +86,12 @@ public class GuiFluidStorageBus extends GuiUpgradeable {
         super.actionPerformed(btn);
         final boolean backwards = Mouse.isButtonDown(1);
         if (btn == this.partition) {
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("StorageBus.Action", "Partition"));
+            // FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("StorageBus.Action",
+            // "Partition"));
         } else if (btn == this.clear) {
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("StorageBus.Action", "Clear"));
+            // FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("StorageBus.Action", "Clear"));
         } else if (btn == this.priority) {
-            // InventoryHandler.switchGui(GuiType.PRIORITY);
+            NetworkHandler.instance.sendToServer(new PacketSwitchGuis(GuiBridge.GUI_PRIORITY));
         } else if (btn == this.rwMode) {
             NetworkHandler.instance.sendToServer(new PacketConfigButton(this.rwMode.getSetting(), backwards));
         }

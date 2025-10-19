@@ -12,11 +12,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.p455w0rd.wirelesscraftingterminal.helpers.WirelessTerminalGuiObject;
 
 import com.glodblock.github.inventory.InventoryHandler;
@@ -27,12 +25,9 @@ import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.UltraTerminalModes;
 
 import appeng.api.AEApi;
-import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
-import appeng.api.features.IWirelessTermRegistry;
 import appeng.api.implementations.guiobjects.IGuiItem;
 import appeng.api.implementations.guiobjects.IGuiItemObject;
-import appeng.core.localization.PlayerMessages;
 import appeng.core.sync.GuiBridge;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.util.Platform;
@@ -44,7 +39,6 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     protected Object type;
     public static String infinityBoosterCard = "infinityBoosterCard";
     public static String infinityEnergyCard = "InfinityEnergyCard";
-    public static String restockItems = "restock";
 
     public ItemBaseWirelessTerminal(Object t) {
         super();
@@ -55,37 +49,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     public ItemStack onItemRightClick(final ItemStack item, final World w, final EntityPlayer player) {
         if (player.isSneaking()) return removeInfinityBoosterCard(player, item); // todo: doesn't work in universal
                                                                                  // terminal
-        if (ForgeEventFactory.onItemUseStart(player, item, 1) > 0) {
-            if (Platform.isClient()) return item;
-
-            IWirelessTermRegistry term = AEApi.instance().registries().wireless();
-            if (!term.isWirelessTerminal(item)) {
-                player.addChatMessage(PlayerMessages.DeviceNotWirelessTerminal.toChat());
-                return item;
-            }
-
-            final IWirelessTermHandler handler = term.getWirelessTerminalHandler(item);
-            final String unparsedKey = handler.getEncryptionKey(item);
-            if (unparsedKey.isEmpty()) {
-                player.addChatMessage(PlayerMessages.DeviceNotLinked.toChat());
-                return item;
-            }
-
-            final long parsedKey = Long.parseLong(unparsedKey);
-            final ILocatable securityStation = AEApi.instance().registries().locatable().getLocatableBy(parsedKey);
-            if (securityStation == null) {
-                player.addChatMessage(PlayerMessages.StationCanNotBeLocated.toChat());
-                return item;
-            }
-
-            if (handler.hasPower(player, 0.5, item)) {
-                openGui(item, w, player);
-            } else {
-                player.addChatMessage(PlayerMessages.DeviceNotPowered.toChat());
-            }
-        }
-
-        return item;
+        return super.onItemRightClick(item, w, player);
     }
 
     private ItemStack removeInfinityBoosterCard(final EntityPlayer player, ItemStack is) {
@@ -133,11 +97,6 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         return null;
     }
 
-    public static void toggleRestockItemsMode(ItemStack is, boolean state) {
-        NBTTagCompound data = Platform.openNbtData(is);
-        data.setBoolean(restockItems, state);
-    }
-
     public static UltraTerminalModes getMode(ItemStack is) {
         Item item = is.getItem();
         if (item instanceof ItemWirelessUltraTerminal) {
@@ -157,23 +116,24 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         is.getTagCompound().setInteger(MODE, utm.ordinal());
     }
 
-    public static void openGui(final ItemStack is, final World w, final EntityPlayer player) {
+    @Override
+    public void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode) {
         final GuiBridge aeGui;
-        switch (getMode(is)) {
-            case CRAFTING -> aeGui = GuiBridge.GUI_CRAFTING_TERMINAL;
-            case PATTERN -> aeGui = GuiBridge.GUI_PATTERN_TERMINAL;
-            case PATTERN_EX -> aeGui = GuiBridge.GUI_PATTERN_TERMINAL_EX;
-            case INTERFACE -> aeGui = GuiBridge.GUI_INTERFACE_TERMINAL;
-            case LEVEL -> {
-                InventoryHandler.openGui(
-                        player,
-                        w,
-                        new BlockPos(player.inventory.currentItem, 0, 0),
-                        ForgeDirection.UNKNOWN,
-                        GuiType.WIRELESS_LEVEL_TERMINAL);
-                return;
-            }
-            default -> aeGui = GuiBridge.GUI_ME;
+        Item item = is.getItem();
+        if (item instanceof ItemWirelessPatternTerminal) {
+            aeGui = GuiBridge.GUI_PATTERN_TERMINAL;
+        } else if (item instanceof ItemWirelessInterfaceTerminal) {
+            aeGui = GuiBridge.GUI_INTERFACE_TERMINAL;
+        } else if (item instanceof ItemWirelessLevelTerminal) {
+            InventoryHandler.openGui(
+                    player,
+                    w,
+                    new BlockPos(player.inventory.currentItem, 0, 0),
+                    ForgeDirection.UNKNOWN,
+                    GuiType.WIRELESS_LEVEL_TERMINAL);
+            return;
+        } else {
+            aeGui = GuiBridge.GUI_INTERFACE_TERMINAL; // any wireless gui object will fit
         }
         Platform.openGUI(player, null, null, aeGui);
     }

@@ -17,11 +17,15 @@ import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.client.StorageName;
 import appeng.client.gui.AEBaseGui;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.SlotFake;
 import appeng.core.localization.GuiText;
-import appeng.helpers.InventoryAction;
+import appeng.core.sync.GuiBridge;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.PacketSwitchGuis;
+import appeng.core.sync.packets.PacketVirtualSlot;
 import appeng.util.item.AEItemStack;
 
 public class GuiSuperStockReplenisher extends AEBaseGui {
@@ -40,13 +44,14 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
         if (mouseButton == 3) {
             if (slot instanceof SlotFake) {
                 if (slot.getHasStack()) {
-                    InventoryAction action = InventoryAction.SET_PATTERN_VALUE;
                     IAEItemStack stack = AEItemStack.create(slot.getStack());
                     ((AEBaseContainer) this.inventorySlots).setTargetStack(stack);
                     for (int i = 0; i < this.inventorySlots.inventorySlots.size(); i++) {
                         if (slot.equals(this.inventorySlots.inventorySlots.get(i))) {
-                            // FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, i, 0,
-                            // stack));
+                            NetworkHandler.instance
+                                    .sendToServer(new PacketSwitchGuis(GuiBridge.GUI_PATTERN_VALUE_AMOUNT));
+                            NetworkHandler.instance
+                                    .sendToServer(new PacketVirtualSlot(StorageName.CRAFTING_INPUT, i, stack));
                         }
                     }
                     return;

@@ -1,7 +1,5 @@
 package com.glodblock.github.loader;
 
-import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.switchTerminal;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
@@ -11,6 +9,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.network.CPacketValueConfig;
 import com.glodblock.github.util.Util;
 
@@ -59,7 +58,9 @@ public class KeybindLoader implements Runnable {
     private void handleOpenTerminalKey() {
         if (Minecraft.getMinecraft().currentScreen != null) return;
         EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-        if (player.openContainer != null) switchTerminal(player, null);
+        ImmutablePair<Integer, ItemStack> temp = Util.getUltraWirelessTerm(player);
+        if (temp == null) return;
+        FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(null, true));
     }
 
     private void handleRestockKey() {
