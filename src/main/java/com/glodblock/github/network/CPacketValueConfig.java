@@ -11,7 +11,6 @@ import net.minecraft.util.StatCollector;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import com.glodblock.github.client.gui.container.ContainerFluidLevelEmitter;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
@@ -59,9 +58,7 @@ public class CPacketValueConfig implements IMessage {
             EntityPlayer player = ctx.getServerHandler().playerEntity;
             Container container = player.openContainer;
             if (container != null) {
-                if (container instanceof ContainerFluidLevelEmitter) {
-                    ((ContainerFluidLevelEmitter) container).setLevel(message.amount, player);
-                } else if (container instanceof ContainerPlayer) {
+                if (container instanceof ContainerPlayer) {
                     ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
                     if (result != null) {
                         final ItemStack wirelessTerm = result.getRight();

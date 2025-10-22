@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.client.gui.GuiFluidIO;
 import com.glodblock.github.client.gui.GuiFluidInterface;
-import com.glodblock.github.client.gui.GuiFluidLevelEmitter;
 import com.glodblock.github.client.gui.GuiIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
 import com.glodblock.github.util.Util;
@@ -94,10 +93,6 @@ public class SPacketFluidUpdate implements IMessage {
             } else if (gs instanceof GuiFluidInterface) {
                 for (Map.Entry<Integer, IAEFluidStack> e : message.list.entrySet()) {
                     ((GuiFluidInterface) gs).update(e.getKey(), e.getValue());
-                }
-            } else if (gs instanceof GuiFluidLevelEmitter) {
-                for (Map.Entry<Integer, IAEFluidStack> e : message.list.entrySet()) {
-                    ((GuiFluidLevelEmitter) gs).update(e.getKey(), e.getValue());
                 }
             }
             return null;

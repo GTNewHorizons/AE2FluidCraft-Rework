@@ -83,7 +83,7 @@ public class PartFluidLevelEmitterAdapter implements ILevelViewable, ILevelViewa
         if (stack == null) return new LevelItemInfo[] { null };
         return new LevelItemInfo[] { new LevelItemInfo(
                 stack,
-                delegate.getReportingValue(),
+                1, // delegate.getReportingValue()
                 -1,
                 delegate.isProvidingStrongPower() > 0 ? LevelState.Craft : LevelState.Idle) };
     }
