@@ -52,6 +52,7 @@ import appeng.api.config.TerminalFontSize;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
 import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.data.IAEStack;
 import appeng.client.gui.IGuiTooltipHandler;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -74,7 +75,6 @@ import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
 import appeng.util.Platform;
 import appeng.util.ReadableNumberConverter;
-import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.Loader;
 
 public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextField, IGuiTooltipHandler {
@@ -544,7 +544,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         && relMouseY >= Math.max(viewY + rowYTop, LevelTerminalSection.TITLE_HEIGHT)
                         && relMouseY < Math.min(viewY + rowYBot, viewHeight);
                 if (info != null) {
-                    ItemStack itemStack = info.stack;
+                    IAEStack<?> aes = info.stack;
                     long quantity = info.quantity;
                     long batch = info.batchSize;
                     LevelState state = info.state;
@@ -553,10 +553,10 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     GL11.glTranslatef(colLeft, viewY + rowYTop + 1, ITEM_STACK_Z);
                     GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                     RenderHelper.enableGUIStandardItemLighting();
-                    itemStack.stackSize = 0;
+                    aes.setStackSize(1);
                     renderItem.zLevel = ITEM_STACK_Z - MAGIC_RENDER_ITEM_Z;
-                    renderItem.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
-                    renderItem.renderItemOverlayIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
+                    aes.drawInGui(mc, 0, 0);
+                    aes.drawOverlayInGui(mc, 0, 0, false, false, false, false);
                     GL11.glTranslatef(0.0f, 0.0f, ITEM_STACK_OVERLAY_Z - ITEM_STACK_Z);
                     int color = switch (state) {
                         case Idle -> FCGuiColors.StateIdle.getColor();
@@ -584,7 +584,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                             drawRect(0, 0, 16, 16, GuiColors.ItemSlotOverlayUnpowered.getColor());
                         }
                     } else {
-                        tooltipStack = itemStack;
+                        tooltipStack = Platform.stackConvert(aes).getItemStack();
                     }
                     GL11.glPopMatrix();
                 } else if (entry.filteredRecipes[slotIdx]) {
@@ -1105,7 +1105,9 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                             continue;
                         }
 
-                        if (itemStackMatchesSearchTerm(entry.infoList[i].stack, output)) {
+                        if (itemStackMatchesSearchTerm(
+                                Platform.stackConvert(entry.infoList[i].stack).getItemStack(),
+                                output)) {
                             shouldAdd = true;
                             entry.filteredRecipes[i] = false;
                         } else {
@@ -1234,10 +1236,15 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                                     blockPos.getDimension(),
                                     blockPos.getSide()));
                 } else if (isShiftKeyDown()) {
-                    /*
-                     * FluidCraft.proxy.netHandler.sendToServer( new CPacketRenamer( blockPos.x, blockPos.y, blockPos.z,
-                     * blockPos.getDimension(), blockPos.getSide()));
-                     */
+                    FluidCraft.proxy.netHandler.sendToServer(
+                            new CPacketLevelTerminalCommands(
+                                    Action.RENAME,
+                                    blockPos.x,
+                                    blockPos.y,
+                                    blockPos.z,
+                                    blockPos.getDimension(),
+                                    blockPos.getSide()));
+
                 } else {
                     BlockPosHighlighter.highlightBlocks(
                             mc.thePlayer,
@@ -1274,7 +1281,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 };
 
                 if (action != null && this.infoList[slotIdx] != null) {
-                    AEItemStack aeStack = AEItemStack.create(this.infoList[slotIdx].stack);
+                    IAEStack<?> aeStack = this.infoList[slotIdx].stack;
                     ((AEBaseContainer) inventorySlots).setTargetStack(aeStack);
                     // FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, slotIdx, 0,
                     // aeStack));

@@ -353,7 +353,7 @@ public class TileLevelMaintainer extends AENetworkTile
         return Arrays.stream(this.requests).map(request -> {
             if (request == null) return null;
             return new LevelItemInfo(
-                    request.itemStack.getItemStack(),
+                    AEItemStack.create(request.itemStack.getItemStack()),
                     request.getQuantity(),
                     request.getBatchSize(),
                     request.getState());

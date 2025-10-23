@@ -9,7 +9,6 @@ import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.Nullable;
@@ -155,7 +154,7 @@ public class ContainerLevelTerminal extends FCBaseContainer {
                                 knownTracker.infoList[i] = null;
                                 if (update == null) update = new SPacketLevelTerminalUpdate();
                                 update.addOverwriteSlotEntry(knownTracker.id, i, null);
-                            } else if (!ItemStack.areItemStacksEqual(prev[i].stack, curr[i].stack)
+                            } else if (!Platform.isStacksIdentical(prev[i].stack, curr[i].stack)
                                     || prev[i].quantity == curr[i].quantity
                                     || prev[i].batchSize == curr[i].batchSize
                                     || prev[i].state == curr[i].state) {

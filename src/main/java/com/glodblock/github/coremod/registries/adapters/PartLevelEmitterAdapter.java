@@ -1,7 +1,6 @@
 package com.glodblock.github.coremod.registries.adapters;
 
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -12,8 +11,10 @@ import com.glodblock.github.api.registries.LevelState;
 
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import appeng.client.StorageName;
 import appeng.parts.automation.PartLevelEmitter;
 
 public class PartLevelEmitterAdapter implements ILevelViewable, ILevelViewableAdapter {
@@ -79,7 +80,7 @@ public class PartLevelEmitterAdapter implements ILevelViewable, ILevelViewableAd
 
     @Override
     public LevelItemInfo[] getLevelItemInfoList() {
-        ItemStack stack = delegate.getInventoryByName("config").getStackInSlot(0);
+        IAEStack<?> stack = delegate.getAEInventoryByName(StorageName.NONE).getAEStackInSlot(0);
         if (stack == null) return new LevelItemInfo[] { null };
         return new LevelItemInfo[] { new LevelItemInfo(
                 stack,

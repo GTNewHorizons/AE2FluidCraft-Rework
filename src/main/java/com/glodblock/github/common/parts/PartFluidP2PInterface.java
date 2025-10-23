@@ -61,7 +61,6 @@ import appeng.helpers.IPriorityHost;
 import appeng.me.GridAccessException;
 import appeng.me.cache.CraftingGridCache;
 import appeng.parts.automation.UpgradeInventory;
-import appeng.parts.p2p.PartP2PTunnel;
 import appeng.parts.p2p.PartP2PTunnelStatic;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -304,12 +303,6 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
         final NBTTagCompound output = super.getMemoryCardData();
         this.duality.getConfigManager().writeToNBT(output);
         return output;
-    }
-
-    @Override
-    public void pasteMemoryCardData(PartP2PTunnel<?> newTunnel, NBTTagCompound data) throws GridAccessException {
-        this.duality.getConfigManager().readFromNBT(data);
-        super.pasteMemoryCardData(newTunnel, data);
     }
 
     @Override

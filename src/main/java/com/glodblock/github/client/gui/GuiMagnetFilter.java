@@ -15,7 +15,7 @@ import com.glodblock.github.util.NameConst;
 import appeng.api.config.ActionItems;
 import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
-import appeng.client.gui.implementations.GuiSub;
+import appeng.client.gui.GuiSub;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.MEGuiTextField;
 
