@@ -57,6 +57,7 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
 
             final IInventory upgrades = ci.getUpgradesInventory();
             boolean hasSticky = false;
+            boolean hasInverter = false;
 
             for (int x = 0; x < upgrades.getSizeInventory(); x++) {
                 final ItemStack is = upgrades.getStackInSlot(x);
@@ -64,10 +65,13 @@ public class FluidCellInventoryHandler extends MEInventoryHandler<IAEFluidStack>
                     final Upgrades u = ((IUpgradeModule) is.getItem()).getType(is);
                     if (u == Upgrades.STICKY) {
                         hasSticky = true;
-                        break;
+                    } else if (u == Upgrades.INVERTER) {
+                        hasInverter = true;
                     }
                 }
             }
+
+            this.setWhitelist(hasInverter ? IncludeExclude.BLACKLIST : IncludeExclude.WHITELIST);
 
             if (hasSticky) {
                 setSticky(true);
