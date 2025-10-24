@@ -61,6 +61,7 @@ import appeng.helpers.IPriorityHost;
 import appeng.me.GridAccessException;
 import appeng.me.cache.CraftingGridCache;
 import appeng.parts.automation.UpgradeInventory;
+import appeng.parts.p2p.PartP2PTunnel;
 import appeng.parts.p2p.PartP2PTunnelStatic;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;

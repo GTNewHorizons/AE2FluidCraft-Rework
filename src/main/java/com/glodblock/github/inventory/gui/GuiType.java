@@ -12,7 +12,6 @@ import com.glodblock.github.client.gui.GuiFluidIO;
 import com.glodblock.github.client.gui.GuiFluidInterface;
 import com.glodblock.github.client.gui.GuiFluidPacketDecoder;
 import com.glodblock.github.client.gui.GuiFluidPatternEncoder;
-import com.glodblock.github.client.gui.GuiFluidStorageBus;
 import com.glodblock.github.client.gui.GuiIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLevelEmitterProxy;
@@ -28,7 +27,6 @@ import com.glodblock.github.client.gui.container.ContainerFluidIO;
 import com.glodblock.github.client.gui.container.ContainerFluidInterface;
 import com.glodblock.github.client.gui.container.ContainerFluidPacketDecoder;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternEncoder;
-import com.glodblock.github.client.gui.container.ContainerFluidStorageBus;
 import com.glodblock.github.client.gui.container.ContainerIngredientBuffer;
 import com.glodblock.github.client.gui.container.ContainerLargeIngredientBuffer;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
@@ -37,7 +35,6 @@ import com.glodblock.github.client.gui.container.ContainerLevelWireless;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
 import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
-import com.glodblock.github.common.parts.PartFluidStorageBus;
 import com.glodblock.github.common.parts.base.FCSharedFluidBus;
 import com.glodblock.github.common.tile.TileFluidAutoFiller;
 import com.glodblock.github.common.tile.TileFluidPacketDecoder;
@@ -146,19 +143,6 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, FCSharedFluidBus inv) {
             return new GuiFluidIO(player.inventory, inv);
-        }
-    }),
-
-    FLUID_STORAGE_BUS(new PartGuiFactory<>(PartFluidStorageBus.class) {
-
-        @Override
-        protected Object createServerGui(EntityPlayer player, PartFluidStorageBus inv) {
-            return new ContainerFluidStorageBus(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(EntityPlayer player, PartFluidStorageBus inv) {
-            return new GuiFluidStorageBus(player.inventory, inv);
         }
     }),
 

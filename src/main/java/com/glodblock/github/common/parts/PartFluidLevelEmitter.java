@@ -2,9 +2,12 @@ package com.glodblock.github.common.parts;
 
 import net.minecraft.item.ItemStack;
 
+import appeng.helpers.Reflected;
+
 public class PartFluidLevelEmitter extends PartLevelTerminal {
 
-    public PartFluidLevelEmitter(ItemStack is) {
+    @Reflected
+    public PartFluidLevelEmitter(final ItemStack is) {
         super(is);
     }
 }
