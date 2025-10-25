@@ -5,36 +5,32 @@ import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.api.FluidCraftAPI;
-import com.glodblock.github.common.storage.IFluidCellInventory;
-import com.glodblock.github.common.storage.IFluidCellInventoryHandler;
-import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
-import com.glodblock.github.inventory.FluidCellConfig;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
+import appeng.api.storage.ICellInventory;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.core.features.AEFeature;
 import appeng.core.localization.GuiText;
-import appeng.items.AEBaseItem;
-import appeng.items.contents.CellUpgrades;
+import appeng.items.AEBaseCell;
+import appeng.me.storage.FluidCellInventoryHandler;
 import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ItemFluidVoidStorageCell extends AEBaseItem
-        implements IStorageFluidCell, IRegister<ItemFluidVoidStorageCell> {
+public class ItemFluidVoidStorageCell extends AEBaseCell<IAEFluidStack> implements IRegister<ItemFluidVoidStorageCell> {
 
     public ItemFluidVoidStorageCell() {
-        super();
+        super(com.google.common.base.Optional.absent());
         setUnlocalizedName(NameConst.ITEM_FLUID_VOID_CELL);
         setTextureName(FluidCraft.resource(NameConst.ITEM_FLUID_VOID_CELL).toString());
         this.setFeature(EnumSet.of(AEFeature.StorageCells));
@@ -53,15 +49,15 @@ public class ItemFluidVoidStorageCell extends AEBaseItem
                                       final boolean displayMoreInfo) {
         final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
             .getCellInventory(stack, null, StorageChannel.FLUIDS);
-        if (inventory instanceof final IFluidCellInventoryHandler handler) {
+        if (inventory instanceof final FluidCellInventoryHandler handler) {
             lines.add(NameConst.i18n(NameConst.TT_ITEM_FLUID_VOID_CELL));
             lines.add(GuiText.VoidCellTooltip.getLocal());
             lines.add(0 + " " + GuiText.Of.getLocal() + " \u00A7k9999\u00A77 " + GuiText.BytesUsed.getLocal());
-            final IFluidCellInventory inv = handler.getCellInv();
+            final ICellInventory<IAEFluidStack> inv = handler.getCellInv();
             if (GuiScreen.isShiftKeyDown()) {
                 lines.add(GuiText.Filter.getLocal() + ": ");
                 for (int i = 0; i < inv.getConfigInventory().getSizeInventory(); ++i) {
-                    ItemStack s = inv.getConfigInventory().getStackInSlot(i);
+                    IAEStack<?> s = inv.getConfigInventory().getAEStackInSlot(i);
                     if (s != null) lines.add(s.getDisplayName());
                 }
             }
@@ -69,7 +65,7 @@ public class ItemFluidVoidStorageCell extends AEBaseItem
     }
 
     @Override
-    public long getBytes(ItemStack cellItem) {
+    public long getBytesLong(ItemStack cellItem) {
         return 0;
     }
 
@@ -79,18 +75,13 @@ public class ItemFluidVoidStorageCell extends AEBaseItem
     }
 
     @Override
-    public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
+    public boolean isBlackListed(IAEFluidStack requestedAddition) {
         return requestedAddition == null || requestedAddition.getFluid() == null
                 || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }
 
     @Override
     public boolean storableInStorageCell() {
-        return true;
-    }
-
-    @Override
-    public boolean isStorageCell(ItemStack i) {
         return true;
     }
 
@@ -105,21 +96,6 @@ public class ItemFluidVoidStorageCell extends AEBaseItem
     }
 
     @Override
-    public boolean isEditable(ItemStack is) {
-        return true;
-    }
-
-    @Override
-    public IInventory getUpgradesInventory(ItemStack is) {
-        return new CellUpgrades(is, 5);
-    }
-
-    @Override
-    public IInventory getConfigInventory(ItemStack is) {
-        return new FluidCellConfig(is);
-    }
-
-    @Override
     public FuzzyMode getFuzzyMode(ItemStack is) {
         final String fz = Platform.openNbtData(is).getString("FuzzyMode");
         try {
@@ -130,7 +106,7 @@ public class ItemFluidVoidStorageCell extends AEBaseItem
     }
 
     @Override
-    public void setFuzzyMode(ItemStack is, FuzzyMode fzMode) {
-        Platform.openNbtData(is).setString("FuzzyMode", fzMode.name());
+    public StorageChannel getStorageChannel() {
+        return StorageChannel.FLUIDS;
     }
 }

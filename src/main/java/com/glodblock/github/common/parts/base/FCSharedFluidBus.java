@@ -1,5 +1,7 @@
 package com.glodblock.github.common.parts.base;
 
+import java.util.Objects;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -10,6 +12,8 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 
 import appeng.api.config.RedstoneMode;
@@ -22,6 +26,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartUpgradeable;
 import appeng.tile.inventory.AppEngInternalAEInventory;
+import appeng.util.Platform;
 
 public abstract class FCSharedFluidBus extends PartUpgradeable implements IGridTickable {
 
@@ -64,10 +69,15 @@ public abstract class FCSharedFluidBus extends PartUpgradeable implements IGridT
     public boolean onPartActivate(final EntityPlayer player, final Vec3 pos) {
         if (player.isSneaking()) {
             return false;
-        } /*
-           * if (Platform.isServer()) { InventoryHandler.openGui( player, this.getHost().getTile().getWorldObj(), new
-           * BlockPos(this.getHost().getTile()), Objects.requireNonNull(this.getSide()), GuiType.FLUID_BUS_IO); }
-           */
+        }
+        if (Platform.isServer()) {
+            InventoryHandler.openGui(
+                    player,
+                    this.getHost().getTile().getWorldObj(),
+                    new BlockPos(this.getHost().getTile()),
+                    Objects.requireNonNull(this.getSide()),
+                    GuiType.FLUID_BUS_IO);
+        }
 
         return true;
     }

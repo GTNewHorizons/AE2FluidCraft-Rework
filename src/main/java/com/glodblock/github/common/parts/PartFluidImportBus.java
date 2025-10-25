@@ -23,7 +23,6 @@ import appeng.api.networking.security.BaseActionSource;
 import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
-import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartRenderHelper;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
@@ -146,13 +145,6 @@ public class PartFluidImportBus extends FCSharedFluidBus {
     @Override
     public RedstoneMode getRSMode() {
         return (RedstoneMode) this.getConfigManager().getSetting(Settings.REDSTONE_CONTROLLED);
-    }
-
-    @Override
-    public void getBoxes(final IPartCollisionHelper bch) {
-        bch.addBox(6, 6, 11, 10, 10, 13);
-        bch.addBox(5, 5, 13, 11, 11, 14);
-        bch.addBox(4, 4, 14, 12, 12, 16);
     }
 
     @Override

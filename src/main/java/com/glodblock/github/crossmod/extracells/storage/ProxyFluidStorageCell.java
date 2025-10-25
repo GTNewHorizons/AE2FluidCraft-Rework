@@ -4,23 +4,30 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.api.FluidCraftAPI;
-import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.crossmod.extracells.ProxyItem;
-import com.glodblock.github.inventory.FluidCellConfig;
 
 import appeng.api.config.FuzzyMode;
+import appeng.api.implementations.items.IStorageCell;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
+import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;
 
-public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCell {
+public class ProxyFluidStorageCell extends ProxyItem implements IStorageCell<IAEFluidStack> {
 
     public ProxyFluidStorageCell(String ec2itemName) {
         super(ec2itemName);
     }
 
     @Override
-    public long getBytes(ItemStack cellItem) {
+    public int getBytes(ItemStack cellItem) {
+        return Math.toIntExact(getBytesLong(cellItem));
+    }
+
+    @Override
+    public long getBytesLong(ItemStack cellItem) {
         int meta = cellItem.getItemDamage();
         if (replacements.containsKey(meta)) {
             ProxyItemEntry entry = replacements.get(meta);
@@ -28,6 +35,11 @@ public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCel
                 return ((ProxyStorageEntry) entry).maxBytes;
             }
         }
+        return 0;
+    }
+
+    @Override
+    public int BytePerType(ItemStack cellItem) {
         return 0;
     }
 
@@ -44,7 +56,7 @@ public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCel
     }
 
     @Override
-    public boolean isBlackListed(ItemStack cellItem, IAEFluidStack requestedAddition) {
+    public boolean isBlackListed(IAEFluidStack requestedAddition) {
         return requestedAddition == null || requestedAddition.getFluid() == null
                 || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
     }
@@ -72,6 +84,16 @@ public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCel
     }
 
     @Override
+    public double getIdleDrain() {
+        return 0;
+    }
+
+    @Override
+    public StorageChannel getStorageChannel() {
+        return StorageChannel.FLUIDS;
+    }
+
+    @Override
     public int getTotalTypes(ItemStack cellItem) {
         return 5;
     }
@@ -87,8 +109,8 @@ public class ProxyFluidStorageCell extends ProxyItem implements IStorageFluidCel
     }
 
     @Override
-    public IInventory getConfigInventory(ItemStack is) {
-        return new FluidCellConfig(is);
+    public IAEStackInventory getConfigInventory(ItemStack is) {
+        return new CellConfig(is);
     }
 
     @Override

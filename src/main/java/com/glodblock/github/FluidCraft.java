@@ -3,7 +3,6 @@ package com.glodblock.github;
 import net.minecraft.util.ResourceLocation;
 
 import com.glodblock.github.common.Config;
-import com.glodblock.github.common.storage.FluidCellHandler;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.opencomputers.OCDriverInit;
 import com.glodblock.github.crossmod.waila.WailaInit;
@@ -67,7 +66,6 @@ public class FluidCraft {
     public static void postInit(FMLPostInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(FluidCraft.INSTANCE, new InventoryHandler());
 
-        AEApi.instance().registries().cell().addCellHandler(new FluidCellHandler());
         ItemAndBlockHolder.loadSetting();
 
         if (!Config.removeRecipe) {

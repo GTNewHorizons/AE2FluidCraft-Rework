@@ -6,14 +6,12 @@ import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.Config;
-import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.loader.IRegister;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ItemFluidExtremeStorageCell extends FCBaseItemCell
-        implements IStorageFluidCell, IRegister<ItemFluidExtremeStorageCell> {
+public class ItemFluidExtremeStorageCell extends FCBaseItemCell implements IRegister<ItemFluidExtremeStorageCell> {
 
     private final String name;
 

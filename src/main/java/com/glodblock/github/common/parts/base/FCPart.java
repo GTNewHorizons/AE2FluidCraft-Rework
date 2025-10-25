@@ -221,12 +221,16 @@ public abstract class FCPart extends AEBasePart
         if (Platform.isServer()) {
             if (Util.hasPermission(player, SecurityPermissions.INJECT, (IGridHost) this)
                     || Util.hasPermission(player, SecurityPermissions.EXTRACT, (IGridHost) this)) {
-                Platform.openGUI(player, this.getHost().getTile(), this.getSide(), this.getGui());
+                openGui(player);
             } else {
                 player.addChatComponentMessage(new ChatComponentText("You don't have permission to view."));
             }
         }
         return true;
+    }
+
+    protected void openGui(EntityPlayer player) {
+        Platform.openGUI(player, this.getHost().getTile(), this.getSide(), this.getGui());
     }
 
     @Override

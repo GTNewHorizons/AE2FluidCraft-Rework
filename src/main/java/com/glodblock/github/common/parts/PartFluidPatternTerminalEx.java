@@ -19,7 +19,7 @@ public class PartFluidPatternTerminalEx extends FCPart {
 
     @Override
     public GuiBridge getGui() {
-        return GuiBridge.GUI_ME;
+        return GuiBridge.GUI_PATTERN_TERMINAL_EX;
     }
 
     @Override

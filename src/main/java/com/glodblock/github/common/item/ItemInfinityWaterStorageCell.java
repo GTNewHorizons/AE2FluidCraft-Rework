@@ -4,33 +4,32 @@ import static com.glodblock.github.util.Util.FluidUtil.water_bucket;
 
 import java.util.EnumSet;
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.storage.IStorageFluidCell;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
+import com.glodblock.github.util.Util;
 
 import appeng.api.config.FuzzyMode;
 import appeng.core.features.AEFeature;
-import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.IAEStackInventory;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemInfinityWaterStorageCell extends ItemBaseInfinityStorageCell
-        implements IStorageFluidCell, IRegister<ItemInfinityWaterStorageCell> {
+        implements IRegister<ItemInfinityWaterStorageCell> {
 
     @Override
-    public IInventory getConfigInventory(ItemStack is) {
+    public IAEStackInventory getConfigInventory(ItemStack is) {
         return new InfinityConfig(water_bucket);
     }
 
-    public static class InfinityConfig extends AppEngInternalInventory {
+    public static class InfinityConfig extends IAEStackInventory {
 
         public InfinityConfig(final ItemStack is) {
             super(null, 1);
-            this.setInventorySlotContents(0, is);
+            this.putAEStackInSlot(0, Util.getAEFluidFromItem(is));
         }
 
         @Override
@@ -38,7 +37,7 @@ public class ItemInfinityWaterStorageCell extends ItemBaseInfinityStorageCell
     }
 
     public ItemInfinityWaterStorageCell() {
-        super();
+        super(com.google.common.base.Optional.absent());
         setUnlocalizedName(NameConst.ITEM_INFINITY_WATER_FLUID_STORAGE);
         setTextureName(FluidCraft.resource(NameConst.ITEM_INFINITY_FLUID_STORAGE).toString());
         this.setFeature(EnumSet.of(AEFeature.StorageCells));

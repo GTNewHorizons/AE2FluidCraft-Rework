@@ -1,11 +1,17 @@
 package com.glodblock.github.common.parts;
 
+import java.util.Objects;
+
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.parts.base.FCPart;
+import com.glodblock.github.inventory.InventoryHandler;
+import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IClickableInTerminal;
+import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
 import appeng.core.sync.GuiBridge;
@@ -80,5 +86,15 @@ public class PartLevelTerminal extends FCPart implements IClickableInTerminal {
     @Override
     public Util.DimensionalCoordSide getClickedInterface() {
         return this.tile;
+    }
+
+    @Override
+    protected void openGui(EntityPlayer player) {
+        InventoryHandler.openGui(
+                player,
+                this.getHost().getTile().getWorldObj(),
+                new BlockPos(this.getHost().getTile()),
+                Objects.requireNonNull(this.getSide()),
+                GuiType.LEVEL_TERMINAL);
     }
 }
