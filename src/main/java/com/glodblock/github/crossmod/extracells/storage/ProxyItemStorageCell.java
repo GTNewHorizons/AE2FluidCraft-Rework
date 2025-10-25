@@ -9,16 +9,18 @@ import com.glodblock.github.crossmod.extracells.ProxyItem;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.implementations.items.IStorageCell;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.items.contents.CellConfig;
 import appeng.items.contents.CellUpgrades;
+import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;
 
 /**
  * Proxy Item Storage. 256K, 1024K, etc. -> AE2's version. For now its just mirroring AE2's version, will need to
  * transition to something better.
  */
-public class ProxyItemStorageCell extends ProxyItem implements IStorageCell {
+public class ProxyItemStorageCell extends ProxyItem implements IStorageCell<IAEItemStack> {
 
     public ProxyItemStorageCell(String ec2itemName) {
         super(ec2itemName);
@@ -90,7 +92,7 @@ public class ProxyItemStorageCell extends ProxyItem implements IStorageCell {
     }
 
     @Override
-    public boolean isBlackListed(ItemStack cellItem, IAEItemStack requestedAddition) {
+    public boolean isBlackListed(IAEItemStack requestedAddition) {
         return false;
     }
 
@@ -125,6 +127,11 @@ public class ProxyItemStorageCell extends ProxyItem implements IStorageCell {
     }
 
     @Override
+    public StorageChannel getStorageChannel() {
+        return StorageChannel.ITEMS;
+    }
+
+    @Override
     public boolean isEditable(ItemStack is) {
         return true;
     }
@@ -135,7 +142,7 @@ public class ProxyItemStorageCell extends ProxyItem implements IStorageCell {
     }
 
     @Override
-    public IInventory getConfigInventory(ItemStack is) {
+    public IAEStackInventory getConfigInventory(ItemStack is) {
         return new CellConfig(is);
     }
 

@@ -87,7 +87,6 @@ public class ItemReplacements {
         GameRegistry.registerItem(voidCell, "ec2placeholder.storage.physical.void");
         registry.put("extracells:storage.physical.void", voidCell);
         deprecateItem("pattern.fluid", ItemAndBlockHolder.PATTERN);
-        deprecateWireless("terminal.fluid.wireless", ItemAndBlockHolder.WIRELESS_FLUID_TERM);
 
         /* Storage casings */
         deprecateItem("storage.casing", 0, AEApi.instance().definitions().materials().emptyAdvancedStorageCell());

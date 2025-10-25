@@ -5,11 +5,16 @@ import net.minecraft.entity.player.InventoryPlayer;
 import com.glodblock.github.client.gui.container.base.FCContainerFluidConfigurable;
 import com.glodblock.github.common.parts.PartFluidExportBus;
 import com.glodblock.github.common.parts.base.FCSharedFluidBus;
+import com.glodblock.github.inventory.gui.GuiType;
+import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.FluidPrimaryGui;
 
 import appeng.api.config.SchedulingMode;
 import appeng.api.config.Settings;
 import appeng.api.config.YesNo;
 import appeng.api.util.IConfigManager;
+import appeng.container.ContainerOpenContext;
+import appeng.container.PrimaryGui;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 
 public class ContainerFluidIO extends FCContainerFluidConfigurable {
@@ -41,5 +46,17 @@ public class ContainerFluidIO extends FCContainerFluidConfigurable {
 
     public void setSchedulingMode(final SchedulingMode schedulingMode) {
         this.schedulingMode = schedulingMode;
+    }
+
+    @Override
+    public PrimaryGui getPrimaryGui() {
+
+        ContainerOpenContext context = getOpenContext();
+        return new FluidPrimaryGui(
+                GuiType.FLUID_BUS_IO,
+                getTarget() instanceof PartFluidExportBus ? ItemAndBlockHolder.FLUID_EXPORT_BUS.stack()
+                        : ItemAndBlockHolder.FLUID_IMPORT_BUS.stack(),
+                context.getTile(),
+                context.getSide());
     }
 }

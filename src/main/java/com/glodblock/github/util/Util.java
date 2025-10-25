@@ -2,7 +2,7 @@ package com.glodblock.github.util;
 
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityBoosterCard;
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityEnergyCard;
-import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.restockItems;
+import static com.glodblock.github.inventory.UltraTerminalButtons.restockItems;
 import static com.glodblock.github.util.Util.DimensionalCoordSide.hasEnergyCard;
 import static net.minecraft.init.Items.glass_bottle;
 
@@ -145,6 +145,13 @@ public final class Util {
             return data.hasKey(restockItems) && data.getBoolean(restockItems);
         }
         return false;
+    }
+
+    public static void toggleRestock(ItemStack is) {
+        if (is.getItem() instanceof ItemWirelessUltraTerminal) {
+            NBTTagCompound data = Platform.openNbtData(is);
+            data.setBoolean(restockItems, !data.getBoolean(restockItems));
+        }
     }
 
     public static boolean hasInfinityBoosterCard(ItemStack is) {

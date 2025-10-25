@@ -2,7 +2,6 @@ package com.glodblock.github.common.parts.base;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,8 +17,6 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
@@ -44,6 +41,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.IConfigManager;
 import appeng.client.texture.CableBusTextures;
+import appeng.core.sync.GuiBridge;
 import appeng.me.GridAccessException;
 import appeng.parts.AEBasePart;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -149,7 +147,7 @@ public abstract class FCPart extends AEBasePart
         this.viewCell.writeToNBT(data, "viewCell");
     }
 
-    public abstract GuiType getGui();
+    public abstract GuiBridge getGui();
 
     @Override
     public void writeToStream(final ByteBuf data) throws IOException {
@@ -223,12 +221,16 @@ public abstract class FCPart extends AEBasePart
         if (Platform.isServer()) {
             if (Util.hasPermission(player, SecurityPermissions.INJECT, (IGridHost) this)
                     || Util.hasPermission(player, SecurityPermissions.EXTRACT, (IGridHost) this)) {
-                InventoryHandler.openGui(player, te.getWorldObj(), tePos, Objects.requireNonNull(getSide()), getGui());
+                openGui(player);
             } else {
                 player.addChatComponentMessage(new ChatComponentText("You don't have permission to view."));
             }
         }
         return true;
+    }
+
+    protected void openGui(EntityPlayer player) {
+        Platform.openGUI(player, this.getHost().getTile(), this.getSide(), this.getGui());
     }
 
     @Override

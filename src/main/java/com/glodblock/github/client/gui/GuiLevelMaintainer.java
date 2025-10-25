@@ -22,7 +22,6 @@ import org.lwjgl.opengl.GL11;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -96,7 +95,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                         "");
             } else if (target instanceof IWirelessTerminal terminal && terminal.isUniversal(target)) {
                 icon = ItemAndBlockHolder.WIRELESS_ULTRA_TERM.stack();
-                originalGui = ItemWirelessUltraTerminal.readMode(terminal.getItemStack());
                 originalBlockPos = new Util.DimensionalCoordSide(
                         terminal.getInventorySlot(),
                         Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),

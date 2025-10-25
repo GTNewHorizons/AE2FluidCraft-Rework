@@ -3,7 +3,6 @@ package com.glodblock.github;
 import net.minecraft.util.ResourceLocation;
 
 import com.glodblock.github.common.Config;
-import com.glodblock.github.common.storage.FluidCellHandler;
 import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.opencomputers.OCDriverInit;
 import com.glodblock.github.crossmod.waila.WailaInit;
@@ -13,7 +12,6 @@ import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.loader.RecipeLoader;
 import com.glodblock.github.loader.filter.FluidFilter;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.proxy.CommonProxy;
 import com.glodblock.github.util.ModAndClassUtil;
 
@@ -25,8 +23,6 @@ import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(
@@ -70,7 +66,6 @@ public class FluidCraft {
     public static void postInit(FMLPostInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(FluidCraft.INSTANCE, new InventoryHandler());
 
-        AEApi.instance().registries().cell().addCellHandler(new FluidCellHandler());
         ItemAndBlockHolder.loadSetting();
 
         if (!Config.removeRecipe) {
@@ -96,16 +91,6 @@ public class FluidCraft {
     @Mod.EventHandler
     public void onLoadComplete(FMLLoadCompleteEvent event) {
         proxy.onLoadComplete(event);
-    }
-
-    @Mod.EventHandler
-    public void onServerStart(FMLServerStartingEvent event) {
-        SPacketMEUpdateBuffer.init();
-    }
-
-    @Mod.EventHandler
-    public void onServerStop(FMLServerStoppedEvent event) {
-        SPacketMEUpdateBuffer.disable();
     }
 
     @Mod.EventHandler

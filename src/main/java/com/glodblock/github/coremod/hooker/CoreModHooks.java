@@ -4,7 +4,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.glodblock.github.client.gui.GuiFluidCraftConfirm;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 
@@ -25,12 +24,5 @@ public class CoreModHooks {
             return guiTooltipHandler.getHoveredStack();
         }
         return null;
-    }
-
-    public static boolean shouldShowTooltip(GuiContainer gui) {
-        if (gui instanceof GuiFluidCraftConfirm guiCraftConfirm) {
-            return guiCraftConfirm.getHoveredStack() == null;
-        }
-        return true;
     }
 }

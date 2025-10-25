@@ -1,12 +1,14 @@
 package com.glodblock.github.network;
 
+import static appeng.util.Platform.readStackByte;
+import static appeng.util.Platform.writeStackByte;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +16,7 @@ import com.glodblock.github.api.registries.LevelItemInfo;
 import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.GuiLevelTerminal;
 
+import appeng.api.storage.data.IAEStack;
 import appeng.core.AEConfig;
 import appeng.core.AELog;
 import appeng.core.features.AEFeature;
@@ -176,7 +179,7 @@ public class SPacketLevelTerminalUpdate implements IMessage {
             infolist = new LevelItemInfo[infoSize];
             for (int i = 0; i < infoSize; i++) {
                 if (!buf.readBoolean()) continue;
-                ItemStack stack = ByteBufUtils.readItemStack(buf);
+                IAEStack<?> stack = readStackByte(buf);
                 long quantity = buf.readLong();
                 long batchSize = buf.readLong();
                 LevelState state = LevelState.values()[buf.readInt()];
@@ -206,7 +209,7 @@ public class SPacketLevelTerminalUpdate implements IMessage {
                 buf.writeBoolean(info != null);
                 if (info == null) continue;
                 // System.out.println("Writing info: " + info.stack != null);
-                ByteBufUtils.writeItemStack(buf, info.stack);
+                writeStackByte(info.stack, buf);
                 buf.writeLong(info.quantity);
                 buf.writeLong(info.batchSize);
                 buf.writeInt(info.state.ordinal());
@@ -293,7 +296,7 @@ public class SPacketLevelTerminalUpdate implements IMessage {
             this.index = buf.readInt();
             if (buf.readBoolean()) {
                 this.info = new LevelItemInfo(
-                        ByteBufUtils.readItemStack(buf),
+                        readStackByte(buf),
                         buf.readLong(),
                         buf.readLong(),
                         LevelState.values()[buf.readInt()]);
@@ -312,7 +315,7 @@ public class SPacketLevelTerminalUpdate implements IMessage {
             super.write(buf);
             buf.writeInt(index);
             buf.writeBoolean(info != null);
-            ByteBufUtils.writeItemStack(buf, info.stack);
+            writeStackByte(info.stack, buf);
             buf.writeLong(info.quantity);
             buf.writeLong(info.batchSize);
             buf.writeInt(info.state.ordinal());
@@ -334,7 +337,7 @@ public class SPacketLevelTerminalUpdate implements IMessage {
             this.infoList = new LevelItemInfo[infoSize];
             for (int i = 0; i < infoSize; i++) {
                 if (!buf.readBoolean()) continue;
-                ItemStack stack = ByteBufUtils.readItemStack(buf);
+                IAEStack<?> stack = readStackByte(buf);
                 long quantity = buf.readLong();
                 long batchSize = buf.readLong();
                 LevelState state = LevelState.values()[buf.readInt()];
@@ -356,7 +359,7 @@ public class SPacketLevelTerminalUpdate implements IMessage {
                 buf.writeBoolean(info != null);
                 if (info == null) continue;
                 buf.writeInt(i);
-                ByteBufUtils.writeItemStack(buf, info.stack);
+                writeStackByte(info.stack, buf);
                 buf.writeLong(info.quantity);
                 buf.writeLong(info.batchSize);
                 buf.writeInt(info.state.ordinal());

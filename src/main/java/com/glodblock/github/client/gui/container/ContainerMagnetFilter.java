@@ -5,12 +5,12 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-import com.glodblock.github.client.gui.container.base.FCBaseContainer;
-import com.glodblock.github.inventory.item.IItemTerminal;
 import com.glodblock.github.inventory.item.IWirelessMagnetFilter;
 import com.glodblock.github.inventory.item.WirelessMagnet;
+import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 
 import appeng.api.storage.ITerminalHost;
+import appeng.container.ContainerSubGui;
 import appeng.container.guisync.GuiSync;
 import appeng.container.slot.AppEngSlot;
 import appeng.container.slot.IOptionalSlotHost;
@@ -19,7 +19,7 @@ import appeng.container.slot.SlotFake;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.util.Platform;
 
-public class ContainerMagnetFilter extends FCBaseContainer implements IOptionalSlotHost {
+public class ContainerMagnetFilter extends ContainerSubGui implements IOptionalSlotHost {
 
     @GuiSync(101)
     public WirelessMagnet.ListMode listMode;
@@ -41,12 +41,14 @@ public class ContainerMagnetFilter extends FCBaseContainer implements IOptionalS
 
     protected OptionalSlotFake[] filterSlots;
     protected final IInventory filter;
+    private final IWirelessMagnetFilter object;
 
     public ContainerMagnetFilter(InventoryPlayer ip, ITerminalHost monitorable) {
         super(ip, monitorable);
-        this.filter = ((IItemTerminal) monitorable).getInventoryByName("config");
+        this.object = (WirelessMagnetCardFilterInventory) monitorable;
+        this.filter = object.getInventoryByName("config");
         this.filterSlots = new OptionalSlotFake[27];
-        oreDictFilter = ((IWirelessMagnetFilter) getHost()).getOreDictFilter();
+        oreDictFilter = object.getOreDictFilter();
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
                 this.addSlotToContainer(
@@ -62,12 +64,8 @@ public class ContainerMagnetFilter extends FCBaseContainer implements IOptionalS
                 this.filterSlots[x + y * 9].setRenderDisabled(false);
             }
         }
+        this.lockPlayerInventorySlot(this.object.getInventorySlot());
         bindPlayerInventory(ip, 0, 126);
-    }
-
-    @Override
-    protected boolean isWirelessTerminal() {
-        return true;
     }
 
     @Override
@@ -87,14 +85,13 @@ public class ContainerMagnetFilter extends FCBaseContainer implements IOptionalS
 
     @Override
     public void detectAndSendChanges() {
-        if (Platform.isServer() && this.getPortableCell() instanceof IWirelessMagnetFilter) {
-            IWirelessMagnetFilter host = (IWirelessMagnetFilter) this.getHost();
-            this.listMode = host.getListMode();
-            this.meta = host.getMetaMode();
-            this.nbt = host.getNBTMode();
-            this.ore = host.getOreMode();
-            this.oreDict = host.getOreDictMode();
-            this.oreDictFilter = host.getOreDictFilter();
+        if (Platform.isServer()) {
+            this.listMode = this.object.getListMode();
+            this.meta = this.object.getMetaMode();
+            this.nbt = this.object.getNBTMode();
+            this.ore = this.object.getOreMode();
+            this.oreDict = this.object.getOreDictMode();
+            this.oreDictFilter = this.object.getOreDictFilter();
         }
         super.detectAndSendChanges();
     }

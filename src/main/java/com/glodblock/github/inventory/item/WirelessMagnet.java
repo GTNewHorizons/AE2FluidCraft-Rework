@@ -29,13 +29,7 @@ public class WirelessMagnet {
 
         Off,
         Inv,
-        ME;
-
-        private static final Mode[] MODES = Mode.values();
-
-        public static Mode[] getModes() {
-            return MODES;
-        }
+        ME
     }
 
     public enum ListMode {
@@ -144,7 +138,7 @@ public class WirelessMagnet {
         if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
             NBTTagCompound data = Platform.openNbtData(is);
             if (data.hasKey(modeKey)) {
-                return Mode.getModes()[data.getInteger(modeKey)];
+                return Mode.values()[data.getInteger(modeKey)];
             }
             setMode(is, Mode.Off);
         }
