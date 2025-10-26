@@ -10,10 +10,10 @@ import com.glodblock.github.client.gui.container.ContainerFluidAutoFiller;
 import com.glodblock.github.common.tile.TileFluidAutoFiller;
 import com.glodblock.github.util.NameConst;
 
-import appeng.client.gui.AEBaseMEGui;
+import appeng.client.gui.AEBaseGui;
 import appeng.core.localization.GuiText;
 
-public class GuiFluidAutoFiller extends AEBaseMEGui {
+public class GuiFluidAutoFiller extends AEBaseGui {
 
     protected EntityPlayer player;
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/fluid_auto_filler.png");

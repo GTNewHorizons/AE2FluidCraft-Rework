@@ -3,9 +3,9 @@ package com.glodblock.github.client.gui.base;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 
-import appeng.client.gui.AEBaseMEGui;
+import appeng.client.gui.AEBaseGui;
 
-public abstract class FCBaseMEGui extends AEBaseMEGui {
+public abstract class FCBaseMEGui extends AEBaseGui {
 
     public FCBaseMEGui(final InventoryPlayer inventoryPlayer, Container container) {
         super(container);
