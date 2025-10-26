@@ -19,6 +19,7 @@ import com.glodblock.github.util.RenderUtil;
 import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.items.AEBasePortableCell;
 import appeng.items.contents.CellUpgrades;
 import appeng.items.contents.PortableCellViewer;
@@ -26,8 +27,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPortableFluidCell extends AEBasePortableCell<IAEFluidStack>
-        implements IRegister<ItemPortableFluidCell> {
+public class ItemPortableFluidCell extends AEBasePortableCell implements IRegister<ItemPortableFluidCell> {
 
     public ItemPortableFluidCell() {
         super();
@@ -60,9 +60,10 @@ public class ItemPortableFluidCell extends AEBasePortableCell<IAEFluidStack>
     }
 
     @Override
-    public boolean isBlackListed(IAEFluidStack requestedAddition) {
-        return requestedAddition == null || requestedAddition.getFluid() == null
-                || FluidCraftAPI.instance().isBlacklistedInStorage(requestedAddition.getFluid().getClass());
+    public boolean isBlackListed(IAEStack<?> requestedAddition) {
+
+        return requestedAddition instanceof IAEFluidStack ifs && (ifs.getFluid() == null
+                || FluidCraftAPI.instance().isBlacklistedInStorage(ifs.getFluid().getClass()));
     }
 
     @Override

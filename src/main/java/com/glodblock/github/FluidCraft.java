@@ -3,7 +3,6 @@ package com.glodblock.github;
 import net.minecraft.util.ResourceLocation;
 
 import com.glodblock.github.common.Config;
-import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.opencomputers.OCDriverInit;
 import com.glodblock.github.crossmod.waila.WailaInit;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -20,7 +19,6 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
-import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -91,13 +89,6 @@ public class FluidCraft {
     @Mod.EventHandler
     public void onLoadComplete(FMLLoadCompleteEvent event) {
         proxy.onLoadComplete(event);
-    }
-
-    @Mod.EventHandler
-    public void missingMappings(FMLMissingMappingsEvent event) {
-        if (!ModAndClassUtil.EC2 && Config.replaceEC2) {
-            EC2Replacer.replaceExtraCells(event);
-        }
     }
 
     public static ResourceLocation resource(String path) {

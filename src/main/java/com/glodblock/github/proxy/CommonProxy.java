@@ -15,7 +15,6 @@ import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.common.parts.PartFluidP2PInterface;
 import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.common.tile.TileWalrus;
-import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
@@ -96,9 +95,6 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-        if (!ModAndClassUtil.EC2 && Config.replaceEC2) {
-            EC2Replacer.initReplacer();
-        }
         if (ModAndClassUtil.ThE) {
             ThaumicEnergisticsCrafting.postInit();
         }

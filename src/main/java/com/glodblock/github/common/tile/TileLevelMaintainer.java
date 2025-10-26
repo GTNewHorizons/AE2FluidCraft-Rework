@@ -51,6 +51,7 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
@@ -200,26 +201,22 @@ public class TileLevelMaintainer extends AENetworkTile
                 IAEItemStack craftItem = requests[i].itemStack.copy();
                 craftItem.setStackSize(batchSize);
 
+                IAEStack<?> aeItem = craftItem.getItem() instanceof ItemFluidDrop
+                        ? invFluid.findPrecise(ItemFluidDrop.getAeFluidStack(craftItem))
+                        : invItems.findPrecise(craftItem);
+
                 if (ModAndClassUtil.ThE) {
                     if (ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
-                        craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
+                        aeItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
                     }
                 }
 
-                IAEItemStack aeItem = invItems.findPrecise(craftItem);
-
-                long stackSize;
-
-                if (craftItem.getItem() instanceof ItemFluidDrop) {
-                    IAEFluidStack ifs = invFluid.findPrecise(ItemFluidDrop.getAeFluidStack(craftItem));
-                    stackSize = ifs == null ? 0 : ifs.getStackSize();
-                } else {
-                    stackSize = aeItem == null ? 0 : aeItem.getStackSize();
-                }
+                long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
 
                 if (ModAndClassUtil.ThE) {
-                    if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
-                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(aeItem, grid);
+                    if (aeItem instanceof IAEItemStack ais
+                            && ThaumicEnergisticsCrafting.isAspectStack(ais.getItemStack())) {
+                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(ais, grid);
                     }
                 }
 
@@ -243,11 +240,11 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
-                if (craftingGrid.canEmitFor(craftItem)) {
+                if (craftingGrid.canEmitFor(aeItem)) {
                     continue;
                 }
 
-                if (craftingGrid.isRequesting(craftItem)) {
+                if (craftingGrid.isRequesting(aeItem)) {
                     continue;
                 }
 
