@@ -21,7 +21,7 @@ public class ItemInfinityWaterStorageCell extends ItemBaseInfinityStorageCell
         implements IRegister<ItemInfinityWaterStorageCell> {
 
     @Override
-    public IAEStackInventory getConfigInventory(ItemStack is) {
+    public IAEStackInventory getConfigAEInventory(ItemStack is) {
         return new InfinityConfig(water_bucket);
     }
 
