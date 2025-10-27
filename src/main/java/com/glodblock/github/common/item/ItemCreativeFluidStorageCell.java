@@ -9,16 +9,15 @@ import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 
-import appeng.api.config.FuzzyMode;
+import appeng.api.storage.StorageChannel;
 import appeng.core.features.AEFeature;
-import appeng.util.Platform;
+import appeng.items.AEBaseInfiniteCell;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ItemCreativeFluidStorageCell extends ItemBaseInfinityStorageCell
+public class ItemCreativeFluidStorageCell extends AEBaseInfiniteCell
         implements IRegister<ItemCreativeFluidStorageCell> {
 
     public ItemCreativeFluidStorageCell() {
-        super(com.google.common.base.Optional.absent());
         setUnlocalizedName(NameConst.ITEM_CREATIVE_FLUID_STORAGE);
         setTextureName(FluidCraft.resource(NameConst.ITEM_CREATIVE_FLUID_STORAGE).toString());
         this.setFeature(EnumSet.of(AEFeature.StorageCells));
@@ -26,19 +25,24 @@ public class ItemCreativeFluidStorageCell extends ItemBaseInfinityStorageCell
     }
 
     @Override
-    public FuzzyMode getFuzzyMode(ItemStack is) {
-        final String fz = Platform.openNbtData(is).getString("FuzzyMode");
-        try {
-            return FuzzyMode.valueOf(fz);
-        } catch (final Throwable t) {
-            return FuzzyMode.IGNORE_ALL;
-        }
-    }
-
-    @Override
     public ItemCreativeFluidStorageCell register() {
         GameRegistry.registerItem(this, NameConst.ITEM_CREATIVE_FLUID_STORAGE, FluidCraft.MODID);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
+    }
+
+    @Override
+    public boolean isEditable(ItemStack is) {
+        return true;
+    }
+
+    @Override
+    public int getTotalTypes(ItemStack cellItem) {
+        return 63;
+    }
+
+    @Override
+    public StorageChannel getStorageChannel() {
+        return StorageChannel.FLUIDS;
     }
 }

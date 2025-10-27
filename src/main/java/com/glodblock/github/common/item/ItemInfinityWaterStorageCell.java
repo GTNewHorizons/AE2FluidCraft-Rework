@@ -12,18 +12,14 @@ import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
-import appeng.api.config.FuzzyMode;
+import appeng.api.storage.StorageChannel;
 import appeng.core.features.AEFeature;
+import appeng.items.AEBaseInfiniteCell;
 import appeng.tile.inventory.IAEStackInventory;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ItemInfinityWaterStorageCell extends ItemBaseInfinityStorageCell
+public class ItemInfinityWaterStorageCell extends AEBaseInfiniteCell
         implements IRegister<ItemInfinityWaterStorageCell> {
-
-    @Override
-    public IAEStackInventory getConfigAEInventory(ItemStack is) {
-        return new InfinityConfig(water_bucket);
-    }
 
     public static class InfinityConfig extends IAEStackInventory {
 
@@ -37,7 +33,6 @@ public class ItemInfinityWaterStorageCell extends ItemBaseInfinityStorageCell
     }
 
     public ItemInfinityWaterStorageCell() {
-        super(com.google.common.base.Optional.absent());
         setUnlocalizedName(NameConst.ITEM_INFINITY_WATER_FLUID_STORAGE);
         setTextureName(FluidCraft.resource(NameConst.ITEM_INFINITY_FLUID_STORAGE).toString());
         this.setFeature(EnumSet.of(AEFeature.StorageCells));
@@ -52,16 +47,22 @@ public class ItemInfinityWaterStorageCell extends ItemBaseInfinityStorageCell
     }
 
     @Override
+    public IAEStackInventory getConfigAEInventory(ItemStack is) {
+        return new InfinityConfig(water_bucket);
+    }
+
+    @Override
     public boolean isEditable(ItemStack is) {
         return false;
     }
 
     @Override
-    public FuzzyMode getFuzzyMode(ItemStack is) {
-        return FuzzyMode.IGNORE_ALL;
+    public int getTotalTypes(ItemStack cellItem) {
+        return 1;
     }
 
     @Override
-    public void setFuzzyMode(ItemStack is, FuzzyMode fzMode) {}
-
+    public StorageChannel getStorageChannel() {
+        return StorageChannel.FLUIDS;
+    }
 }
