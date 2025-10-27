@@ -1,7 +1,5 @@
 package com.glodblock.github.client.gui;
 
-import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.hasInfinityBoosterCard;
-
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -504,7 +502,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             entry.renameButton.yPosition = viewY + 1;
             entry.configButton.yPosition = viewY + 1;
             GuiFCImgButton toRender;
-            if (isCtrlKeyDown() && isShiftKeyDown() && hasInfinityBoosterCard(player)) {
+            if (isCtrlKeyDown() && isShiftKeyDown()) {
                 toRender = entry.configButton;
             } else if (isShiftKeyDown()) {
                 toRender = entry.renameButton;
