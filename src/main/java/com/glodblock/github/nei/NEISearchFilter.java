@@ -55,7 +55,7 @@ public class NEISearchFilter implements SearchTokenParser.ISearchParserProvider 
 
         @Override
         public boolean matches(ItemStack itemStack) {
-            if (itemStack.getItem() instanceof AEBaseCell<?>) {
+            if (itemStack.getItem() instanceof AEBaseCell) {
                 final IMEInventoryHandler<?> inventory = AEApi.instance().registries().cell()
                     .getCellInventory(itemStack, null, StorageChannel.FLUIDS);
                 if (inventory instanceof final FluidCellInventoryHandler handler) {

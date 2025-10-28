@@ -7,10 +7,9 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.google.common.base.Optional;
 
 import appeng.api.storage.StorageChannel;
-import appeng.api.storage.data.IAEFluidStack;
 import appeng.items.AEBaseCell;
 
-public abstract class FCBaseItemCell extends AEBaseCell<IAEFluidStack> {
+public abstract class FCBaseItemCell extends AEBaseCell {
 
     protected CellType component;
 
