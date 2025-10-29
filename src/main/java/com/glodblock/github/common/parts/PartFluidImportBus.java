@@ -2,11 +2,13 @@ package com.glodblock.github.common.parts;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.util.BlockPos;
 
 import appeng.api.config.Actionable;
@@ -26,6 +28,11 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
 
     public PartFluidImportBus(ItemStack is) {
         super(is);
+    }
+
+    @Override
+    public IIcon getFaceIcon() {
+        return FCPartsTexture.PartFluidImportBus.getIcon();
     }
 
     @Override

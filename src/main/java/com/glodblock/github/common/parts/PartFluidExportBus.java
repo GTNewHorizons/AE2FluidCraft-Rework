@@ -1,6 +1,9 @@
 package com.glodblock.github.common.parts;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+
+import com.glodblock.github.client.textures.FCPartsTexture;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.Upgrades;
@@ -15,6 +18,11 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
 
     public PartFluidExportBus(ItemStack is) {
         super(is);
+    }
+
+    @Override
+    public IIcon getFaceIcon() {
+        return FCPartsTexture.PartFluidExportBus.getIcon();
     }
 
     @Override
