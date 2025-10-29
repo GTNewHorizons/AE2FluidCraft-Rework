@@ -8,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import com.glodblock.github.client.gui.GuiDualInterface;
 import com.glodblock.github.client.gui.GuiFluidAutoFiller;
-import com.glodblock.github.client.gui.GuiFluidIO;
 import com.glodblock.github.client.gui.GuiFluidInterface;
 import com.glodblock.github.client.gui.GuiFluidPacketDecoder;
 import com.glodblock.github.client.gui.GuiFluidPatternEncoder;
@@ -23,7 +22,6 @@ import com.glodblock.github.client.gui.GuiOCPatternEditor;
 import com.glodblock.github.client.gui.GuiSuperStockReplenisher;
 import com.glodblock.github.client.gui.container.ContainerDualInterface;
 import com.glodblock.github.client.gui.container.ContainerFluidAutoFiller;
-import com.glodblock.github.client.gui.container.ContainerFluidIO;
 import com.glodblock.github.client.gui.container.ContainerFluidInterface;
 import com.glodblock.github.client.gui.container.ContainerFluidPacketDecoder;
 import com.glodblock.github.client.gui.container.ContainerFluidPatternEncoder;
@@ -35,7 +33,6 @@ import com.glodblock.github.client.gui.container.ContainerLevelWireless;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.client.gui.container.ContainerOCPatternEditor;
 import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
-import com.glodblock.github.common.parts.base.FCSharedFluidBus;
 import com.glodblock.github.common.tile.TileFluidAutoFiller;
 import com.glodblock.github.common.tile.TileFluidPacketDecoder;
 import com.glodblock.github.common.tile.TileFluidPatternEncoder;
@@ -130,19 +127,6 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, IDualHost inv) {
             return new GuiFluidInterface(player.inventory, inv);
-        }
-    }),
-
-    FLUID_BUS_IO(new PartGuiFactory<>(FCSharedFluidBus.class) {
-
-        @Override
-        protected Object createServerGui(EntityPlayer player, FCSharedFluidBus inv) {
-            return new ContainerFluidIO(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(EntityPlayer player, FCSharedFluidBus inv) {
-            return new GuiFluidIO(player.inventory, inv);
         }
     }),
 

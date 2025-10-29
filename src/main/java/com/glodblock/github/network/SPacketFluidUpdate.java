@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
-import com.glodblock.github.client.gui.GuiFluidIO;
 import com.glodblock.github.client.gui.GuiFluidInterface;
 import com.glodblock.github.client.gui.GuiIngredientBuffer;
 import com.glodblock.github.client.gui.GuiLargeIngredientBuffer;
@@ -85,10 +84,6 @@ public class SPacketFluidUpdate implements IMessage {
             } else if (gs instanceof GuiLargeIngredientBuffer) {
                 for (Map.Entry<Integer, IAEFluidStack> e : message.list.entrySet()) {
                     ((GuiLargeIngredientBuffer) gs).update(e.getKey(), e.getValue());
-                }
-            } else if (gs instanceof GuiFluidIO) {
-                for (Map.Entry<Integer, IAEFluidStack> e : message.list.entrySet()) {
-                    ((GuiFluidIO) gs).update(e.getKey(), e.getValue());
                 }
             } else if (gs instanceof GuiFluidInterface) {
                 for (Map.Entry<Integer, IAEFluidStack> e : message.list.entrySet()) {
