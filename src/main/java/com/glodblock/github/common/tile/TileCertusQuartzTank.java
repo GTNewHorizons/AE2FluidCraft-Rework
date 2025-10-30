@@ -20,19 +20,7 @@ import com.glodblock.github.util.BlockPos;
 public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     private FluidStack lastBeforeUpdate = null;
-    public FluidTank tank = new FluidTank(32000) {
-
-        @Override
-        public FluidTank readFromNBT(NBTTagCompound nbt) {
-            if (!nbt.hasKey("Empty")) {
-                FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
-                setFluid(fluid);
-            } else {
-                setFluid(null);
-            }
-            return this;
-        }
-    };
+    public FluidTank tank = new FluidTank(32000);
     private boolean hasUpdate;
 
     @Override
