@@ -225,50 +225,41 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         return null;
     }
 
-    public FluidTankInfo[] getTankInfo(boolean goToMainTank) {
-        if (!goToMainTank) return new FluidTankInfo[] { this.tank.getInfo() };
-
-        int amount = 0, capacity = 0;
-        Fluid fluid = null;
-
-        int yOff = 0;
-        TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-        TileCertusQuartzTank mainTank;
-        while (true) {
-            if (offTE instanceof TileCertusQuartzTank) {
-                if (((TileCertusQuartzTank) offTE).getFluid() == null
-                        || ((TileCertusQuartzTank) offTE).getFluid() == getFluid()) {
-                    yOff++;
-                    offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-                    continue;
-                }
-            }
-            break;
+    public FluidTankInfo[] getTankInfo(boolean countAllTanksInColumn) {
+        if (!countAllTanksInColumn) {
+            return new FluidTankInfo[] { this.tank.getInfo() };
         }
 
-        yOff -= 1;
-        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-        while (true) {
-            if (offTE instanceof TileCertusQuartzTank) {
-                mainTank = (TileCertusQuartzTank) offTE;
-                if (mainTank.getFluid() == null || getFluid() == null || mainTank.getFluid() == getFluid()) {
-                    FluidTankInfo info = mainTank.getTankInfo(false)[0];
-                    if (info != null) {
-                        capacity += info.capacity;
-                        if (info.fluid != null) {
-                            amount += info.fluid.amount;
-                            if (info.fluid.getFluid() != null) fluid = info.fluid.getFluid();
-                        }
-                    }
-                    offTE = new BlockPos(offTE).getOffSet(0, 1, 0).getTileEntity();
-                    continue;
-                }
+        final FluidStack tankFluidStack = this.tank.getFluid();
+        final Fluid mainFluid = tankFluidStack != null ? tankFluidStack.getFluid() : null;
+
+        int amount = tankFluidStack == null ? 0 : tankFluidStack.amount;
+        int capacity = this.tank.getCapacity();
+
+        TileCertusQuartzTank tankAbove = this;
+        while ((tankAbove = tankAbove.getTankAbove()) != null) {
+            if (tankAbove.getFluid() == null || mainFluid != tankAbove.getFluid()) {
+                break;
             }
-            break;
+
+            FluidTankInfo info = tankAbove.tank.getInfo();
+            amount += info.fluid == null ? 0 : info.fluid.amount;
+            capacity += info.capacity;
+        }
+
+        TileCertusQuartzTank tankBelow = this;
+        while ((tankBelow = tankBelow.getTankBelow()) != null) {
+            if (mainFluid == null || mainFluid != tankBelow.getFluid()) {
+                break;
+            }
+
+            FluidTankInfo info = tankBelow.tank.getInfo();
+            amount += info.fluid == null ? 0 : info.fluid.amount;
+            capacity += info.capacity;
         }
 
         return new FluidTankInfo[] {
-                new FluidTankInfo(fluid != null ? new FluidStack(fluid, amount) : null, capacity) };
+                new FluidTankInfo(mainFluid != null ? new FluidStack(mainFluid, amount) : null, capacity) };
     }
 
     @Override
