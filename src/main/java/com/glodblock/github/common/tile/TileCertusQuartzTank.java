@@ -64,6 +64,10 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
     }
 
     public FluidStack drain(FluidStack fluid, boolean doDrain, boolean findMainTank) {
+        if (fluid == null || this.getFluid() == null || this.getFluid() != fluid.getFluid()) {
+            return null;
+        }
+
         if (findMainTank) {
             int yOff = 0;
             TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
@@ -108,9 +112,6 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-        if (this.tank.getFluid() == null || resource == null || resource.getFluid() != this.tank.getFluid().getFluid())
-            return null;
-
         return drain(resource, doDrain, true);
     }
 
@@ -122,6 +123,10 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
     }
 
     public int fill(FluidStack fluid, boolean doFill, boolean findMainTank) {
+        if (fluid == null || this.getFluid() != null && this.getFluid() != fluid.getFluid()) {
+            return 0;
+        }
+
         if (findMainTank) {
             int yOff = 0;
             TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
@@ -162,8 +167,6 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
      */
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-        if (resource == null || this.tank.getFluid() != null && resource.getFluid() != this.tank.getFluid().getFluid())
-            return 0;
         return fill(resource, doFill, true);
     }
 
