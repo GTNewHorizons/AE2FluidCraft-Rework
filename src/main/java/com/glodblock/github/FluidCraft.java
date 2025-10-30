@@ -10,11 +10,9 @@ import com.glodblock.github.loader.CalculatorV2PluginLoader;
 import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.loader.RecipeLoader;
-import com.glodblock.github.loader.filter.FluidFilter;
 import com.glodblock.github.proxy.CommonProxy;
 import com.glodblock.github.util.ModAndClassUtil;
 
-import appeng.api.AEApi;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -78,9 +76,6 @@ public class FluidCraft {
 
         if (ModAndClassUtil.isV2) {
             CalculatorV2PluginLoader.installCalculatorV2Plugins();
-        }
-        if (ModAndClassUtil.isTypeFilter) {
-            AEApi.instance().registries().itemDisplay().addItemFilter(FluidFilter::filter);
         }
 
         proxy.postInit(event);

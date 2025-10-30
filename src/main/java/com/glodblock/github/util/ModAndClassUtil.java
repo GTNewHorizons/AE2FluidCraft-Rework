@@ -37,7 +37,6 @@ public final class ModAndClassUtil {
     public static boolean NEW_HORIZONS_CORE_MOD = false;
 
     public static boolean isV2;
-    public static boolean isTypeFilter;
     public static boolean isDoubleButton;
     public static boolean isSaveText;
     public static boolean isSearchStringTooltip;
@@ -119,12 +118,6 @@ public final class ModAndClassUtil {
             isV2 = true;
         } catch (ClassNotFoundException e) {
             isV2 = false;
-        }
-        try {
-            Class<?> filter = Class.forName("appeng.core.features.registries.ItemDisplayRegistry");
-            isTypeFilter = true;
-        } catch (ClassNotFoundException e) {
-            isTypeFilter = false;
         }
 
         if (Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi")) {
