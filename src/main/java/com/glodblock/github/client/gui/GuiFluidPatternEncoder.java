@@ -22,7 +22,6 @@ import com.glodblock.github.common.tile.TileFluidPatternEncoder;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.slot.ISlotFluid;
 import com.glodblock.github.inventory.slot.SlotSingleItem;
-import com.glodblock.github.network.CPacketEncodePattern;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.storage.data.IAEItemStack;
@@ -50,7 +49,7 @@ public class GuiFluidPatternEncoder extends AEBaseGui {
             public boolean onClick(int button) {
                 if (button == 0) {
                     if (cont.canEncodePattern()) {
-                        FluidCraft.proxy.netHandler.sendToServer(new CPacketEncodePattern());
+                        // FluidCraft.proxy.netHandler.sendToServer(new CPacketEncodePattern());
                     }
                     return true;
                 }

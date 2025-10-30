@@ -15,11 +15,11 @@ import com.glodblock.github.inventory.slot.OptionalFluidSlotFakeTypeOnly;
 import com.glodblock.github.network.SPacketFluidUpdate;
 
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.container.AEBaseContainer;
+import appeng.container.ContainerSubGui;
 import appeng.container.slot.IOptionalSlotHost;
 import appeng.util.item.AEFluidStack;
 
-public class ContainerFluidInterface extends AEBaseContainer implements IOptionalSlotHost {
+public class ContainerFluidInterface extends ContainerSubGui implements IOptionalSlotHost {
 
     private final IDualHost tile;
 

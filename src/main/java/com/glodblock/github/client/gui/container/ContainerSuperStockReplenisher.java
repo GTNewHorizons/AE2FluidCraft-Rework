@@ -3,6 +3,8 @@ package com.glodblock.github.client.gui.container;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -13,19 +15,36 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.FCBaseItemCell;
+import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
+import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.slot.OptionalFluidSlotFake;
+import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketSuperStockReplenisherUpdate;
+import com.glodblock.github.util.FluidPrimaryGui;
 
+import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.client.StorageName;
+import appeng.client.gui.implementations.GuiPatternItemRenamer;
+import appeng.client.gui.implementations.GuiPatternValueAmount;
 import appeng.container.AEBaseContainer;
+import appeng.container.ContainerOpenContext;
+import appeng.container.PrimaryGui;
 import appeng.container.slot.IOptionalSlotHost;
 import appeng.container.slot.SlotPatternOutputs;
 import appeng.container.slot.SlotRestrictedInput;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.PacketVirtualSlot;
+import appeng.helpers.IVirtualSlotHolder;
+import appeng.helpers.IVirtualSlotSource;
 import appeng.items.storage.ItemBasicStorageCell;
+import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
-public class ContainerSuperStockReplenisher extends AEBaseContainer implements IOptionalSlotHost {
+public class ContainerSuperStockReplenisher extends AEBaseContainer
+        implements IOptionalSlotHost, IVirtualSlotHolder, IVirtualSlotSource {
 
     private final TileSuperStockReplenisher tile;
     private final IInventory configFluids;
@@ -151,4 +170,52 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
     public TileSuperStockReplenisher getTile() {
         return tile;
     }
+
+    @Override
+    public PrimaryGui getPrimaryGui() {
+
+        ContainerOpenContext context = getOpenContext();
+        return new FluidPrimaryGui(
+                GuiType.GUI_SUPER_STOCK_REPLENISHER,
+                ItemAndBlockHolder.SUPER_STOCK_RERPLENISHER.stack(),
+                context.getTile(),
+                context.getSide());
+    }
+
+    @Override
+    public void receiveSlotStacks(StorageName invName, Int2ObjectMap<IAEStack<?>> slotStacks) {
+        var entry = slotStacks.int2ObjectEntrySet().iterator().next();
+        IAEStack<?> aes = entry.getValue();
+        int slotIndex = entry.getIntKey();
+
+        if (Platform.isServer()) {
+            for (ICrafting crafter : this.crafters) {
+                final EntityPlayerMP emp = (EntityPlayerMP) crafter;
+                NetworkHandler.instance.sendTo(new PacketVirtualSlot(invName, slotIndex, aes), emp);
+            }
+        } else {
+            final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
+            if (gs instanceof GuiPatternValueAmount gpva) {
+                gpva.update();
+            } else if (gs instanceof GuiPatternItemRenamer gpir) {
+                gpir.update();
+            }
+        }
+    }
+
+    @Override
+    public void updateVirtualSlot(StorageName invName, int slotId, IAEStack<?> aes) {
+        if (aes instanceof IAEItemStack ais) {
+            ItemStack newIs;
+            if (ais.getItem() instanceof ItemFluidPacket) {
+                newIs = ais.getItemStack();
+                newIs.stackSize = 1;
+                ItemFluidPacket.setFluidAmount(newIs, aes.getStackSize());
+            } else {
+                newIs = ais.getItemStack();
+            }
+            this.inventorySlots.get(slotId).putStack(newIs);
+        }
+    }
+
 }
