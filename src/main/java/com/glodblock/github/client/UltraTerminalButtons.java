@@ -1,4 +1,4 @@
-package com.glodblock.github.inventory;
+package com.glodblock.github.client;
 
 import static appeng.util.Platform.nextEnum;
 import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.MODE;

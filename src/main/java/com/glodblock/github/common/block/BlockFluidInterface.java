@@ -11,14 +11,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 import com.glodblock.github.client.render.RenderBlockFluidInterface;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileFluidInterface;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.util.IOrientable;
 import appeng.block.AEBaseItemBlock;
 import appeng.core.features.AEFeature;
+import appeng.core.sync.GuiBridge;
 import appeng.tile.misc.TileInterface;
 import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -50,12 +48,7 @@ public class BlockFluidInterface extends FCBaseBlock {
         final TileInterface tg = this.getTileEntity(world, x, y, z);
         if (tg != null) {
             if (Platform.isServer()) {
-                InventoryHandler.openGui(
-                        player,
-                        world,
-                        new BlockPos(x, y, z),
-                        ForgeDirection.getOrientation(facing),
-                        GuiType.DUAL_INTERFACE);
+                Platform.openGUI(player, tg, ForgeDirection.getOrientation(facing), GuiBridge.GUI_INTERFACE);
             }
             return true;
         }

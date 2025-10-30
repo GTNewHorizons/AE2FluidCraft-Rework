@@ -1,25 +1,23 @@
 package com.glodblock.github.common.parts;
 
-import java.util.Objects;
+import java.util.List;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 
+import com.glodblock.github.client.FluidInterfaceButtons;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.Util;
 
@@ -30,20 +28,25 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.util.IConfigManager;
 import appeng.helpers.DualityInterface;
+import appeng.helpers.ICustomButtonDataObject;
+import appeng.helpers.ICustomButtonProvider;
 import appeng.parts.p2p.PartP2PInterface;
 import appeng.parts.p2p.PartP2PTunnel;
 import appeng.tile.inventory.AppEngInternalAEInventory;
-import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost {
+public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost, ICustomButtonProvider {
 
     private final DualityFluidInterface dualityFluid = new DualityFluidInterface(this.getProxy(), this);
     private final AppEngInternalAEInventory config = new AppEngInternalAEInventory(this, 6);
 
+    private ICustomButtonDataObject customButtonDataObject;
+
     public PartFluidP2PInterface(ItemStack is) {
         super(is);
+
+        this.customButtonDataObject = new FluidInterfaceButtons(false);
     }
 
     @Override
@@ -60,28 +63,6 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
             p2PInterface.duality.getConfigManager().readFromNBT(data);
         }
         return newTunnel;
-    }
-
-    @Override
-    public boolean onPartActivate(final EntityPlayer p, final Vec3 pos) {
-        if (super.onPartActivate(p, pos)) {
-            return true;
-        }
-
-        if (p.isSneaking()) {
-            return false;
-        }
-
-        if (Platform.isServer()) {
-            InventoryHandler.openGui(
-                    p,
-                    this.getHost().getTile().getWorldObj(),
-                    new BlockPos(this.getHost().getTile()),
-                    Objects.requireNonNull(this.getSide()),
-                    GuiType.DUAL_INTERFACE);
-        }
-
-        return true;
     }
 
     @Override
@@ -185,5 +166,39 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
         if (id >= 0 && id < 6) {
             dualityFluid.getInternalFluid().setFluidInSlot(id, fluid);
         }
+    }
+
+    @Override
+    public ItemStack getPrimaryGuiIcon() {
+        return ItemAndBlockHolder.FLUID_INTERFACE.stack();
+    }
+
+    @Override
+    public void writeCustomButtonData() {}
+
+    @Override
+    public void readCustomButtonData() {}
+
+    @Override
+    public void initCustomButtons(int guiLeft, int guiTop, int xSize, int ySize, int xOffset, int yOffset,
+            List<GuiButton> buttonList) {
+        if (customButtonDataObject != null)
+            customButtonDataObject.initCustomButtons(guiLeft, guiTop, xSize, ySize, xOffset, yOffset, buttonList);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean actionPerformedCustomButtons(final GuiButton btn) {
+        return customButtonDataObject != null && customButtonDataObject.actionPerformedCustomButtons(btn);
+    }
+
+    @Override
+    public ICustomButtonDataObject getDataObject() {
+        return customButtonDataObject;
+    }
+
+    @Override
+    public void setDataObject(ICustomButtonDataObject dataObject) {
+        customButtonDataObject = dataObject;
     }
 }

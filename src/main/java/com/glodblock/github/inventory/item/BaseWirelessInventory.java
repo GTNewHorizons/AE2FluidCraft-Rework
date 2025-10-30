@@ -1,7 +1,7 @@
 package com.glodblock.github.inventory.item;
 
 import static appeng.util.Platform.nextEnum;
-import static com.glodblock.github.inventory.UltraTerminalButtons.restockItems;
+import static com.glodblock.github.client.UltraTerminalButtons.restockItems;
 import static com.glodblock.github.inventory.item.WirelessMagnet.modeKey;
 
 import java.util.Objects;

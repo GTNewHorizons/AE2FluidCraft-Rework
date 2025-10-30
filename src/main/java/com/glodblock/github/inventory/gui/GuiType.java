@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import com.glodblock.github.client.gui.GuiDualInterface;
 import com.glodblock.github.client.gui.GuiFluidAutoFiller;
 import com.glodblock.github.client.gui.GuiFluidInterface;
 import com.glodblock.github.client.gui.GuiFluidPacketDecoder;
@@ -20,7 +19,6 @@ import com.glodblock.github.client.gui.GuiLevelWireless;
 import com.glodblock.github.client.gui.GuiMagnetFilter;
 import com.glodblock.github.client.gui.GuiOCPatternEditor;
 import com.glodblock.github.client.gui.GuiSuperStockReplenisher;
-import com.glodblock.github.client.gui.container.ContainerDualInterface;
 import com.glodblock.github.client.gui.container.ContainerFluidAutoFiller;
 import com.glodblock.github.client.gui.container.ContainerFluidInterface;
 import com.glodblock.github.client.gui.container.ContainerFluidPacketDecoder;
@@ -47,7 +45,6 @@ import com.google.common.collect.ImmutableList;
 
 import appeng.api.storage.ITerminalHost;
 import appeng.container.implementations.ContainerLevelEmitter;
-import appeng.helpers.IInterfaceHost;
 import appeng.helpers.ILevelEmitter;
 
 public enum GuiType {
@@ -101,19 +98,6 @@ public enum GuiType {
         @Override
         protected Object createClientGui(EntityPlayer player, TileOCPatternEditor inv) {
             return new GuiOCPatternEditor(player.inventory, inv);
-        }
-    }),
-
-    DUAL_INTERFACE(new TileOrPartGuiFactory<>(IInterfaceHost.class) {
-
-        @Override
-        protected Object createServerGui(EntityPlayer player, IInterfaceHost inv) {
-            return new ContainerDualInterface(player.inventory, inv);
-        }
-
-        @Override
-        protected Object createClientGui(EntityPlayer player, IInterfaceHost inv) {
-            return new GuiDualInterface(player.inventory, inv);
         }
     }),
 

@@ -19,9 +19,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.UltraTerminalButtons;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.UltraTerminalButtons;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
 import com.glodblock.github.inventory.item.WirelessMagnet;

@@ -5,6 +5,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.network.CPacketCustomButtonUpdate;
 import com.glodblock.github.network.CPacketDumpTank;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.network.CPacketLevelMaintainer;
@@ -65,6 +66,11 @@ public class ChannelLoader implements Runnable {
                 SPacketCustomButtonUpdate.class,
                 id++,
                 Side.CLIENT);
+        netHandler.registerMessage(
+                new CPacketCustomButtonUpdate.Handler(),
+                CPacketCustomButtonUpdate.class,
+                id++,
+                Side.SERVER);
     }
 
     public static void sendPacketToAllPlayers(Packet packet, World world) {

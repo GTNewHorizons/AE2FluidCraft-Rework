@@ -8,7 +8,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.util.BlockPos;
 
 import appeng.core.sync.GuiBridge;
@@ -18,10 +17,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class InventoryHandler implements IGuiHandler {
-
-    public static void switchGui(Object guiType) {
-        FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis());
-    }
 
     public static void openGui(EntityPlayer player, World world, BlockPos pos, ForgeDirection face, Object guiType) {
         if (Platform.isClient()) {

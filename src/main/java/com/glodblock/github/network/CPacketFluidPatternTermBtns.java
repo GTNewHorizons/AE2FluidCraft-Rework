@@ -5,9 +5,9 @@ import net.minecraft.inventory.Container;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.UltraTerminalButtons;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.UltraTerminalButtons;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IWirelessMagnetFilter;
 import com.glodblock.github.util.BlockPos;
