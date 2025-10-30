@@ -54,10 +54,11 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         }
 
         boolean amountSufficientlyChanged = Math.abs(current.amount - this.lastBeforeUpdate.amount) >= 500;
-        boolean filledStateChanged = (current.amount == this.tank.getCapacity())
-                != (this.lastBeforeUpdate.amount == this.tank.getCapacity());
+        boolean isFull = current.amount == this.tank.getCapacity();
+        boolean wasFull = this.lastBeforeUpdate.amount == this.tank.getCapacity();
+        boolean fullStateChanged = isFull != wasFull;
 
-        if (amountSufficientlyChanged || filledStateChanged) {
+        if (amountSufficientlyChanged || fullStateChanged) {
             ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
             this.lastBeforeUpdate = current.copy();
         }
