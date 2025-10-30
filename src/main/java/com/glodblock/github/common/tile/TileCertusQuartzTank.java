@@ -69,24 +69,19 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         }
 
         if (findMainTank) {
-            int yOff = 0;
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
+            // Main tank is the highest tank in the column with desired fluid
             TileCertusQuartzTank mainTank = this;
-            while (true) {
-                if (offTE instanceof TileCertusQuartzTank) {
-                    Fluid offFluid = ((TileCertusQuartzTank) offTE).getFluid();
-                    if (offFluid != null && offFluid == fluid.getFluid()) {
-                        mainTank = (TileCertusQuartzTank) this.worldObj
-                                .getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
-                        yOff++;
-                        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
-                        continue;
-                    }
+            TileCertusQuartzTank tankAbove;
+
+            while ((tankAbove = mainTank.getTankAbove()) != null) {
+                // We can't drain tank with different or null fluid
+                if (fluid.getFluid() != tankAbove.getFluid()) {
+                    break;
                 }
-                break;
+                mainTank = tankAbove;
             }
 
-            return mainTank != null ? mainTank.drain(fluid, doDrain, false) : null;
+            return mainTank.drain(fluid, doDrain, false);
         }
 
         FluidStack drained = this.tank.drain(fluid.amount, doDrain);
@@ -128,24 +123,24 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         }
 
         if (findMainTank) {
-            int yOff = 0;
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
+            // Main tank is the lowest tank in the column with desired fluid
             TileCertusQuartzTank mainTank = this;
-            while (true) {
-                if (offTE instanceof TileCertusQuartzTank) {
-                    Fluid offFluid = ((TileCertusQuartzTank) offTE).getFluid();
-                    if (offFluid == null || offFluid == fluid.getFluid()) {
-                        mainTank = (TileCertusQuartzTank) this.worldObj
-                                .getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-                        yOff++;
-                        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-                        continue;
-                    }
+            TileCertusQuartzTank tankBelow;
+
+            while ((tankBelow = mainTank.getTankBelow()) != null) {
+                FluidStack fluidBelow = tankBelow.tank.getFluid();
+                // We can't fill already full tank
+                if (fluidBelow != null && fluidBelow.amount == tankBelow.tank.getCapacity()) {
+                    break;
                 }
-                break;
+                // We can't fill tank with different fluid
+                if (tankBelow.getFluid() != null && fluid.getFluid() != tankBelow.getFluid()) {
+                    break;
+                }
+                mainTank = tankBelow;
             }
 
-            return mainTank != null ? mainTank.fill(fluid, doFill, false) : 0;
+            return mainTank.fill(fluid, doFill, false);
         }
 
         int filled = this.tank.fill(fluid, doFill);
@@ -196,9 +191,8 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     @Override
     public void updateEntity() {
-        super.updateEntity();
         if (this.tank.getFluid() != null) {
-            TileCertusQuartzTank below = getTankBelow(this);
+            TileCertusQuartzTank below = getTankBelow();
             if (below != null) {
                 FluidStack filled = this.tank.getFluid().copy();
                 filled.amount = below.fill(this.tank.getFluid(), true, true);
@@ -216,10 +210,18 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         }
     }
 
-    private TileCertusQuartzTank getTankBelow(TileEntity tile) {
-        TileEntity tank = new BlockPos(tile).getOffSet(0, -1, 0).getTileEntity();
-        if (tank instanceof TileCertusQuartzTank) {
-            return (TileCertusQuartzTank) tank;
+    private TileCertusQuartzTank getTankAbove() {
+        TileEntity tile = new BlockPos(this).getOffSet(0, 1, 0).getTileEntity();
+        if (tile instanceof TileCertusQuartzTank tankTile) {
+            return tankTile;
+        }
+        return null;
+    }
+
+    private TileCertusQuartzTank getTankBelow() {
+        TileEntity tile = new BlockPos(this).getOffSet(0, -1, 0).getTileEntity();
+        if (tile instanceof TileCertusQuartzTank tankTile) {
+            return tankTile;
         }
         return null;
     }
