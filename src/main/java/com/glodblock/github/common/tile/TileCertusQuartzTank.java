@@ -39,28 +39,27 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
     }
 
     public void compareAndUpdate() {
-        if (!this.worldObj.isRemote) {
-            FluidStack current = this.tank.getFluid();
-            if (current != null) {
-                if (this.lastBeforeUpdate != null) {
-                    if (Math.abs(current.amount - this.lastBeforeUpdate.amount) >= 500) {
-                        ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                        this.lastBeforeUpdate = current.copy();
-                    } else if (this.lastBeforeUpdate.amount < this.tank.getCapacity()
-                            && current.amount == this.tank.getCapacity()
-                            || this.lastBeforeUpdate.amount == this.tank.getCapacity()
-                                    && current.amount < this.tank.getCapacity()) {
-                                        ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                                        this.lastBeforeUpdate = current.copy();
-                                    }
-                } else {
-                    ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                    this.lastBeforeUpdate = current.copy();
-                }
-            } else if (this.lastBeforeUpdate != null) {
+        if (this.worldObj.isRemote) {
+            return;
+        }
+
+        FluidStack current = this.tank.getFluid();
+
+        if (current == null || this.lastBeforeUpdate == null) {
+            if (current != this.lastBeforeUpdate) {
                 ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                this.lastBeforeUpdate = null;
+                this.lastBeforeUpdate = current == null ? null : current.copy();
             }
+            return;
+        }
+
+        boolean amountSufficientlyChanged = Math.abs(current.amount - this.lastBeforeUpdate.amount) >= 500;
+        boolean filledStateChanged = (current.amount == this.tank.getCapacity())
+                != (this.lastBeforeUpdate.amount == this.tank.getCapacity());
+
+        if (amountSufficientlyChanged || filledStateChanged) {
+            ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
+            this.lastBeforeUpdate = current.copy();
         }
     }
 
