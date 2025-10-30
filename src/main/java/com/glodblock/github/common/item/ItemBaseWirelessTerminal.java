@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.p455w0rd.wirelesscraftingterminal.helpers.WirelessTerminalGuiObject;
 
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -29,6 +28,7 @@ import appeng.api.features.IWirelessTermHandler;
 import appeng.api.implementations.guiobjects.IGuiItem;
 import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.core.sync.GuiBridge;
+import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
