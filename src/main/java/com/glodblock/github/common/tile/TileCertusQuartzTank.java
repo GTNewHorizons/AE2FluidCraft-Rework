@@ -84,25 +84,24 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
             return mainTank.drain(fluid, doDrain, false);
         }
 
-        FluidStack drained = this.tank.drain(fluid.amount, doDrain);
+        FluidStack drainedFluid = this.tank.drain(fluid.amount, doDrain);
+        int drained = drainedFluid != null ? drainedFluid.amount : 0;
+
         compareAndUpdate();
 
-        if (drained == null || drained.amount < fluid.amount) {
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
-            if (offTE instanceof TileCertusQuartzTank tileCertusQuartzTank) {
-                FluidStack externallyDrained = tileCertusQuartzTank.drain(
-                        new FluidStack(fluid.getFluid(), fluid.amount - (drained != null ? drained.amount : 0)),
-                        doDrain,
-                        false);
+        if (drained < fluid.amount) {
+            TileCertusQuartzTank tankBelow = this.getTankBelow();
+            if (tankBelow != null) {
+                FluidStack fluidToDrain = new FluidStack(fluid.getFluid(), fluid.amount - drained);
+                FluidStack externallyDrained = tankBelow.drain(fluidToDrain, doDrain, false);
 
-                if (externallyDrained != null) return new FluidStack(
-                        fluid.getFluid(),
-                        (drained != null ? drained.amount : 0) + externallyDrained.amount);
-                else return drained;
+                if (externallyDrained != null) {
+                    return new FluidStack(fluid.getFluid(), drained + externallyDrained.amount);
+                }
             }
         }
 
-        return drained;
+        return drainedFluid;
     }
 
     @Override
@@ -147,10 +146,10 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         compareAndUpdate();
 
         if (filled < fluid.amount) {
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + 1, this.zCoord);
-            if (offTE instanceof TileCertusQuartzTank tileCertusQuartzTank) {
-                return filled + tileCertusQuartzTank
-                        .fill(new FluidStack(fluid.getFluid(), fluid.amount - filled), doFill, false);
+            TileCertusQuartzTank tankAbove = this.getTankAbove();
+            if (tankAbove != null) {
+                FluidStack fluidToFill = new FluidStack(fluid.getFluid(), fluid.amount - filled);
+                return filled + tankAbove.fill(fluidToFill, doFill, false);
             }
         }
 
