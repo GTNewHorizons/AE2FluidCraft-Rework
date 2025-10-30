@@ -20,19 +20,7 @@ import com.glodblock.github.util.BlockPos;
 public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     private FluidStack lastBeforeUpdate = null;
-    public FluidTank tank = new FluidTank(32000) {
-
-        @Override
-        public FluidTank readFromNBT(NBTTagCompound nbt) {
-            if (!nbt.hasKey("Empty")) {
-                FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
-                setFluid(fluid);
-            } else {
-                setFluid(null);
-            }
-            return this;
-        }
-    };
+    public FluidTank tank = new FluidTank(32000);
     private boolean hasUpdate;
 
     @Override
@@ -51,79 +39,74 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
     }
 
     public void compareAndUpdate() {
-        if (!this.worldObj.isRemote) {
-            FluidStack current = this.tank.getFluid();
-            if (current != null) {
-                if (this.lastBeforeUpdate != null) {
-                    if (Math.abs(current.amount - this.lastBeforeUpdate.amount) >= 500) {
-                        ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                        this.lastBeforeUpdate = current.copy();
-                    } else if (this.lastBeforeUpdate.amount < this.tank.getCapacity()
-                            && current.amount == this.tank.getCapacity()
-                            || this.lastBeforeUpdate.amount == this.tank.getCapacity()
-                                    && current.amount < this.tank.getCapacity()) {
-                                        ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                                        this.lastBeforeUpdate = current.copy();
-                                    }
-                } else {
-                    ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                    this.lastBeforeUpdate = current.copy();
-                }
-            } else if (this.lastBeforeUpdate != null) {
+        if (this.worldObj.isRemote) {
+            return;
+        }
+
+        FluidStack current = this.tank.getFluid();
+
+        if (current == null || this.lastBeforeUpdate == null) {
+            if (current != this.lastBeforeUpdate) {
                 ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
-                this.lastBeforeUpdate = null;
+                this.lastBeforeUpdate = current == null ? null : current.copy();
             }
+            return;
+        }
+
+        boolean amountSufficientlyChanged = Math.abs(current.amount - this.lastBeforeUpdate.amount) >= 500;
+        boolean isFull = current.amount == this.tank.getCapacity();
+        boolean wasFull = this.lastBeforeUpdate.amount == this.tank.getCapacity();
+        boolean fullStateChanged = isFull != wasFull;
+
+        if (amountSufficientlyChanged || fullStateChanged) {
+            ChannelLoader.sendPacketToAllPlayers(getDescriptionPacket(), this.worldObj);
+            this.lastBeforeUpdate = current.copy();
         }
     }
 
     public FluidStack drain(FluidStack fluid, boolean doDrain, boolean findMainTank) {
-        if (findMainTank) {
-            int yOff = 0;
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
-            TileCertusQuartzTank mainTank = this;
-            while (true) {
-                if (offTE instanceof TileCertusQuartzTank) {
-                    Fluid offFluid = ((TileCertusQuartzTank) offTE).getFluid();
-                    if (offFluid != null && offFluid == fluid.getFluid()) {
-                        mainTank = (TileCertusQuartzTank) this.worldObj
-                                .getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
-                        yOff++;
-                        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + yOff, this.zCoord);
-                        continue;
-                    }
-                }
-                break;
-            }
-
-            return mainTank != null ? mainTank.drain(fluid, doDrain, false) : null;
+        if (fluid == null || this.getFluid() == null || this.getFluid() != fluid.getFluid()) {
+            return null;
         }
 
-        FluidStack drained = this.tank.drain(fluid.amount, doDrain);
+        if (findMainTank) {
+            // Main tank is the highest tank in the column with desired fluid
+            TileCertusQuartzTank mainTank = this;
+            TileCertusQuartzTank tankAbove;
+
+            while ((tankAbove = mainTank.getTankAbove()) != null) {
+                // We can't drain tank with different or null fluid
+                if (fluid.getFluid() != tankAbove.getFluid()) {
+                    break;
+                }
+                mainTank = tankAbove;
+            }
+
+            return mainTank.drain(fluid, doDrain, false);
+        }
+
+        FluidStack drainedFluid = this.tank.drain(fluid.amount, doDrain);
+        int drained = drainedFluid != null ? drainedFluid.amount : 0;
+
         compareAndUpdate();
 
-        if (drained == null || drained.amount < fluid.amount) {
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
-            if (offTE instanceof TileCertusQuartzTank tileCertusQuartzTank) {
-                FluidStack externallyDrained = tileCertusQuartzTank.drain(
-                        new FluidStack(fluid.getFluid(), fluid.amount - (drained != null ? drained.amount : 0)),
-                        doDrain,
-                        false);
+        if (drained < fluid.amount) {
+            TileCertusQuartzTank tankBelow = this.getTankBelow();
+            if (tankBelow != null) {
+                FluidStack fluidToDrain = new FluidStack(fluid.getFluid(), fluid.amount - drained);
+                FluidStack externallyDrained = tankBelow.drain(fluidToDrain, doDrain, false);
 
-                if (externallyDrained != null) return new FluidStack(
-                        fluid.getFluid(),
-                        (drained != null ? drained.amount : 0) + externallyDrained.amount);
-                else return drained;
+                if (externallyDrained != null) {
+                    return new FluidStack(fluid.getFluid(), drained + externallyDrained.amount);
+                }
             }
         }
 
-        return drained;
+        return drainedFluid;
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-        if (this.tank.getFluid() == null || resource == null || resource.getFluid() != this.tank.getFluid().getFluid())
-            return null;
-
         return drain(resource, doDrain, true);
     }
 
@@ -135,35 +118,39 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
     }
 
     public int fill(FluidStack fluid, boolean doFill, boolean findMainTank) {
+        if (fluid == null || this.getFluid() != null && this.getFluid() != fluid.getFluid()) {
+            return 0;
+        }
+
         if (findMainTank) {
-            int yOff = 0;
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
+            // Main tank is the lowest tank in the column with desired fluid
             TileCertusQuartzTank mainTank = this;
-            while (true) {
-                if (offTE instanceof TileCertusQuartzTank) {
-                    Fluid offFluid = ((TileCertusQuartzTank) offTE).getFluid();
-                    if (offFluid == null || offFluid == fluid.getFluid()) {
-                        mainTank = (TileCertusQuartzTank) this.worldObj
-                                .getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-                        yOff++;
-                        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-                        continue;
-                    }
+            TileCertusQuartzTank tankBelow;
+
+            while ((tankBelow = mainTank.getTankBelow()) != null) {
+                FluidStack fluidBelow = tankBelow.tank.getFluid();
+                // We can't fill already full tank
+                if (fluidBelow != null && fluidBelow.amount == tankBelow.tank.getCapacity()) {
+                    break;
                 }
-                break;
+                // We can't fill tank with different fluid
+                if (tankBelow.getFluid() != null && fluid.getFluid() != tankBelow.getFluid()) {
+                    break;
+                }
+                mainTank = tankBelow;
             }
 
-            return mainTank != null ? mainTank.fill(fluid, doFill, false) : 0;
+            return mainTank.fill(fluid, doFill, false);
         }
 
         int filled = this.tank.fill(fluid, doFill);
         compareAndUpdate();
 
         if (filled < fluid.amount) {
-            TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord + 1, this.zCoord);
-            if (offTE instanceof TileCertusQuartzTank tileCertusQuartzTank) {
-                return filled + tileCertusQuartzTank
-                        .fill(new FluidStack(fluid.getFluid(), fluid.amount - filled), doFill, false);
+            TileCertusQuartzTank tankAbove = this.getTankAbove();
+            if (tankAbove != null) {
+                FluidStack fluidToFill = new FluidStack(fluid.getFluid(), fluid.amount - filled);
+                return filled + tankAbove.fill(fluidToFill, doFill, false);
             }
         }
 
@@ -175,8 +162,6 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
      */
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-        if (resource == null || this.tank.getFluid() != null && resource.getFluid() != this.tank.getFluid().getFluid())
-            return 0;
         return fill(resource, doFill, true);
     }
 
@@ -206,9 +191,8 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     @Override
     public void updateEntity() {
-        super.updateEntity();
         if (this.tank.getFluid() != null) {
-            TileCertusQuartzTank below = getTankBelow(this);
+            TileCertusQuartzTank below = getTankBelow();
             if (below != null) {
                 FluidStack filled = this.tank.getFluid().copy();
                 filled.amount = below.fill(this.tank.getFluid(), true, true);
@@ -226,58 +210,57 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         }
     }
 
-    private TileCertusQuartzTank getTankBelow(TileEntity tile) {
-        TileEntity tank = new BlockPos(tile).getOffSet(0, -1, 0).getTileEntity();
-        if (tank instanceof TileCertusQuartzTank) {
-            return (TileCertusQuartzTank) tank;
+    private TileCertusQuartzTank getTankAbove() {
+        TileEntity tile = new BlockPos(this).getOffSet(0, 1, 0).getTileEntity();
+        if (tile instanceof TileCertusQuartzTank tankTile) {
+            return tankTile;
         }
         return null;
     }
 
-    public FluidTankInfo[] getTankInfo(boolean goToMainTank) {
-        if (!goToMainTank) return new FluidTankInfo[] { this.tank.getInfo() };
+    private TileCertusQuartzTank getTankBelow() {
+        TileEntity tile = new BlockPos(this).getOffSet(0, -1, 0).getTileEntity();
+        if (tile instanceof TileCertusQuartzTank tankTile) {
+            return tankTile;
+        }
+        return null;
+    }
 
-        int amount = 0, capacity = 0;
-        Fluid fluid = null;
-
-        int yOff = 0;
-        TileEntity offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-        TileCertusQuartzTank mainTank;
-        while (true) {
-            if (offTE instanceof TileCertusQuartzTank) {
-                if (((TileCertusQuartzTank) offTE).getFluid() == null
-                        || ((TileCertusQuartzTank) offTE).getFluid() == getFluid()) {
-                    yOff++;
-                    offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-                    continue;
-                }
-            }
-            break;
+    public FluidTankInfo[] getTankInfo(boolean countAllTanksInColumn) {
+        if (!countAllTanksInColumn) {
+            return new FluidTankInfo[] { this.tank.getInfo() };
         }
 
-        yOff -= 1;
-        offTE = this.worldObj.getTileEntity(this.xCoord, this.yCoord - yOff, this.zCoord);
-        while (true) {
-            if (offTE instanceof TileCertusQuartzTank) {
-                mainTank = (TileCertusQuartzTank) offTE;
-                if (mainTank.getFluid() == null || getFluid() == null || mainTank.getFluid() == getFluid()) {
-                    FluidTankInfo info = mainTank.getTankInfo(false)[0];
-                    if (info != null) {
-                        capacity += info.capacity;
-                        if (info.fluid != null) {
-                            amount += info.fluid.amount;
-                            if (info.fluid.getFluid() != null) fluid = info.fluid.getFluid();
-                        }
-                    }
-                    offTE = new BlockPos(offTE).getOffSet(0, 1, 0).getTileEntity();
-                    continue;
-                }
+        final FluidStack tankFluidStack = this.tank.getFluid();
+        final Fluid mainFluid = tankFluidStack != null ? tankFluidStack.getFluid() : null;
+
+        int amount = tankFluidStack == null ? 0 : tankFluidStack.amount;
+        int capacity = this.tank.getCapacity();
+
+        TileCertusQuartzTank tankAbove = this;
+        while ((tankAbove = tankAbove.getTankAbove()) != null) {
+            if (tankAbove.getFluid() == null || mainFluid != tankAbove.getFluid()) {
+                break;
             }
-            break;
+
+            FluidTankInfo info = tankAbove.tank.getInfo();
+            amount += info.fluid == null ? 0 : info.fluid.amount;
+            capacity += info.capacity;
+        }
+
+        TileCertusQuartzTank tankBelow = this;
+        while ((tankBelow = tankBelow.getTankBelow()) != null) {
+            if (mainFluid == null || mainFluid != tankBelow.getFluid()) {
+                break;
+            }
+
+            FluidTankInfo info = tankBelow.tank.getInfo();
+            amount += info.fluid == null ? 0 : info.fluid.amount;
+            capacity += info.capacity;
         }
 
         return new FluidTankInfo[] {
-                new FluidTankInfo(fluid != null ? new FluidStack(fluid, amount) : null, capacity) };
+                new FluidTankInfo(mainFluid != null ? new FluidStack(mainFluid, amount) : null, capacity) };
     }
 
     @Override
