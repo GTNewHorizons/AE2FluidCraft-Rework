@@ -2,12 +2,10 @@ package com.glodblock.github.client.gui;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -41,21 +39,15 @@ import com.glodblock.github.util.Util;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.DimensionalCoord;
 import appeng.client.gui.AEBaseGui;
+import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.SlotFake;
-import appeng.core.sync.network.NetworkHandler;
-import appeng.core.sync.packets.PacketNEIDragClick;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
-import codechicken.nei.VisiblityData;
-import codechicken.nei.api.INEIGuiHandler;
-import codechicken.nei.api.TaggedInventoryArea;
 import cofh.core.render.CoFHFontRenderer;
-import cpw.mods.fml.common.Optional;
 
-@Optional.Interface(modid = "NotEnoughItems", iface = "codechicken.nei.api.INEIGuiHandler")
-public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
+public class GuiLevelMaintainer extends AEBaseGui {
 
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_maintainer.png");
     private final ContainerLevelMaintainer cont;
@@ -64,6 +56,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     private Widget focusedWidget;
     private final CoFHFontRenderer render;
     protected ItemStack icon = null;
+    private final VirtualMEPhantomSlot[] slots = new VirtualMEPhantomSlot[TileLevelMaintainer.REQ_COUNT];
 
     protected GuiType originalGui;
     protected Util.DimensionalCoordSide originalBlockPos;
@@ -120,6 +113,12 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     @Override
     public void initGui() {
         super.initGui();
+
+        for (int i = 0; i < slots.length; i++) {
+            slots[i] = new VirtualMEPhantomSlot(27, 20 + i * 19, this.cont.getTile().getAEStackInventory(), i);
+            this.registerVirtualSlots(slots[i]);
+        }
+
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             component[i] = new Component(
                     new Widget(
@@ -275,59 +274,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             message.setOriginalGui(originalGui.ordinal());
         }
         FluidCraft.proxy.netHandler.sendToServer(message);
-    }
-
-    @Override
-    public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
-        return currentVisibility;
-    }
-
-    @Override
-    public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack item) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
-        return null;
-    }
-
-    @Override
-    protected void handleMouseClick(Slot slot, int slotIdx, int ctrlDown, int mouseButton) {
-        if (slot instanceof SlotFluidConvertingFake && this.cont.getPlayerInv().getItemStack() == null) {
-            slot.putStack(null);
-            this.component[slot.getSlotIndex()].reset();
-        }
-        super.handleMouseClick(slot, slotIdx, ctrlDown, mouseButton);
-    }
-
-    @Override
-    public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
-        if (draggedStack == null) {
-            return false;
-        }
-
-        draggedStack.stackSize = 0;
-        Slot slotAtPosition = this.getSlotAtPosition(mouseX, mouseY);
-        if (slotAtPosition == null) {
-            return false;
-        }
-
-        for (int i = 0; i < this.cont.getRequestSlots().length; i++) {
-            SlotFluidConvertingFake slot = this.cont.getRequestSlots()[i];
-            if (slotAtPosition.equals(slot)) {
-                slot.putStack(draggedStack);
-                component[i].reset();
-                NetworkHandler.instance.sendToServer(new PacketNEIDragClick(draggedStack, slot.getSlotIndex()));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
-        return false;
     }
 
     public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state) {

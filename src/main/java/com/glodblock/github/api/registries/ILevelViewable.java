@@ -5,12 +5,11 @@ import net.minecraft.tileentity.TileEntity;
 
 import com.glodblock.github.api.ISide;
 
-import appeng.api.implementations.tiles.ISegmentedInventory;
 import appeng.api.networking.IGridHost;
 import appeng.api.util.DimensionalCoord;
 import appeng.helpers.ICustomNameObject;
 
-public interface ILevelViewable extends IGridHost, ISide, ISegmentedInventory, ICustomNameObject {
+public interface ILevelViewable extends IGridHost, ISide, ICustomNameObject {
 
     DimensionalCoord getLocation();
 
