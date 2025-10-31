@@ -690,6 +690,7 @@ public class TileLevelMaintainer extends AENetworkTile
             return tag;
         }
 
+        @NotNull
         public IAEStack<?> getAEStack() {
             return this.stack;
         }

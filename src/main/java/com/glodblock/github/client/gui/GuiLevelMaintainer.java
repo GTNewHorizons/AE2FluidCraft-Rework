@@ -115,8 +115,15 @@ public class GuiLevelMaintainer extends AEBaseGui {
         super.initGui();
 
         for (int i = 0; i < slots.length; i++) {
-            slots[i] = new VirtualMEPhantomSlot(27, 20 + i * 19, this.cont.getTile().getAEStackInventory(), i);
-            this.registerVirtualSlots(slots[i]);
+            VirtualMEPhantomSlot slot = new VirtualMEPhantomSlot(
+                    27,
+                    20 + i * 19,
+                    this.cont.getTile().getAEStackInventory(),
+                    i);
+            slot.setShowAmount(true);
+            slot.setShowAmountAlways(true);
+            slots[i] = slot;
+            this.registerVirtualSlots(slot);
         }
 
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
@@ -469,15 +476,6 @@ public class GuiLevelMaintainer extends AEBaseGui {
         public void setState(LevelState state) {
             this.state = state;
         }
-
-        public void reset() {
-            this.qty.textField.setText("0");
-            this.batch.textField.setText("0");
-            this.qty.validate();
-            this.batch.validate();
-            this.setEnable(false);
-            this.setState(LevelState.None);
-        }
     }
 
     private class Widget {
@@ -535,6 +533,11 @@ public class GuiLevelMaintainer extends AEBaseGui {
             } else {
                 this.amount = (long) ArithHelper.round(result, 0);
                 this.textField.setTextColor(0xFFFFFF);
+            }
+            TileLevelMaintainer.RequestInfo info = cont.getTile().requests[this.componentIndex];
+            if (info != null) {
+                Long amount = component[this.componentIndex].getQty().getAmount();
+                info.getAEStack().setStackSize(amount != null ? amount : 0);
             }
         }
 
