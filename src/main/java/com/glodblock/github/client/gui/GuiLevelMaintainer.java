@@ -23,6 +23,7 @@ import com.glodblock.github.network.CPacketLevelMaintainer.Action;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.storage.data.IAEStack;
 import appeng.client.gui.GuiSub;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
@@ -228,8 +229,12 @@ public class GuiLevelMaintainer extends GuiSub {
             this.isEnable = enable;
         }
 
+        public IAEStack<?> getStack() {
+            return this.container.getTile().getAEStackInventory().getAEStackInSlot(this.getIndex());
+        }
+
         private void send(Widget widget) {
-            if (cont.inventorySlots.get(widget.componentIndex).getHasStack() && widget.getAmount() != null) {
+            if (this.getStack() != null && widget.getAmount() != null) {
                 FluidCraft.proxy.netHandler.sendToServer(
                         new CPacketLevelMaintainer(widget.action, widget.componentIndex, widget.getAmount()));
             }
@@ -261,7 +266,7 @@ public class GuiLevelMaintainer extends GuiSub {
                 FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Enable, this.getIndex()));
                 didSomething = true;
             } else if (this.disable == btn) {
-                if (this.container.getInventory().get(this.getIndex()) != null) {
+                if (this.getStack() != null) {
                     this.setEnable(true);
                     FluidCraft.proxy.netHandler
                             .sendToServer(new CPacketLevelMaintainer(Action.Disable, this.getIndex()));
@@ -428,10 +433,11 @@ public class GuiLevelMaintainer extends GuiSub {
                 this.amount = (long) ArithHelper.round(result, 0);
                 this.textField.setTextColor(0xFFFFFF);
             }
-            TileLevelMaintainer.RequestInfo info = cont.getTile().requests[this.componentIndex];
-            if (info != null) {
+
+            IAEStack<?> stack = component[this.componentIndex].getStack();
+            if (stack != null) {
                 Long amount = component[this.componentIndex].getQty().getAmount();
-                info.getAEStack().setStackSize(amount != null ? amount : 0);
+                stack.setStackSize(amount != null ? amount : 0);
             }
         }
 

@@ -733,11 +733,7 @@ public class TileLevelMaintainer extends AENetworkTile
 
         @Override
         public void putAEStackInSlot(int slot, IAEStack<?> aes) {
-            if (aes == null) {
-                updateStack(slot, (IAEStack<?>) null);
-            } else {
-                updateStack(slot, aes);
-            }
+            updateStack(slot, aes);
             super.putAEStackInSlot(slot, aes);
         }
 
