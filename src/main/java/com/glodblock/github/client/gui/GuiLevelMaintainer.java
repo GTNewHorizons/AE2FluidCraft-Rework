@@ -7,10 +7,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
@@ -18,30 +16,23 @@ import org.lwjgl.input.Keyboard;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
-import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
-import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.CPacketLevelMaintainer;
 import com.glodblock.github.network.CPacketLevelMaintainer.Action;
-import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
-import com.glodblock.github.util.Util;
 
-import appeng.api.util.DimensionalCoord;
-import appeng.client.gui.AEBaseGui;
+import appeng.client.gui.GuiSub;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.container.AEBaseContainer;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.PacketSwitchGuis;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
 import cofh.core.render.CoFHFontRenderer;
 
-public class GuiLevelMaintainer extends AEBaseGui {
+public class GuiLevelMaintainer extends GuiSub {
 
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_maintainer.png");
     private final ContainerLevelMaintainer cont;
@@ -49,11 +40,7 @@ public class GuiLevelMaintainer extends AEBaseGui {
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
     private final CoFHFontRenderer render;
-    protected ItemStack icon = null;
     private final VirtualMEPhantomSlot[] slots = new VirtualMEPhantomSlot[TileLevelMaintainer.REQ_COUNT];
-
-    protected GuiType originalGui;
-    protected Util.DimensionalCoordSide originalBlockPos;
     protected GuiTabButton originalGuiBtn;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
@@ -66,42 +53,6 @@ public class GuiLevelMaintainer extends AEBaseGui {
                 TEX_BG,
                 Minecraft.getMinecraft().getTextureManager(),
                 true);
-
-        if (ipl.player.openContainer instanceof AEBaseContainer container) {
-            var target = container.getTarget();
-            if (target instanceof PartLevelTerminal terminal) {
-                icon = ItemAndBlockHolder.LEVEL_TERMINAL.stack();
-                originalGui = GuiType.LEVEL_TERMINAL;
-                DimensionalCoord blockPos = new DimensionalCoord(terminal.getTile());
-                originalBlockPos = new Util.DimensionalCoordSide(
-                        blockPos.x,
-                        blockPos.y,
-                        blockPos.z,
-                        blockPos.getDimension(),
-                        terminal.getSide(),
-                        "");
-            } else if (target instanceof IWirelessTerminal terminal && terminal.isUniversal(target)) {
-                icon = ItemAndBlockHolder.WIRELESS_ULTRA_TERM.stack();
-                originalBlockPos = new Util.DimensionalCoordSide(
-                        terminal.getInventorySlot(),
-                        Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
-                        0,
-                        ipl.player.worldObj.provider.dimensionId,
-                        ForgeDirection.UNKNOWN,
-                        "");
-            } else if (target instanceof WirelessLevelTerminalInventory terminal) {
-                icon = ItemAndBlockHolder.WIRELESS_LEVEL_TERM.stack();
-                originalGui = GuiType.WIRELESS_LEVEL_TERMINAL;
-                originalBlockPos = new Util.DimensionalCoordSide(
-                        terminal.getInventorySlot(),
-                        Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
-                        0,
-                        ipl.player.worldObj.provider.dimensionId,
-                        ForgeDirection.UNKNOWN,
-                        "");
-
-            }
-        }
     }
 
     @Override
@@ -139,16 +90,18 @@ public class GuiLevelMaintainer extends AEBaseGui {
                     this.buttonList,
                     this.cont);
         }
-        if (this.icon != null) {
-            this.originalGuiBtn = new GuiTabButton(
-                    this.guiLeft + 151,
-                    this.guiTop - 4,
-                    this.icon,
-                    this.icon.getDisplayName(),
-                    itemRender);
-            this.originalGuiBtn.setHideEdge(13);
-            this.buttonList.add(originalGuiBtn);
-        }
+    }
+
+    @Override
+    public void initPrimaryGuiButton() {
+        this.originalGuiBtn = new GuiTabButton(
+                this.guiLeft + 151,
+                this.guiTop - 4,
+                this.cont.getPrimaryGuiIcon(),
+                this.cont.getPrimaryGuiIcon().getDisplayName(),
+                itemRender);
+        this.originalGuiBtn.setHideEdge(13);
+        this.buttonList.add(originalGuiBtn);
     }
 
     @Override
@@ -222,7 +175,7 @@ public class GuiLevelMaintainer extends AEBaseGui {
     @Override
     protected void actionPerformed(final GuiButton btn) {
         if (btn == originalGuiBtn) {
-            switchGui();
+            NetworkHandler.instance.sendToServer(new PacketSwitchGuis());
         } else {
             super.actionPerformed(btn);
             for (Component com : this.component) {
@@ -231,20 +184,6 @@ public class GuiLevelMaintainer extends AEBaseGui {
                 }
             }
         }
-    }
-
-    public void switchGui() {
-        CPacketLevelTerminalCommands message = new CPacketLevelTerminalCommands(
-                CPacketLevelTerminalCommands.Action.BACK,
-                originalBlockPos.x,
-                originalBlockPos.y,
-                originalBlockPos.z,
-                originalBlockPos.getDimension(),
-                originalBlockPos.getSide());
-        if (originalGui != null) {
-            message.setOriginalGui(originalGui.ordinal());
-        }
-        FluidCraft.proxy.netHandler.sendToServer(message);
     }
 
     public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state) {

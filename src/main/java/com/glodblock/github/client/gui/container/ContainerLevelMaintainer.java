@@ -13,7 +13,7 @@ import com.glodblock.github.network.SPacketLevelMaintainerGuiUpdate;
 import appeng.api.config.SecurityPermissions;
 import appeng.api.storage.data.IAEStack;
 import appeng.client.StorageName;
-import appeng.container.AEBaseContainer;
+import appeng.container.ContainerSubGui;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketVirtualSlot;
 import appeng.helpers.IVirtualSlotHolder;
@@ -24,7 +24,7 @@ import appeng.util.item.AEItemStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-public class ContainerLevelMaintainer extends AEBaseContainer implements IVirtualSlotHolder {
+public class ContainerLevelMaintainer extends ContainerSubGui implements IVirtualSlotHolder {
 
     private final TileLevelMaintainer tile;
 
