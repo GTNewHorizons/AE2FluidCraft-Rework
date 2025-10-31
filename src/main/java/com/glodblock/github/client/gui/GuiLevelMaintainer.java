@@ -7,7 +7,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -15,7 +14,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.api.registries.LevelState;
@@ -26,8 +24,6 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
-import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
-import com.glodblock.github.inventory.slot.SlotSingleItem;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.CPacketLevelMaintainer;
 import com.glodblock.github.network.CPacketLevelMaintainer.Action;
@@ -36,13 +32,11 @@ import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
-import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.DimensionalCoord;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.container.AEBaseContainer;
-import appeng.container.slot.SlotFake;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
 import cofh.core.render.CoFHFontRenderer;
@@ -181,36 +175,6 @@ public class GuiLevelMaintainer extends AEBaseGui {
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
         fontRendererObj.drawString(getGuiDisplayName(NameConst.i18n(NameConst.GUI_LEVEL_MAINTAINER)), 8, 6, 0x404040);
         mouseRegions.render(mouseX, mouseY);
-    }
-
-    @Override
-    public void func_146977_a(final Slot s) {
-        if (drawSlot0(s)) super.func_146977_a(s);
-    }
-
-    public boolean drawSlot0(Slot slot) {
-        if (slot instanceof SlotFake) {
-            IAEItemStack stack = ((SlotFluidConvertingFake) slot).getAeStack();
-            super.func_146977_a(new SlotSingleItem(slot));
-            if (stack == null) return true;
-            IAEItemStack fake = stack.copy();
-
-            Widget qty = this.component[slot.getSlotIndex()].getQty();
-            qty.validate();
-            fake.setStackSize(qty.getAmount() != null ? qty.getAmount() : 0);
-
-            GL11.glTranslatef(0.0f, 0.0f, 200.0f);
-            aeRenderItem.setAeStack(fake);
-            aeRenderItem.renderItemOverlayIntoGUI(
-                    fontRendererObj,
-                    mc.getTextureManager(),
-                    fake.getItemStack(),
-                    slot.xDisplayPosition,
-                    slot.yDisplayPosition);
-            GL11.glTranslatef(0.0f, 0.0f, -200.0f);
-            return false;
-        }
-        return true;
     }
 
     @Override
