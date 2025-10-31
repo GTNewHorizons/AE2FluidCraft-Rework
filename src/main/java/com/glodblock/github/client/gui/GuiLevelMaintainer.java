@@ -26,8 +26,6 @@ import com.glodblock.github.util.NameConst;
 import appeng.client.gui.GuiSub;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.core.sync.network.NetworkHandler;
-import appeng.core.sync.packets.PacketSwitchGuis;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
 import cofh.core.render.CoFHFontRenderer;
@@ -40,8 +38,6 @@ public class GuiLevelMaintainer extends GuiSub {
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
     private final CoFHFontRenderer render;
-    private final VirtualMEPhantomSlot[] slots = new VirtualMEPhantomSlot[TileLevelMaintainer.REQ_COUNT];
-    protected GuiTabButton originalGuiBtn;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
@@ -59,7 +55,7 @@ public class GuiLevelMaintainer extends GuiSub {
     public void initGui() {
         super.initGui();
 
-        for (int i = 0; i < slots.length; i++) {
+        for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             VirtualMEPhantomSlot slot = new VirtualMEPhantomSlot(
                     27,
                     20 + i * 19,
@@ -67,7 +63,6 @@ public class GuiLevelMaintainer extends GuiSub {
                     i);
             slot.setShowAmount(true);
             slot.setShowAmountAlways(true);
-            slots[i] = slot;
             this.registerVirtualSlots(slot);
         }
 
@@ -174,16 +169,12 @@ public class GuiLevelMaintainer extends GuiSub {
 
     @Override
     protected void actionPerformed(final GuiButton btn) {
-        if (btn == originalGuiBtn) {
-            NetworkHandler.instance.sendToServer(new PacketSwitchGuis());
-        } else {
-            super.actionPerformed(btn);
-            for (Component com : this.component) {
-                if (com.sendToServer(btn)) {
-                    break;
-                }
+        for (Component com : this.component) {
+            if (com.sendToServer(btn)) {
+                return;
             }
         }
+        super.actionPerformed(btn);
     }
 
     public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state) {
