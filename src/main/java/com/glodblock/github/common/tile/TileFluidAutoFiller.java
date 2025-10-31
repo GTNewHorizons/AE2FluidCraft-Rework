@@ -60,7 +60,7 @@ import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TileFluidAutoFiller extends AENetworkInvTile
-        implements ICraftingProvider, IMEMonitorHandlerReceiver, IGridTickable {
+        implements ICraftingProvider, IMEMonitorHandlerReceiver<IAEStack<?>>, IGridTickable {
 
     private final AppEngInternalInventory inventory = new AppEngInternalInventory(this, 1);
     private final BaseActionSource source = new MachineSource(this);
@@ -215,7 +215,7 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     }
 
     @Override
-    public void postChange(IBaseMonitor monitor, Iterable<IAEStack<?>> change, BaseActionSource source) {
+    public void postChange(IBaseMonitor<IAEStack<?>> monitor, Iterable<IAEStack<?>> change, BaseActionSource source) {
         if (this.getProxy().isActive() && this.getStorageGrid() != null) {
             boolean hasChanged = false;
             for (IAEStack<?> tmp : change) {
