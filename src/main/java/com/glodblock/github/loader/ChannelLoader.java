@@ -1,9 +1,5 @@
 package com.glodblock.github.loader;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.Packet;
-import net.minecraft.world.World;
-
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.network.CPacketCraftRequest;
 import com.glodblock.github.network.CPacketDumpTank;
@@ -99,13 +95,5 @@ public class ChannelLoader implements Runnable {
                 SPacketLevelMaintainerGuiUpdate.class,
                 id++,
                 Side.CLIENT);
-    }
-
-    public static void sendPacketToAllPlayers(Packet packet, World world) {
-        for (Object player : world.playerEntities) {
-            if (player instanceof EntityPlayerMP) {
-                ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(packet);
-            }
-        }
     }
 }
