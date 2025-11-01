@@ -1,12 +1,16 @@
 package com.glodblock.github.common.item;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import net.minecraft.item.ItemStack;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.glodblock.github.common.storage.CellType;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.google.common.base.Optional;
 
-import appeng.api.storage.StorageChannel;
+import appeng.api.storage.data.IAEStackType;
 import appeng.items.AEBaseCell;
 
 public abstract class FCBaseItemCell extends AEBaseCell {
@@ -23,8 +27,8 @@ public abstract class FCBaseItemCell extends AEBaseCell {
     }
 
     @Override
-    public StorageChannel getStorageChannel() {
-        return StorageChannel.FLUIDS;
+    public @NotNull IAEStackType<?> getStackType() {
+        return FLUID_STACK_TYPE;
     }
 
     public FCBaseItemCell(Optional subName) {
