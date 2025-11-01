@@ -11,12 +11,12 @@ import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
 import com.glodblock.github.network.SPacketLevelMaintainerGuiUpdate;
 
 import appeng.api.config.SecurityPermissions;
+import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEStack;
-import appeng.client.StorageName;
 import appeng.container.ContainerSubGui;
+import appeng.container.interfaces.IVirtualSlotHolder;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketVirtualSlot;
-import appeng.helpers.IVirtualSlotHolder;
 import appeng.helpers.InventoryAction;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;

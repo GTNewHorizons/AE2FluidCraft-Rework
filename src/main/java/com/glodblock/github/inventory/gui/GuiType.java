@@ -43,9 +43,9 @@ import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.inventory.item.IWirelessTerminal;
 import com.google.common.collect.ImmutableList;
 
+import appeng.api.parts.ILevelEmitter;
 import appeng.api.storage.ITerminalHost;
 import appeng.container.implementations.ContainerLevelEmitter;
-import appeng.helpers.ILevelEmitter;
 
 public enum GuiType {
 

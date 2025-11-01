@@ -25,8 +25,8 @@ import com.glodblock.github.util.Util;
 
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
-import appeng.container.IContainerSubGui;
 import appeng.container.PrimaryGui;
+import appeng.container.interfaces.IContainerSubGui;
 import appeng.helpers.ICustomButtonProvider;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;

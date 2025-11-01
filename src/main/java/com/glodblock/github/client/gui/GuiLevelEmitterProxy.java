@@ -3,13 +3,13 @@ package com.glodblock.github.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 
+import appeng.api.parts.ILevelEmitter;
 import appeng.client.gui.IGuiSub;
 import appeng.client.gui.implementations.GuiLevelEmitter;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.container.IContainerSubGui;
+import appeng.container.interfaces.IContainerSubGui;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketSwitchGuis;
-import appeng.helpers.ILevelEmitter;
 
 public class GuiLevelEmitterProxy extends GuiLevelEmitter implements IGuiSub {
 

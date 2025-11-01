@@ -16,7 +16,7 @@ import appeng.api.features.IWirelessTermHandler;
 import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.core.features.AEFeature;
 import appeng.core.sync.GuiBridge;
-import appeng.helpers.WirelessInterfaceTerminalGuiObject;
+import appeng.items.contents.WirelessInterfaceTerminalGuiObject;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemWirelessInterfaceTerminal extends ItemBaseWirelessTerminal

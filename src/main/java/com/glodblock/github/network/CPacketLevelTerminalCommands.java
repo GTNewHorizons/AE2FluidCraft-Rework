@@ -11,13 +11,13 @@ import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 
+import appeng.api.parts.ILevelEmitter;
 import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.container.AEBaseContainer;
-import appeng.container.IContainerSubGui;
 import appeng.container.PrimaryGui;
+import appeng.container.interfaces.IContainerSubGui;
 import appeng.core.sync.GuiBridge;
-import appeng.helpers.ILevelEmitter;
 import appeng.util.Platform;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
