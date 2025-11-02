@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
 import com.glodblock.github.common.item.ItemCertusQuartzTank;
@@ -241,5 +242,23 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
         GameRegistry.registerTileEntity(TileCertusQuartzTank.class, NameConst.BLOCK_CERTUS_QUARTZ_TANK);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride(World worldIn, int x, int y, int z, int side) {
+        TileEntity tileEntity = worldIn.getTileEntity(x, y, z);
+        if (tileEntity instanceof TileCertusQuartzTank tileCertusQuartzTank) {
+            FluidTankInfo info = tileCertusQuartzTank.getTankInfo(false)[0];
+            if (info.fluid != null) {
+                int nonEmptyBump = info.fluid.amount > 0 ? 1 : 0;
+                return (int) (14.0 * info.fluid.amount / info.capacity) + nonEmptyBump;
+            }
+        }
+        return 0;
     }
 }
