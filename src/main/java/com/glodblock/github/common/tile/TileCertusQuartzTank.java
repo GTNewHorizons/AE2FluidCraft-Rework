@@ -1,12 +1,10 @@
 package com.glodblock.github.common.tile;
 
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -19,7 +17,6 @@ import com.glodblock.github.util.BlockPos;
 public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     public FluidTank tank = new FluidTank(32000);
-    private boolean hasUpdate;
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
@@ -155,31 +152,6 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         return (float) this.tank.getFluidAmount() / this.tank.getCapacity();
     }
 
-    private void onComparatorUpdate(World world, int x, int y, int z, Block block) {
-        world.func_147453_f(x, y, z, block);
-    }
-
-    @Override
-    public void updateEntity() {
-        if (this.tank.getFluid() != null) {
-            TileCertusQuartzTank below = getTankBelow();
-            if (below != null) {
-                FluidStack filled = this.tank.getFluid().copy();
-                filled.amount = below.fill(this.tank.getFluid(), true, true);
-                if (filled.amount >= 0) {
-                    this.drain(filled, true, true);
-                    this.hasUpdate = true;
-                    below.hasUpdate = true;
-                }
-            }
-        }
-
-        if (this.hasUpdate) {
-            onComparatorUpdate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
-            this.hasUpdate = false;
-        }
-    }
-
     private TileCertusQuartzTank getTankAbove() {
         TileEntity tile = new BlockPos(this).getOffSet(0, 1, 0).getTileEntity();
         if (tile instanceof TileCertusQuartzTank tankTile) {
@@ -242,6 +214,31 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         return this.getTankInfo(true);
     }
 
+    private void flowFluidDown(boolean checkTankAbove) {
+        if (this.getFluid() != null) {
+            TileCertusQuartzTank below = getTankBelow();
+            if (below != null) {
+                FluidStack fluid = this.tank.getFluid().copy();
+                int amount = below.tank.fill(fluid, true);
+                if (amount > 0) {
+                    this.tank.drain(amount, true);
+                    this.update();
+                    below.update();
+                    below.flowFluidDown(false);
+                }
+            }
+        }
+
+        if (checkTankAbove) {
+            TileCertusQuartzTank above = getTankAbove();
+            if (above != null && above.getFluid() != null) {
+                if (this.getFluid() == null || this.getFluid() == above.getFluid()) {
+                    above.flowFluidDown(true);
+                }
+            }
+        }
+    }
+
     public void update() {
         if (!this.worldObj.isRemote) {
             markDirty();
@@ -276,6 +273,15 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     public void readFromNBTWithoutCoords(NBTTagCompound tag) {
         this.tank.readFromNBT(tag);
+    }
+
+    // Specifically used when player is placing a tank in world,
+    // so we can apply the item's NBT and flow down its fluid in lower tanks
+    public void readFromItemNBT(NBTTagCompound tag) {
+        if (tag != null) {
+            this.readFromNBTWithoutCoords(tag.getCompoundTag("tileEntity"));
+        }
+        this.flowFluidDown(true);
     }
 
     @Override
