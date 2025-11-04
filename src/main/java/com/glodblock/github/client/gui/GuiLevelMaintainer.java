@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
@@ -23,6 +22,7 @@ import com.glodblock.github.network.CPacketLevelMaintainer.Action;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.features.LevelState;
 import appeng.api.storage.data.IAEStack;
 import appeng.client.gui.GuiSub;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;

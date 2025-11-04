@@ -33,8 +33,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.api.registries.LevelItemInfo;
-import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.base.FCBaseMEGui;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
@@ -49,6 +47,8 @@ import appeng.api.config.Settings;
 import appeng.api.config.TerminalFontSize;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
+import appeng.api.features.LevelItemInfo;
+import appeng.api.features.LevelState;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEStack;
 import appeng.client.gui.IGuiTooltipHandler;

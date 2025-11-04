@@ -6,11 +6,11 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import com.glodblock.github.api.registries.ILevelTerminalRegistry;
-import com.glodblock.github.api.registries.ILevelViewable;
 import com.glodblock.github.api.registries.ILevelViewableAdapter;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 
+import appeng.api.features.ILevelViewable;
 import appeng.api.networking.IGridHost;
 import appeng.parts.automation.PartLevelEmitter;
 

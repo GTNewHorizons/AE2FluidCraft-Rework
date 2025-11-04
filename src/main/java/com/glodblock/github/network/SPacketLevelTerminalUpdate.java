@@ -12,10 +12,10 @@ import net.minecraft.client.gui.GuiScreen;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.glodblock.github.api.registries.LevelItemInfo;
-import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.GuiLevelTerminal;
 
+import appeng.api.features.LevelItemInfo;
+import appeng.api.features.LevelState;
 import appeng.api.storage.data.IAEStack;
 import appeng.core.AEConfig;
 import appeng.core.AELog;

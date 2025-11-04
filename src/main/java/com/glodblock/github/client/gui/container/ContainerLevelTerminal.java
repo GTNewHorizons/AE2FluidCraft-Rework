@@ -14,8 +14,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.jetbrains.annotations.Nullable;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.api.registries.ILevelViewable;
-import com.glodblock.github.api.registries.LevelItemInfo;
 import com.glodblock.github.client.gui.container.base.FCBaseContainer;
 import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.coremod.registries.LevelTerminalRegistry;
@@ -25,6 +23,8 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketLevelTerminalUpdate;
 import com.glodblock.github.util.FluidPrimaryGui;
 
+import appeng.api.features.ILevelViewable;
+import appeng.api.features.LevelItemInfo;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
