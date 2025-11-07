@@ -1,5 +1,7 @@
 package com.glodblock.github.common.item;
 
+import static appeng.util.Platform.baublesSlotsOffset;
+import static appeng.util.Platform.itemGuiSlotOffset;
 import static appeng.util.Platform.nextEnum;
 import static com.glodblock.github.util.Util.GuiHelper.decodeInvType;
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
@@ -135,7 +137,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     private void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode,
             final int slotIndex) {
         final GuiBridge aeGui;
-        final int slot = slotIndex == -1 ? player.inventory.currentItem : slotIndex;
+        final int slot = slotIndex == Integer.MIN_VALUE ? player.inventory.currentItem : slotIndex;
         final ImmutablePair<Util.GuiHelper.InvType, Integer> invSlotPair = decodeInvType(slotIndex);
 
         switch (mode instanceof UltraTerminalModes utm ? utm : getMode(is)) {
@@ -163,13 +165,14 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 null,
                 null,
                 aeGui,
-                invSlotPair.getLeft() == Util.GuiHelper.InvType.PLAYER_INV ? slotIndex
-                        : invSlotPair.getRight() + 1_000_000);
+                invSlotPair.getLeft() == Util.GuiHelper.InvType.PLAYER_INV
+                    ? slotIndex
+                    : invSlotPair.getRight() + baublesSlotsOffset);
     }
 
     @Override
     public void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode) {
-        this.openGui(is, w, player, mode, -1);
+        this.openGui(is, w, player, mode, Integer.MIN_VALUE);
     }
 
     public static boolean hasInfinityBoosterCard(EntityPlayer player) {
@@ -213,7 +216,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return switch (y != -1 ? UltraTerminalModes.values()[y] : getMode(is)) {
+        return switch (y != Integer.MIN_VALUE ? UltraTerminalModes.values()[y] : getMode(is)) {
             case CRAFTING -> new WirelessCraftingTerminalGuiObject(wh, is, p, world, x, y, z);
             case PATTERN, PATTERN_EX -> new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
             case INTERFACE -> new WirelessInterfaceTerminalGuiObject(wh, is);
