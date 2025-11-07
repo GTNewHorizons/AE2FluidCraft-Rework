@@ -401,6 +401,12 @@ public class PartFluidP2PInterface extends PartP2PTunnelStatic<PartFluidP2PInter
                 for (int i = 0; i < storage.getSizeInventory(); ++i) {
                     newStorage.setInventorySlotContents(i, storage.getStackInSlot(i));
                 }
+
+                IInventory config = fromInterface.duality.getInventoryByName("config");
+                IInventory newConfig = newDuality.getInventoryByName("config");
+                for (int i = 0; i < config.getSizeInventory(); ++i) {
+                    newConfig.setInventorySlotContents(i, config.getStackInSlot(i));
+                }
             }
 
             AppEngInternalInventory patterns = fromInterface.duality.getPatterns();
