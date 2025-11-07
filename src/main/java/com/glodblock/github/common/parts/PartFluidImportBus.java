@@ -1,6 +1,7 @@
 package com.glodblock.github.common.parts;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -10,6 +11,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.Util;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
@@ -19,6 +21,8 @@ import appeng.api.networking.energy.IEnergySource;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartBaseImportBus;
 import appeng.tile.inventory.IAEStackInventory;
@@ -154,5 +158,19 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
             }
         }
         return false;
+    }
+
+    // legacy
+    @Override
+    public void readFromNBT(NBTTagCompound extra) {
+        super.readFromNBT(extra);
+
+        final IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+        for (int i = 0; i < config.getSizeInventory(); i++) {
+            final IAEStack<?> stack = config.getAEStackInSlot(i);
+            if (stack instanceof IAEItemStack ais) {
+                config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
+            }
+        }
     }
 }

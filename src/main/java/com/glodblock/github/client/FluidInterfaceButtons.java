@@ -21,6 +21,8 @@ import appeng.client.gui.widgets.GuiTabButton;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketConfigButton;
 import appeng.helpers.ICustomButtonDataObject;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
 public class FluidInterfaceButtons implements ICustomButtonDataObject {
@@ -34,6 +36,8 @@ public class FluidInterfaceButtons implements ICustomButtonDataObject {
         this.fullBlock = fullBlock;
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
     public void initCustomButtons(int guiLeft, int guiTop, int xSize, int ySize, int xOffset, int yOffset,
             List<GuiButton> buttonList) {
         if (fullBlock) {
@@ -56,6 +60,7 @@ public class FluidInterfaceButtons implements ICustomButtonDataObject {
         FluidCraft.proxy.netHandler.sendToServer(new CPacketCustomButtonUpdate());
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public boolean actionPerformedCustomButtons(final GuiButton btn) {
         if (btn == this.switcher) {

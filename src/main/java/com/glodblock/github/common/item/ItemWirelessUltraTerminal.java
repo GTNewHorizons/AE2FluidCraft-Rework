@@ -1,6 +1,7 @@
 package com.glodblock.github.common.item;
 
 import static appeng.util.Platform.nextEnum;
+import static com.glodblock.github.util.Util.GuiHelper.decodeInvType;
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
 
 import java.util.Arrays;
@@ -121,17 +122,22 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         return super.onItemRightClick(is, w, player);
     }
 
-    public void switchTerminal(EntityPlayer player, ItemStack term, UltraTerminalModes mode) {
-        if (term != null && term.getItem() instanceof ItemWirelessUltraTerminal) {
-            if (mode != null) setMode(term, mode);
-            else mode = getMode(term);
-            openGui(term, player.worldObj, player, mode);
+    public void switchTerminal(EntityPlayer player, ImmutablePair<Integer, ItemStack> term, UltraTerminalModes mode) {
+        if (term != null) {
+            final ItemStack terminal = term.getRight();
+            if (terminal == null) return;
+            if (mode != null) setMode(terminal, mode);
+            else mode = getMode(terminal);
+            openGui(terminal, player.worldObj, player, mode, term.getLeft());
         }
     }
 
-    @Override
-    public void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode) {
+    private void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode,
+            final int slotIndex) {
         final GuiBridge aeGui;
+        final int slot = slotIndex == -1 ? player.inventory.currentItem : slotIndex;
+        final ImmutablePair<Util.GuiHelper.InvType, Integer> invSlotPair = decodeInvType(slotIndex);
+
         switch (mode instanceof UltraTerminalModes utm ? utm : getMode(is)) {
             case CRAFTING -> aeGui = GuiBridge.GUI_CRAFTING_TERMINAL;
             case PATTERN -> aeGui = GuiBridge.GUI_PATTERN_TERMINAL;
@@ -142,7 +148,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                         player,
                         w,
                         new BlockPos(
-                                player.inventory.currentItem,
+                                slot,
                                 0,
                                 player.openContainer instanceof AEBaseContainer abc ? abc.getSwitchAbleGuiNext() : 0),
                         ForgeDirection.UNKNOWN,
@@ -151,7 +157,19 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
             }
             default -> aeGui = GuiBridge.GUI_ME;
         }
-        Platform.openGUI(player, null, null, aeGui);
+
+        Platform.openGUI(
+                player,
+                null,
+                null,
+                aeGui,
+                invSlotPair.getLeft() == Util.GuiHelper.InvType.PLAYER_INV ? slotIndex
+                        : invSlotPair.getRight() + 1_000_000);
+    }
+
+    @Override
+    public void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode) {
+        this.openGui(is, w, player, mode, -1);
     }
 
     public static boolean hasInfinityBoosterCard(EntityPlayer player) {

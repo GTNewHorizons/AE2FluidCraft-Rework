@@ -247,6 +247,7 @@ public class TileFluidInterface extends TileInterface implements IDualHost, ICus
     @Override
     public void readCustomButtonData() {}
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void initCustomButtons(int guiLeft, int guiTop, int xSize, int ySize, int xOffset, int yOffset,
             List<GuiButton> buttonList) {

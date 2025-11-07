@@ -81,7 +81,7 @@ public class CPacketSwitchGuis implements IMessage {
                         abc.setSwitchAbleGuiNext(message.mode.ordinal());
 
                     }
-                    iwut.switchTerminal(player, temp.getRight(), message.mode);
+                    iwut.switchTerminal(player, temp, message.mode);
                     if (player.openContainer instanceof AEBaseContainer abc) {
                         if (abc.getTarget() instanceof ICustomButtonProvider icbp) {
                             FluidCraft.proxy.netHandler
