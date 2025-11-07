@@ -58,11 +58,118 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     @Override
     public PartP2PTunnel<?> applyMemoryCard(EntityPlayer player, IMemoryCard memoryCard, ItemStack is) {
         PartP2PTunnel<?> newTunnel = super.applyMemoryCard(player, memoryCard, is);
+        if (Platform.isClient()) return newTunnel;
         NBTTagCompound data = memoryCard.getData(is);
         if (newTunnel instanceof PartFluidP2PInterface p2PInterface) {
             p2PInterface.duality.getConfigManager().readFromNBT(data);
         }
         return newTunnel;
+    }
+
+    @Override
+    public void addToWorld() {
+        super.addToWorld();
+        this.duality.initialize();
+    }
+
+    @Override
+    public void getDrops(final List<ItemStack> drops, final boolean wrenched) {
+        this.duality.addDrops(drops);
+    }
+
+    @Override
+    public int cableConnectionRenderTo() {
+        return 4;
+    }
+
+    @Override
+    public IConfigManager getConfigManager() {
+        return this.duality.getConfigManager();
+    }
+
+    @Override
+    public IInventory getInventoryByName(final String name) {
+        return this.duality.getInventoryByName(name);
+    }
+
+    @Override
+    public void onNeighborChanged() {
+        this.duality.updateRedstoneState();
+    }
+
+    @Override
+    public boolean onPartActivate(final EntityPlayer p, final Vec3 pos) {
+        if (super.onPartActivate(p, pos)) {
+            return true;
+        }
+
+        if (p.isSneaking()) {
+            return false;
+        }
+
+        if (Platform.isServer()) {
+            InventoryHandler.openGui(
+                    p,
+                    this.getHost().getTile().getWorldObj(),
+                    new BlockPos(this.getHost().getTile()),
+                    Objects.requireNonNull(this.getSide()),
+                    GuiType.DUAL_INTERFACE);
+        }
+
+        return true;
+    }
+
+    private void dropPatterns(final PartFluidP2PInterface p2p) {
+        final AppEngInternalInventory patterns = p2p.duality.getPatterns();
+        final List<ItemStack> drops = new ArrayList<>();
+        for (int i = 0; i < patterns.getSizeInventory(); i++) {
+            if (patterns.getStackInSlot(i) == null) continue;
+            drops.add(patterns.getStackInSlot(i));
+        }
+        if (!drops.isEmpty()) {
+            final TileEntity te = p2p.getTileEntity();
+            Platform.spawnDrops(te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord, drops);
+        }
+    }
+
+    @Override
+    protected void copyContents(final PartP2PTunnel<?> from) {
+        if (from instanceof PartFluidP2PInterface fromInterface) {
+            DualityInterface newDuality = this.duality;
+            // Copy interface storage, upgrades, and settings over
+            UpgradeInventory upgrades = (UpgradeInventory) fromInterface.duality.getInventoryByName("upgrades");
+            UpgradeInventory newUpgrade = (UpgradeInventory) newDuality.getInventoryByName("upgrades");
+            for (int i = 0; i < upgrades.getSizeInventory(); ++i) {
+                newUpgrade.setInventorySlotContents(i, upgrades.getStackInSlot(i));
+            }
+
+            if (!fromInterface.duality.sharedInventory) {
+                IInventory storage = fromInterface.duality.getStorage();
+                IInventory newStorage = newDuality.getStorage();
+                for (int i = 0; i < storage.getSizeInventory(); ++i) {
+                    newStorage.setInventorySlotContents(i, storage.getStackInSlot(i));
+                }
+
+                IInventory config = fromInterface.duality.getInventoryByName("config");
+                IInventory newConfig = newDuality.getInventoryByName("config");
+                for (int i = 0; i < config.getSizeInventory(); ++i) {
+                    newConfig.setInventorySlotContents(i, config.getStackInSlot(i));
+                }
+            }
+
+            AppEngInternalInventory patterns = fromInterface.duality.getPatterns();
+            boolean drop = true;
+            if (!from.isOutput() && !this.isOutput()) { // input to input
+                for (int i = 0; i < patterns.getSizeInventory(); i++) {
+                    newDuality.getPatterns().setInventorySlotContents(i, patterns.getStackInSlot(i));
+                }
+                drop = false;
+            }
+
+            if (drop) {
+                this.dropPatterns(fromInterface);
+            }
+        }
     }
 
     @Override
