@@ -58,6 +58,7 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     @Override
     public PartP2PTunnel<?> applyMemoryCard(EntityPlayer player, IMemoryCard memoryCard, ItemStack is) {
         PartP2PTunnel<?> newTunnel = super.applyMemoryCard(player, memoryCard, is);
+        if (Platform.isClient()) return newTunnel;
         NBTTagCompound data = memoryCard.getData(is);
         if (newTunnel instanceof PartFluidP2PInterface p2PInterface) {
             p2PInterface.duality.getConfigManager().readFromNBT(data);
