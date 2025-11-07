@@ -1,17 +1,23 @@
 package com.glodblock.github.common.parts;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.util.Util;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.energy.IEnergyGrid;
 import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartBaseExportBus;
+import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.InventoryAdaptor;
 
 public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
@@ -66,4 +72,18 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
 
     @Override
     protected void doOreDict(InventoryAdaptor destination, IEnergyGrid energy, IMEMonitor<IAEFluidStack> gridInv) {}
+
+    // legacy
+    @Override
+    public void readFromNBT(NBTTagCompound extra) {
+        super.readFromNBT(extra);
+
+        final IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+        for (int i = 0; i < config.getSizeInventory(); i++) {
+            final IAEStack<?> stack = config.getAEStackInSlot(i);
+            if (stack instanceof IAEItemStack ais) {
+                config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
+            }
+        }
+    }
 }
