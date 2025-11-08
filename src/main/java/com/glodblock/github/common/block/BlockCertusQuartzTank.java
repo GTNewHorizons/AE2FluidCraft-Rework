@@ -110,60 +110,63 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
             float offsetX, float offsetY, float offsetZ) {
         ItemStack current = entityplayer.inventory.getCurrentItem();
 
-        if (entityplayer.isSneaking() && current != null) {
-            if (current.getItem() instanceof IAEWrench
-                    && ((IAEWrench) current.getItem()).canWrench(current, entityplayer, x, y, z)) {
+        if (current == null) {
+            return false;
+        }
+
+        if (entityplayer.isSneaking()) {
+            if (current.getItem() instanceof IAEWrench wrench && wrench.canWrench(current, entityplayer, x, y, z)) {
                 dropBlockAsItem(worldObj, x, y, z, getDropWithNBT(worldObj, x, y, z));
                 worldObj.setBlockToAir(x, y, z);
                 return true;
             }
         }
-        if (current != null) {
-            FluidStack liquid = FluidContainerRegistry.getFluidForFilledItem(current);
-            TileCertusQuartzTank tank = (TileCertusQuartzTank) worldObj.getTileEntity(x, y, z);
 
-            if (liquid != null) {
-                int amountFilled = tank.fill(ForgeDirection.UNKNOWN, liquid, true);
-                if (amountFilled != 0 && !entityplayer.capabilities.isCreativeMode && current.getItem() != null) {
-                    ItemStack empty;
-                    if (FluidContainerRegistry.isContainer(current)) {
-                        empty = FluidContainerRegistry.drainFluidContainer(current);
-                    } else {
-                        // Try this as a fallback.
-                        entityplayer.inventory.addItemStackToInventory(current.getItem().getContainerItem(current));
-                        empty = current.getItem().getContainerItem(current);
-                    }
-                    if (current.stackSize > 1) {
-                        entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem].stackSize -= 1;
-                        entityplayer.inventory.addItemStackToInventory(empty);
-                    } else {
-                        entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem] = empty;
-                    }
+        FluidStack liquid = FluidContainerRegistry.getFluidForFilledItem(current);
+        TileCertusQuartzTank tank = (TileCertusQuartzTank) worldObj.getTileEntity(x, y, z);
+
+        if (liquid != null) {
+            int amountFilled = tank.fill(ForgeDirection.UNKNOWN, liquid, true);
+            if (amountFilled != 0 && !entityplayer.capabilities.isCreativeMode && current.getItem() != null) {
+                ItemStack empty;
+                if (FluidContainerRegistry.isContainer(current)) {
+                    empty = FluidContainerRegistry.drainFluidContainer(current);
+                } else {
+                    // Try this as a fallback.
+                    entityplayer.inventory.addItemStackToInventory(current.getItem().getContainerItem(current));
+                    empty = current.getItem().getContainerItem(current);
                 }
-                return true;
-            } else {
-                FluidStack available = tank.getTankInfo(ForgeDirection.UNKNOWN)[0].fluid;
-                if (available != null) {
-                    ItemStack filled = FluidContainerRegistry.fillFluidContainer(available, current);
+                if (current.stackSize > 1) {
+                    entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem].stackSize -= 1;
+                    entityplayer.inventory.addItemStackToInventory(empty);
+                } else {
+                    entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem] = empty;
+                }
+            }
+            return true;
+        } else {
+            FluidStack available = tank.getTankInfo(ForgeDirection.UNKNOWN)[0].fluid;
+            if (available != null) {
+                ItemStack filled = FluidContainerRegistry.fillFluidContainer(available, current);
 
-                    liquid = FluidContainerRegistry.getFluidForFilledItem(filled);
+                liquid = FluidContainerRegistry.getFluidForFilledItem(filled);
 
-                    if (liquid != null) {
-                        tank.drain(ForgeDirection.UNKNOWN, liquid.amount, true);
-                        if (!entityplayer.capabilities.isCreativeMode) {
-                            if (current.stackSize == 1) {
-                                entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem] = filled;
-                            } else {
-                                entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem].stackSize--;
-                                if (!entityplayer.inventory.addItemStackToInventory(filled))
-                                    entityplayer.entityDropItem(filled, 0);
-                            }
+                if (liquid != null) {
+                    tank.drain(ForgeDirection.UNKNOWN, liquid.amount, true);
+                    if (!entityplayer.capabilities.isCreativeMode) {
+                        if (current.stackSize == 1) {
+                            entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem] = filled;
+                        } else {
+                            entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem].stackSize--;
+                            if (!entityplayer.inventory.addItemStackToInventory(filled))
+                                entityplayer.entityDropItem(filled, 0);
                         }
-                        return true;
                     }
+                    return true;
                 }
             }
         }
+
         return false;
     }
 
