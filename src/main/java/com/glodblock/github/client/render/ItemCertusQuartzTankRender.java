@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.render.tank.ModelCertusTank;
+import com.glodblock.github.common.item.ItemCertusQuartzTank;
 import com.glodblock.github.common.tile.TileCertusQuartzTank;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -49,21 +50,20 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
                 .bindTexture(FluidCraft.resource("textures/blocks/certus_quartz_tank/map.png"));
         GL11.glPushMatrix();
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
-        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         GL11.glTranslatef(0.5F, 0.5F, 0.5F);
-        GL11.glScalef(1, -1, -1);
+        GL11.glRotatef(180F, 1F, 0F, 0F);
         this.model.render(0.0625f);
-        GL11.glScalef(1, -1, 1);
-        this.model.render(0.0625f);
+        GL11.glRotatef(180F, 1F, 0F, 0F);
+        GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 
-        if (item != null && item.hasTagCompound()) {
-            FluidStack storedFluid = FluidStack
-                    .loadFluidStackFromNBT(item.getTagCompound().getCompoundTag("tileEntity"));
-            int tankCapacity = 32000;
+        if (item.getItem() instanceof ItemCertusQuartzTank itemCertusQuartzTank) {
+            FluidStack storedFluid = itemCertusQuartzTank.getFluid(item);
+            int tankCapacity = itemCertusQuartzTank.getCapacity(item);
 
             if (storedFluid != null && storedFluid.getFluid() != null) {
                 IIcon fluidIcon = storedFluid.getFluid().getIcon();
@@ -71,9 +71,12 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
                 if (ModAndClassUtil.HODGEPODGE && fluidIcon instanceof IPatchedTextureAtlasSprite) {
                     ((IPatchedTextureAtlasSprite) fluidIcon).markNeedsAnimationUpdate();
                 }
+
                 Tessellator tessellator = Tessellator.instance;
                 RenderBlocks renderer = new RenderBlocks();
-                GL11.glScalef(1, 1, -1);
+                Block waterBlock = FluidRegistry.WATER.getBlock();
+
+                Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
                 renderer.setRenderBounds(
                         0.08F,
                         0.001F,
@@ -81,9 +84,7 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
                         0.92F,
                         (float) storedFluid.amount / (float) tankCapacity * 0.999F,
                         0.92F);
-                Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
-                GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-                Block waterBlock = FluidRegistry.WATER.getBlock();
+
                 tessellator.startDrawingQuads();
                 tessellator.setColorRGBA_F(
                         (storedFluid.getFluid().getColor() >> 16 & 0xFF) / 255.0F,
