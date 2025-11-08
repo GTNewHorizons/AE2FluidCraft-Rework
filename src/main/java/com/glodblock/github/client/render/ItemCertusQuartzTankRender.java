@@ -53,8 +53,7 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_BLEND);
 
         GL11.glTranslatef(0.5F, 0.5F, 0.5F);
         GL11.glRotatef(180F, 1F, 0F, 0F);
@@ -85,6 +84,9 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
                         0.92F,
                         (float) storedFluid.amount / (float) tankCapacity * 0.999F,
                         0.92F);
+                GL11.glDisable(GL11.GL_LIGHTING);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
                 tessellator.startDrawingQuads();
                 tessellator.setColorRGBA_F(
