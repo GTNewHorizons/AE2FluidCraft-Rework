@@ -1,7 +1,6 @@
 package com.glodblock.github.common.item;
 
 import static appeng.util.Platform.baublesSlotsOffset;
-import static appeng.util.Platform.itemGuiSlotOffset;
 import static appeng.util.Platform.nextEnum;
 import static com.glodblock.github.util.Util.GuiHelper.decodeInvType;
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
@@ -165,9 +164,8 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
                 null,
                 null,
                 aeGui,
-                invSlotPair.getLeft() == Util.GuiHelper.InvType.PLAYER_INV
-                    ? slotIndex
-                    : invSlotPair.getRight() + baublesSlotsOffset);
+                invSlotPair.getLeft() == Util.GuiHelper.InvType.PLAYER_INV ? slotIndex
+                        : invSlotPair.getRight() + baublesSlotsOffset);
     }
 
     @Override
