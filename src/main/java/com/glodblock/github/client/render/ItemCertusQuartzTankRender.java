@@ -36,7 +36,7 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-        return type != ItemRenderType.EQUIPPED_FIRST_PERSON;
+        return true;
     }
 
     @Override
