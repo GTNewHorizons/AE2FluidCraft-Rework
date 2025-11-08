@@ -55,11 +55,13 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_BLEND);
 
-        GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+        if (type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
+            GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+        }
+
         GL11.glRotatef(180F, 1F, 0F, 0F);
         this.model.render(0.0625f);
         GL11.glRotatef(180F, 1F, 0F, 0F);
-        GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 
         if (item.getItem() instanceof ItemCertusQuartzTank itemCertusQuartzTank) {
             FluidStack storedFluid = itemCertusQuartzTank.getFluid(item);
@@ -84,6 +86,7 @@ public class ItemCertusQuartzTankRender implements IItemRenderer {
                         0.92F,
                         (float) storedFluid.amount / (float) tankCapacity * 0.999F,
                         0.92F);
+                GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
