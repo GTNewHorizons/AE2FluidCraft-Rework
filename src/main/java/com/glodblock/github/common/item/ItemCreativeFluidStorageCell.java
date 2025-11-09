@@ -13,9 +13,12 @@ import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.data.IAEStackType;
 import appeng.core.features.AEFeature;
 import appeng.items.AEBaseInfiniteCell;
+import appeng.me.storage.CreativeCellInventory;
+import appeng.me.storage.FluidCellInventoryHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemCreativeFluidStorageCell extends AEBaseInfiniteCell
@@ -48,5 +51,10 @@ public class ItemCreativeFluidStorageCell extends AEBaseInfiniteCell
     @Override
     public @NotNull IAEStackType<?> getStackType() {
         return FLUID_STACK_TYPE;
+    }
+
+    @Override
+    public IMEInventoryHandler getCellInventory(ItemStack stack) {
+        return new FluidCellInventoryHandler(new CreativeCellInventory<>(stack));
     }
 }
