@@ -33,7 +33,6 @@ public final class ModAndClassUtil {
     public static boolean GTPP = false;
     public static boolean WAILA = false;
     public static boolean AVARITIA = false;
-    public static boolean HODGEPODGE = false;
     public static boolean NEW_HORIZONS_CORE_MOD = false;
 
     public static boolean isV2;
@@ -148,7 +147,6 @@ public final class ModAndClassUtil {
         if (Loader.isModLoaded("miscutils")) GTPP = true;
         if (Loader.isModLoaded("Waila")) WAILA = true;
         if (Loader.isModLoaded("Avaritia")) AVARITIA = true;
-        if (Loader.isModLoaded("hodgepodge")) HODGEPODGE = true;
         if (Loader.isModLoaded("dreamcraft")) NEW_HORIZONS_CORE_MOD = true;
     }
 }
