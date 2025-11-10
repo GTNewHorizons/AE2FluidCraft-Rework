@@ -139,7 +139,9 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
 
                 if (itemInHand.stackSize > 1) {
                     itemInHand.stackSize--;
-                    player.inventory.addItemStackToInventory(empty);
+                    if (player.inventory.addItemStackToInventory(empty)) {
+                        player.entityDropItem(empty, 0);
+                    }
                 } else {
                     player.inventory.setInventorySlotContents(player.inventory.currentItem, empty);
                 }
