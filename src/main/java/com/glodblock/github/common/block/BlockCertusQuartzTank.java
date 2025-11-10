@@ -106,65 +106,67 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
     }
 
     @Override
-    public boolean onBlockActivated(World worldObj, int x, int y, int z, EntityPlayer entityplayer, int blockID,
-            float offsetX, float offsetY, float offsetZ) {
-        ItemStack current = entityplayer.inventory.getCurrentItem();
+    public boolean onBlockActivated(World worldObj, int x, int y, int z, EntityPlayer player, int side, float offsetX,
+            float offsetY, float offsetZ) {
+        ItemStack itemInHand = player.inventory.getCurrentItem();
 
-        if (current == null) {
+        if (itemInHand == null || itemInHand.getItem() == null) {
             return false;
         }
 
-        if (entityplayer.isSneaking()) {
-            if (current.getItem() instanceof IAEWrench wrench && wrench.canWrench(current, entityplayer, x, y, z)) {
+        if (player.isSneaking()) {
+            if (itemInHand.getItem() instanceof IAEWrench wrench && wrench.canWrench(itemInHand, player, x, y, z)) {
                 dropBlockAsItem(worldObj, x, y, z, getDropWithNBT(worldObj, x, y, z));
                 worldObj.setBlockToAir(x, y, z);
                 return true;
             }
         }
 
-        FluidStack liquid = FluidContainerRegistry.getFluidForFilledItem(current);
         TileCertusQuartzTank tank = (TileCertusQuartzTank) worldObj.getTileEntity(x, y, z);
+        boolean isCreativeMode = player.capabilities.isCreativeMode;
 
-        if (liquid != null) {
-            int amountFilled = tank.fill(ForgeDirection.UNKNOWN, liquid, true);
-            if (amountFilled != 0 && !entityplayer.capabilities.isCreativeMode && current.getItem() != null) {
-                ItemStack empty;
-                if (FluidContainerRegistry.isContainer(current)) {
-                    empty = FluidContainerRegistry.drainFluidContainer(current);
+        if (FluidContainerRegistry.isFilledContainer(itemInHand)) {
+            // Fill the tank from the container in player's hand
+            FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(itemInHand);
+
+            if (fluid == null) {
+                return false;
+            }
+
+            int amountFilled = tank.fill(ForgeDirection.UNKNOWN, fluid, true);
+            if (amountFilled > 0 && !isCreativeMode) {
+                ItemStack empty = FluidContainerRegistry.drainFluidContainer(itemInHand);
+
+                if (itemInHand.stackSize > 1) {
+                    itemInHand.stackSize--;
+                    player.inventory.addItemStackToInventory(empty);
                 } else {
-                    // Try this as a fallback.
-                    entityplayer.inventory.addItemStackToInventory(current.getItem().getContainerItem(current));
-                    empty = current.getItem().getContainerItem(current);
-                }
-                if (current.stackSize > 1) {
-                    entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem].stackSize -= 1;
-                    entityplayer.inventory.addItemStackToInventory(empty);
-                } else {
-                    entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem] = empty;
+                    player.inventory.setInventorySlotContents(player.inventory.currentItem, empty);
                 }
             }
             return true;
-        } else {
-            FluidStack available = tank.getTankInfo(ForgeDirection.UNKNOWN)[0].fluid;
-            if (available != null) {
-                ItemStack filled = FluidContainerRegistry.fillFluidContainer(available, current);
+        } else if (FluidContainerRegistry.isEmptyContainer(itemInHand)) {
+            // Fill the container in player's hand using the tank
+            FluidStack available = tank.tank.getFluid();
+            ItemStack filled = FluidContainerRegistry.fillFluidContainer(available, itemInHand);
+            FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(filled);
 
-                liquid = FluidContainerRegistry.getFluidForFilledItem(filled);
+            if (fluid == null) {
+                return false;
+            }
 
-                if (liquid != null) {
-                    tank.drain(ForgeDirection.UNKNOWN, liquid.amount, true);
-                    if (!entityplayer.capabilities.isCreativeMode) {
-                        if (current.stackSize == 1) {
-                            entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem] = filled;
-                        } else {
-                            entityplayer.inventory.mainInventory[entityplayer.inventory.currentItem].stackSize--;
-                            if (!entityplayer.inventory.addItemStackToInventory(filled))
-                                entityplayer.entityDropItem(filled, 0);
-                        }
+            tank.drain(ForgeDirection.UNKNOWN, fluid.amount, true);
+            if (!isCreativeMode) {
+                if (itemInHand.stackSize > 1) {
+                    itemInHand.stackSize--;
+                    if (!player.inventory.addItemStackToInventory(filled)) {
+                        player.entityDropItem(filled, 0);
                     }
-                    return true;
+                } else {
+                    player.inventory.setInventorySlotContents(player.inventory.currentItem, filled);
                 }
             }
+            return true;
         }
 
         return false;
