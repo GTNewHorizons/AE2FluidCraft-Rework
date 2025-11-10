@@ -22,7 +22,6 @@ import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.storage.FluidCellInventoryHandler;
 
 import appeng.api.AEApi;
 import appeng.api.config.TerminalFontSize;
