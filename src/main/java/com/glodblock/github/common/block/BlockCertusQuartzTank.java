@@ -150,7 +150,7 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
             return true;
         } else if (FluidContainerRegistry.isEmptyContainer(itemInHand)) {
             // Fill the container in hand from the tank
-            FluidStack available = tank.tank.getFluid();
+            FluidStack available = tank.getTankInfo(true)[0].fluid;
             ItemStack filled = FluidContainerRegistry.fillFluidContainer(available, itemInHand);
             FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(filled);
 
