@@ -139,7 +139,7 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
 
                 if (itemInHand.stackSize > 1) {
                     itemInHand.stackSize--;
-                    if (player.inventory.addItemStackToInventory(empty)) {
+                    if (player.inventory.addItemStackToInventory(empty) && !worldObj.isRemote) {
                         player.entityDropItem(empty, 0);
                     }
                 } else {
@@ -161,7 +161,7 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
             if (!isCreativeMode) {
                 if (itemInHand.stackSize > 1) {
                     itemInHand.stackSize--;
-                    if (!player.inventory.addItemStackToInventory(filled)) {
+                    if (!player.inventory.addItemStackToInventory(filled) && !worldObj.isRemote) {
                         player.entityDropItem(filled, 0);
                     }
                 } else {
