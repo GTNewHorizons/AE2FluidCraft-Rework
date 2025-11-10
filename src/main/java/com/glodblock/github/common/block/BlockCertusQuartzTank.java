@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -16,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 
 import com.glodblock.github.common.item.ItemCertusQuartzTank;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
@@ -114,6 +116,12 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
             return false;
         }
 
+        // In case if we're holding a IFluidContainerItem which is also a block we'll just allow to place a block
+        // instead of trying to fill or drain it. In other cases we don't need to handle blocks either way
+        if (itemInHand.getItem() instanceof ItemBlock) {
+            return false;
+        }
+
         if (player.isSneaking()) {
             if (itemInHand.getItem() instanceof IAEWrench wrench && wrench.canWrench(itemInHand, player, x, y, z)) {
                 dropBlockAsItem(worldObj, x, y, z, getDropWithNBT(worldObj, x, y, z));
@@ -126,7 +134,7 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
         boolean isCreativeMode = player.capabilities.isCreativeMode;
 
         if (FluidContainerRegistry.isFilledContainer(itemInHand)) {
-            // Fill the tank from the container in player's hand
+            // Fill the tank from the container in hand
             FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(itemInHand);
 
             if (fluid == null) {
@@ -136,19 +144,12 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
             int amountFilled = tank.fill(ForgeDirection.UNKNOWN, fluid, true);
             if (amountFilled > 0 && !isCreativeMode) {
                 ItemStack empty = FluidContainerRegistry.drainFluidContainer(itemInHand);
-
-                if (itemInHand.stackSize > 1) {
-                    itemInHand.stackSize--;
-                    if (player.inventory.addItemStackToInventory(empty) && !worldObj.isRemote) {
-                        player.entityDropItem(empty, 0);
-                    }
-                } else {
-                    player.inventory.setInventorySlotContents(player.inventory.currentItem, empty);
-                }
+                replaceItemInInventory(worldObj, player, itemInHand, empty);
             }
+
             return true;
         } else if (FluidContainerRegistry.isEmptyContainer(itemInHand)) {
-            // Fill the container in player's hand using the tank
+            // Fill the container in hand from the tank
             FluidStack available = tank.tank.getFluid();
             ItemStack filled = FluidContainerRegistry.fillFluidContainer(available, itemInHand);
             FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(filled);
@@ -159,19 +160,53 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
 
             tank.drain(ForgeDirection.UNKNOWN, fluid.amount, true);
             if (!isCreativeMode) {
-                if (itemInHand.stackSize > 1) {
-                    itemInHand.stackSize--;
-                    if (!player.inventory.addItemStackToInventory(filled) && !worldObj.isRemote) {
-                        player.entityDropItem(filled, 0);
-                    }
-                } else {
-                    player.inventory.setInventorySlotContents(player.inventory.currentItem, filled);
+                replaceItemInInventory(worldObj, player, itemInHand, filled);
+            }
+
+            return true;
+        } else if (itemInHand.getItem() instanceof IFluidContainerItem) {
+            ItemStack singleContainerItem = itemInHand.copy();
+            singleContainerItem.stackSize = 1;
+
+            IFluidContainerItem fluidContainer = (IFluidContainerItem) singleContainerItem.getItem();
+            assert fluidContainer != null;
+
+            FluidStack fluid = fluidContainer.getFluid(itemInHand);
+
+            if (fluid != null && fluid.amount > 0) {
+                // Fill the tank from the container in hand
+                int filled = tank.fill(ForgeDirection.UNKNOWN, fluid, true);
+                if (filled > 0 && !isCreativeMode) {
+                    fluidContainer.drain(singleContainerItem, filled, true);
+                    replaceItemInInventory(worldObj, player, itemInHand, singleContainerItem);
+                }
+            } else {
+                // Fill the container in hand from the tank
+                int containerCapacity = fluidContainer.getCapacity(itemInHand);
+                FluidStack drained = tank.drain(ForgeDirection.UNKNOWN, containerCapacity, true);
+                if (drained != null && drained.amount > 0 && !isCreativeMode) {
+                    fluidContainer.fill(singleContainerItem, drained, true);
+                    replaceItemInInventory(worldObj, player, itemInHand, singleContainerItem);
                 }
             }
+
             return true;
         }
 
         return false;
+    }
+
+    private void replaceItemInInventory(World world, EntityPlayer player, ItemStack item, ItemStack replacement) {
+        if (item.stackSize > 1) {
+            item.stackSize--;
+            // This method meant to be called both from client and server side, and trying to drop an item
+            // from the client side would create a doubled ghost item, so we don't allow to do that
+            if (!player.inventory.addItemStackToInventory(replacement) && !world.isRemote) {
+                player.entityDropItem(replacement, 0);
+            }
+        } else {
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, replacement);
+        }
     }
 
     @Override
