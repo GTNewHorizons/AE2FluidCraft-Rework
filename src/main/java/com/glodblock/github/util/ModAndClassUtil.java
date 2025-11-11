@@ -32,6 +32,7 @@ public final class ModAndClassUtil {
     public static boolean COFH = false;
     public static boolean GTPP = false;
     public static boolean WAILA = false;
+    public static boolean WAILA_PLUGINS = false;
     public static boolean AVARITIA = false;
     public static boolean NEW_HORIZONS_CORE_MOD = false;
 
@@ -146,6 +147,7 @@ public final class ModAndClassUtil {
         if (Loader.isModLoaded("CoFHCore")) COFH = true;
         if (Loader.isModLoaded("miscutils")) GTPP = true;
         if (Loader.isModLoaded("Waila")) WAILA = true;
+        if (Loader.isModLoaded("wailaplugins")) WAILA_PLUGINS = true;
         if (Loader.isModLoaded("Avaritia")) AVARITIA = true;
         if (Loader.isModLoaded("dreamcraft")) NEW_HORIZONS_CORE_MOD = true;
     }
