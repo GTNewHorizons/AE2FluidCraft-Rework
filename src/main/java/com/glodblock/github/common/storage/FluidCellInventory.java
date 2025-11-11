@@ -159,6 +159,7 @@ public class FluidCellInventory implements IFluidCellInventory {
         final long bytesFree = this.getFreeBytes();
         return (bytesFree > this.getBytesPerType()
                 || (bytesFree == this.getBytesPerType() && this.getUnusedFluidCount() > 0))
+                && (restrictionLong <= 0 || restrictionLong > getStoredFluidCount())
                 && this.getRemainingFluidTypes() > 0;
     }
 
@@ -361,7 +362,12 @@ public class FluidCellInventory implements IFluidCellInventory {
             if (cardDistribution) {
                 remainingFluidSlots = this.getRemainingFluidCountDist(l);
             } else {
-                remainingFluidSlots = this.getRemainingFluidCount();
+                if (restrictionLong > 0) {
+                    remainingFluidSlots = this.getRemainingFluidCount();
+                } else {
+                    remainingFluidSlots = this.getRemainingFluidCount()
+                            - (long) this.getBytesPerType() * singleByteAmount;
+                }
             }
 
             if (remainingFluidSlots <= 0) {
