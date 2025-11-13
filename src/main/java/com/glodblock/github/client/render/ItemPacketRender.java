@@ -13,9 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.RenderUtil;
-import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -46,15 +44,8 @@ public class ItemPacketRender implements IItemRenderer {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         FluidStack fluid = ItemFluidPacket.getFluidStack(item);
-        int RGB = 0xFFFFFF;
-        if (fluid != null) {
-            RGB = fluid.getFluid().getColor(fluid);
-        }
+        int RGB = fluid == null ? 0xFFFFFF : fluid.getFluid().getColor(fluid);
         IIcon icon = fluid == null ? FluidRegistry.WATER.getStillIcon() : fluid.getFluid().getStillIcon();
-
-        if (ModAndClassUtil.HODGEPODGE && icon instanceof IPatchedTextureAtlasSprite) {
-            ((IPatchedTextureAtlasSprite) icon).markNeedsAnimationUpdate();
-        }
 
         if (RGB != 0xFFFFFF) {
             GL11.glColor3f((RGB >> 16 & 0xFF) / 255.0F, (RGB >> 8 & 0xFF) / 255.0F, (RGB & 0xFF) / 255.0F);
