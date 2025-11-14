@@ -2,7 +2,6 @@ package com.glodblock.github.common.block;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,11 +15,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
 
 import com.glodblock.github.common.item.ItemCertusQuartzTank;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileCertusQuartzTank;
-import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
@@ -168,13 +167,6 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block neighborBlock) {
-        if (!world.isRemote) {
-            ChannelLoader.sendPacketToAllPlayers(world.getTileEntity(x, y, z).getDescriptionPacket(), world);
-        }
-    }
-
-    @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
@@ -208,5 +200,23 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
         GameRegistry.registerTileEntity(TileCertusQuartzTank.class, NameConst.BLOCK_CERTUS_QUARTZ_TANK);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride(World worldIn, int x, int y, int z, int side) {
+        TileEntity tileEntity = worldIn.getTileEntity(x, y, z);
+        if (tileEntity instanceof TileCertusQuartzTank tileCertusQuartzTank) {
+            FluidTankInfo[] info = tileCertusQuartzTank.getTankInfo(false);
+            if (info[0].fluid != null) {
+                int nonEmptyBump = info[0].fluid.amount > 0 ? 1 : 0;
+                return (int) (14.0 * info[0].fluid.amount / info[0].capacity) + nonEmptyBump;
+            }
+        }
+        return 0;
     }
 }
