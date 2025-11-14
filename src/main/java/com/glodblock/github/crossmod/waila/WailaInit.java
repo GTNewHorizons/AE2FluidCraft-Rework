@@ -1,6 +1,7 @@
 package com.glodblock.github.crossmod.waila;
 
 import com.glodblock.github.common.tile.TileCertusQuartzTank;
+import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.api.parts.IPartHost;
 import appeng.tile.AEBaseTile;
@@ -26,8 +27,9 @@ public class WailaInit {
         registrar.registerBodyProvider(tile, AEBaseTile.class);
         registrar.registerNBTProvider(tile, AEBaseTile.class);
 
-        final IWailaDataProvider certusQuartzTank = new CertusQuartzTankWailaDataProvider();
-        registrar.registerBodyProvider(certusQuartzTank, TileCertusQuartzTank.class);
-
+        if (!ModAndClassUtil.WAILA_PLUGINS) {
+            final IWailaDataProvider certusQuartzTank = new CertusQuartzTankWailaDataProvider();
+            registrar.registerBodyProvider(certusQuartzTank, TileCertusQuartzTank.class);
+        }
     }
 }
