@@ -220,12 +220,16 @@ public class FluidCellInventory implements IFluidCellInventory {
     public long getRemainingFluidCountDist(IAEFluidStack l) {
         long remaining;
         long types = 0;
-        for (int i = 0; i < this.getTotalFluidTypes(); i++) {
-            if (this.getConfigInventory().getStackInSlot(i) != null) {
+        long maxFluidTypes = this.getTotalFluidTypes();
+        IInventory configInventory = this.getConfigInventory();
+        for (int i = 0; i < configInventory.getSizeInventory(); i++) {
+            // Check all partition slots to determine min distribution behaviour until max fluid types is reached
+            if (types >= maxFluidTypes) break;
+            if (configInventory.getStackInSlot(i) != null) {
                 types++;
             }
         }
-        if (types == 0) types = this.getTotalFluidTypes();
+        if (types == 0) types = maxFluidTypes;
         if (l != null) {
             if (restrictionLong > 0) {
                 remaining = Math.min((restrictionLong / types) - l.getStackSize(), getRemainingFluidCount());
