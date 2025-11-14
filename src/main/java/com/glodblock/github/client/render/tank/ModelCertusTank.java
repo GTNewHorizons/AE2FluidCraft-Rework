@@ -25,8 +25,7 @@ public class ModelCertusTank extends ModelBase {
         this.textureHeight = 64;
 
         this.Shape1 = new ModelRenderer(this, 0, 0);
-        this.Shape1.addBox(0F, 0F, 0F, 14, 16, 14);
-        this.Shape1.setRotationPoint(-7F, -8F, -7F);
+        this.Shape1.addBox(-7F, -8F, -7F, 14, 16, 14);
         this.Shape1.setTextureSize(this.textureWidth, this.textureHeight);
         this.Shape1.mirror = true;
         setRotation(this.Shape1, 0F, 0F, 0F);
