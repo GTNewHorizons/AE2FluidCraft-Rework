@@ -23,8 +23,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.storage.FluidCellInventoryHandler;
-import com.glodblock.github.util.ModAndClassUtil;
-import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 
 import appeng.api.AEApi;
 import appeng.api.config.TerminalFontSize;
@@ -163,10 +161,6 @@ public class NEICellViewHandler implements IUsageHandler {
             final int color = this.stacks.get(i).color;
             final int line = i % ROW_ITEM_NUM;
             final int row = i / ROW_ITEM_NUM;
-
-            if (ModAndClassUtil.HODGEPODGE && icon instanceof IPatchedTextureAtlasSprite sprite) {
-                sprite.markNeedsAnimationUpdate();
-            }
 
             tessellator.setColorRGBA(color >> 16 & 0xFF, color >> 8 & 0xFF, color & 0xFF, 0xFF);
             tessellator.addVertexWithUV(

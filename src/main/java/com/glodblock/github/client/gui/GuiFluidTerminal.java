@@ -19,9 +19,7 @@ import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.network.CPacketFluidUpdate;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
-import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEFluidStack;
@@ -97,10 +95,6 @@ public class GuiFluidTerminal extends GuiFluidMonitor {
         IIcon icon = fluid.getIcon();
         if (icon == null) return;
 
-        if (ModAndClassUtil.HODGEPODGE && icon instanceof IPatchedTextureAtlasSprite) {
-            ((IPatchedTextureAtlasSprite) icon).markNeedsAnimationUpdate();
-        }
-
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_BLEND);
@@ -109,7 +103,7 @@ public class GuiFluidTerminal extends GuiFluidMonitor {
                 (fluid.getColor() >> 16 & 0xFF) / 255.0F,
                 (fluid.getColor() >> 8 & 0xFF) / 255.0F,
                 (fluid.getColor() & 0xFF) / 255.0F);
-        drawTexturedModelRectFromIcon(posX, posY, fluid.getIcon(), 16, 16);
+        drawTexturedModelRectFromIcon(posX, posY, icon, 16, 16);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glColor3f(1, 1, 1);
