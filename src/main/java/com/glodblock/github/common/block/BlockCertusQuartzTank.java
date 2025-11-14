@@ -2,7 +2,6 @@ package com.glodblock.github.common.block;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +21,6 @@ import net.minecraftforge.fluids.IFluidContainerItem;
 import com.glodblock.github.common.item.ItemCertusQuartzTank;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileCertusQuartzTank;
-import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
@@ -206,13 +204,6 @@ public class BlockCertusQuartzTank extends BaseBlockContainer implements IRegist
             }
         } else {
             player.inventory.setInventorySlotContents(player.inventory.currentItem, replacement);
-        }
-    }
-
-    @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block neighborBlock) {
-        if (!world.isRemote) {
-            ChannelLoader.sendPacketToAllPlayers(world.getTileEntity(x, y, z).getDescriptionPacket(), world);
         }
     }
 
