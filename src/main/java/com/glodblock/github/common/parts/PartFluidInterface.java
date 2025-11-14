@@ -1,26 +1,22 @@
 package com.glodblock.github.common.parts;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.List;
 
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 
-import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.client.FluidInterfaceButtons;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.Util;
 
@@ -31,86 +27,27 @@ import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
-import appeng.api.parts.IPartRenderHelper;
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.client.texture.CableBusTextures;
+import appeng.helpers.ICustomButtonDataObject;
+import appeng.helpers.ICustomButtonProvider;
 import appeng.parts.misc.PartInterface;
 import appeng.tile.inventory.AppEngInternalAEInventory;
-import appeng.util.Platform;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
-public class PartFluidInterface extends PartInterface implements IDualHost {
+public class PartFluidInterface extends PartInterface implements IDualHost, ICustomButtonProvider {
 
     private final AppEngInternalAEInventory config = new AppEngInternalAEInventory(this, 6);
     private final DualityFluidInterface fluidDuality = new DualityFluidInterface(this.getProxy(), this);
 
+    private ICustomButtonDataObject customButtonDataObject;
+
     public PartFluidInterface(ItemStack is) {
         super(is);
-    }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderStatic(final int x, final int y, final int z, final IPartRenderHelper rh,
-            final RenderBlocks renderer) {
-        this.setRenderCache(rh.useSimplifiedRendering(x, y, z, this, this.getRenderCache()));
-        rh.setTexture(
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorBack.getIcon(),
-                FCPartsTexture.BlockInterface_Face.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon());
-
-        rh.setBounds(2, 2, 14, 14, 14, 16);
-        rh.renderBlock(x, y, z, renderer);
-
-        rh.setTexture(
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorBack.getIcon(),
-                FCPartsTexture.BlockInterface_Face.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon());
-
-        rh.setBounds(5, 5, 12, 11, 11, 13);
-        rh.renderBlock(x, y, z, renderer);
-
-        rh.setTexture(
-                CableBusTextures.PartMonitorSidesStatus.getIcon(),
-                CableBusTextures.PartMonitorSidesStatus.getIcon(),
-                CableBusTextures.PartMonitorBack.getIcon(),
-                FCPartsTexture.BlockInterface_Face.getIcon(),
-                CableBusTextures.PartMonitorSidesStatus.getIcon(),
-                CableBusTextures.PartMonitorSidesStatus.getIcon());
-
-        rh.setBounds(5, 5, 13, 11, 11, 14);
-        rh.renderBlock(x, y, z, renderer);
-
-        this.renderLights(x, y, z, rh, renderer);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderInventory(final IPartRenderHelper rh, final RenderBlocks renderer) {
-        rh.setTexture(
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorBack.getIcon(),
-                FCPartsTexture.BlockInterface_Face.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon(),
-                CableBusTextures.PartMonitorSides.getIcon());
-
-        rh.setBounds(2, 2, 14, 14, 14, 16);
-        rh.renderInventoryBox(renderer);
-
-        rh.setBounds(5, 5, 12, 11, 11, 13);
-        rh.renderInventoryBox(renderer);
-
-        rh.setBounds(5, 5, 13, 11, 11, 14);
-        rh.renderInventoryBox(renderer);
+        this.customButtonDataObject = new FluidInterfaceButtons(false);
     }
 
     @MENetworkEventSubscribe
@@ -223,22 +160,6 @@ public class PartFluidInterface extends PartInterface implements IDualHost {
     }
 
     @Override
-    public boolean onPartActivate(final EntityPlayer player, final Vec3 pos) {
-        if (player.isSneaking()) {
-            return false;
-        }
-        if (Platform.isServer()) {
-            InventoryHandler.openGui(
-                    player,
-                    this.getHost().getTile().getWorldObj(),
-                    new BlockPos(this.getHost().getTile()),
-                    Objects.requireNonNull(this.getSide()),
-                    GuiType.DUAL_INTERFACE);
-        }
-        return true;
-    }
-
-    @Override
     public void onFluidInventoryChanged(IAEFluidTank inv, int slot) {
         saveChanges();
         getTileEntity().markDirty();
@@ -282,5 +203,39 @@ public class PartFluidInterface extends PartInterface implements IDualHost {
         } else {
             return fluid;
         }
+    }
+
+    @Override
+    public ItemStack getPrimaryGuiIcon() {
+        return ItemAndBlockHolder.FLUID_INTERFACE.stack();
+    }
+
+    @Override
+    public void writeCustomButtonData() {}
+
+    @Override
+    public void readCustomButtonData() {}
+
+    @Override
+    public void initCustomButtons(int guiLeft, int guiTop, int xSize, int ySize, int xOffset, int yOffset,
+            List<GuiButton> buttonList) {
+        if (customButtonDataObject != null)
+            customButtonDataObject.initCustomButtons(guiLeft, guiTop, xSize, ySize, xOffset, yOffset, buttonList);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean actionPerformedCustomButtons(final GuiButton btn) {
+        return customButtonDataObject != null && customButtonDataObject.actionPerformedCustomButtons(btn);
+    }
+
+    @Override
+    public ICustomButtonDataObject getDataObject() {
+        return customButtonDataObject;
+    }
+
+    @Override
+    public void setDataObject(ICustomButtonDataObject dataObject) {
+        customButtonDataObject = dataObject;
     }
 }
