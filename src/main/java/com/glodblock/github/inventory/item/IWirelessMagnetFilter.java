@@ -14,7 +14,7 @@ public interface IWirelessMagnetFilter extends IWirelessTerminal, IItemTerminal 
 
     String getOreDictFilter();
 
-    void setListMode(WirelessMagnet.ListMode mode);
+    void setListMode(boolean mode);
 
     void setNBTMode(boolean ignoreNBT);
 

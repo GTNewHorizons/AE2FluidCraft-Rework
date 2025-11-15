@@ -8,23 +8,22 @@ import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.inventory.item.WirelessPatternTerminalInventory;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
-import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
-import appeng.api.networking.IGridNode;
+import appeng.api.features.IWirelessTermHandler;
+import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.core.features.AEFeature;
-import appeng.core.localization.PlayerMessages;
+import appeng.core.sync.GuiBridge;
+import appeng.items.contents.WirelessPatternTerminalGuiObject;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemWirelessPatternTerminal extends ItemBaseWirelessTerminal
         implements IRegister<ItemWirelessPatternTerminal> {
 
     public ItemWirelessPatternTerminal() {
-        super(GuiType.WIRELESS_FLUID_PATTERN_TERMINAL);
+        super(GuiBridge.GUI_PATTERN_TERMINAL);
         AEApi.instance().registries().wireless().registerWirelessHandler(this);
         this.setFeature(EnumSet.of(AEFeature.WirelessAccessTerminal, AEFeature.PoweredTools));
         setUnlocalizedName(NameConst.ITEM_WIRELESS_FLUID_PATTERN_TERMINAL);
@@ -39,13 +38,9 @@ public class ItemWirelessPatternTerminal extends ItemBaseWirelessTerminal
     }
 
     @Override
-    public Object getInventory(ItemStack stack, World world, int x, int y, int z, EntityPlayer player) {
-        try {
-            IGridNode gridNode = Util.getWirelessGrid(stack);
-            return new WirelessPatternTerminalInventory(stack, x, gridNode, player);
-        } catch (Exception e) {
-            player.addChatMessage(PlayerMessages.OutOfRange.toChat());
-        }
-        return null;
+    public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
+        final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
+        if (wh == null) return null;
+        return new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
     }
 }

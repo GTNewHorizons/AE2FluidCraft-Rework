@@ -34,10 +34,13 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import appeng.api.util.IConfigManager;
 import appeng.core.AELog;
 import appeng.items.storage.ItemBasicStorageCell;
 import appeng.me.GridAccessException;
@@ -52,7 +55,7 @@ import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
 public class TileSuperStockReplenisher extends AENetworkInvTile
-        implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable {
+        implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable, ITerminalHost {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
     private final AppEngInternalInventory invItems = new AppEngInternalInventory(this, 63);
@@ -459,5 +462,20 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
         return doWork();
+    }
+
+    @Override
+    public IMEMonitor<IAEItemStack> getItemInventory() {
+        return null;
+    }
+
+    @Override
+    public IMEMonitor<IAEFluidStack> getFluidInventory() {
+        return null;
+    }
+
+    @Override
+    public IConfigManager getConfigManager() {
+        return null;
     }
 }

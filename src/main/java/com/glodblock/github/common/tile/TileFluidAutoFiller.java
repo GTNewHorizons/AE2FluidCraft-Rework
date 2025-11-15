@@ -45,6 +45,7 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
@@ -59,7 +60,7 @@ import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TileFluidAutoFiller extends AENetworkInvTile
-        implements ICraftingProvider, IMEMonitorHandlerReceiver<IAEFluidStack>, IGridTickable {
+        implements ICraftingProvider, IMEMonitorHandlerReceiver<IAEStack<?>>, IGridTickable {
 
     private final AppEngInternalInventory inventory = new AppEngInternalInventory(this, 1);
     private final BaseActionSource source = new MachineSource(this);
@@ -214,14 +215,13 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     }
 
     @Override
-    public void postChange(IBaseMonitor<IAEFluidStack> monitor, Iterable<IAEFluidStack> change,
-            BaseActionSource source) {
+    public void postChange(IBaseMonitor<IAEStack<?>> monitor, Iterable<IAEStack<?>> change, BaseActionSource source) {
         if (this.getProxy().isActive() && this.getStorageGrid() != null) {
             boolean hasChanged = false;
-            for (IAEFluidStack tmp : change) {
-                if (this.fluids.findPrecise(tmp) == null) {
+            for (IAEStack<?> tmp : change) {
+                if (this.fluids.findPrecise((IAEFluidStack) tmp) == null) {
                     hasChanged = true;
-                    this.fluids.add(tmp);
+                    this.fluids.add((IAEFluidStack) tmp);
                 }
             }
             if (hasChanged) postEvent();

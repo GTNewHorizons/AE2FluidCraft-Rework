@@ -6,13 +6,11 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import com.glodblock.github.api.registries.ILevelTerminalRegistry;
-import com.glodblock.github.api.registries.ILevelViewable;
 import com.glodblock.github.api.registries.ILevelViewableAdapter;
 import com.glodblock.github.common.parts.PartFluidLevelEmitter;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.coremod.registries.adapters.PartFluidLevelEmitterAdapter;
-import com.glodblock.github.coremod.registries.adapters.PartLevelEmitterAdapter;
 
+import appeng.api.features.ILevelViewable;
 import appeng.api.networking.IGridHost;
 import appeng.parts.automation.PartLevelEmitter;
 
@@ -29,8 +27,8 @@ public class LevelTerminalRegistry implements ILevelTerminalRegistry {
 
     {
         this.register(TileLevelMaintainer.class);
-        this.register(PartFluidLevelEmitter.class, new PartFluidLevelEmitterAdapter());
-        this.register(PartLevelEmitter.class, new PartLevelEmitterAdapter());
+        this.register(PartLevelEmitter.class);
+        this.register(PartFluidLevelEmitter.class);
     }
 
     public Set<Class<? extends ILevelViewable>> getSupportedClasses() {

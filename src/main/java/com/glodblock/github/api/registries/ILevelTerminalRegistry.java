@@ -2,6 +2,7 @@ package com.glodblock.github.api.registries;
 
 import java.util.Set;
 
+import appeng.api.features.ILevelViewable;
 import appeng.api.networking.IGridHost;
 
 public interface ILevelTerminalRegistry {

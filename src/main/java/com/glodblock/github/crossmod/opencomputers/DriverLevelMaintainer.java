@@ -3,7 +3,6 @@ package com.glodblock.github.crossmod.opencomputers;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -13,6 +12,10 @@ import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.storage.data.IAEStack;
+import appeng.tile.inventory.IAEStackInventory;
+import appeng.util.Platform;
+import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.NamedBlock;
@@ -44,7 +47,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
             super(tileEntity, NameConst.BLOCK_LEVEL_MAINTAINER);
         }
 
-        private int getSlot(Arguments args, IInventory inv, int index, int def) {
+        private int getSlot(Arguments args, IAEStackInventory inv, int index, int def) {
             if (index >= 0 && index < args.count()) {
                 int slot = args.checkInteger(index) - 1;
                 if (slot < 0 || slot >= inv.getSizeInventory()) {
@@ -93,10 +96,11 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
 
         @Callback(doc = "function([slot:number]):table -- Get the slot status.")
         public Object[] getSlot(Context context, Arguments args) {
-            IInventory config = tileEntity.getInventory();
-            int slot = getSlot(args, config, 0, 0);
-            ItemStack stack = config.getStackInSlot(slot);
-            if (stack != null) {
+            IAEStackInventory inventory = tileEntity.getAEStackInventory();
+            int slot = getSlot(args, inventory, 0, 0);
+            IAEStack<?> aeStack = inventory.getAEStackInSlot(slot);
+            if (aeStack != null) {
+                ItemStack stack = Platform.stackConvert(aeStack).getItemStack();
                 Map<String, Object> result = new HashMap<>();
                 result.put("damage", stack.getItemDamage());
                 result.put("hasTag", stack.hasTagCompound());
@@ -122,7 +126,7 @@ public class DriverLevelMaintainer extends DriverSidedTileEntity {
                     if (dbStack == null) {
                         throw new IllegalArgumentException("Invalid slot");
                     }
-                    tileEntity.updateStack(slot, dbStack);
+                    tileEntity.updateStack(slot, AEItemStack.create(dbStack));
                 } else {
                     throw new IllegalArgumentException("Not a database");
                 }
