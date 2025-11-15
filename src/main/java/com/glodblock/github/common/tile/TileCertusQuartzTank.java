@@ -33,42 +33,57 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         return tankFluid == null || tankFluid.amount == 0 ? 0 : tankFluid.getFluid().getLuminosity(tankFluid);
     }
 
-    public FluidStack drain(FluidStack fluid, boolean doDrain, boolean findMainTank) {
-        if (fluid == null || this.getFluid() == null || this.getFluid() != fluid.getFluid()) {
+    public FluidStack drain(Fluid fluid, int amount, boolean doDrain, boolean findMainTank) {
+        if (fluid != null && this.getFluid() != fluid) {
             return null;
         }
 
         if (findMainTank) {
             // Main tank is the highest tank in the column with desired fluid
             TileCertusQuartzTank mainTank = this;
-            TileCertusQuartzTank tankAbove;
 
-            while ((tankAbove = mainTank.getTankAbove()) != null) {
-                // We can't drain tank with different or null fluid
-                if (fluid.getFluid() != tankAbove.getFluid()) {
-                    break;
+            if (this.tank.getFluid() != null) {
+                // Current tank has a fluid, searching for the highest tank with this fluid
+                TileCertusQuartzTank tankAbove;
+                while ((tankAbove = mainTank.getTankAbove()) != null) {
+                    // We can't drain tank with different or null fluid
+                    if (tankAbove.getFluid() == null || mainTank.getFluid() != tankAbove.getFluid()) {
+                        break;
+                    }
+                    mainTank = tankAbove;
                 }
-                mainTank = tankAbove;
+            } else {
+                // Current tank doesn't have a fluid, searching for the first non-empty tank below
+                TileCertusQuartzTank tankBelow;
+                while ((tankBelow = mainTank.getTankBelow()) != null) {
+                    // We can't drain tank with different fluid
+                    if (fluid != null && tankBelow.getFluid() != fluid) {
+                        break;
+                    }
+                    mainTank = tankBelow;
+                    if (tankBelow.getFluid() != null) {
+                        break;
+                    }
+                }
             }
 
-            return mainTank.drain(fluid, doDrain, false);
+            return mainTank.drain(fluid, amount, doDrain, false);
         }
 
-        FluidStack drainedFluid = this.tank.drain(fluid.amount, doDrain);
+        FluidStack drainedFluid = this.tank.drain(amount, doDrain);
         int drained = drainedFluid != null ? drainedFluid.amount : 0;
 
         if (drained > 0) {
             update();
         }
 
-        if (drained < fluid.amount) {
+        if (drained < amount) {
             TileCertusQuartzTank tankBelow = this.getTankBelow();
             if (tankBelow != null) {
-                FluidStack fluidToDrain = new FluidStack(fluid.getFluid(), fluid.amount - drained);
-                FluidStack externallyDrained = tankBelow.drain(fluidToDrain, doDrain, false);
+                FluidStack externallyDrained = tankBelow.drain(fluid, amount - drained, doDrain, false);
 
                 if (externallyDrained != null) {
-                    return new FluidStack(fluid.getFluid(), drained + externallyDrained.amount);
+                    return new FluidStack(fluid, drained + externallyDrained.amount);
                 }
             }
         }
@@ -78,14 +93,14 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-        return drain(resource, doDrain, true);
+        if (resource == null) return null;
+
+        return drain(resource.getFluid(), resource.amount, doDrain, true);
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-        if (this.tank.getFluid() == null) return null;
-
-        return drain(from, new FluidStack(this.tank.getFluid(), maxDrain), doDrain);
+        return drain(null, maxDrain, true, true);
     }
 
     public int fill(FluidStack fluid, boolean doFill, boolean findMainTank) {
@@ -174,14 +189,14 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         }
 
         final FluidStack tankFluidStack = this.tank.getFluid();
-        final Fluid mainFluid = tankFluidStack != null ? tankFluidStack.getFluid() : null;
+        Fluid mainFluid = tankFluidStack != null ? tankFluidStack.getFluid() : null;
 
         int amount = tankFluidStack == null ? 0 : tankFluidStack.amount;
         int capacity = this.tank.getCapacity();
 
         TileCertusQuartzTank tankAbove = this;
         while ((tankAbove = tankAbove.getTankAbove()) != null) {
-            if (tankAbove.getFluid() == null || mainFluid != tankAbove.getFluid()) {
+            if (tankAbove.getFluid() != null && mainFluid != tankAbove.getFluid()) {
                 break;
             }
 
@@ -192,7 +207,10 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
         TileCertusQuartzTank tankBelow = this;
         while ((tankBelow = tankBelow.getTankBelow()) != null) {
-            if (mainFluid == null || mainFluid != tankBelow.getFluid()) {
+            if (mainFluid == null && tankBelow.getFluid() != null) {
+                mainFluid = tankBelow.getFluid();
+            }
+            if (mainFluid != tankBelow.getFluid()) {
                 break;
             }
 
