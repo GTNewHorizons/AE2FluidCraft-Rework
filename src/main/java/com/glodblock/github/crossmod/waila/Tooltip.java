@@ -15,12 +15,16 @@ public class Tooltip {
         return String.format("%s: %s mB", name, NumberFormat.getInstance().format(amount));
     }
 
-    public static String fluidFormat(String name, long amount, long capacity) {
+    public static String tankWithFluidFormat(String fluidName, long amount, long capacity) {
         return String.format(
                 "%s: %s mB / %s mB",
-                name,
+                fluidName,
                 NumberFormat.getInstance().format(amount),
                 NumberFormat.getInstance().format(capacity));
+    }
+
+    public static String tankEmptyFormat(long capacity) {
+        return String.format("0 mB / %s mB", NumberFormat.getInstance().format(capacity));
     }
 
     public static String partFluidBusFormat(int amount) {
