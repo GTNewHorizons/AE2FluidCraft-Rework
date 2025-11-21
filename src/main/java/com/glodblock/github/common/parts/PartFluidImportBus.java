@@ -95,10 +95,10 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
             final IMEMonitor<IAEFluidStack> inv, final IEnergySource energy, final FuzzyMode fzMode) {
         if (myTarget instanceof IFluidHandler fh) {
             FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
-            if (tanksInfo == null) return false;
+            if (tanksInfo == null) return true;
 
             int maxDrain = this.calculateAmountToSend();
-            boolean drained = false;
+            boolean doBreak = true;
 
             for (FluidTankInfo tankInfo : tanksInfo) {
                 if (tankInfo.fluid == null) continue;
@@ -117,14 +117,14 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
 
                     fh.drain(this.getSide().getOpposite(), aeFluidStack.getFluidStack(), true);
                     maxDrain -= aeFluidStack.getFluidStack().amount;
-                    drained = true;
+                    doBreak = false;
                 }
             }
 
-            return drained;
+            return doBreak;
         }
 
-        return false;
+        return true;
     }
 
     @Override
