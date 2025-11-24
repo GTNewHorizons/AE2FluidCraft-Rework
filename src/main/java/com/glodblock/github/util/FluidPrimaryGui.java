@@ -28,7 +28,7 @@ public class FluidPrimaryGui extends PrimaryGui {
                         p,
                         p.worldObj,
                         new BlockPos(
-                                p.inventory.currentItem,
+                                this.slotIndex == Integer.MIN_VALUE ? p.inventory.currentItem : this.slotIndex,
                                 Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
                                 0),
                         Objects.requireNonNull(side),
