@@ -41,6 +41,6 @@ public class ItemWirelessInterfaceTerminal extends ItemBaseWirelessTerminal
     public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return new WirelessInterfaceTerminalGuiObject(wh, is);
+        return new WirelessInterfaceTerminalGuiObject(wh, is, x);
     }
 }

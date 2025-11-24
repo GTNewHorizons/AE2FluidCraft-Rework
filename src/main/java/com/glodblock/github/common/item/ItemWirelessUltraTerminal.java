@@ -129,7 +129,9 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
             if (terminal == null) return;
             if (mode != null) setMode(terminal, mode);
             else mode = getMode(terminal);
-            openGui(terminal, player.worldObj, player, mode, term.getLeft());
+
+            if (AEApi.instance().registries().wireless().performCheck(terminal, player))
+                openGui(terminal, player.worldObj, player, mode, term.getLeft());
         }
     }
 
@@ -217,7 +219,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         return switch (y != Integer.MIN_VALUE ? UltraTerminalModes.values()[y] : getMode(is)) {
             case CRAFTING -> new WirelessCraftingTerminalGuiObject(wh, is, p, world, x, y, z);
             case PATTERN, PATTERN_EX -> new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
-            case INTERFACE -> new WirelessInterfaceTerminalGuiObject(wh, is);
+            case INTERFACE -> new WirelessInterfaceTerminalGuiObject(wh, is, x);
             default -> super.getGuiObject(is, world, p, x, y, z);
         };
     }
