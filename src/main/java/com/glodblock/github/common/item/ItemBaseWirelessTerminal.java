@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -100,6 +101,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     public static UltraTerminalModes getMode(ItemStack is) {
         Item item = is.getItem();
         if (item instanceof ItemWirelessUltraTerminal) {
+            if (!is.hasTagCompound()) is.setTagCompound(new NBTTagCompound());
             return UltraTerminalModes.values()[is.getTagCompound().getInteger(MODE)];
         } else if (item instanceof ItemWirelessPatternTerminal) {
             return UltraTerminalModes.PATTERN;
