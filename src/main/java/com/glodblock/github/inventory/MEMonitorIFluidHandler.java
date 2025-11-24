@@ -28,6 +28,7 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
 import appeng.util.item.AEFluidStack;
@@ -39,7 +40,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     private final IFluidHandler handler;
     private final ForgeDirection side;
     private IItemList<IAEFluidStack> cache = AEApi.instance().storage().createFluidList();
-    private final HashMap<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> listeners = new HashMap<>();
+    private final HashMap<IMEMonitorHandlerReceiver, Object> listeners = new HashMap<>();
     private BaseActionSource mySource;
     private StorageFilter mode;
     private boolean init = false;
@@ -56,11 +57,11 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         this.side = ForgeDirection.UNKNOWN;
     }
 
-    public void addListener(IMEMonitorHandlerReceiver<IAEFluidStack> l, Object verificationToken) {
+    public void addListener(IMEMonitorHandlerReceiver l, Object verificationToken) {
         this.listeners.put(l, verificationToken);
     }
 
-    public void removeListener(IMEMonitorHandlerReceiver<IAEFluidStack> l) {
+    public void removeListener(IMEMonitorHandlerReceiver l) {
         this.listeners.remove(l);
     }
 
@@ -155,7 +156,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         }
 
         // make diff between cache and new contents
-        IItemList<IAEFluidStack> changes = AEApi.instance().storage().createFluidList();
+        IItemList<IAEStack<?>> changes = AEApi.instance().storage().createAEStackList();
         // using non-enhanced for to prevent concurrency errors
         for (Iterator<IAEFluidStack> iter = this.cache.iterator(); iter.hasNext();) {
             IAEFluidStack copy = iter.next().copy();
@@ -168,7 +169,7 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         // update cache as soon as possible
         this.cache = currentlyOnStorage;
         // remove unchanged values
-        for (Iterator<IAEFluidStack> iter = changes.iterator(); iter.hasNext();) {
+        for (Iterator<IAEStack<?>> iter = changes.iterator(); iter.hasNext();) {
             if (iter.next().getStackSize() == 0L) {
                 iter.remove();
             }
@@ -182,14 +183,13 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         return TickRateModulation.SLOWER;
     }
 
-    private void postDifference(Iterable<IAEFluidStack> a) {
+    private void postDifference(Iterable<IAEStack<?>> a) {
         if (a != null) {
-            Iterator<Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object>> i = this.listeners.entrySet()
-                    .iterator();
+            Iterator<Map.Entry<IMEMonitorHandlerReceiver, Object>> i = this.listeners.entrySet().iterator();
 
             while (i.hasNext()) {
-                Map.Entry<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> l = i.next();
-                IMEMonitorHandlerReceiver<IAEFluidStack> key = l.getKey();
+                Map.Entry<IMEMonitorHandlerReceiver, Object> l = i.next();
+                IMEMonitorHandlerReceiver key = l.getKey();
                 if (key.isValid(l.getValue())) {
                     key.postChange(this, a, this.getActionSource());
                 } else {

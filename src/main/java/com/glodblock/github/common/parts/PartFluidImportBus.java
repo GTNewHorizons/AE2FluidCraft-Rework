@@ -1,49 +1,37 @@
 package com.glodblock.github.common.parts;
 
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.parts.base.FCSharedFluidBus;
+import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.Util;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
-import appeng.api.config.RedstoneMode;
-import appeng.api.config.SchedulingMode;
-import appeng.api.config.Settings;
-import appeng.api.config.YesNo;
-import appeng.api.networking.IGridNode;
-import appeng.api.networking.security.BaseActionSource;
-import appeng.api.networking.security.MachineSource;
-import appeng.api.networking.ticking.TickRateModulation;
-import appeng.api.networking.ticking.TickingRequest;
-import appeng.api.parts.IPartCollisionHelper;
-import appeng.api.parts.IPartRenderHelper;
+import appeng.api.config.Upgrades;
+import appeng.api.networking.energy.IEnergyGrid;
+import appeng.api.networking.energy.IEnergySource;
 import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.client.texture.CableBusTextures;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.me.GridAccessException;
+import appeng.parts.automation.PartBaseImportBus;
+import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.item.AEFluidStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartFluidImportBus extends FCSharedFluidBus {
-
-    private final BaseActionSource source;
+public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
 
     public PartFluidImportBus(ItemStack is) {
         super(is);
-        this.getConfigManager().registerSetting(Settings.REDSTONE_CONTROLLED, RedstoneMode.IGNORE);
-        this.getConfigManager().registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL);
-        this.getConfigManager().registerSetting(Settings.CRAFT_ONLY, YesNo.NO);
-        this.getConfigManager().registerSetting(Settings.SCHEDULING_MODE, SchedulingMode.DEFAULT);
-        this.source = new MachineSource(this);
     }
 
     @Override
@@ -52,79 +40,108 @@ public class PartFluidImportBus extends FCSharedFluidBus {
     }
 
     @Override
-    public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(5, 40, this.isSleeping(), false);
+    protected Object getTarget() {
+        TileEntity self = this.getHost().getTile();
+        return this.getTileEntity(self, (new BlockPos(self)).getOffSet(this.getSide()));
     }
 
-    @Override
-    public TickRateModulation tickingRequest(IGridNode node, int ticksSinceLastCall) {
-        return this.canDoBusWork() ? this.doBusWork() : TickRateModulation.IDLE;
-    }
+    private TileEntity getTileEntity(final TileEntity self, final BlockPos pos) {
+        final World w = self.getWorldObj();
 
-    @Override
-    protected TickRateModulation doBusWork() {
-        if (!this.canDoBusWork()) {
-            return TickRateModulation.IDLE;
+        if (w.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
+            return w.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
         }
 
-        final TileEntity te = this.getConnectedTE();
+        return null;
+    }
 
-        if (te instanceof IFluidHandler) {
-            try {
-                final IFluidHandler fh = (IFluidHandler) te;
-                FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
-                if (tanksInfo == null) {
-                    return TickRateModulation.SLOWER;
+    @Override
+    public int calculateAmountToSend() {
+        double amount = 1000D;
+        switch (this.getInstalledUpgrades(Upgrades.SPEED)) {
+            case 4:
+                amount = amount * 1.5;
+            case 3:
+                amount = amount * 2;
+            case 2:
+                amount = amount * 4;
+            case 1:
+                amount = amount * 8;
+        }
+        switch (this.getInstalledUpgrades(Upgrades.SUPERSPEED)) {
+            case 4:
+                amount = amount * 8;
+            case 3:
+                amount = amount * 12;
+            case 2:
+                amount = amount * 16;
+            case 1:
+                amount = amount * 32;
+        }
+        return (int) Math.floor(amount);
+    }
+
+    @Override
+    protected IMEMonitor<IAEFluidStack> getMonitor() {
+        try {
+            return this.getProxy().getStorage().getFluidInventory();
+        } catch (final GridAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    protected boolean importStuff(final Object myTarget, final IAEFluidStack whatToImport,
+            final IMEMonitor<IAEFluidStack> inv, final IEnergySource energy, final FuzzyMode fzMode) {
+        if (myTarget instanceof IFluidHandler fh) {
+            FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
+            if (tanksInfo == null) return true;
+
+            int maxDrain = this.calculateAmountToSend();
+            boolean doBreak = true;
+
+            for (FluidTankInfo tankInfo : tanksInfo) {
+                if (tankInfo.fluid == null) continue;
+
+                FluidStack fluidStack = new FluidStack(tankInfo.fluid, Math.min(tankInfo.fluid.amount, maxDrain));
+                fluidStack = fh.drain(this.getSide().getOpposite(), fluidStack, false);
+                if (this.filterEnabled() && !this.isInFilter(fluidStack)) continue;
+
+                final AEFluidStack aeFluidStack = AEFluidStack.create(fluidStack);
+                if (aeFluidStack != null) {
+                    final IAEFluidStack notInserted = inv.injectItems(aeFluidStack, Actionable.MODULATE, this.mySrc);
+
+                    if (notInserted != null && notInserted.getStackSize() > 0) {
+                        aeFluidStack.decStackSize(notInserted.getStackSize());
+                    }
+
+                    fh.drain(this.getSide().getOpposite(), aeFluidStack.getFluidStack(), true);
+                    maxDrain -= aeFluidStack.getFluidStack().amount;
+                    doBreak = false;
                 }
-
-                final IMEMonitor<IAEFluidStack> inv = this.getProxy().getStorage().getFluidInventory();
-                int maxDrain = this.calculateAmountToSend();
-                boolean drained = false;
-
-                for (FluidTankInfo tankInfo : tanksInfo) {
-                    if (tankInfo.fluid == null) {
-                        continue;
-                    }
-
-                    FluidStack fluidStack = new FluidStack(tankInfo.fluid, Math.min(tankInfo.fluid.amount, maxDrain));
-                    fluidStack = fh.drain(this.getSide().getOpposite(), fluidStack, false);
-                    if (this.filterEnabled() && !this.isInFilter(fluidStack)) {
-                        continue;
-                    }
-
-                    final AEFluidStack aeFluidStack = AEFluidStack.create(fluidStack);
-                    if (aeFluidStack != null) {
-                        final IAEFluidStack notInserted = inv
-                                .injectItems(aeFluidStack, Actionable.MODULATE, this.source);
-
-                        if (notInserted != null && notInserted.getStackSize() > 0) {
-                            aeFluidStack.decStackSize(notInserted.getStackSize());
-                        }
-
-                        fh.drain(this.getSide().getOpposite(), aeFluidStack.getFluidStack(), true);
-                        maxDrain -= aeFluidStack.getFluidStack().amount;
-                        drained = true;
-                    }
-                }
-
-                return drained ? TickRateModulation.FASTER : TickRateModulation.SLOWER;
-            } catch (GridAccessException e) {
-                e.printStackTrace();
             }
+
+            return doBreak;
         }
 
-        return TickRateModulation.SLEEP;
+        return true;
     }
 
     @Override
-    protected boolean canDoBusWork() {
-        return this.getProxy().isActive();
+    protected boolean doOreDict(final Object myTarget, IMEMonitor<IAEFluidStack> inv, IEnergyGrid energy,
+            FuzzyMode fzMode) {
+        return false;
+    }
+
+    @Override
+    protected int getPowerMultiplier() {
+        return 1000;
     }
 
     private boolean isInFilter(FluidStack fluid) {
-        for (int i = 0; i < this.getInventoryByName("config").getSizeInventory(); i++) {
-            final IAEFluidStack stack = AEFluidStack
-                    .create(ItemFluidPacket.getFluidStack(this.getInventoryByName("config").getStackInSlot(i)));
+        final IAEStackInventory inv = this.getAEInventoryByName(StorageName.NONE);
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            final IAEFluidStack stack = (IAEFluidStack) inv.getAEStackInSlot(i);
             if (stack != null && stack.getFluidStack().equals(fluid)) {
                 return true;
             }
@@ -133,9 +150,9 @@ public class PartFluidImportBus extends FCSharedFluidBus {
     }
 
     private boolean filterEnabled() {
-        for (int i = 0; i < this.getInventoryByName("config").getSizeInventory(); i++) {
-            final IAEFluidStack stack = AEFluidStack
-                    .create(ItemFluidPacket.getFluidStack(this.getInventoryByName("config").getStackInSlot(i)));
+        final IAEStackInventory inv = this.getAEInventoryByName(StorageName.NONE);
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            final IAEFluidStack stack = (IAEFluidStack) inv.getAEStackInSlot(i);
             if (stack != null) {
                 return true;
             }
@@ -143,71 +160,17 @@ public class PartFluidImportBus extends FCSharedFluidBus {
         return false;
     }
 
+    // legacy
     @Override
-    public RedstoneMode getRSMode() {
-        return (RedstoneMode) this.getConfigManager().getSetting(Settings.REDSTONE_CONTROLLED);
-    }
+    public void readFromNBT(NBTTagCompound extra) {
+        super.readFromNBT(extra);
 
-    @Override
-    public void getBoxes(final IPartCollisionHelper bch) {
-        bch.addBox(6, 6, 11, 10, 10, 13);
-        bch.addBox(5, 5, 13, 11, 11, 14);
-        bch.addBox(4, 4, 14, 12, 12, 16);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderInventory(final IPartRenderHelper rh, final RenderBlocks renderer) {
-        rh.setTexture(
-                CableBusTextures.PartImportSides.getIcon(),
-                CableBusTextures.PartImportSides.getIcon(),
-                CableBusTextures.PartMonitorBack.getIcon(),
-                this.getFaceIcon(),
-                CableBusTextures.PartImportSides.getIcon(),
-                CableBusTextures.PartImportSides.getIcon());
-
-        rh.setBounds(3, 3, 15, 13, 13, 16);
-        rh.renderInventoryBox(renderer);
-
-        rh.setBounds(4, 4, 14, 12, 12, 15);
-        rh.renderInventoryBox(renderer);
-
-        rh.setBounds(5, 5, 13, 11, 11, 14);
-        rh.renderInventoryBox(renderer);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderStatic(final int x, final int y, final int z, final IPartRenderHelper rh,
-            final RenderBlocks renderer) {
-        this.setRenderCache(rh.useSimplifiedRendering(x, y, z, this, this.getRenderCache()));
-        rh.setTexture(
-                CableBusTextures.PartImportSides.getIcon(),
-                CableBusTextures.PartImportSides.getIcon(),
-                CableBusTextures.PartMonitorBack.getIcon(),
-                this.getFaceIcon(),
-                CableBusTextures.PartImportSides.getIcon(),
-                CableBusTextures.PartImportSides.getIcon());
-
-        rh.setBounds(4, 4, 14, 12, 12, 16);
-        rh.renderBlock(x, y, z, renderer);
-
-        rh.setBounds(5, 5, 13, 11, 11, 14);
-        rh.renderBlock(x, y, z, renderer);
-
-        rh.setBounds(6, 6, 12, 10, 10, 13);
-        rh.renderBlock(x, y, z, renderer);
-        rh.setTexture(
-                CableBusTextures.PartMonitorSidesStatus.getIcon(),
-                CableBusTextures.PartMonitorSidesStatus.getIcon(),
-                CableBusTextures.PartMonitorBack.getIcon(),
-                this.getFaceIcon(),
-                CableBusTextures.PartMonitorSidesStatus.getIcon(),
-                CableBusTextures.PartMonitorSidesStatus.getIcon());
-
-        rh.setBounds(6, 6, 11, 10, 10, 12);
-        rh.renderBlock(x, y, z, renderer);
-
-        this.renderLights(x, y, z, rh, renderer);
+        final IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+        for (int i = 0; i < config.getSizeInventory(); i++) {
+            final IAEStack<?> stack = config.getAEStackInSlot(i);
+            if (stack instanceof IAEItemStack ais) {
+                config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
+            }
+        }
     }
 }

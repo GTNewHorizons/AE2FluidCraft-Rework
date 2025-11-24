@@ -3,14 +3,12 @@ package com.glodblock.github.client.gui.container.base;
 import net.minecraft.entity.player.InventoryPlayer;
 
 import com.glodblock.github.inventory.item.IFluidPortableCell;
-import com.glodblock.github.inventory.item.IWirelessExtendCard;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.util.Util;
 
 import appeng.api.storage.ITerminalHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.guisync.GuiSync;
-import appeng.util.Platform;
 
 public abstract class FCBaseContainer extends AEBaseContainer {
 
@@ -61,13 +59,6 @@ public abstract class FCBaseContainer extends AEBaseContainer {
                     this.ticks,
                     this.getPowerMultiplier(),
                     ((IFluidPortableCell) this.host));
-        }
-
-        if (Platform.isServer()) {
-            if (this.host instanceof IWirelessExtendCard wec) {
-                this.mode = wec.getMagnetCardMode();
-                this.restock = wec.isRestock();
-            }
         }
         super.detectAndSendChanges();
     }

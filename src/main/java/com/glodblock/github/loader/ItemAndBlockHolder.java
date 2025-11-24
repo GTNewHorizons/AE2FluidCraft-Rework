@@ -1,7 +1,5 @@
 package com.glodblock.github.loader;
 
-import static com.glodblock.github.common.storage.FluidCellInventory.singleByteAmount;
-
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.block.BlockCertusQuartzTank;
 import com.glodblock.github.common.block.BlockFluidAutoFiller;
@@ -133,7 +131,7 @@ public class ItemAndBlockHolder {
             4.5).register();
     public static ItemFluidExtremeStorageCell SINGULARITY_CELL = new ItemFluidExtremeStorageCell(
             NameConst.ITEM_SINGULARITY_FLUID_STORAGE,
-            Long.MAX_VALUE / (singleByteAmount * 2),
+            Long.MAX_VALUE / (256 * 8 * 2),
             8,
             1,
             5).register();

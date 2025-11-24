@@ -6,9 +6,9 @@ import static com.glodblock.github.common.tile.TileLevelMaintainer.RequestInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
-import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.GuiLevelMaintainer;
 
+import appeng.api.features.LevelState;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

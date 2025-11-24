@@ -123,8 +123,8 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
     }
 
     @Override
-    public void setListMode(WirelessMagnet.ListMode mode) {
-        this.listMode = mode;
+    public void setListMode(boolean mode) {
+        this.listMode = mode ? WirelessMagnet.ListMode.WhiteList : WirelessMagnet.ListMode.BlackList;
     }
 
     @Override
