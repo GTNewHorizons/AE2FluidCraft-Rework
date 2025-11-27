@@ -129,7 +129,6 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
         }
 
         return true;
-        return true;
     }
 
     @Override
