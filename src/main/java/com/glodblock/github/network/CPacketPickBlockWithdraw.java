@@ -14,12 +14,13 @@ import net.minecraft.world.World;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
-import com.glodblock.github.inventory.item.WirelessCraftingTerminalInventory;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
-import appeng.api.networking.IGridNode;
+import appeng.api.config.Actionable;
+import appeng.api.networking.security.PlayerSource;
+import appeng.api.storage.IMEInventoryHandler;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -84,28 +85,27 @@ public class CPacketPickBlockWithdraw implements IMessage {
             }
             World world = player.worldObj;
 
-            // Ensure the player has the wireless terminal
-            ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getUltraWirelessTerm(player);
+            // Ensure the player has a wireless terminal
+            ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getWirelessTerminal(player);
             if (terminalAndInventorySlot == null) {
                 return null;
             }
 
-            ItemStack terminalStack = terminalAndInventorySlot.getRight();
-            if (terminalStack == null || !(terminalStack.getItem() instanceof ItemWirelessUltraTerminal)) {
+            ItemStack terminalItemStack = terminalAndInventorySlot.getRight();
+            if (terminalItemStack == null) {
                 return null;
             }
 
-            IGridNode wirelessGrid = Util.getWirelessGrid(terminalStack);
-            if (wirelessGrid == null) {
+            // Obtain the inventory handler for the AE2 wireless terminal.
+            //
+            // We can safely suppress this warning, as we are the one providing the storage type in
+            // the function call.
+            @SuppressWarnings("unchecked")
+            IMEInventoryHandler<IAEItemStack> terminalInventory = (IMEInventoryHandler<IAEItemStack>) Util
+                    .getWirelessInv(terminalItemStack, player, StorageChannel.ITEMS);
+            if (terminalInventory == null) {
                 return null;
             }
-
-            // Create the terminal inventory handler
-            WirelessCraftingTerminalInventory terminalInventory = new WirelessCraftingTerminalInventory(
-                    terminalStack,
-                    terminalAndInventorySlot.getLeft(),
-                    wirelessGrid,
-                    player);
 
             // Get the target block
             Block targetBlock = world.getBlock(message.blockX, message.blockY, message.blockZ);
@@ -170,15 +170,6 @@ public class CPacketPickBlockWithdraw implements IMessage {
                 }
             }
 
-            // Ensure the wireless terminal is within network range,
-            // if not, move consolidated stack to the active slot and return
-            if (!Util.rangeCheck(terminalStack, player, wirelessGrid)) {
-                setSlotAsActiveSlot(player, consolidatedStackSlot);
-
-                // TODO: Return out of network range player message.
-                return null;
-            }
-
             // 5. Calculate withdrawal amount
             int amountToWithdraw = consolidatedStack == null ? itemToFind.getMaxStackSize()
                     : itemToFind.getMaxStackSize() - consolidatedStack.stackSize;
@@ -195,7 +186,8 @@ public class CPacketPickBlockWithdraw implements IMessage {
             }
 
             // 6. Extract items from the network
-            IAEStack<?> extractedStack = terminalInventory.extractItems(targetAeItemStack);
+            PlayerSource source = new PlayerSource(player, null);
+            IAEStack<?> extractedStack = terminalInventory.extractItems(targetAeItemStack, Actionable.MODULATE, source);
             if (extractedStack instanceof IAEItemStack extractedAeItemStack && extractedStack.getStackSize() > 0) {
                 ItemStack itemsToGive = extractedAeItemStack.getItemStack();
                 // Update the player's inventory with the withdrawn items

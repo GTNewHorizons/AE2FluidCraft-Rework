@@ -101,15 +101,15 @@ public class KeybindLoader implements Runnable {
         if (player == null) return;
 
         // Ensure the player has the wireless terminal
-        ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getUltraWirelessTerm(player);
+        ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getWirelessTerminal(player);
         if (terminalAndInventorySlot == null) {
             player.addChatMessage(new ChatComponentText("Could not find wireless terminal."));
             return;
         }
 
         ItemStack terminal = terminalAndInventorySlot.getRight();
-        if (terminal == null || !(terminal.getItem() instanceof ItemWirelessUltraTerminal)) {
-            player.addChatMessage(new ChatComponentText("Terminal must be universal version."));
+        if (terminal == null) {
+            player.addChatMessage(new ChatComponentText("Could not find wireless terminal."));
             return;
         }
 

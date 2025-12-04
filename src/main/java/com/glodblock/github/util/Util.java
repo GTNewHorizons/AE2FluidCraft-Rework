@@ -196,6 +196,32 @@ public final class Util {
         }
     }
 
+    public static ImmutablePair<Integer, ItemStack> getWirelessTerminal(EntityPlayer player) {
+        // Check player inventory for the wireless terminal.
+        int inventorySize = player.inventory.getSizeInventory();
+        for (int i = 0; i < inventorySize; ++i) {
+            ItemStack is = player.inventory.getStackInSlot(i);
+            if (is != null && is.getItem() instanceof ToolWirelessTerminal) {
+                return new ImmutablePair<>(GuiHelper.encodeType(i, GuiHelper.InvType.PLAYER_BAUBLES), is);
+            }
+        }
+
+        if (isBaublesLoaded) {
+            IInventory handler = BaublesApi.getBaubles(player);
+            if (handler != null) {
+                int baubleSlotCount = handler.getSizeInventory();
+                for (int i = 0; i < baubleSlotCount; ++i) {
+                    ItemStack is = handler.getStackInSlot(i);
+                    if (is != null && is.getItem() instanceof ToolWirelessTerminal) {
+                        return new ImmutablePair<>(GuiHelper.encodeType(i, GuiHelper.InvType.PLAYER_BAUBLES), is);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public static ImmutablePair<Integer, ItemStack> getUltraWirelessTerm(EntityPlayer player) {
         int invSize = player.inventory.getSizeInventory();
 
