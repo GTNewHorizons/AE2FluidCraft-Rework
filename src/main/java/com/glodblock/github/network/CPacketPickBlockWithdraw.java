@@ -124,7 +124,11 @@ public class CPacketPickBlockWithdraw implements IMessage {
                     1,
                     world.getBlockMetadata(message.blockX, message.blockY, message.blockZ));
 
-            // 1. Initial Scan for full/partial stacks
+            // 1. Scan through the player's main inventory to categorize existing stacks of the target block:
+            // - If a full stack (stackSize >= maxStackSize) is found, record its slot and stop searching.
+            // This indicates the player already has the maximum possible stack, so no withdrawal is needed.
+            // - Otherwise, collect all partial stack slots (stacks that match the item but aren't full).
+            // Partial stacks will be consolidated in a later step.
             int fullStackSlot = -1;
             List<Integer> partialStackSlotsList = new ArrayList<>();
             for (int i = 0; i < player.inventory.mainInventory.length; i++) {
@@ -152,7 +156,8 @@ public class CPacketPickBlockWithdraw implements IMessage {
                 return null;
             }
 
-            // 4. Consolidate if multiple partial stacks exist.
+            // 4. Consolidate all partial stacks of target block into 1 ItemStack.
+            // If a full stack is obtained, set it as the active slot and return.
             ItemStack consolidatedStack = null;
             int consolidatedStackSlot = -1;
             for (Integer partialStackSlot : partialStackSlotsList) {
@@ -203,12 +208,22 @@ public class CPacketPickBlockWithdraw implements IMessage {
 
             // If the target stack is already in the player's hotbar, set that as the active slot.
             // Otherwise, move the target stack to the active slot.
+            // The slot to swap will have either been a consolidated stack of partial ItemStacks,
+            // or it will have been a newly created ItemStack in the next empty slot.
             int slotToSwap = consolidatedStack == null ? nextEmptySlot : consolidatedStackSlot;
             setSlotAsActiveSlot(player, slotToSwap);
 
             return null; // No reply packet needed
         }
 
+        /**
+         * Finds the first empty slot in the player's inventory, searching in reverse order (from the last slot to the
+         * first). This prioritizes filling the inventory from the end, which helps keep commonly accessed hotbar slots
+         * free.
+         *
+         * @param inventory The player's inventory to search.
+         * @return The index of the first empty slot found (searching backwards), or -1 if the inventory is full.
+         */
         private int getFirstEmptyStackReverse(InventoryPlayer inventory) {
             for (int i = inventory.mainInventory.length - 1; i >= 0; --i) {
                 if (inventory.mainInventory[i] == null) {
@@ -219,6 +234,14 @@ public class CPacketPickBlockWithdraw implements IMessage {
             return -1;
         }
 
+        /**
+         * Sets the specified inventory slot as the player's active (held) slot. If the target slot is in the hotbar
+         * (slots 0-8), it directly selects that hotbar slot. If the target slot is outside the hotbar, it swaps the
+         * contents of that slot with the current active slot.
+         *
+         * @param player The player whose active slot should be changed.
+         * @param slot   The inventory slot index to make active (0-8 for hotbar, 9+ for main inventory).
+         */
         private void setSlotAsActiveSlot(EntityPlayerMP player, int slot) {
             if (slot >= 0 && slot <= 8) {
                 player.inventory.currentItem = slot;
