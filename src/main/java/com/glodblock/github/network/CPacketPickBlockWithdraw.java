@@ -5,15 +5,17 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S09PacketHeldItemChange;
 import net.minecraft.world.World;
+import net.p455w0rd.wirelesscraftingterminal.common.container.ContainerWirelessCraftingTerminal;
+import net.p455w0rd.wirelesscraftingterminal.common.utils.RandomUtils;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import com.glodblock.github.util.PlayerInventoryUtil;
 import com.glodblock.github.util.Util;
 
 import appeng.api.AEApi;
@@ -86,23 +88,7 @@ public class CPacketPickBlockWithdraw implements IMessage {
             World world = player.worldObj;
 
             // Ensure the player has a wireless terminal
-            ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getWirelessTerminal(player);
-            if (terminalAndInventorySlot == null) {
-                return null;
-            }
-
-            ItemStack terminalItemStack = terminalAndInventorySlot.getRight();
-            if (terminalItemStack == null) {
-                return null;
-            }
-
-            // Obtain the inventory handler for the AE2 wireless terminal.
-            //
-            // We can safely suppress this warning, as we are the one providing the storage type in
-            // the function call.
-            @SuppressWarnings("unchecked")
-            IMEInventoryHandler<IAEItemStack> terminalInventory = (IMEInventoryHandler<IAEItemStack>) Util
-                    .getWirelessInv(terminalItemStack, player, StorageChannel.ITEMS);
+            IMEInventoryHandler<IAEItemStack> terminalInventory = getWirelessInventory(player);
             if (terminalInventory == null) {
                 return null;
             }
@@ -145,13 +131,13 @@ public class CPacketPickBlockWithdraw implements IMessage {
 
             // 2. If a full stack already exists, put in active slot and return.
             if (fullStackSlot >= 0) {
-                setSlotAsActiveSlot(player, fullStackSlot);
+                PlayerInventoryUtil.setSlotAsActiveSlot(player, fullStackSlot);
                 return null;
             }
 
             // 3. If there are no partial stacks and the player's inventory is full,
             // then return since we cannot add a retrieved stack to a full inventory
-            int nextEmptySlot = getFirstEmptyStackReverse(player.inventory);
+            int nextEmptySlot = PlayerInventoryUtil.getFirstEmptyStackReverse(player.inventory);
             if (partialStackSlotsList.isEmpty() && nextEmptySlot == -1) {
                 return null;
             }
@@ -165,12 +151,13 @@ public class CPacketPickBlockWithdraw implements IMessage {
                     consolidatedStack = player.inventory.getStackInSlot(partialStackSlot);
                     consolidatedStackSlot = partialStackSlot;
                 } else {
-                    consolidateItemStacks(player.inventory, partialStackSlot, consolidatedStackSlot);
+                    PlayerInventoryUtil
+                            .consolidateItemStacks(player.inventory, partialStackSlot, consolidatedStackSlot);
                 }
 
                 // Check if we created a full stack of items
                 if (consolidatedStack.stackSize == consolidatedStack.getMaxStackSize()) {
-                    setSlotAsActiveSlot(player, consolidatedStackSlot);
+                    PlayerInventoryUtil.setSlotAsActiveSlot(player, consolidatedStackSlot);
                     return null;
                 }
             }
@@ -211,105 +198,49 @@ public class CPacketPickBlockWithdraw implements IMessage {
             // The slot to swap will have either been a consolidated stack of partial ItemStacks,
             // or it will have been a newly created ItemStack in the next empty slot.
             int slotToSwap = consolidatedStack == null ? nextEmptySlot : consolidatedStackSlot;
-            setSlotAsActiveSlot(player, slotToSwap);
+            PlayerInventoryUtil.setSlotAsActiveSlot(player, slotToSwap);
 
             return null; // No reply packet needed
         }
 
-        /**
-         * Finds the first empty slot in the player's inventory, searching in reverse order (from the last slot to the
-         * first). This prioritizes filling the inventory from the end, which helps keep commonly accessed hotbar slots
-         * free.
-         *
-         * @param inventory The player's inventory to search.
-         * @return The index of the first empty slot found (searching backwards), or -1 if the inventory is full.
-         */
-        private int getFirstEmptyStackReverse(InventoryPlayer inventory) {
-            for (int i = inventory.mainInventory.length - 1; i >= 0; --i) {
-                if (inventory.mainInventory[i] == null) {
-                    return i;
+        @SuppressWarnings("unchecked")
+        private IMEInventoryHandler<IAEItemStack> getWirelessInventory(EntityPlayerMP player) {
+            ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getWirelessTerminal(player);
+            ItemStack wctTerminal = null;
+
+            if (terminalAndInventorySlot == null) {
+                // Secondary check, does the player have a WirelessCraftingTerminal terminal
+                // Why is this mod still in GTNH ;-;
+                wctTerminal = RandomUtils.getWirelessTerm(player.inventory);
+                if (wctTerminal == null) {
+                    return null;
                 }
             }
 
-            return -1;
-        }
-
-        /**
-         * Sets the specified inventory slot as the player's active (held) slot. If the target slot is in the hotbar
-         * (slots 0-8), it directly selects that hotbar slot. If the target slot is outside the hotbar, it swaps the
-         * contents of that slot with the current active slot.
-         *
-         * @param player The player whose active slot should be changed.
-         * @param slot   The inventory slot index to make active (0-8 for hotbar, 9+ for main inventory).
-         */
-        private void setSlotAsActiveSlot(EntityPlayerMP player, int slot) {
-            if (slot >= 0 && slot <= 8) {
-                player.inventory.currentItem = slot;
-                player.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(slot));
+            IMEInventoryHandler<IAEItemStack> inventoryHandler;
+            if (wctTerminal != null) {
+                inventoryHandler = ContainerWirelessCraftingTerminal.getGuiObject(
+                        wctTerminal,
+                        player,
+                        player.worldObj,
+                        (int) player.posX,
+                        (int) player.posY,
+                        (int) player.posZ).getItemInventory();
             } else {
-                swapInventorySlots(player.inventory, player.inventory.currentItem, slot);
-            }
-            player.inventory.markDirty();
-        }
+                ItemStack terminalItemStack = terminalAndInventorySlot.getRight();
+                if (terminalItemStack == null) {
+                    return null;
+                }
 
-        /**
-         * Moves an ItemStack from a source slot to a destination slot in the player's inventory. If the destination
-         * slot is occupied, the items are swapped.
-         *
-         * @param inventory The player's inventory.
-         * @param slot1     The index of the first ItemStack to move.
-         * @param slot2     The index of the second ItemStack to move.
-         */
-        private void swapInventorySlots(InventoryPlayer inventory, int slot1, int slot2) {
-            if (slot1 == slot2) {
-                return;
+                // Obtain the inventory handler for the AE2 wireless terminal.
+                //
+                // We can safely suppress this warning, as we are the one providing the storage type in
+                // the function call.
+                inventoryHandler = (IMEInventoryHandler<IAEItemStack>) Util
+                        .getWirelessInv(terminalItemStack, player, StorageChannel.ITEMS);
             }
 
-            // Get the stacks from both slots
-            ItemStack sourceStack = inventory.getStackInSlot(slot1);
-            ItemStack destinationStack = inventory.getStackInSlot(slot2);
-
-            // Set the destination slot with the source stack (even if it's null)
-            inventory.setInventorySlotContents(slot2, sourceStack);
-
-            // Set the source slot with the original destination stack
-            inventory.setInventorySlotContents(slot1, destinationStack);
-
-            // Mark the inventory as dirty to ensure changes are saved and synced
-            inventory.markDirty();
-        }
-
-        /**
-         * Consolidate ItemStacks from a source slot to a destination slot in the player's inventory.
-         *
-         * @param inventory       The player's inventory.
-         * @param sourceSlot      The index of the slot to move the item from.
-         * @param destinationSlot The index of the slot to move the item to.
-         */
-        private void consolidateItemStacks(InventoryPlayer inventory, int sourceSlot, int destinationSlot) {
-            ItemStack sourceStack = inventory.getStackInSlot(sourceSlot);
-            ItemStack destinationStack = inventory.getStackInSlot(destinationSlot);
-
-            if (!sourceStack.isItemEqual(destinationStack)
-                    || !ItemStack.areItemStackTagsEqual(sourceStack, destinationStack)) {
-                return;
-            }
-
-            int missingQuantity = destinationStack.getMaxStackSize() - destinationStack.stackSize;
-            if (missingQuantity >= sourceStack.stackSize) {
-                destinationStack.stackSize = destinationStack.stackSize + sourceStack.stackSize;
-                sourceStack = null;
-            } else {
-                sourceStack.stackSize -= missingQuantity;
-                destinationStack.stackSize += missingQuantity;
-            }
-
-            // Update the inventory stacks
-            inventory.setInventorySlotContents(destinationSlot, destinationStack);
-            inventory.setInventorySlotContents(sourceSlot, sourceStack);
-
-            // Mark the inventory as dirty to ensure changes are saved and synced
-            inventory.markDirty();
+            return inventoryHandler;
         }
     }
 }
