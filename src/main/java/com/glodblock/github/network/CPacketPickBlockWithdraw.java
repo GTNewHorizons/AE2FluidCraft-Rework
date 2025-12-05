@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.S09PacketHeldItemChange;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.p455w0rd.wirelesscraftingterminal.common.container.ContainerWirelessCraftingTerminal;
 import net.p455w0rd.wirelesscraftingterminal.common.utils.RandomUtils;
@@ -90,6 +90,7 @@ public class CPacketPickBlockWithdraw implements IMessage {
             // Ensure the player has a wireless terminal
             IMEInventoryHandler<IAEItemStack> terminalInventory = getWirelessInventory(player);
             if (terminalInventory == null) {
+                player.addChatMessage(new ChatComponentText("Could not access AE2 network."));
                 return null;
             }
 

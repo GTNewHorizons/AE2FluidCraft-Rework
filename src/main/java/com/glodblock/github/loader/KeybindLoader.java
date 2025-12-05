@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -99,19 +98,6 @@ public class KeybindLoader implements Runnable {
 
         EntityClientPlayerMP player = minecraft.thePlayer;
         if (player == null) return;
-
-        // Ensure the player has the wireless terminal
-        ImmutablePair<Integer, ItemStack> terminalAndInventorySlot = Util.getWirelessTerminal(player);
-        if (terminalAndInventorySlot == null) {
-            player.addChatMessage(new ChatComponentText("Could not find wireless terminal."));
-            return;
-        }
-
-        ItemStack terminal = terminalAndInventorySlot.getRight();
-        if (terminal == null) {
-            player.addChatMessage(new ChatComponentText("Could not find wireless terminal."));
-            return;
-        }
 
         // Get the block the player is currently looking at
         MovingObjectPosition movingObject = minecraft.objectMouseOver;
