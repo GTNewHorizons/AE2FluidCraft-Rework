@@ -252,24 +252,24 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removed, ItemStack added) {
         switch (mc) {
             case setInventorySlotContents -> {
-                if (added != null) {
-                    if (inv == cell) {
+                if (inv == cell) {
+                    if (added != null) {
                         if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
                             totalBytes = ibsc.getBytesLong(added);
                         } else if (added.getItem() instanceof FCBaseItemCell fcbic) {
                             totalBytes = fcbic.getBytes(added);
                         }
                         getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
-                    } else if (inv == invItems) {
-                        storedItemCount += added.stackSize;
-                    }
-                }
-
-                if (removed != null) {
-                    if (inv == cell) {
+                    } else if (removed != null) {
                         totalBytes = 0;
                         getProxy().setIdlePowerUsage(4d);
-                    } else if (inv == invItems) {
+                    }
+                } else if (inv == invItems) {
+                    if (added != null) {
+                        storedItemCount += added.stackSize;
+                    }
+
+                    if (removed != null) {
                         storedItemCount -= removed.stackSize;
                     }
                 }
@@ -279,11 +279,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     totalBytes = 0;
                     getProxy().setIdlePowerUsage(4d);
                 }
+
                 if (inv == invItems) {
                     storedItemCount -= removed.stackSize;
                 }
             }
-            case markDirty -> {}
+            case markDirty -> markDirty();
         }
 
         try {
