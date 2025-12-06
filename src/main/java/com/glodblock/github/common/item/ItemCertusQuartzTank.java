@@ -138,19 +138,14 @@ public class ItemCertusQuartzTank extends BaseItemBlockContainer implements IFlu
     @Override
     public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
             float hitX, float hitY, float hitZ, int metadata) {
-        if (!world.setBlock(x, y, z, this.field_150939_a, metadata, 3)) {
+        if (!super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata)) {
             return false;
         }
 
-        if (world.getBlock(x, y, z) == this.field_150939_a) {
-            this.field_150939_a.onBlockPlacedBy(world, x, y, z, player, stack);
-            this.field_150939_a.onPostBlockPlaced(world, x, y, z, metadata);
+        if (stack != null) {
+            ((TileCertusQuartzTank) world.getTileEntity(x, y, z)).readFromItemNBT(stack.getTagCompound());
         }
 
-        if (stack != null && stack.hasTagCompound()) {
-            ((TileCertusQuartzTank) world.getTileEntity(x, y, z))
-                    .readFromNBTWithoutCoords(stack.getTagCompound().getCompoundTag("tileEntity"));
-        }
         return true;
     }
 }
