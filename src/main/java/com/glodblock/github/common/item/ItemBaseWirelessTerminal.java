@@ -146,4 +146,16 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         if (wh == null) return null;
         return new WirelessTerminalGuiObject(wh, is, p, world, x, y, z);
     }
+
+    @Override
+    public boolean hasInfinityPower(ItemStack is) {
+        NBTTagCompound data = is.getTagCompound();
+        return data != null && data.hasKey(infinityEnergyCard) && data.getBoolean(infinityEnergyCard);
+    }
+
+    @Override
+    public boolean hasInfinityRange(ItemStack is) {
+        NBTTagCompound data = is.getTagCompound();
+        return data != null && data.hasKey(infinityBoosterCard) && data.getBoolean(infinityBoosterCard);
+    }
 }
