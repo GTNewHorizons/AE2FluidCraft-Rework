@@ -6,6 +6,10 @@ import com.glodblock.github.network.CPacketDumpTank;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.network.CPacketLevelMaintainer;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
+import com.glodblock.github.network.CPacketPatternMultiSet;
+import com.glodblock.github.network.CPacketPatternValueSet;
+import com.glodblock.github.network.CPacketPickBlockWithdraw;
+import com.glodblock.github.network.CPacketRenamer;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.network.CPacketValueConfig;
 import com.glodblock.github.network.SPacketCustomButtonUpdate;
@@ -57,6 +61,11 @@ public class ChannelLoader implements Runnable {
                 SPacketLevelMaintainerGuiUpdate.class,
                 id++,
                 Side.CLIENT);
+        netHandler.registerMessage(
+                new CPacketPickBlockWithdraw.Handler(),
+                CPacketPickBlockWithdraw.class,
+                id++,
+                Side.SERVER);
         netHandler.registerMessage(
                 new SPacketCustomButtonUpdate.Handler(),
                 SPacketCustomButtonUpdate.class,
