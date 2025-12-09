@@ -10,7 +10,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.network.CPacketPickBlockWithdraw;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.network.CPacketValueConfig;
