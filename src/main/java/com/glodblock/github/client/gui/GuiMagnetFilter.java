@@ -8,8 +8,6 @@ import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
-import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.util.NameConst;
@@ -17,12 +15,11 @@ import com.glodblock.github.util.NameConst;
 import appeng.api.config.ActionItems;
 import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
-import appeng.client.gui.AEBaseMEGui;
+import appeng.client.gui.GuiSub;
 import appeng.client.gui.widgets.GuiImgButton;
-import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.MEGuiTextField;
 
-public class GuiMagnetFilter extends AEBaseMEGui {
+public class GuiMagnetFilter extends GuiSub {
 
     protected FCGuiBaseButton listModeBtn;
     protected ContainerMagnetFilter cont;
@@ -30,12 +27,11 @@ public class GuiMagnetFilter extends AEBaseMEGui {
 
     protected Component[] components = new Component[4];
     protected MEGuiTextField oreDict;
-    protected GuiTabButton originalGuiBtn;
     protected GuiImgButton clearBtn;
 
     public GuiMagnetFilter(InventoryPlayer ip, ITerminalHost container) {
         super(new ContainerMagnetFilter(ip, container));
-        this.xSize = 195;
+        this.xSize = 176;
         this.ySize = 214;
         this.cont = (ContainerMagnetFilter) this.inventorySlots;
         oreDict = new MEGuiTextField(149, 12, NameConst.i18n(NameConst.TT_MAGNET_CARD_OREDICT));
@@ -45,10 +41,10 @@ public class GuiMagnetFilter extends AEBaseMEGui {
 
         private final GuiFCImgButton enable;
         private final GuiFCImgButton disable;
-        private final String action;
+        private final CPacketFluidPatternTermBtns.Command action;
         private boolean var;
 
-        public Component(int x, int y, boolean var, String action) {
+        public Component(int x, int y, boolean var, CPacketFluidPatternTermBtns.Command action) {
             this.enable = new GuiFCImgButton(x, y, "ENABLE_12x", "ENABLE", false);
             this.disable = new GuiFCImgButton(x, y, "DISABLE_12x", "DISABLE", false);
             this.var = var;
@@ -106,35 +102,26 @@ public class GuiMagnetFilter extends AEBaseMEGui {
                 this.guiLeft + 157,
                 this.guiTop + 18,
                 this.cont.nbt,
-                "WirelessTerminal.magnet.NBT");
+                CPacketFluidPatternTermBtns.Command.MAGNET_FILTER_NBT);
         this.components[1] = new Component(
                 this.guiLeft + 157,
                 this.guiTop + 31,
                 this.cont.meta,
-                "WirelessTerminal.magnet.Meta");
+                CPacketFluidPatternTermBtns.Command.MAGNET_FILTER_META);
         this.components[2] = new Component(
                 this.guiLeft + 157,
                 this.guiTop + 44,
                 this.cont.ore,
-                "WirelessTerminal.magnet.Ore");
+                CPacketFluidPatternTermBtns.Command.MAGNET_FILTER_ORE);
         this.components[3] = new Component(
                 this.guiLeft + 157,
                 this.guiTop + 112,
                 this.cont.oreDict,
-                "WirelessTerminal.magnet.OreDictState");
+                CPacketFluidPatternTermBtns.Command.MAGNET_FILTER_OREDICT_STATE);
 
         oreDict.x = this.guiLeft + 7;
         oreDict.y = this.guiTop + 112;
         oreDict.setText(this.cont.oreDictFilter);
-
-        this.buttonList.add(
-                this.originalGuiBtn = new GuiTabButton(
-                        this.guiLeft + this.xSize - 44,
-                        this.guiTop - 4,
-                        this.cont.getPortableCell().getItemStack(),
-                        this.cont.getPortableCell().getItemStack().getDisplayName(),
-                        itemRender));
-        this.originalGuiBtn.setHideEdge(13); // GuiTabButton implementation //
 
         this.clearBtn = new GuiImgButton(this.guiLeft + 7, this.guiTop + 48, Settings.ACTIONS, ActionItems.CLOSE);
         this.clearBtn.setHalfSize(true);
@@ -176,7 +163,9 @@ public class GuiMagnetFilter extends AEBaseMEGui {
     protected void keyTyped(char typedChar, int keyCode) {
         if (oreDict.isFocused() && (Keyboard.KEY_NUMPADENTER == keyCode || Keyboard.KEY_RETURN == keyCode)) {
             FluidCraft.proxy.netHandler.sendToServer(
-                    new CPacketFluidPatternTermBtns("WirelessTerminal.magnet.OreDictFilter", oreDict.getText()));
+                    new CPacketFluidPatternTermBtns(
+                            CPacketFluidPatternTermBtns.Command.MAGNET_FILTER_OREDICT_FILTER,
+                            oreDict.getText()));
         }
 
         if (!oreDict.textboxKeyTyped(typedChar, keyCode)) super.keyTyped(typedChar, keyCode);
@@ -199,13 +188,11 @@ public class GuiMagnetFilter extends AEBaseMEGui {
         if (btn == this.listModeBtn) {
             FluidCraft.proxy.netHandler.sendToServer(
                     new CPacketFluidPatternTermBtns(
-                            "WirelessTerminal.magnet.FilterMode",
+                            CPacketFluidPatternTermBtns.Command.MAGNET_FILTER_MODE,
                             this.cont.listMode != WirelessMagnet.ListMode.WhiteList));
-        } else if (btn == this.originalGuiBtn) {
-            InventoryHandler.switchGui(ItemWirelessUltraTerminal.readMode(this.cont.getPortableCell().getItemStack()));
         } else if (btn == this.clearBtn) {
-            FluidCraft.proxy.netHandler
-                    .sendToServer(new CPacketFluidPatternTermBtns("WirelessTerminal.magnet.clear", 1));
+            FluidCraft.proxy.netHandler.sendToServer(
+                    new CPacketFluidPatternTermBtns(CPacketFluidPatternTermBtns.Command.MAGNET_FILTER_CLEAR, 1));
         }
         super.actionPerformed(btn);
     }
