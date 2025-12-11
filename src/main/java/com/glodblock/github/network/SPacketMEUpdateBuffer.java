@@ -29,10 +29,9 @@ public class SPacketMEUpdateBuffer {
     private static ScheduledFuture<?> task;
 
     private static final Map<EntityPlayerMP, LinkedHashSet<IAEItemStack>> itemBuffer = new HashMap<>();
-
     private static final Map<EntityPlayerMP, LinkedHashSet<IAEFluidStack>> fluidBuffer = new HashMap<>();
 
-    public static void init() {
+    public static void start() {
         executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(r);
             thread.setName("AE2FC Network worker");
@@ -44,12 +43,20 @@ public class SPacketMEUpdateBuffer {
                 .scheduleAtFixedRate(SPacketMEUpdateBuffer::sendBuffer, 0, Config.packetRate, TimeUnit.MILLISECONDS);
     }
 
-    public static void disable() {
+    public static void stop() {
         if (task != null) {
             task.cancel(false);
         }
         if (executor != null) {
             executor.shutdown();
+        }
+        executor = null;
+        task = null;
+        synchronized (itemBuffer) {
+            itemBuffer.clear();
+        }
+        synchronized (fluidBuffer) {
+            fluidBuffer.clear();
         }
     }
 
@@ -64,7 +71,7 @@ public class SPacketMEUpdateBuffer {
     }
 
     public static void scheduleFluidUpdate(EntityPlayerMP player, List<IAEFluidStack> stacks) {
-        synchronized (itemBuffer) {
+        synchronized (fluidBuffer) {
             if (!fluidBuffer.containsKey(player)) {
                 fluidBuffer.put(player, new LinkedHashSet<>(1024));
             }
@@ -94,6 +101,8 @@ public class SPacketMEUpdateBuffer {
                 packet.setResort(true);
                 FluidCraft.proxy.netHandler.sendTo(packet, player);
             });
+        }
+        synchronized (fluidBuffer) {
             fluidBuffer.forEach((player, updates) -> {
                 if (updates.isEmpty()) return;
                 int i = 0;
@@ -122,6 +131,8 @@ public class SPacketMEUpdateBuffer {
             if (itemBuffer.containsKey(player)) {
                 itemBuffer.get(player).clear();
             }
+        }
+        synchronized (fluidBuffer) {
             if (fluidBuffer.containsKey(player)) {
                 fluidBuffer.get(player).clear();
             }

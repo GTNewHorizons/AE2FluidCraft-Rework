@@ -100,12 +100,12 @@ public class FluidCraft {
 
     @Mod.EventHandler
     public void onServerStart(FMLServerStartingEvent event) {
-        SPacketMEUpdateBuffer.init();
+        SPacketMEUpdateBuffer.start();
     }
 
     @Mod.EventHandler
     public void onServerStop(FMLServerStoppedEvent event) {
-        SPacketMEUpdateBuffer.disable();
+        SPacketMEUpdateBuffer.stop();
     }
 
     @Mod.EventHandler
