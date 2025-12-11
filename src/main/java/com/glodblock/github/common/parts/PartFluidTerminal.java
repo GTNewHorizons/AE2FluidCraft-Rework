@@ -4,7 +4,8 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.parts.base.FCPart;
-import com.glodblock.github.inventory.gui.GuiType;
+
+import appeng.core.sync.GuiBridge;
 
 public class PartFluidTerminal extends FCPart {
 
@@ -42,7 +43,7 @@ public class PartFluidTerminal extends FCPart {
     }
 
     @Override
-    public GuiType getGui() {
-        return GuiType.FLUID_TERMINAL;
+    public GuiBridge getGui() {
+        return GuiBridge.GUI_ME;
     }
 }

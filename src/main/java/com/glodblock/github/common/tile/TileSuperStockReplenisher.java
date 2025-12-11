@@ -34,10 +34,13 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import appeng.api.util.IConfigManager;
 import appeng.core.AELog;
 import appeng.items.storage.ItemBasicStorageCell;
 import appeng.me.GridAccessException;
@@ -52,7 +55,7 @@ import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
 public class TileSuperStockReplenisher extends AENetworkInvTile
-        implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable {
+        implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable, ITerminalHost {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
     private final AppEngInternalInventory invItems = new AppEngInternalInventory(this, 63);
@@ -252,24 +255,24 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removed, ItemStack added) {
         switch (mc) {
             case setInventorySlotContents -> {
-                if (added != null) {
-                    if (inv == cell) {
+                if (inv == cell) {
+                    if (added != null) {
                         if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
                             totalBytes = ibsc.getBytesLong(added);
                         } else if (added.getItem() instanceof FCBaseItemCell fcbic) {
                             totalBytes = fcbic.getBytes(added);
                         }
                         getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
-                    } else if (inv == invItems) {
-                        storedItemCount += added.stackSize;
-                    }
-                }
-
-                if (removed != null) {
-                    if (inv == cell) {
+                    } else if (removed != null) {
                         totalBytes = 0;
                         getProxy().setIdlePowerUsage(4d);
-                    } else if (inv == invItems) {
+                    }
+                } else if (inv == invItems) {
+                    if (added != null) {
+                        storedItemCount += added.stackSize;
+                    }
+
+                    if (removed != null) {
                         storedItemCount -= removed.stackSize;
                     }
                 }
@@ -279,11 +282,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     totalBytes = 0;
                     getProxy().setIdlePowerUsage(4d);
                 }
+
                 if (inv == invItems) {
                     storedItemCount -= removed.stackSize;
                 }
             }
-            case markDirty -> {}
+            case markDirty -> markDirty();
         }
 
         try {
@@ -459,5 +463,20 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
         return doWork();
+    }
+
+    @Override
+    public IMEMonitor<IAEItemStack> getItemInventory() {
+        return null;
+    }
+
+    @Override
+    public IMEMonitor<IAEFluidStack> getFluidInventory() {
+        return null;
+    }
+
+    @Override
+    public IConfigManager getConfigManager() {
+        return null;
     }
 }

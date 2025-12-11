@@ -51,7 +51,6 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_BRIDGE_CARD
 import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.SINGULARITY_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WALRUS;
-import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_INTERFACE_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_LEVEL_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_PATTERN_TERM;
@@ -235,8 +234,7 @@ public class RecipeLoader implements Runnable {
             GameRegistry.addShapelessRecipe(FLUID_INTERFACE_P2P.stack(), AE2_P2P_ME, FLUID_INTERFACE.stack());
         }
         GameRegistry.addShapelessRecipe(INTERFACE.stack(), FLUID_INTERFACE.stack());
-        GameRegistry.addShapelessRecipe(WIRELESS_FLUID_TERM.stack(), AE2_WIRELESS_TERMINAL, BUCKET);
-        GameRegistry.addShapelessRecipe(WIRELESS_PATTERN_TERM.stack(), WIRELESS_FLUID_TERM, FLUID_TERMINAL);
+        GameRegistry.addShapelessRecipe(WIRELESS_PATTERN_TERM.stack(), FLUID_TERMINAL);
         GameRegistry.addShapelessRecipe(WIRELESS_INTERFACE_TERM.stack(), AE2_WIRELESS_TERMINAL, AE2_INTERFACE_TERMINAL);
         GameRegistry.addShapelessRecipe(WIRELESS_LEVEL_TERM.stack(), AE2_WIRELESS_TERMINAL, LEVEL_MAINTAINER);
         GameRegistry
@@ -751,8 +749,8 @@ public class RecipeLoader implements Runnable {
     }
 
     public static void runTerminalRecipe() {
-        ItemStack[] fc2Terms = { WIRELESS_ULTRA_TERM.stack(), WIRELESS_FLUID_TERM.stack(),
-                WIRELESS_PATTERN_TERM.stack(), WIRELESS_INTERFACE_TERM.stack(), WIRELESS_LEVEL_TERM.stack() };
+        ItemStack[] fc2Terms = { WIRELESS_ULTRA_TERM.stack(), WIRELESS_PATTERN_TERM.stack(),
+                WIRELESS_INTERFACE_TERM.stack(), WIRELESS_LEVEL_TERM.stack() };
 
         for (ItemStack fc2term : fc2Terms) {
             if (fc2term != null) {
@@ -764,8 +762,8 @@ public class RecipeLoader implements Runnable {
             }
         }
 
-        ItemStack[] term = { AE2_WIRELESS_TERMINAL, WIRELESS_FLUID_TERM.stack(), WIRELESS_PATTERN_TERM.stack(),
-                WIRELESS_INTERFACE_TERM.stack(), WIRELESS_LEVEL_TERM.stack(), THE_WIRELESS_TERM, WCT_WIRELESS_TERM };
+        ItemStack[] term = { AE2_WIRELESS_TERMINAL, WIRELESS_PATTERN_TERM.stack(), WIRELESS_INTERFACE_TERM.stack(),
+                WIRELESS_LEVEL_TERM.stack(), THE_WIRELESS_TERM, WCT_WIRELESS_TERM };
         GameRegistry.addShapelessRecipe(
                 WIRELESS_ULTRA_TERM.stack(),
                 Arrays.stream(term).filter(Objects::nonNull).toArray());
