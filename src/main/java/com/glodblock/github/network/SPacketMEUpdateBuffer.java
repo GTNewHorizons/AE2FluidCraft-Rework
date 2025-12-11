@@ -31,7 +31,7 @@ public class SPacketMEUpdateBuffer {
     private static final Map<EntityPlayerMP, LinkedHashSet<IAEItemStack>> itemBuffer = new HashMap<>();
     private static final Map<EntityPlayerMP, LinkedHashSet<IAEFluidStack>> fluidBuffer = new HashMap<>();
 
-    public static void init() {
+    public static void start() {
         executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(r);
             thread.setName("AE2FC Network worker");
@@ -43,12 +43,20 @@ public class SPacketMEUpdateBuffer {
                 .scheduleAtFixedRate(SPacketMEUpdateBuffer::sendBuffer, 0, Config.packetRate, TimeUnit.MILLISECONDS);
     }
 
-    public static void disable() {
+    public static void stop() {
         if (task != null) {
             task.cancel(false);
         }
         if (executor != null) {
             executor.shutdown();
+        }
+        executor = null;
+        task = null;
+        synchronized (itemBuffer) {
+            itemBuffer.clear();
+        }
+        synchronized (fluidBuffer) {
+            fluidBuffer.clear();
         }
     }
 
