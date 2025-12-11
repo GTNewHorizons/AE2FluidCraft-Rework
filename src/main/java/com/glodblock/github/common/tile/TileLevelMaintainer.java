@@ -1,10 +1,8 @@
 package com.glodblock.github.common.tile;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -17,20 +15,18 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.glodblock.github.api.registries.ILevelViewable;
-import com.glodblock.github.api.registries.LevelItemInfo;
-import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
-import com.glodblock.github.inventory.AeItemStackHandler;
-import com.glodblock.github.inventory.AeStackInventory;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
+import appeng.api.features.ILevelViewable;
+import appeng.api.features.LevelItemInfo;
+import appeng.api.features.LevelState;
 import appeng.api.implementations.IPowerChannelState;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
@@ -49,8 +45,10 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
@@ -58,7 +56,9 @@ import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
+import appeng.tile.inventory.IAEStackInventory;
 import appeng.tile.inventory.InvOperation;
+import appeng.util.Platform;
 import appeng.util.SettingsFrom;
 import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
@@ -76,10 +76,9 @@ public class TileLevelMaintainer extends AENetworkTile
     public static final String NBT_LINK = "link";
 
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
-    private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests, this);
+    private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests);
     private int firstRequest = 0;
     private final BaseActionSource source;
-    private final IInventory inv = new AeItemStackHandler(inventory);
     private boolean isPowered = false;
 
     public TileLevelMaintainer() {
@@ -88,7 +87,7 @@ public class TileLevelMaintainer extends AENetworkTile
         source = new MachineSource(this);
     }
 
-    public AeStackInventory<IAEItemStack> getRequestSlots() {
+    public IAEStackInventory getAEStackInventory() {
         return inventory;
     }
 
@@ -181,7 +180,7 @@ public class TileLevelMaintainer extends AENetworkTile
             // If there is none, find the next request we can begin calculating.
             ICraftingJob jobToSubmit = null;
             int jobToSubmitIdx = -1;
-            IAEItemStack itemToBegin = null;
+            IAEStack<?> itemToBegin = null;
             int itemToBeginIdx = -1;
 
             for (int j = 0; j < REQ_COUNT; ++j) {
@@ -197,29 +196,27 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
-                IAEItemStack craftItem = requests[i].itemStack.copy();
+                IAEStack<?> aeItem = null;
+
+                IAEStack<?> craftItem = requests[i].stack.copy();
                 craftItem.setStackSize(batchSize);
 
-                if (ModAndClassUtil.ThE) {
-                    if (ThaumicEnergisticsCrafting.isAspectStack(craftItem.getItemStack())) {
-                        craftItem = ThaumicEnergisticsCrafting.convertAspectStack(craftItem);
+                if (craftItem instanceof IAEItemStack ais) {
+                    if (ModAndClassUtil.ThE && ThaumicEnergisticsCrafting.isAspectStack(ais.getItemStack())) {
+                        aeItem = ThaumicEnergisticsCrafting.convertAspectStack(ais);
+                    } else {
+                        aeItem = invItems.findPrecise(ais);
                     }
+                } else if (craftItem instanceof IAEFluidStack afs) {
+                    aeItem = invFluid.findPrecise(afs);
                 }
 
-                IAEItemStack aeItem = invItems.findPrecise(craftItem);
-
-                long stackSize;
-
-                if (craftItem.getItem() instanceof ItemFluidDrop) {
-                    IAEFluidStack ifs = invFluid.findPrecise(ItemFluidDrop.getAeFluidStack(craftItem));
-                    stackSize = ifs == null ? 0 : ifs.getStackSize();
-                } else {
-                    stackSize = aeItem == null ? 0 : aeItem.getStackSize();
-                }
+                long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
 
                 if (ModAndClassUtil.ThE) {
-                    if (aeItem != null && ThaumicEnergisticsCrafting.isAspectStack(aeItem.getItemStack())) {
-                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(aeItem, grid);
+                    if (aeItem instanceof IAEItemStack ais
+                            && ThaumicEnergisticsCrafting.isAspectStack(ais.getItemStack())) {
+                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(ais, grid);
                     }
                 }
 
@@ -243,11 +240,11 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
-                if (craftingGrid.canEmitFor(craftItem)) {
+                if (craftingGrid.canEmitFor(aeItem)) {
                     continue;
                 }
 
-                if (craftingGrid.isRequesting(craftItem)) {
+                if (craftingGrid.isRequesting(aeItem)) {
                     continue;
                 }
 
@@ -338,22 +335,12 @@ public class TileLevelMaintainer extends AENetworkTile
         return isPowered;
     }
 
-    public IInventory getInventory() {
-        return inv;
-    }
-
-    public IInventory getInventoryByName(String name) {
-        if (Objects.equals(name, "config")) return new AeItemStackHandler(this.inventory);
-
-        return null;
-    }
-
     @Override
     public LevelItemInfo[] getLevelItemInfoList() {
         return Arrays.stream(this.requests).map(request -> {
             if (request == null) return null;
             return new LevelItemInfo(
-                    request.itemStack.getItemStack(),
+                    request.getAEStack(),
                     request.getQuantity(),
                     request.getBatchSize(),
                     request.getState());
@@ -387,11 +374,10 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
-    public void updateStack(int idx, @Nullable ItemStack stack) {
+    public void updateStack(int idx, @Nullable IAEStack<?> stack) {
         if (stack == null) {
             requests[idx] = null;
         } else {
-            stack = this.removeRecursion(stack);
             requests[idx] = new RequestInfo(stack, this);
         }
         this.saveChanges();
@@ -481,7 +467,7 @@ public class TileLevelMaintainer extends AENetworkTile
                 ItemStack craftStack = ItemStack.loadItemStackFromNBT(itemTag.getCompoundTag("Stack"));
                 craftStack = removeRecursion(craftStack);
                 if (craftStack == null) continue;
-                requests[i] = new RequestInfo(craftStack, this);
+                requests[i] = new RequestInfo(Platform.convertStack(AEItemStack.create(craftStack)), this);
                 if (itemTag.hasKey("Enable")) {
                     requests[i].enable = itemTag.getBoolean("Enable");
                 }
@@ -522,7 +508,7 @@ public class TileLevelMaintainer extends AENetworkTile
 
             for (int i = 0; i < REQ_COUNT; i++) {
                 if (stacks[i] == null) continue;
-                this.requests[i] = new RequestInfo(stacks[i], this);
+                this.requests[i] = new RequestInfo(Platform.convertStack(AEItemStack.create(stacks[i])), this);
                 this.requests[i].batchSize = batches[i];
                 this.requests[i].quantity = quantyties[i];
             }
@@ -631,7 +617,7 @@ public class TileLevelMaintainer extends AENetworkTile
     public static class RequestInfo {
 
         private final TileLevelMaintainer tile;
-        private @NotNull IAEItemStack itemStack;
+        private @NotNull IAEStack<?> stack;
         private long quantity;
         private long batchSize;
         private boolean enable;
@@ -641,9 +627,9 @@ public class TileLevelMaintainer extends AENetworkTile
         @Nullable
         private ICraftingLink link;
 
-        public RequestInfo(@NotNull ItemStack stack, TileLevelMaintainer tile) {
+        public RequestInfo(@NotNull IAEStack<?> stack, TileLevelMaintainer tile) {
             this.tile = tile;
-            itemStack = AEItemStack.create(stack);
+            this.stack = stack.copy();
             quantity = 0;
             batchSize = 0;
             enable = false;
@@ -654,8 +640,8 @@ public class TileLevelMaintainer extends AENetworkTile
 
         public RequestInfo(NBTTagCompound tag, TileLevelMaintainer tile) throws IllegalArgumentException {
             this.tile = tile;
-            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag(NBT_STACK));
-            if (itemStack == null) {
+            stack = Platform.readStackNBT(tag.getCompoundTag(NBT_STACK), true);
+            if (stack == null) {
                 throw new IllegalArgumentException("ItemStack cannot be null!");
             }
             quantity = tag.getLong(NBT_QUANTITY);
@@ -673,7 +659,7 @@ public class TileLevelMaintainer extends AENetworkTile
         }
 
         public void loadFromNBT(NBTTagCompound tag) {
-            itemStack = AEItemStack.loadItemStackFromNBT(tag.getCompoundTag(NBT_STACK));
+            stack = Platform.readStackNBT(tag.getCompoundTag(NBT_STACK), true);
             quantity = tag.getLong(NBT_QUANTITY);
             batchSize = tag.getLong(NBT_BATCH);
             enable = tag.getBoolean(NBT_ENABLE);
@@ -690,7 +676,7 @@ public class TileLevelMaintainer extends AENetworkTile
         public NBTTagCompound writeToNBT(boolean includeLink) {
             NBTTagCompound tag = new NBTTagCompound();
             NBTTagCompound stackTag = new NBTTagCompound();
-            itemStack.writeToNBT(stackTag);
+            Platform.writeStackNBT(stack, stackTag, true);
             tag.setTag(NBT_STACK, stackTag);
             tag.setLong(NBT_QUANTITY, quantity);
             tag.setLong(NBT_BATCH, batchSize);
@@ -704,8 +690,9 @@ public class TileLevelMaintainer extends AENetworkTile
             return tag;
         }
 
-        public IAEItemStack getAEItemStack() {
-            return this.itemStack;
+        @NotNull
+        public IAEStack<?> getAEStack() {
+            return this.stack;
         }
 
         public long getQuantity() {
@@ -725,43 +712,34 @@ public class TileLevelMaintainer extends AENetworkTile
         }
     }
 
-    private static class LevelMaintainerInventory implements AeStackInventory<IAEItemStack> {
+    private class LevelMaintainerInventory extends IAEStackInventory {
 
-        private final RequestInfo[] requests;
-        private final TileLevelMaintainer tile;
-
-        private LevelMaintainerInventory(RequestInfo[] requests, TileLevelMaintainer tile) {
-            this.requests = requests;
-            this.tile = tile;
+        public LevelMaintainerInventory(RequestInfo[] requests) {
+            super(null, requests.length, StorageName.NONE);
         }
 
         @Override
-        public @NotNull Iterator<IAEItemStack> iterator() {
-            return Arrays.stream(requests).map(info -> info != null ? info.itemStack : null).iterator();
-        }
-
-        @Override
-        public int getSlotCount() {
+        public int getSizeInventory() {
             return requests.length;
         }
 
         @Override
-        public @Nullable IAEItemStack getStack(int slot) {
-            return requests[slot] != null ? requests[slot].itemStack : null;
-        }
-
-        @Override
-        public void setStack(int slot, @Nullable IAEItemStack stack) {
-            if (stack == null) {
-                this.tile.updateStack(slot, null);
-            } else {
-                this.tile.updateStack(slot, stack.getItemStack());
+        public IAEStack<?> getAEStackInSlot(int n) {
+            if (requests[n] != null) {
+                return requests[n].stack;
             }
+            return null;
         }
 
         @Override
-        public Stream<IAEItemStack> stream() {
-            return Arrays.stream(requests).map(info -> info != null ? info.itemStack : null);
+        public void putAEStackInSlot(int slot, IAEStack<?> aes) {
+            updateStack(slot, aes);
+            super.putAEStackInSlot(slot, aes);
+        }
+
+        @Override
+        public void markDirty() {
+
         }
     }
 }
