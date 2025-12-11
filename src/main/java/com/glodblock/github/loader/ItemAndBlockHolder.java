@@ -1,7 +1,5 @@
 package com.glodblock.github.loader;
 
-import static com.glodblock.github.common.storage.FluidCellInventory.singleByteAmount;
-
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.block.BlockCertusQuartzTank;
 import com.glodblock.github.common.block.BlockFluidAutoFiller;
@@ -14,6 +12,7 @@ import com.glodblock.github.common.block.BlockIngredientBuffer;
 import com.glodblock.github.common.block.BlockLargeIngredientBuffer;
 import com.glodblock.github.common.block.BlockLevelMaintainer;
 import com.glodblock.github.common.block.BlockOCPatternEditor;
+import com.glodblock.github.common.block.BlockSuperStockReplenisher;
 import com.glodblock.github.common.block.BlockWalrus;
 import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
 import com.glodblock.github.common.item.ItemBasicFluidStoragePart;
@@ -65,6 +64,7 @@ public class ItemAndBlockHolder {
     public static BlockLargeIngredientBuffer LARGE_BUFFER = new BlockLargeIngredientBuffer().register();
     public static BlockOCPatternEditor OC_EDITOR = new BlockOCPatternEditor().register();
     public static BlockWalrus WALRUS = new BlockWalrus().register();
+    public static BlockSuperStockReplenisher SUPER_STOCK_RERPLENISHER = new BlockSuperStockReplenisher().register();
     public static ItemFluidDrop DROP = new ItemFluidDrop().register();
     public static ItemFluidEncodedPattern PATTERN = new ItemFluidEncodedPattern().register();
     public static ItemPartFluidTerminal FLUID_TERM = new ItemPartFluidTerminal().register();
@@ -131,7 +131,7 @@ public class ItemAndBlockHolder {
             4.5).register();
     public static ItemFluidExtremeStorageCell SINGULARITY_CELL = new ItemFluidExtremeStorageCell(
             NameConst.ITEM_SINGULARITY_FLUID_STORAGE,
-            Long.MAX_VALUE / (singleByteAmount * 2),
+            Long.MAX_VALUE / (256 * 8 * 2),
             8,
             1,
             5).register();

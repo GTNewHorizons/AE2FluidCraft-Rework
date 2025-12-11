@@ -8,16 +8,11 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import appeng.api.implementations.IUpgradeableHost;
 import appeng.api.networking.IGrid;
-import appeng.api.networking.crafting.ICraftingCPU;
 import appeng.api.networking.crafting.ICraftingJob;
-import appeng.api.networking.security.BaseActionSource;
-import appeng.api.networking.security.MachineSource;
 import appeng.api.storage.IMEInventory;
-import appeng.api.storage.data.IAEItemStack;
 import appeng.container.implementations.ContainerCraftConfirm;
 import appeng.container.implementations.ContainerUpgradeable;
 import appeng.container.implementations.CraftingCPURecord;
-import appeng.crafting.MECraftingInventory;
 import appeng.helpers.DualityInterface;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.me.helpers.AENetworkProxy;
@@ -32,19 +27,12 @@ public class Ae2Reflect {
     private static final Field fInventory_containerUpgrade;
     private static final Field fAEPass_internal;
     private static final Field fAEInv_partitionList;
-    private static final Field fCPU_cpu;
     private static final Field fCPU_myName;
-    private static final Field fCPU_processors;
-    private static final Field fCPU_size;
-    private static final Field fCPU_inventory;
-    private static final Field fCPU_machineSrc;
     private static final Field fContainerUpgradeable_upgradeable;
     private static final Field fDualInterface_gridProxy;
     private static final Field fCraftConfirm_result;
     private static final Method mItemSlot_setExtractable;
     private static final Method mCPU_getGrid;
-    private static final Method mCPU_postChange;
-    private static final Method mCPU_markDirty;
     private static final Method mP2PLiquids_getTarget;
     private static final Method mCraftConfirm_getGrid;
 
@@ -53,22 +41,11 @@ public class Ae2Reflect {
             fInventory_containerUpgrade = reflectField(ContainerUpgradeable.class, "upgradeable");
             fAEPass_internal = reflectField(MEPassThrough.class, "internal");
             fAEInv_partitionList = reflectField(MEInventoryHandler.class, "myPartitionList");
-            fCPU_cpu = Ae2Reflect.reflectField(CraftingCPURecord.class, "cpu");
             fCPU_myName = Ae2Reflect.reflectField(CraftingCPURecord.class, "myName");
-            fCPU_processors = Ae2Reflect.reflectField(CraftingCPURecord.class, "processors");
-            fCPU_size = Ae2Reflect.reflectField(CraftingCPURecord.class, "size");
-            fCPU_inventory = Ae2Reflect.reflectField(CraftingCPUCluster.class, "inventory");
-            fCPU_machineSrc = Ae2Reflect.reflectField(CraftingCPUCluster.class, "machineSrc");
             fContainerUpgradeable_upgradeable = Ae2Reflect.reflectField(ContainerUpgradeable.class, "upgradeable");
             mItemSlot_setExtractable = reflectMethod(ItemSlot.class, "setExtractable", boolean.class);
             fDualInterface_gridProxy = reflectField(DualityInterface.class, "gridProxy");
             mCPU_getGrid = reflectMethod(CraftingCPUCluster.class, "getGrid");
-            mCPU_postChange = reflectMethod(
-                    CraftingCPUCluster.class,
-                    "postChange",
-                    IAEItemStack.class,
-                    BaseActionSource.class);
-            mCPU_markDirty = reflectMethod(CraftingCPUCluster.class, "markDirty");
             mP2PLiquids_getTarget = reflectMethod(PartP2PLiquids.class, "getTarget");
             fCraftConfirm_result = reflectField(ContainerCraftConfirm.class, "result");
             mCraftConfirm_getGrid = reflectMethod(ContainerCraftConfirm.class, "getGrid");
@@ -116,14 +93,17 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static IPartitionList<?> getPartitionList(MEInventoryHandler<?> me) {
         return Ae2Reflect.readField(me, fAEInv_partitionList);
     }
 
+    @Deprecated
     public static IMEInventory<?> getInternal(MEPassThrough<?> me) {
         return Ae2Reflect.readField(me, fAEPass_internal);
     }
 
+    @Deprecated
     public static void setItemSlotExtractable(ItemSlot slot, boolean extractable) {
         try {
             mItemSlot_setExtractable.invoke(slot, extractable);
@@ -132,26 +112,17 @@ public class Ae2Reflect {
         }
     }
 
-    public static ICraftingCPU getCPU(CraftingCPURecord cpu) {
-        return Ae2Reflect.readField(cpu, fCPU_cpu);
-    }
-
+    @Deprecated
     public static String getName(CraftingCPURecord cpu) {
         return Ae2Reflect.readField(cpu, fCPU_myName);
     }
 
-    public static int getProcessors(CraftingCPURecord cpu) {
-        return Ae2Reflect.readField(cpu, fCPU_processors);
-    }
-
-    public static long getSize(CraftingCPURecord cpu) {
-        return Ae2Reflect.readField(cpu, fCPU_size);
-    }
-
+    @Deprecated
     public static IUpgradeableHost getUpgradeList(ContainerUpgradeable container) {
         return Ae2Reflect.readField(container, fInventory_containerUpgrade);
     }
 
+    @Deprecated
     public static IGrid getGrid(CraftingCPUCluster cpu) {
         try {
             return (IGrid) mCPU_getGrid.invoke(cpu);
@@ -160,6 +131,7 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static IGrid getGrid(ContainerCraftConfirm ccc) {
         try {
             return (IGrid) mCraftConfirm_getGrid.invoke(ccc);
@@ -168,46 +140,22 @@ public class Ae2Reflect {
         }
     }
 
+    @Deprecated
     public static ICraftingJob getResult(ContainerCraftConfirm ccc) {
         return Ae2Reflect.readField(ccc, fCraftConfirm_result);
     }
 
-    public static MECraftingInventory getCPUInventory(CraftingCPUCluster cpu) {
-        return Ae2Reflect.readField(cpu, fCPU_inventory);
-    }
-
-    public static void setCPUInventory(CraftingCPUCluster cpu, MECraftingInventory value) {
-        Ae2Reflect.writeField(cpu, fCPU_inventory, value);
-    }
-
-    public static MachineSource getCPUSource(CraftingCPUCluster cpu) {
-        return Ae2Reflect.readField(cpu, fCPU_machineSrc);
-    }
-
+    @Deprecated
     public static IUpgradeableHost getUpgradeableHost(ContainerUpgradeable owner) {
         return Ae2Reflect.readField(owner, fContainerUpgradeable_upgradeable);
     }
 
+    @Deprecated
     public static AENetworkProxy getInterfaceProxy(DualityInterface owner) {
         return Ae2Reflect.readField(owner, fDualInterface_gridProxy);
     }
 
-    public static void postCPUChange(CraftingCPUCluster cpu, IAEItemStack stack, MachineSource src) {
-        try {
-            mCPU_postChange.invoke(cpu, stack, src);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to invoke method: " + mCPU_postChange, e);
-        }
-    }
-
-    public static void markCPUDirty(CraftingCPUCluster cpu) {
-        try {
-            mCPU_markDirty.invoke(cpu);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to invoke method: " + mCPU_markDirty, e);
-        }
-    }
-
+    @Deprecated
     public static IFluidHandler getP2PLiquidTarget(PartP2PLiquids p2p) {
         try {
             return (IFluidHandler) mP2PLiquids_getTarget.invoke(p2p);

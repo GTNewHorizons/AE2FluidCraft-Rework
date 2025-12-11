@@ -2,7 +2,6 @@ package com.glodblock.github.common.item;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -46,7 +45,9 @@ public class ItemPartFluidStorageBus extends FCBaseItem implements IPartItem {
     }
 
     @Override
-    public void registerIcons(IIconRegister _iconRegister) {}
+    protected String getIconString() {
+        return NameConst.RES_KEY + "fluid_storage_bus";
+    }
 
     @Override
     @SideOnly(Side.CLIENT)

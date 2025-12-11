@@ -1,7 +1,9 @@
 package com.glodblock.github.inventory.item;
 
+import java.util.List;
 import java.util.Objects;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -22,12 +24,17 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.IConfigManager;
+import appeng.helpers.ICustomButtonDataObject;
+import appeng.helpers.ICustomButtonProvider;
+import appeng.helpers.ICustomButtonSource;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.ConfigManager;
 import appeng.util.Platform;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class WirelessLevelTerminalInventory implements IClickableInTerminal, IWirelessTerminal {
+public class WirelessLevelTerminalInventory implements IClickableInTerminal, IWirelessTerminal, ICustomButtonProvider {
 
     private final ItemStack target;
     private final IAEItemPowerStorage ips;
@@ -42,6 +49,11 @@ public class WirelessLevelTerminalInventory implements IClickableInTerminal, IWi
         this.target = is;
         this.inventorySlot = slot;
         readFromNBT();
+
+        if (getItemStack().getItem() instanceof ICustomButtonSource icbs) {
+            customButtonDataObject = icbs.getCustomDataObject(this);
+            customButtonDataObject.readData(getItemStack().getTagCompound());
+        }
     }
 
     public void readFromNBT() {
@@ -142,5 +154,40 @@ public class WirelessLevelTerminalInventory implements IClickableInTerminal, IWi
     @Override
     public Util.DimensionalCoordSide getClickedInterface() {
         return this.tile;
+    }
+
+    private ICustomButtonDataObject customButtonDataObject;
+
+    @Override
+    public void writeCustomButtonData() {
+        this.customButtonDataObject.writeData(this.getItemStack().getTagCompound());
+    }
+
+    @Override
+    public void readCustomButtonData() {
+        this.customButtonDataObject.readData(this.getItemStack().getTagCompound());
+    }
+
+    @Override
+    public void initCustomButtons(int guiLeft, int guiTop, int xSize, int ySize, int xOffset, int yOffset,
+            List<GuiButton> buttonList) {
+        if (customButtonDataObject != null)
+            customButtonDataObject.initCustomButtons(guiLeft, guiTop, xSize, ySize, xOffset, yOffset, buttonList);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean actionPerformedCustomButtons(final GuiButton btn) {
+        return customButtonDataObject != null && customButtonDataObject.actionPerformedCustomButtons(btn);
+    }
+
+    @Override
+    public ICustomButtonDataObject getDataObject() {
+        return customButtonDataObject;
+    }
+
+    @Override
+    public void setDataObject(ICustomButtonDataObject dataObject) {
+        customButtonDataObject = dataObject;
     }
 }

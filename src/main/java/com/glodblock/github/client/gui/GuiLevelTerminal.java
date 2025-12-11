@@ -1,7 +1,5 @@
 package com.glodblock.github.client.gui;
 
-import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.hasInfinityBoosterCard;
-
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,16 +33,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.api.registries.LevelItemInfo;
-import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.base.FCBaseMEGui;
 import com.glodblock.github.client.gui.container.ContainerLevelTerminal;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
-import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.network.CPacketLevelTerminalCommands.Action;
-import com.glodblock.github.network.CPacketRenamer;
 import com.glodblock.github.network.SPacketLevelTerminalUpdate;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -55,7 +47,10 @@ import appeng.api.config.Settings;
 import appeng.api.config.TerminalFontSize;
 import appeng.api.config.TerminalStyle;
 import appeng.api.config.YesNo;
+import appeng.api.features.LevelItemInfo;
+import appeng.api.features.LevelState;
 import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.data.IAEStack;
 import appeng.client.gui.IGuiTooltipHandler;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -70,12 +65,14 @@ import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.PlayerMessages;
+import appeng.core.sync.GuiBridge;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.PacketSwitchGuis;
 import appeng.helpers.InventoryAction;
 import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
 import appeng.util.Platform;
 import appeng.util.ReadableNumberConverter;
-import appeng.util.item.AEItemStack;
 import cpw.mods.fml.common.Loader;
 
 public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextField, IGuiTooltipHandler {
@@ -86,7 +83,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     public static final int VIEW_LEFT = 8;
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_terminal.png");
     private static final RenderItem renderItem = new RenderItem();
-    protected int offsetY;
     private static final int offsetX = 21;
     protected static String searchFieldOutputsText = "";
     protected static String searchFieldNamesText = "";
@@ -147,16 +143,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         this(inventoryPlayer, new ContainerLevelTerminal(inventoryPlayer, te));
     }
 
-    @Override
-    public int getOffsetY() {
-        return offsetY;
-    }
-
-    @Override
-    public void setOffsetY(int y) {
-        offsetY = y;
-    }
-
     private void setScrollBar() {
         int maxScroll = masterList.getHeight() - viewHeight - 1;
         if (maxScroll <= 0) {
@@ -174,7 +160,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         final int unusedSpace = height - ySize;
         guiTop = (int) Math.floor(unusedSpace / (unusedSpace < 0 ? 3.8f : 2.0f));
 
-        offsetY = guiTop + 8;
+        int offsetY = guiTop + 8;
         terminalStyleBox = new GuiImgButton(
                 guiLeft - 18,
                 offsetY,
@@ -213,7 +199,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
         setScrollBar();
         repositionSlots();
-        initGuiDone();
+        initCustomButtons(0, offsetY);
     }
 
     @Override
@@ -274,12 +260,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     public void drawScreen(final int mouseX, final int mouseY, final float btn) {
         terminalStyleBox.set(AEConfig.instance.settings.getSetting(Settings.TERMINAL_STYLE));
 
-        buttonList.clear();
-        buttonList.add(terminalStyleBox);
-        buttonList.add(searchStringSave);
-        buttonList.add(craftingStatusBtn);
-        addSwitchGuiBtns();
-
         super.drawScreen(mouseX, mouseY, btn);
 
         handleTooltip(mouseX, mouseY, searchFieldOutputs);
@@ -309,7 +289,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
     @Override
     protected void actionPerformed(final GuiButton btn) {
-            if (ModAndClassUtil.isSaveText && btn == searchStringSave) {
+        if (actionPerformedCustomButtons(btn)) return;
+        if (ModAndClassUtil.isSaveText && btn == searchStringSave) {
 
             final boolean backwards = Mouse.isButtonDown(1);
             final GuiImgButton iBtn = (GuiImgButton) btn;
@@ -320,7 +301,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             searchStringSave.set(next);
 
         } else if (btn == craftingStatusBtn) {
-            InventoryHandler.switchGui(GuiType.CRAFTING_STATUS);
+            NetworkHandler.instance.sendToServer(new PacketSwitchGuis(GuiBridge.GUI_CRAFTING_STATUS));
         } else if (btn instanceof final GuiImgButton iBtn) {
             if (iBtn.getSetting() != Settings.ACTIONS) {
                 final Enum<?> cv = iBtn.getCurrentValue();
@@ -344,7 +325,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         /* Draws the top part. */
         drawTexturedModalRect(offsetX, offsetY, 0, 0, xSize, HEADER_HEIGHT);
         /* Draws the middle part. */
-        Tessellator.instance.startDrawingQuads();
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
         addTexturedRectToTesselator(
                 offsetX,
                 offsetY + HEADER_HEIGHT,
@@ -355,7 +337,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 (HEADER_HEIGHT + LevelTerminalSection.TITLE_HEIGHT + 1.0f) / 256.0f,
                 xSize / 256.0f,
                 (HEADER_HEIGHT + 106.0f) / 256.0f);
-        Tessellator.instance.draw();
+        tess.draw();
         /* Draw the bottom part */
         drawTexturedModalRect(offsetX, offsetY + HEADER_HEIGHT + viewHeight, 0, 158, xSize, INV_HEIGHT);
         if (online) {
@@ -483,7 +465,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     private int drawEntry(LevelTerminalEntry entry, int viewY, int titleBottom, int relMouseX, int relMouseY) {
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         mc.getTextureManager().bindTexture(TEX_BG);
-        Tessellator.instance.startDrawingQuads();
+        final Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
         int relY = 0;
         final int slotLeftMargin = (VIEW_WIDTH - entry.rowSize * 18);
         float lastZLevel = renderItem.zLevel;
@@ -512,14 +495,14 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         (173 + 18) / 256f);
             }
         }
-        Tessellator.instance.draw();
+        tess.draw();
         /* Draw button */
         if (viewY + entry.highlightButton.height > 0 && viewY < viewHeight) {
             entry.highlightButton.yPosition = viewY + 1;
             entry.renameButton.yPosition = viewY + 1;
             entry.configButton.yPosition = viewY + 1;
             GuiFCImgButton toRender;
-            if (isCtrlKeyDown() && isShiftKeyDown() && hasInfinityBoosterCard(player)) {
+            if (isCtrlKeyDown() && isShiftKeyDown()) {
                 toRender = entry.configButton;
             } else if (isShiftKeyDown()) {
                 toRender = entry.renameButton;
@@ -559,7 +542,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         && relMouseY >= Math.max(viewY + rowYTop, LevelTerminalSection.TITLE_HEIGHT)
                         && relMouseY < Math.min(viewY + rowYBot, viewHeight);
                 if (info != null) {
-                    ItemStack itemStack = info.stack;
+                    IAEStack<?> aes = info.stack;
                     long quantity = info.quantity;
                     long batch = info.batchSize;
                     LevelState state = info.state;
@@ -568,16 +551,16 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     GL11.glTranslatef(colLeft, viewY + rowYTop + 1, ITEM_STACK_Z);
                     GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                     RenderHelper.enableGUIStandardItemLighting();
-                    itemStack.stackSize = 0;
+                    aes.setStackSize(1);
                     renderItem.zLevel = ITEM_STACK_Z - MAGIC_RENDER_ITEM_Z;
-                    renderItem.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
-                    renderItem.renderItemOverlayIntoGUI(fontRendererObj, mc.getTextureManager(), itemStack, 0, 0);
+                    aes.drawInGui(mc, 0, 0);
+                    aes.drawOverlayInGui(mc, 0, 0, false, false, false, false);
                     GL11.glTranslatef(0.0f, 0.0f, ITEM_STACK_OVERLAY_Z - ITEM_STACK_Z);
                     int color = switch (state) {
                         case Idle -> FCGuiColors.StateIdle.getColor();
                         case Craft -> FCGuiColors.StateCraft.getColor();
                         case Export -> FCGuiColors.StateExport.getColor();
-                        case Error -> FCGuiColors.StateError.getColor();
+                        case Error, NotFound, CantCraft -> FCGuiColors.StateError.getColor();
                         case None -> FCGuiColors.StateNone.getColor();
                     };
                     int offset = 0;
@@ -599,7 +582,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                             drawRect(0, 0, 16, 16, GuiColors.ItemSlotOverlayUnpowered.getColor());
                         }
                     } else {
-                        tooltipStack = itemStack;
+                        tooltipStack = Platform.stackConvert(aes).getItemStack();
                     }
                     GL11.glPopMatrix();
                 } else if (entry.filteredRecipes[slotIdx]) {
@@ -1120,7 +1103,9 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                             continue;
                         }
 
-                        if (itemStackMatchesSearchTerm(entry.infoList[i].stack, output)) {
+                        if (itemStackMatchesSearchTerm(
+                                Platform.stackConvert(entry.infoList[i].stack).getItemStack(),
+                                output)) {
                             shouldAdd = true;
                             entry.filteredRecipes[i] = false;
                         } else {
@@ -1239,7 +1224,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         dim,
                         ForgeDirection.getOrientation(side),
                         "");
-                if (isCtrlKeyDown() && isShiftKeyDown() && hasInfinityBoosterCard(mc.thePlayer)) {
+                if (isCtrlKeyDown() && isShiftKeyDown()) {
                     FluidCraft.proxy.netHandler.sendToServer(
                             new CPacketLevelTerminalCommands(
                                     Action.EDIT,
@@ -1250,18 +1235,20 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                                     blockPos.getSide()));
                 } else if (isShiftKeyDown()) {
                     FluidCraft.proxy.netHandler.sendToServer(
-                            new CPacketRenamer(
+                            new CPacketLevelTerminalCommands(
+                                    Action.RENAME,
                                     blockPos.x,
                                     blockPos.y,
                                     blockPos.z,
                                     blockPos.getDimension(),
                                     blockPos.getSide()));
+
                 } else {
                     BlockPosHighlighter.highlightBlocks(
                             mc.thePlayer,
                             Collections.singletonList(blockPos),
-                            PlayerMessages.LevelEmitterHighlighted.getName(),
-                            PlayerMessages.LevelEmitterInAnotherDim.getName());
+                            PlayerMessages.LevelEmitterHighlighted.getUnlocalized(),
+                            PlayerMessages.LevelEmitterInAnotherDim.getUnlocalized());
                     mc.thePlayer.closeScreen();
                 }
                 return true;
@@ -1292,9 +1279,10 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 };
 
                 if (action != null && this.infoList[slotIdx] != null) {
-                    AEItemStack aeStack = AEItemStack.create(this.infoList[slotIdx].stack);
+                    IAEStack<?> aeStack = this.infoList[slotIdx].stack;
                     ((AEBaseContainer) inventorySlots).setTargetStack(aeStack);
-                    FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, slotIdx, 0, aeStack));
+                    // FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(action, slotIdx, 0,
+                    // aeStack));
                 }
 
                 return true;

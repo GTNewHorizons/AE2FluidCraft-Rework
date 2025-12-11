@@ -1,5 +1,7 @@
 package com.glodblock.github.network;
 
+import java.util.Objects;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.DimensionManager;
@@ -9,6 +11,14 @@ import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 
+import appeng.api.parts.ILevelEmitter;
+import appeng.api.parts.IPart;
+import appeng.api.parts.IPartHost;
+import appeng.container.AEBaseContainer;
+import appeng.container.PrimaryGui;
+import appeng.container.interfaces.IContainerSubGui;
+import appeng.core.sync.GuiBridge;
+import appeng.util.Platform;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -31,6 +41,7 @@ public class CPacketLevelTerminalCommands implements IMessage {
         DISABLE,
         ENABLE_ALL,
         DISABLE_ALL,
+        RENAME
     }
 
     public CPacketLevelTerminalCommands() {}
@@ -53,7 +64,7 @@ public class CPacketLevelTerminalCommands implements IMessage {
     public void fromBytes(ByteBuf buf) {
         action = Action.values()[buf.readInt()];
         switch (action) {
-            case EDIT -> {
+            case EDIT, RENAME -> {
                 x = buf.readInt();
                 y = buf.readInt();
                 z = buf.readInt();
@@ -79,7 +90,7 @@ public class CPacketLevelTerminalCommands implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeInt(action.ordinal());
         switch (action) {
-            case EDIT -> {
+            case EDIT, RENAME -> {
                 buf.writeInt(x);
                 buf.writeInt(y);
                 buf.writeInt(z);
@@ -106,31 +117,50 @@ public class CPacketLevelTerminalCommands implements IMessage {
         @Override
         public IMessage onMessage(CPacketLevelTerminalCommands message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            switch (message.action) {
-                case EDIT -> {
+
+            if (Objects.requireNonNull(message.action) == Action.EDIT) {
+                if (player.openContainer instanceof AEBaseContainer abc) {
+                    final PrimaryGui pGui = abc.getPrimaryGui();
+
                     TileEntity tile = DimensionManager.getWorld(message.dim)
                             .getTileEntity(message.x, message.y, message.z);
-                    InventoryHandler.openGui(
-                            player,
-                            player.worldObj,
-                            new BlockPos(tile),
-                            message.side,
-                            GuiType.LEVEL_MAINTAINER);
-                }
-                case BACK -> {
-                    GuiType originalGui = GuiType.getByOrdinal(message.originalGui);
-                    if (originalGui == null) {
-                        return null;
+
+                    if (tile instanceof IPartHost host) {
+                        IPart part = host.getPart(message.side);
+                        if (part instanceof ILevelEmitter) {
+                            InventoryHandler.openGui(
+                                    player,
+                                    tile.getWorldObj(),
+                                    new BlockPos(tile),
+                                    message.side,
+                                    GuiType.LEVEL_EMITTER_PROXY);
+                        }
+                    } else {
+                        InventoryHandler.openGui(
+                                player,
+                                tile.getWorldObj(),
+                                new BlockPos(tile),
+                                message.side,
+                                GuiType.LEVEL_MAINTAINER);
                     }
 
-                    InventoryHandler.openGui(
-                            player,
-                            player.worldObj,
-                            new BlockPos(message.x, message.y, message.z, DimensionManager.getWorld(message.dim)),
-                            message.side,
-                            originalGui);
+                    if (player.openContainer instanceof IContainerSubGui sg) {
+                        sg.setPrimaryGui(pGui);
+                    }
                 }
-                default -> {}
+            } else if (Objects.requireNonNull(message.action) == Action.RENAME) {
+                if (player.openContainer instanceof AEBaseContainer abc) {
+                    final PrimaryGui pGui = abc.getPrimaryGui();
+
+                    TileEntity tile = DimensionManager.getWorld(message.dim)
+                            .getTileEntity(message.x, message.y, message.z);
+
+                    Platform.openGUI(player, tile, message.side, GuiBridge.GUI_RENAMER);
+
+                    if (player.openContainer instanceof IContainerSubGui sg) {
+                        sg.setPrimaryGui(pGui);
+                    }
+                }
             }
             return null;
         }

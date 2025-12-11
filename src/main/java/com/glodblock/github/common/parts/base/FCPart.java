@@ -2,7 +2,6 @@ package com.glodblock.github.common.parts.base;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,8 +17,6 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
@@ -44,6 +41,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.IConfigManager;
 import appeng.client.texture.CableBusTextures;
+import appeng.core.sync.GuiBridge;
 import appeng.me.GridAccessException;
 import appeng.parts.AEBasePart;
 import appeng.tile.inventory.AppEngInternalInventory;
@@ -149,7 +147,7 @@ public abstract class FCPart extends AEBasePart
         this.viewCell.writeToNBT(data, "viewCell");
     }
 
-    public abstract GuiType getGui();
+    public abstract GuiBridge getGui();
 
     @Override
     public void writeToStream(final ByteBuf data) throws IOException {
@@ -223,12 +221,16 @@ public abstract class FCPart extends AEBasePart
         if (Platform.isServer()) {
             if (Util.hasPermission(player, SecurityPermissions.INJECT, (IGridHost) this)
                     || Util.hasPermission(player, SecurityPermissions.EXTRACT, (IGridHost) this)) {
-                InventoryHandler.openGui(player, te.getWorldObj(), tePos, Objects.requireNonNull(getSide()), getGui());
+                openGui(player);
             } else {
                 player.addChatComponentMessage(new ChatComponentText("You don't have permission to view."));
             }
         }
         return true;
+    }
+
+    protected void openGui(EntityPlayer player) {
+        Platform.openGUI(player, this.getHost().getTile(), this.getSide(), this.getGui());
     }
 
     @Override
@@ -366,21 +368,22 @@ public abstract class FCPart extends AEBasePart
         rh.setBounds(2, 2, 14, 14, 14, 16);
         rh.renderBlock(x, y, z, renderer);
 
+        final Tessellator tess = Tessellator.instance;
         if (this.getLightLevel() > 0) {
             final int l = 13;
-            Tessellator.instance.setBrightness(l << 20 | l << 4);
+            tess.setBrightness(l << 20 | l << 4);
         }
 
         renderer.uvRotateBottom = renderer.uvRotateEast = renderer.uvRotateNorth = renderer.uvRotateSouth = renderer.uvRotateTop = renderer.uvRotateWest = this
                 .getSpin();
 
-        Tessellator.instance.setColorOpaque_I(this.getColor().whiteVariant);
+        tess.setColorOpaque_I(this.getColor().whiteVariant);
         rh.renderFace(x, y, z, this.getFrontBright().getIcon(), ForgeDirection.SOUTH, renderer);
 
-        Tessellator.instance.setColorOpaque_I(this.getColor().mediumVariant);
+        tess.setColorOpaque_I(this.getColor().mediumVariant);
         rh.renderFace(x, y, z, this.getFrontDark().getIcon(), ForgeDirection.SOUTH, renderer);
 
-        Tessellator.instance.setColorOpaque_I(this.getColor().blackVariant);
+        tess.setColorOpaque_I(this.getColor().blackVariant);
         rh.renderFace(x, y, z, this.getFrontColored().getIcon(), ForgeDirection.SOUTH, renderer);
 
         renderer.uvRotateBottom = renderer.uvRotateEast = renderer.uvRotateNorth = renderer.uvRotateSouth = renderer.uvRotateTop = renderer.uvRotateWest = 0;
@@ -404,15 +407,15 @@ public abstract class FCPart extends AEBasePart
 
         if (hasChan) {
             final int l = 14;
-            Tessellator.instance.setBrightness(l << 20 | l << 4);
-            Tessellator.instance.setColorOpaque_I(this.getColor().blackVariant);
+            tess.setBrightness(l << 20 | l << 4);
+            tess.setColorOpaque_I(this.getColor().blackVariant);
         } else if (hasPower) {
             final int l = 9;
-            Tessellator.instance.setBrightness(l << 20 | l << 4);
-            Tessellator.instance.setColorOpaque_I(this.getColor().whiteVariant);
+            tess.setBrightness(l << 20 | l << 4);
+            tess.setColorOpaque_I(this.getColor().whiteVariant);
         } else {
-            Tessellator.instance.setBrightness(0);
-            Tessellator.instance.setColorOpaque_I(0x000000);
+            tess.setBrightness(0);
+            tess.setColorOpaque_I(0x000000);
         }
 
         final IIcon sideStatusLightTexture = CableBusTextures.PartMonitorSidesStatusLights.getIcon();

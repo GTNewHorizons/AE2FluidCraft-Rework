@@ -15,7 +15,6 @@ import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.common.parts.PartFluidP2PInterface;
 import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.common.tile.TileWalrus;
-import com.glodblock.github.crossmod.extracells.EC2Replacer;
 import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
@@ -23,7 +22,6 @@ import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory;
 import com.glodblock.github.inventory.item.WirelessMagnetCardFilterInventory.FilterCache;
 import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.network.SPacketMEUpdateBuffer;
 import com.glodblock.github.network.wrapper.FCNetworkWrapper;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
@@ -70,10 +68,7 @@ public class CommonProxy {
                                     .getFilter(wirelessTerm, result.getLeft(), gridNode, player);
 
                             if (inv.isPassFilter(stack)) {
-                                if (inv.doInject(
-                                        AEApi.instance().storage().createItemStack(stack),
-                                        itemEntity,
-                                        world)) {
+                                if (inv.doInject(AEApi.instance().storage().createItemStack(stack), itemEntity)) {
                                     itemEntity.setDead();
                                     e.setCanceled(true);
                                 }
@@ -94,16 +89,12 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
-        FMLCommonHandler.instance().bus().register(SPacketMEUpdateBuffer.class);
         if (ModAndClassUtil.ThE) {
             AspectUtil.init();
         }
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-        if (!ModAndClassUtil.EC2 && Config.replaceEC2) {
-            EC2Replacer.initReplacer();
-        }
         if (ModAndClassUtil.ThE) {
             ThaumicEnergisticsCrafting.postInit();
         }
@@ -120,6 +111,9 @@ public class CommonProxy {
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 1);
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 1);
         Upgrades.LOCK_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 1);
+        Upgrades.FUZZY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 3);
+        Upgrades.FUZZY.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 3);
+        Upgrades.FUZZY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 3);
         Upgrades.CAPACITY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 5);
         Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
         Upgrades.STICKY.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_STORAGE_BUS), 1);
