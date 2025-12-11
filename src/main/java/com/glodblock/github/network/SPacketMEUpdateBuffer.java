@@ -29,7 +29,6 @@ public class SPacketMEUpdateBuffer {
     private static ScheduledFuture<?> task;
 
     private static final Map<EntityPlayerMP, LinkedHashSet<IAEItemStack>> itemBuffer = new HashMap<>();
-
     private static final Map<EntityPlayerMP, LinkedHashSet<IAEFluidStack>> fluidBuffer = new HashMap<>();
 
     public static void init() {
@@ -64,7 +63,7 @@ public class SPacketMEUpdateBuffer {
     }
 
     public static void scheduleFluidUpdate(EntityPlayerMP player, List<IAEFluidStack> stacks) {
-        synchronized (itemBuffer) {
+        synchronized (fluidBuffer) {
             if (!fluidBuffer.containsKey(player)) {
                 fluidBuffer.put(player, new LinkedHashSet<>(1024));
             }
@@ -94,6 +93,8 @@ public class SPacketMEUpdateBuffer {
                 packet.setResort(true);
                 FluidCraft.proxy.netHandler.sendTo(packet, player);
             });
+        }
+        synchronized (fluidBuffer) {
             fluidBuffer.forEach((player, updates) -> {
                 if (updates.isEmpty()) return;
                 int i = 0;
@@ -122,6 +123,8 @@ public class SPacketMEUpdateBuffer {
             if (itemBuffer.containsKey(player)) {
                 itemBuffer.get(player).clear();
             }
+        }
+        synchronized (fluidBuffer) {
             if (fluidBuffer.containsKey(player)) {
                 fluidBuffer.get(player).clear();
             }
