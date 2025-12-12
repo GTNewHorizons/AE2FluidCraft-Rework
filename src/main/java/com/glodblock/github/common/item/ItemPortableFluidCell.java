@@ -1,5 +1,7 @@
 package com.glodblock.github.common.item;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -9,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.api.FluidCraftAPI;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
@@ -17,9 +21,9 @@ import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 
 import appeng.api.implementations.guiobjects.IGuiItemObject;
-import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IAEStackType;
 import appeng.items.AEBasePortableCell;
 import appeng.items.contents.CellUpgrades;
 import appeng.items.contents.PortableCellViewer;
@@ -79,12 +83,12 @@ public class ItemPortableFluidCell extends AEBasePortableCell implements IRegist
     @Override
     public IGuiItemObject getGuiObject(final ItemStack is, final World w, final EntityPlayer p, final int x,
             final int y, final int z) {
-        return new PortableCellViewer<IAEFluidStack>(is, x, StorageChannel.FLUIDS);
+        return new PortableCellViewer<IAEFluidStack>(is, x, FLUID_STACK_TYPE);
     }
 
     @Override
-    public StorageChannel getStorageChannel() {
-        return StorageChannel.FLUIDS;
+    public @NotNull IAEStackType<?> getStackType() {
+        return FLUID_STACK_TYPE;
     }
 
     @Override

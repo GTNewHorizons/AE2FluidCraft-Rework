@@ -8,7 +8,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
-import com.glodblock.github.coremod.transform.ExternalStorageRegistryTransformer;
 import com.glodblock.github.coremod.transform.GuiCraftingTransformer;
 import com.glodblock.github.coremod.transform.NEITransformer;
 import com.gtnewhorizon.gtnhlib.asm.ASMUtil;
@@ -23,7 +22,6 @@ public class FCClassTransformer implements IClassTransformer {
         switch (transformedName) {
             case "appeng.client.gui.implementations.GuiCraftingCPU", "appeng.client.gui.implementations.GuiCraftConfirm", "net.p455w0rd.wirelesscraftingterminal.client.gui.GuiCraftConfirm", "appeng.client.gui.widgets.GuiCraftingTree" -> tform = GuiCraftingTransformer.INSTANCE;
             case "appeng.integration.modules.NEI" -> tform = NEITransformer.INSTANCE;
-            case "appeng.core.features.registries.ExternalStorageRegistry" -> tform = ExternalStorageRegistryTransformer.INSTANCE;
             default -> {
                 return basicClass;
             }
