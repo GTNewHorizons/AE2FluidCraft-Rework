@@ -4,7 +4,6 @@ import com.glodblock.github.common.Config;
 import com.glodblock.github.common.block.BlockCertusQuartzTank;
 import com.glodblock.github.common.block.BlockFluidAutoFiller;
 import com.glodblock.github.common.block.BlockFluidBuffer;
-import com.glodblock.github.common.block.BlockFluidDiscretizer;
 import com.glodblock.github.common.block.BlockFluidInterface;
 import com.glodblock.github.common.block.BlockFluidPacketDecoder;
 import com.glodblock.github.common.block.BlockFluidPatternEncoder;
@@ -54,7 +53,6 @@ public class ItemAndBlockHolder {
 
     public static BlockCertusQuartzTank CERTUS_QUARTZ_TANK = new BlockCertusQuartzTank().register();
     public static BlockFluidAutoFiller FLUID_AUTO_FILLER = new BlockFluidAutoFiller().register();
-    public static BlockFluidDiscretizer DISCRETIZER = new BlockFluidDiscretizer().register();
     public static BlockLevelMaintainer LEVEL_MAINTAINER = new BlockLevelMaintainer().register();
     public static BlockFluidPatternEncoder ENCODER = new BlockFluidPatternEncoder().register();
     public static BlockFluidPacketDecoder DECODER = new BlockFluidPacketDecoder().register();

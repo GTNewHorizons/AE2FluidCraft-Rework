@@ -1,6 +1,7 @@
 package com.glodblock.github.common.item;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -38,4 +39,10 @@ public class ItemWirelessFluidTerminal extends ItemBaseWirelessTerminal
         return null;
     }
 
+    @Override
+    public void addCheckedInformation(ItemStack stack, EntityPlayer player, List<String> lines,
+            boolean displayMoreInfo) {
+        lines.add("§4DEPRECATED!");
+        super.addCheckedInformation(stack, player, lines, displayMoreInfo);
+    }
 }

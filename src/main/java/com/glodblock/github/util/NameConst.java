@@ -10,7 +10,6 @@ import com.glodblock.github.FluidCraft;
 public class NameConst {
 
     public static final String BLOCK_CERTUS_QUARTZ_TANK = "certus_quartz_tank";
-    public static final String BLOCK_FLUID_DISCRETIZER = "fluid_discretizer";
     public static final String BLOCK_FLUID_PATTERN_ENCODER = "fluid_pattern_encoder";
     public static final String BLOCK_FLUID_PACKET_DECODER = "fluid_packet_decoder";
     public static final String BLOCK_FLUID_INTERFACE = "fluid_interface";
@@ -75,8 +74,6 @@ public class NameConst {
     public static final String TT_FLUID_PACKET_DECODER = TT_KEY + "fluid_packet_decoder.";
     public static final String TT_FLUID_PACKET_DECODER_DESC = TT_FLUID_PACKET_DECODER + "desc";
     public static final String TT_FLUID_BUFFER_DESC = TT_FLUID_BUFFER + "desc";
-    public static final String TT_FLUID_DISCRETIZER = TT_KEY + "discretizer.";
-    public static final String TT_FLUID_DISCRETIZER_DESC = TT_FLUID_DISCRETIZER + "desc";
     public static final String TT_LEVEL_MAINTAINER = TT_KEY + "level_maintainer.";
     public static final String TT_LEVEL_MAINTAINER_DESC = TT_LEVEL_MAINTAINER + "desc";
     public static final String TT_LEVEL_MAINTAINER_WHO_AM_I = TT_LEVEL_MAINTAINER + "Who_Am_I";

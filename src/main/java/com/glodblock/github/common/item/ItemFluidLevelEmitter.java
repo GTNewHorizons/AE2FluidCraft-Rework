@@ -63,7 +63,7 @@ public class ItemFluidLevelEmitter extends FCBaseItem implements IPartItem {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> lines,
             final boolean displayMoreInfo) {
-        lines.add("Deprecated, use regular level emitter, hold CTRL for get fluid of container.");
+        lines.add("§4Deprecated, use regular level emitter, hold CTRL for get fluid of container.");
         super.addInformation(stack, player, lines, displayMoreInfo);
     }
 }
