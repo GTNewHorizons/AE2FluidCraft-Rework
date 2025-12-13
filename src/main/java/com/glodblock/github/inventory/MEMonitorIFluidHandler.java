@@ -48,12 +48,14 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         this.mode = StorageFilter.EXTRACTABLE_ONLY;
         this.handler = handler;
         this.side = side;
+        this.onTick();
     }
 
     public MEMonitorIFluidHandler(IFluidHandler handler) {
         this.mode = StorageFilter.EXTRACTABLE_ONLY;
         this.handler = handler;
         this.side = ForgeDirection.UNKNOWN;
+        this.onTick();
     }
 
     public void addListener(IMEMonitorHandlerReceiver<IAEFluidStack> l, Object verificationToken) {
@@ -224,10 +226,6 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     }
 
     public IItemList<IAEFluidStack> getAvailableItems(IItemList<IAEFluidStack> out, int iteration) {
-        if (!init) {
-            this.onTick();
-            init = true;
-        }
         for (IAEFluidStack fs : this.cache) {
             out.addStorage(fs);
         }
@@ -237,10 +235,6 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
 
     @Override
     public IAEFluidStack getAvailableItem(@Nonnull IAEFluidStack request, int iteration) {
-        if (!init) {
-            this.onTick();
-            init = true;
-        }
         return this.cache.findPrecise(request);
     }
 
