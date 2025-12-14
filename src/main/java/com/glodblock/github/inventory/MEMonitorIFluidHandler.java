@@ -48,14 +48,12 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
         this.mode = StorageFilter.EXTRACTABLE_ONLY;
         this.handler = handler;
         this.side = side;
-        this.onTick();
     }
 
     public MEMonitorIFluidHandler(IFluidHandler handler) {
         this.mode = StorageFilter.EXTRACTABLE_ONLY;
         this.handler = handler;
         this.side = ForgeDirection.UNKNOWN;
-        this.onTick();
     }
 
     public void addListener(IMEMonitorHandlerReceiver<IAEFluidStack> l, Object verificationToken) {
