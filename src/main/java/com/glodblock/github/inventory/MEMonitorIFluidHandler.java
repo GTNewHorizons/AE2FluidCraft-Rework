@@ -42,7 +42,6 @@ public class MEMonitorIFluidHandler implements IMEMonitor<IAEFluidStack> {
     private final HashMap<IMEMonitorHandlerReceiver<IAEFluidStack>, Object> listeners = new HashMap<>();
     private BaseActionSource mySource;
     private StorageFilter mode;
-    private boolean init = false;
 
     public MEMonitorIFluidHandler(IFluidHandler handler, ForgeDirection side) {
         this.mode = StorageFilter.EXTRACTABLE_ONLY;
