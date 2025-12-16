@@ -59,6 +59,6 @@ public class ItemPartFluidPatternTerminal extends FCBaseItem implements IPartIte
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> toolTip, boolean flag) {
-        toolTip.add("DEPRECATED!");
+        toolTip.add("§4DEPRECATED!");
     }
 }
