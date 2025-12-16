@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 
 import appeng.api.storage.data.IAEStackType;
 import appeng.items.AEBaseCell;
+import appeng.util.Platform;
 
 public abstract class FCBaseItemCell extends AEBaseCell {
 
@@ -49,5 +50,21 @@ public abstract class FCBaseItemCell extends AEBaseCell {
 
     public ItemStack stack() {
         return new ItemStack(this, 1);
+    }
+
+    @Override
+    public String getCellData(ItemStack is) {
+        return totalBytes + ","
+                + this.getTotalTypes(null)
+                + ","
+                + perType
+                + ","
+                + 8 * 256
+                + ","
+                + Platform.openNbtData(is).getByte("cellRestrictionTypes")
+                + ","
+                + Platform.openNbtData(is).getLong("cellRestrictionAmount")
+                + ","
+                + "fluid";
     }
 }

@@ -45,7 +45,7 @@ public class ItemPartFluidTerminal extends FCBaseItem implements IPartItem {
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> toolTip, boolean flag) {
-        toolTip.add("DEPRECATED!");
+        toolTip.add("§4DEPRECATED!");
         if (isShiftKeyDown()) {
             toolTip.add(NameConst.i18n(NameConst.TT_FLUID_TERMINAL));
         } else {
