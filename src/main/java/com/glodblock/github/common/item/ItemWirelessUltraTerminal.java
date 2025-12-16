@@ -226,6 +226,6 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
 
     @Override
     public ICustomButtonDataObject getCustomDataObject(ICustomButtonProvider provider) {
-        return new UltraTerminalButtons();
+        return new UltraTerminalButtons(((IGuiItemObject) provider).getItemStack());
     }
 }
