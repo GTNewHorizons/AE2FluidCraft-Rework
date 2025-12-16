@@ -22,7 +22,6 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.CELL64KM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CELL_HOUSING;
 import static com.glodblock.github.loader.ItemAndBlockHolder.CERTUS_QUARTZ_TANK;
 import static com.glodblock.github.loader.ItemAndBlockHolder.DECODER;
-import static com.glodblock.github.loader.ItemAndBlockHolder.DISCRETIZER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENCODER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENERGY_CARD;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_AUTO_FILLER;
@@ -51,11 +50,11 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_BRIDGE_CARD
 import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.SINGULARITY_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WALRUS;
+import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_INTERFACE_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_LEVEL_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_PATTERN_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_ULTRA_TERM;
-import static net.minecraft.init.Blocks.redstone_torch;
 import static net.minecraft.init.Items.fish;
 
 import java.util.Arrays;
@@ -111,6 +110,10 @@ public class RecipeLoader implements Runnable {
             GameRegistry.findItem("appliedenergistics2", "item.ItemMultiPart"),
             1,
             340);
+    public static final ItemStack AE2_PATTERN_TERM_EX = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiPart"),
+            1,
+            500);
     public static final ItemStack AE2_PROCESS_LOG = new ItemStack(
             GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
             1,
@@ -189,6 +192,12 @@ public class RecipeLoader implements Runnable {
             GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
             1,
             28);
+
+    public static final ItemStack AE2_LEVEL_EMITTER = new ItemStack(
+            GameRegistry.findItem("appliedenergistics2", "item.ItemMultiPart"),
+            1,
+            280);
+
     public static final ItemStack AE2_WIRELESS_RECEIVER = new ItemStack(
             GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
             1,
@@ -234,26 +243,12 @@ public class RecipeLoader implements Runnable {
             GameRegistry.addShapelessRecipe(FLUID_INTERFACE_P2P.stack(), AE2_P2P_ME, FLUID_INTERFACE.stack());
         }
         GameRegistry.addShapelessRecipe(INTERFACE.stack(), FLUID_INTERFACE.stack());
-        GameRegistry.addShapelessRecipe(WIRELESS_PATTERN_TERM.stack(), FLUID_TERMINAL);
+        GameRegistry.addShapelessRecipe(WIRELESS_PATTERN_TERM.stack(), AE2_WIRELESS_TERMINAL, AE2_PATTERN_TERM);
         GameRegistry.addShapelessRecipe(WIRELESS_INTERFACE_TERM.stack(), AE2_WIRELESS_TERMINAL, AE2_INTERFACE_TERMINAL);
         GameRegistry.addShapelessRecipe(WIRELESS_LEVEL_TERM.stack(), AE2_WIRELESS_TERMINAL, LEVEL_MAINTAINER);
         GameRegistry
                 .addRecipe(new ShapedOreRecipe(CERTUS_QUARTZ_TANK.stack(), "GGG", "G G", "GGG", 'G', AE2_QUARTZ_GLASS));
-        GameRegistry.addShapelessRecipe(FLUID_AUTO_FILLER.stack(), FLUID_TERMINAL, ENCODER);
-        GameRegistry.addRecipe(
-                new ShapedOreRecipe(
-                        DISCRETIZER.stack(),
-                        "IPI",
-                        "TMT",
-                        "IPI",
-                        'I',
-                        "ingotIron",
-                        'P',
-                        AE2_PROCESS_ENG,
-                        'T',
-                        AE2_STORAGE_BUS,
-                        'M',
-                        AE2_CONDENSER));
+        GameRegistry.addShapelessRecipe(FLUID_AUTO_FILLER.stack(), AE2_PATTERN_TERM, ENCODER);
         GameRegistry.addRecipe(
                 new ShapedOreRecipe(
                         DECODER.stack(),
@@ -294,7 +289,7 @@ public class RecipeLoader implements Runnable {
                         'I',
                         "itemIlluminatedPanel",
                         'E',
-                        FLUID_LEVEL_EMITTER,
+                        AE2_LEVEL_EMITTER,
                         'P',
                         "dyeBlue"));
         GameRegistry.addRecipe(
@@ -307,13 +302,6 @@ public class RecipeLoader implements Runnable {
                         FLUID_STORAGE_MONITOR,
                         'F',
                         AE2_CORE_FOM));
-        GameRegistry.addShapelessRecipe(FLUID_TERMINAL.stack(), AE2_PATTERN_TERM, ENCODER);
-        GameRegistry.addShapelessRecipe(
-                FLUID_TERMINAL_EX.stack(),
-                FLUID_TERMINAL.stack(),
-                AE2_PROCESS_CAL,
-                AE2_PROCESS_ENG,
-                AE2_PROCESS_LOG);
         GameRegistry.addRecipe(
                 new ShapedOreRecipe(
                         BUFFER.stack(),
@@ -335,16 +323,6 @@ public class RecipeLoader implements Runnable {
         GameRegistry.addRecipe(new ShapedOreRecipe(WALRUS, "FFF", "F F", "FFF", 'F', fish));
         GameRegistry.addRecipe(
                 new ShapedOreRecipe(
-                        FLUID_LEVEL_EMITTER.stack(),
-                        "RPD",
-                        'R',
-                        redstone_torch,
-                        'P',
-                        AE2_PROCESS_CAL,
-                        'D',
-                        "dyeBlue"));
-        GameRegistry.addRecipe(
-                new ShapedOreRecipe(
                         LARGE_BUFFER.stack(),
                         "BGB",
                         "GEG",
@@ -356,7 +334,6 @@ public class RecipeLoader implements Runnable {
                         'E',
                         AE2_PROCESS_ENG));
         GameRegistry.addShapelessRecipe(AE2_BLANK_PATTERN, PATTERN.stack());
-        GameRegistry.addShapelessRecipe(FLUID_TERM.stack(), AE2_TERMINAL, BUFFER);
         GameRegistry.addShapelessRecipe(LEVEL_TERMINAL.stack(), AE2_TERMINAL, LEVEL_MAINTAINER);
         GameRegistry.addShapelessRecipe(
                 FLUID_BUFFER.stack(),
@@ -365,6 +342,14 @@ public class RecipeLoader implements Runnable {
                         : ModAndClassUtil.EC2 ? ItemEnum.STORAGECOMPONENT.getDamagedStack(4) : null);
         GameRegistry
                 .addShapelessRecipe(LEVEL_MAINTAINER.stack(), AE2_CRAFTING_CP_UNIT, ENCODER, AE2_PATTERN_CAPACITY_CARD);
+
+        // Deprecated
+        GameRegistry.addShapelessRecipe(AE2_TERMINAL, FLUID_TERM.stack());
+        GameRegistry.addShapelessRecipe(AE2_WIRELESS_TERMINAL, WIRELESS_FLUID_TERM.stack());
+        GameRegistry.addShapelessRecipe(AE2_LEVEL_EMITTER, FLUID_LEVEL_EMITTER.stack());
+        GameRegistry.addShapelessRecipe(AE2_PATTERN_TERM, FLUID_TERMINAL.stack());
+        GameRegistry.addShapelessRecipe(AE2_PATTERN_TERM_EX, FLUID_TERMINAL_EX.stack());
+
         if (Config.fluidCells) {
             OreDictionary.registerOre("anyCertusCrystal", AE2_PURE_CERTUS);
             for (ItemStack it : OreDictionary.getOres("crystalCertusQuartz"))
