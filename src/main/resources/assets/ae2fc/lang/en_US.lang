@@ -219,6 +219,11 @@ ae2fc.gui.color.StateError=FFFF5555
 error.unknown=Unknown
 
 ae2fc.key.OpenTerminal=Open Wireless Universal Terminal
+ae2fc.key.OpenCraftingTerminal=Open Wireless Universal Crafting Terminal
+ae2fc.key.OpenLevelTerminal=Open Wireless Universal Level Terminal
+ae2fc.key.OpenInterfaceTerminal=Open Wireless Universal Interface Terminal
+ae2fc.key.OpenPatternTerminal=Open Wireless Universal Pattern Terminal
+ae2fc.key.OpenPatternExTerminal=Open Wireless Universal Processing Pattern Terminal
 ae2fc.key.Restock=Toggle Restock
 
 itemGroup.ae2fc=Fluid Craft For AE2
