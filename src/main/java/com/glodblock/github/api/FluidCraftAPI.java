@@ -6,7 +6,7 @@ import java.util.Set;
 import net.minecraftforge.fluids.Fluid;
 
 import com.glodblock.github.api.registries.ILevelTerminalRegistry;
-import com.glodblock.github.coremod.registries.LevelTerminalRegistry;
+import com.glodblock.github.util.LevelTerminalRegistry;
 
 public final class FluidCraftAPI implements IFluidCraftAPI {
 
