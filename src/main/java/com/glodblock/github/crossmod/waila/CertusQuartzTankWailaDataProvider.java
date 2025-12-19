@@ -20,9 +20,11 @@ public class CertusQuartzTankWailaDataProvider extends BaseWailaDataProvider {
         TileEntity tileEntity = accessor.getTileEntity();
         if (tileEntity instanceof TileCertusQuartzTank quartzTank) {
             FluidTankInfo info = quartzTank.getTankInfo(true)[0];
-            if (info.fluid != null) {
-                currentToolTip
-                        .add(Tooltip.fluidFormat(info.fluid.getLocalizedName(), info.fluid.amount, info.capacity));
+            if (info.fluid == null) {
+                currentToolTip.add(Tooltip.tankEmptyFormat(info.capacity));
+            } else {
+                currentToolTip.add(
+                        Tooltip.tankWithFluidFormat(info.fluid.getLocalizedName(), info.fluid.amount, info.capacity));
             }
         }
         return currentToolTip;

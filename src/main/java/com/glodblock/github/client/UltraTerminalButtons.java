@@ -7,10 +7,12 @@ import static com.glodblock.github.inventory.item.WirelessMagnet.modeKey;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.GuiFCImgButton;
+import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.network.CPacketSwitchGuis;
@@ -23,6 +25,8 @@ import io.netty.buffer.ByteBuf;
 public class UltraTerminalButtons implements ICustomButtonDataObject {
 
     public static String restockItems = "restock";
+
+    private ItemStack terminal;
 
     private GuiFCImgButton CraftingTerminal;
     private GuiFCImgButton PatternTerminal;
@@ -44,6 +48,10 @@ public class UltraTerminalButtons implements ICustomButtonDataObject {
     public UltraTerminalModes terminalMode;
 
     private int offset;
+
+    public UltraTerminalButtons(ItemStack terminal) {
+        this.terminal = terminal;
+    }
 
     public void initCustomButtons(int guiLeft, int guiTop, int xSize, int ySize, int xOffset, int yOffset,
             List<GuiButton> buttonList) {
@@ -93,16 +101,21 @@ public class UltraTerminalButtons implements ICustomButtonDataObject {
     @Override
     public boolean actionPerformedCustomButtons(final GuiButton btn) {
         if (btn instanceof GuiFCImgButton) {
+            UltraTerminalModes mode = null;
             if (btn == this.CraftingTerminal) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(UltraTerminalModes.CRAFTING, true));
+                mode = UltraTerminalModes.CRAFTING;
             } else if (btn == this.PatternTerminal) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(UltraTerminalModes.PATTERN, true));
+                mode = UltraTerminalModes.PATTERN;
             } else if (btn == this.InterfaceTerminal) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(UltraTerminalModes.INTERFACE, true));
+                mode = UltraTerminalModes.INTERFACE;
             } else if (btn == this.LevelTerminal) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(UltraTerminalModes.LEVEL, true));
+                mode = UltraTerminalModes.LEVEL;
             } else if (btn == this.PatternTerminalEx) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(UltraTerminalModes.PATTERN_EX, true));
+                mode = UltraTerminalModes.PATTERN_EX;
+            }
+            if (mode != null) {
+                ItemWirelessUltraTerminal.setMode(this.terminal, mode);
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketSwitchGuis(mode, true));
             }
 
             if (btn == this.magnetOff || btn == this.magnetME || btn == this.magnetInv) {
