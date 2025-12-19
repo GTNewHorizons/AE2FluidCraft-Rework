@@ -52,13 +52,6 @@ public class GuiFluidInterface extends GuiSub {
     }
 
     @Override
-    public void func_146977_a(final Slot s) {
-        try {
-            GuiContainer.class.getDeclaredMethod("func_146977_a_original", Slot.class).invoke(this, s);
-        } catch (final Exception ignore) {}
-    }
-
-    @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
         fontRendererObj.drawString(getGuiDisplayName(I18n.format(NameConst.GUI_FLUID_INTERFACE)), 8, 6, 0x404040);
         fontRendererObj.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
