@@ -115,7 +115,7 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                         }
                     }
                     case MAGNET_OPEN_FILTER -> {
-                        final PrimaryGui pGui = abc.getPrimaryGui();
+                        final PrimaryGui pGui = abc.createPrimaryGui();
                         final int nextGui = abc.getSwitchAbleGuiNext();
 
                         InventoryHandler.openGui(

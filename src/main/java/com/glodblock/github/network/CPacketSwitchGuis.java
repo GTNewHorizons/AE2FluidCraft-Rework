@@ -91,7 +91,7 @@ public class CPacketSwitchGuis implements IMessage {
                 }
             } else {
                 if (cont instanceof AEBaseContainer aeBaseContainer) {
-                    final PrimaryGui pGui = aeBaseContainer.getPrimaryGui();
+                    final PrimaryGui pGui = aeBaseContainer.createPrimaryGui();
                     ContainerOpenContext context = aeBaseContainer.getOpenContext();
                     if (context == null) return null;
                     TileEntity te = context.getTile();
