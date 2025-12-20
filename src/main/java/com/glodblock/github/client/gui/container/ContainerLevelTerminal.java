@@ -244,8 +244,7 @@ public class ContainerLevelTerminal extends FCBaseContainer {
     }
 
     @Override
-    public PrimaryGui getPrimaryGui() {
-
+    public PrimaryGui createPrimaryGui() {
         ContainerOpenContext context = getOpenContext();
         return new FluidPrimaryGui(
                 GuiType.LEVEL_TERMINAL,
