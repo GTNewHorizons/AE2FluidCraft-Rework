@@ -100,7 +100,7 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-        return drain(null, maxDrain, true, true);
+        return drain(null, maxDrain, doDrain, true);
     }
 
     public int fill(FluidStack fluid, boolean doFill, boolean findMainTank) {
