@@ -22,8 +22,7 @@ public class ContainerLevelWireless extends ContainerLevelTerminal {
     }
 
     @Override
-    public PrimaryGui getPrimaryGui() {
-
+    public PrimaryGui createPrimaryGui() {
         ContainerOpenContext context = getOpenContext();
         return new FluidPrimaryGui(
                 GuiType.WIRELESS_LEVEL_TERMINAL,

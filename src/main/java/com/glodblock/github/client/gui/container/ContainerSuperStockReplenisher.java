@@ -172,8 +172,7 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer
     }
 
     @Override
-    public PrimaryGui getPrimaryGui() {
-
+    public PrimaryGui createPrimaryGui() {
         ContainerOpenContext context = getOpenContext();
         return new FluidPrimaryGui(
                 GuiType.GUI_SUPER_STOCK_REPLENISHER,
