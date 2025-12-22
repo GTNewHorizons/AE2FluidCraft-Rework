@@ -26,6 +26,7 @@ import appeng.api.storage.data.IAEStack;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartBaseImportBus;
 import appeng.tile.inventory.IAEStackInventory;
+import appeng.util.InventoryAdaptor;
 import appeng.util.item.AEFluidStack;
 
 public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
@@ -97,13 +98,12 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
             FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
             if (tanksInfo == null) return true;
 
-            int maxDrain = this.calculateAmountToSend();
-            boolean doBreak = true;
-
             for (FluidTankInfo tankInfo : tanksInfo) {
                 if (tankInfo.fluid == null) continue;
 
-                FluidStack fluidStack = new FluidStack(tankInfo.fluid, Math.min(tankInfo.fluid.amount, maxDrain));
+                FluidStack fluidStack = new FluidStack(
+                        tankInfo.fluid,
+                        Math.min(tankInfo.fluid.amount, this.itemToSend));
                 fluidStack = fh.drain(this.getSide().getOpposite(), fluidStack, false);
                 if (this.filterEnabled() && !this.isInFilter(fluidStack)) continue;
 
@@ -112,18 +112,16 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
                     final IAEFluidStack notInserted = inv.injectItems(aeFluidStack, Actionable.MODULATE, this.mySrc);
 
                     if (notInserted != null && notInserted.getStackSize() > 0) {
+                        if (notInserted.getFluidStack().amount == aeFluidStack.getFluidStack().amount) continue;
                         aeFluidStack.decStackSize(notInserted.getStackSize());
                     }
 
                     fh.drain(this.getSide().getOpposite(), aeFluidStack.getFluidStack(), true);
-                    maxDrain -= aeFluidStack.getFluidStack().amount;
-                    doBreak = false;
+                    this.itemToSend -= aeFluidStack.getFluidStack().amount;
+                    this.worked = true;
                 }
             }
-
-            return doBreak;
         }
-
         return true;
     }
 
@@ -172,5 +170,10 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
                 config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
             }
         }
+    }
+
+    @Override
+    protected int getAdaptorFlags() {
+        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_EXTRACTS;
     }
 }

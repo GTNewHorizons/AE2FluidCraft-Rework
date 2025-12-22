@@ -33,7 +33,7 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
 
     @Override
     protected int getAdaptorFlags() {
-        return InventoryAdaptor.DEFAULT & ~InventoryAdaptor.ALLOW_ITEMS;
+        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_INSERTS;
     }
 
     @Override
