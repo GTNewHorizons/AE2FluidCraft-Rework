@@ -98,12 +98,10 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
             FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
             if (tanksInfo == null) return true;
 
-            int maxDrain = this.calculateAmountToSend();
-
             for (FluidTankInfo tankInfo : tanksInfo) {
                 if (tankInfo.fluid == null) continue;
 
-                FluidStack fluidStack = new FluidStack(tankInfo.fluid, Math.min(tankInfo.fluid.amount, maxDrain));
+                FluidStack fluidStack = new FluidStack(tankInfo.fluid, Math.min(tankInfo.fluid.amount, this.itemToSend));
                 fluidStack = fh.drain(this.getSide().getOpposite(), fluidStack, false);
                 if (this.filterEnabled() && !this.isInFilter(fluidStack)) continue;
 
@@ -117,7 +115,7 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
                     }
 
                     fh.drain(this.getSide().getOpposite(), aeFluidStack.getFluidStack(), true);
-                    maxDrain -= aeFluidStack.getFluidStack().amount;
+                    this.itemToSend -= aeFluidStack.getFluidStack().amount;
                     this.worked = true;
                 }
             }
