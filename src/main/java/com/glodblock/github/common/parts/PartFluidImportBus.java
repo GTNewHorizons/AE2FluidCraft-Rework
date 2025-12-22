@@ -1,6 +1,5 @@
 package com.glodblock.github.common.parts;
 
-import appeng.util.InventoryAdaptor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -27,6 +26,7 @@ import appeng.api.storage.data.IAEStack;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartBaseImportBus;
 import appeng.tile.inventory.IAEStackInventory;
+import appeng.util.InventoryAdaptor;
 import appeng.util.item.AEFluidStack;
 
 public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
@@ -101,7 +101,9 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
             for (FluidTankInfo tankInfo : tanksInfo) {
                 if (tankInfo.fluid == null) continue;
 
-                FluidStack fluidStack = new FluidStack(tankInfo.fluid, Math.min(tankInfo.fluid.amount, this.itemToSend));
+                FluidStack fluidStack = new FluidStack(
+                        tankInfo.fluid,
+                        Math.min(tankInfo.fluid.amount, this.itemToSend));
                 fluidStack = fh.drain(this.getSide().getOpposite(), fluidStack, false);
                 if (this.filterEnabled() && !this.isInFilter(fluidStack)) continue;
 
