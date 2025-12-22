@@ -73,7 +73,7 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         FluidStack drainedFluid = this.tank.drain(amount, doDrain);
         int drained = drainedFluid != null ? drainedFluid.amount : 0;
 
-        if (drained > 0) {
+        if (doDrain && drained > 0) {
             update();
         }
 
@@ -131,7 +131,7 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
 
         int filled = this.tank.fill(fluid, doFill);
 
-        if (filled > 0) {
+        if (doFill && filled > 0) {
             update();
         }
 
