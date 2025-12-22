@@ -120,7 +120,7 @@ public class CPacketLevelTerminalCommands implements IMessage {
 
             if (Objects.requireNonNull(message.action) == Action.EDIT) {
                 if (player.openContainer instanceof AEBaseContainer abc) {
-                    final PrimaryGui pGui = abc.getPrimaryGui();
+                    final PrimaryGui pGui = abc.createPrimaryGui();
 
                     TileEntity tile = DimensionManager.getWorld(message.dim)
                             .getTileEntity(message.x, message.y, message.z);
@@ -150,7 +150,7 @@ public class CPacketLevelTerminalCommands implements IMessage {
                 }
             } else if (Objects.requireNonNull(message.action) == Action.RENAME) {
                 if (player.openContainer instanceof AEBaseContainer abc) {
-                    final PrimaryGui pGui = abc.getPrimaryGui();
+                    final PrimaryGui pGui = abc.createPrimaryGui();
 
                     TileEntity tile = DimensionManager.getWorld(message.dim)
                             .getTileEntity(message.x, message.y, message.z);
