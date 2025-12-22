@@ -1,5 +1,6 @@
 package com.glodblock.github.common.parts;
 
+import appeng.util.InventoryAdaptor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -169,5 +170,10 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
                 config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
             }
         }
+    }
+
+    @Override
+    protected int getAdaptorFlags() {
+        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_EXTRACTS;
     }
 }
