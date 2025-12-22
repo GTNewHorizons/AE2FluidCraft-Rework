@@ -1,10 +1,8 @@
 package com.glodblock.github.client.gui;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -49,13 +47,6 @@ public class GuiFluidInterface extends GuiSub {
                     TANK_HEIGHT,
                     new TankMouseHandler(cont.getTile().getInternalFluid(), i));
         }
-    }
-
-    @Override
-    public void func_146977_a(final Slot s) {
-        try {
-            GuiContainer.class.getDeclaredMethod("func_146977_a_original", Slot.class).invoke(this, s);
-        } catch (final Exception ignore) {}
     }
 
     @Override
