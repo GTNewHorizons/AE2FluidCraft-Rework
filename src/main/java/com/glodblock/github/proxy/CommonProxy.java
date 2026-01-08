@@ -168,6 +168,28 @@ public class CommonProxy {
         Upgrades.DISTRIBUTION.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096KM), 1);
         Upgrades.DISTRIBUTION.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384KM), 1);
 
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_VOID_CELL), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL1K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL4K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL16K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL64K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL256K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL1024K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384K), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.QUANTUM_CELL), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.SINGULARITY_CELL), 1);
+
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL1KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL4KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL16KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL64KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL256KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL1024KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL4096KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.CELL16384KM), 1);
+        Upgrades.INVERTER.registerItem(new ItemStack(ItemAndBlockHolder.ARTIFICIAL_UNIVERSE_CELL), 1);
+
         Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE), 1);
         Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.INTERFACE), 1);
         Upgrades.FAKE_CRAFTING.registerItem(new ItemStack(ItemAndBlockHolder.FLUID_INTERFACE_P2P), 1);
