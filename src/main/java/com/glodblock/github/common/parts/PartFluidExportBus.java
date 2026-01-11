@@ -75,11 +75,6 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
     }
 
     @Override
-    protected int getAdaptorFlags() {
-        return InventoryAdaptor.DEFAULT & ~InventoryAdaptor.ALLOW_ITEMS;
-    }
-
-    @Override
     protected void doFuzzy(IAEFluidStack aes, FuzzyMode fzMode, IEnergyGrid energy,
             IMEMonitor<IAEFluidStack> gridInv) {}
 

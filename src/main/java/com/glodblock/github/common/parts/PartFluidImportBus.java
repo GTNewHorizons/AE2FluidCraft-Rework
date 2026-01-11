@@ -90,7 +90,7 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
 
     @Override
     protected int getAdaptorFlags() {
-        return InventoryAdaptor.DEFAULT & ~InventoryAdaptor.ALLOW_ITEMS;
+        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_EXTRACTS;
     }
 
     @Override
@@ -172,11 +172,6 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
                 config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
             }
         }
-    }
-
-    @Override
-    protected int getAdaptorFlags() {
-        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_EXTRACTS;
     }
 
     @Override
