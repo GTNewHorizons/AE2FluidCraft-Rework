@@ -35,6 +35,11 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
     }
 
     @Override
+    protected int getAdaptorFlags() {
+        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_INSERTS;
+    }
+
+    @Override
     public int calculateAmountToSend() {
         double amount = 1000D;
         switch (this.getInstalledUpgrades(Upgrades.SPEED)) {

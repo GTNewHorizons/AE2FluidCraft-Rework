@@ -96,38 +96,34 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
     @Override
     protected boolean importStuff(final Object myTarget, final IAEFluidStack whatToImport,
             final IMEMonitor<IAEFluidStack> inv, final IEnergySource energy, final FuzzyMode fzMode) {
-        final IFluidHandler fh = (IFluidHandler) myTarget;
+        if (myTarget instanceof IFluidHandler fh) {
+            FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
+            if (tanksInfo == null) return true;
 
-        FluidTankInfo[] tanksInfo = fh.getTankInfo(this.getSide().getOpposite());
-        if (tanksInfo == null) return true;
+            for (FluidTankInfo tankInfo : tanksInfo) {
+                if (tankInfo.fluid == null) continue;
 
-        int maxDrain = this.calculateAmountToSend();
+                FluidStack fluidStack = new FluidStack(
+                        tankInfo.fluid,
+                        Math.min(tankInfo.fluid.amount, this.itemToSend));
+                fluidStack = fh.drain(this.getSide().getOpposite(), fluidStack, false);
+                if (this.filterEnabled() && !this.isInFilter(fluidStack)) continue;
 
-        for (FluidTankInfo tankInfo : tanksInfo) {
-            if (tankInfo.fluid == null) continue;
+                final AEFluidStack aeFluidStack = AEFluidStack.create(fluidStack);
+                if (aeFluidStack != null) {
+                    final IAEFluidStack notInserted = inv.injectItems(aeFluidStack, Actionable.MODULATE, this.mySrc);
 
-            FluidStack fluidStack = new FluidStack(tankInfo.fluid, Math.min(tankInfo.fluid.amount, maxDrain));
-            fluidStack = fh.drain(this.getSide().getOpposite(), fluidStack, false);
-            if (this.filterEnabled() && !this.isInFilter(fluidStack)) continue;
+                    if (notInserted != null && notInserted.getStackSize() > 0) {
+                        if (notInserted.getFluidStack().amount == aeFluidStack.getFluidStack().amount) continue;
+                        aeFluidStack.decStackSize(notInserted.getStackSize());
+                    }
 
-            final AEFluidStack aeFluidStack = AEFluidStack.create(fluidStack);
-            if (aeFluidStack != null) {
-                final IAEFluidStack notInserted = inv.injectItems(aeFluidStack, Actionable.MODULATE, this.mySrc);
-
-                if (notInserted != null && notInserted.getStackSize() > 0) {
-                    aeFluidStack.decStackSize(notInserted.getStackSize());
-                }
-
-                FluidStack drained = fh.drain(this.getSide().getOpposite(), aeFluidStack.getFluidStack(), true);
-                if (drained.amount > 0) {
+                    fh.drain(this.getSide().getOpposite(), aeFluidStack.getFluidStack(), true);
+                    this.itemToSend -= aeFluidStack.getFluidStack().amount;
                     this.worked = true;
                 }
-
-                maxDrain -= drained.amount;
-                if (maxDrain <= 0) break;
             }
         }
-
         return true;
     }
 
@@ -176,6 +172,11 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
                 config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
             }
         }
+    }
+
+    @Override
+    protected int getAdaptorFlags() {
+        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_EXTRACTS;
     }
 
     @Override
