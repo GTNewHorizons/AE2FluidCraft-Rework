@@ -173,7 +173,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     storedItemCount += notInserted.getStackSize();
 
                     saveChanges();
-                    markForUpdate();
                 } else invItems.setInventorySlotContents(index, notInserted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
@@ -193,7 +192,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     storedItemCount += extracted.getStackSize();
 
                     saveChanges();
-                    markForUpdate();
                 } else invItems.setInventorySlotContents(index, extracted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
@@ -301,8 +299,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         } catch (GridAccessException e) {
             AELog.error(e, "Couldn't wake up level emitter for delayed updates");
         }
-
-        markForUpdate();
     }
 
     public void fullRefund() {
@@ -371,7 +367,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Override
     public void onFluidInventoryChanged(IAEFluidTank inv, int slot) {
         saveChanges();
-        markForUpdate();
     }
 
     @Override
