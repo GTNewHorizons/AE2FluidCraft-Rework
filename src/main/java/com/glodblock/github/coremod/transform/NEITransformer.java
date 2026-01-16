@@ -31,9 +31,6 @@ public class NEITransformer extends FCClassTransformer.ClassMapper {
                 case "getStackUnderMouse" -> new TransformStackUnderMouse(
                         api,
                         super.visitMethod(access, name, desc, signature, exceptions));
-                case "shouldShowTooltip" -> new TransformShowTooltip(
-                        api,
-                        super.visitMethod(access, name, desc, signature, exceptions));
                 default -> super.visitMethod(access, name, desc, signature, exceptions);
             };
         }
@@ -58,34 +55,6 @@ public class NEITransformer extends FCClassTransformer.ClassMapper {
                         "(Lnet/minecraft/client/gui/inventory/GuiContainer;II)Lnet/minecraft/item/ItemStack;",
                         false);
                 return;
-            }
-            super.visitInsn(opcode);
-        }
-    }
-
-    private static class TransformShowTooltip extends MethodVisitor {
-
-        int const_1 = 0;
-
-        TransformShowTooltip(int api, MethodVisitor mv) {
-            super(api, mv);
-        }
-
-        @Override
-        public void visitInsn(int opcode) {
-            if (opcode == Opcodes.ICONST_1 && const_1 == 2) {
-                super.visitVarInsn(Opcodes.ALOAD, 1);
-                super.visitMethodInsn(
-                        Opcodes.INVOKESTATIC,
-                        "com/glodblock/github/coremod/hooker/CoreModHooks",
-                        "shouldShowTooltip",
-                        "(Lnet/minecraft/client/gui/inventory/GuiContainer;)Z",
-                        false);
-                const_1++;
-                return;
-            }
-            if (opcode == Opcodes.ICONST_1) {
-                const_1++;
             }
             super.visitInsn(opcode);
         }
