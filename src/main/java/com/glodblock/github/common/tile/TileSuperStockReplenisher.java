@@ -171,6 +171,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
                     storedItemCount += notInserted.getStackSize();
+
+                    saveChanges();
+                    markForUpdate();
                 } else invItems.setInventorySlotContents(index, notInserted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
@@ -188,6 +191,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
                     storedItemCount += extracted.getStackSize();
+
+                    saveChanges();
+                    markForUpdate();
                 } else invItems.setInventorySlotContents(index, extracted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
