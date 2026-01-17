@@ -49,6 +49,7 @@ import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.BiggerAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
@@ -58,7 +59,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable, ITerminalHost {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
-    private final AppEngInternalInventory invItems = new AppEngInternalInventory(this, 63);
+    private final BiggerAppEngInventory invItems = new BiggerAppEngInventory(this, 63);
     private final AEFluidInventory invFluids = new AEFluidInventory(this, 9, Integer.MAX_VALUE);
     private final AppEngInternalAEInventory configFluids = new AppEngInternalAEInventory(this, 9);
     private final AppEngInternalAEInventory configItems = new AppEngInternalAEInventory(this, 63);
@@ -171,6 +172,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
                     storedItemCount += notInserted.getStackSize();
+
+                    saveChanges();
                 } else invItems.setInventorySlotContents(index, notInserted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
@@ -188,6 +191,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
                     storedItemCount += extracted.getStackSize();
+
+                    saveChanges();
                 } else invItems.setInventorySlotContents(index, extracted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
@@ -295,8 +300,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         } catch (GridAccessException e) {
             AELog.error(e, "Couldn't wake up level emitter for delayed updates");
         }
-
-        markForUpdate();
     }
 
     public void fullRefund() {
@@ -365,7 +368,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Override
     public void onFluidInventoryChanged(IAEFluidTank inv, int slot) {
         saveChanges();
-        markForUpdate();
     }
 
     @Override
