@@ -1,10 +1,13 @@
 package com.glodblock.github.common.item;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.loader.IRegister;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.storage.data.IAEStackType;
 import appeng.items.storage.ItemVoidStorageCell;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -21,5 +24,10 @@ public class ItemFluidVoidStorageCell extends ItemVoidStorageCell implements IRe
         GameRegistry.registerItem(this, NameConst.ITEM_FLUID_VOID_CELL, FluidCraft.MODID);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
+    }
+
+    @Override
+    public IAEStackType<?> getStackType() {
+        return FLUID_STACK_TYPE;
     }
 }
