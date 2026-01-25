@@ -45,6 +45,7 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
@@ -99,30 +100,35 @@ public class TileLevelMaintainer extends AENetworkTile
     }
 
     @Override
-    public IAEItemStack injectCraftedItems(ICraftingLink link, IAEItemStack items, Actionable mode) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public IAEStack<?> injectCraftedItems(ICraftingLink link, IAEStack<?> stack, Actionable mode) {
         int idx = this.getRequestIndexByLink(link);
 
         try {
             if (getProxy().isActive()) {
                 final IEnergyGrid energy = getProxy().getEnergy();
-                final double power = Math
-                        .ceil(ItemFluidDrop.isFluidStack(items) ? items.getStackSize() / 1000D : items.getStackSize());
-                if (energy.extractAEPower(power, mode, PowerMultiplier.CONFIG) > power - 0.01) {
-                    if (ItemFluidDrop.isFluidStack(items)) {
-                        IAEFluidStack notInjectedItems = getProxy().getStorage().getFluidInventory()
-                                .injectItems(ItemFluidDrop.getAeFluidStack(items), mode, source);
-                        if (notInjectedItems != null) {
-                            items.setStackSize(notInjectedItems.getStackSize());
-                            if (idx != -1) {
-                                this.updateState(idx, LevelState.Export);
-                            }
+                final double power = Math.ceil((double) stack.getStackSize() / stack.getAmountPerUnit());
 
-                            return items;
-                        } else {
-                            return null;
-                        }
+                if (energy.extractAEPower(power, mode, PowerMultiplier.CONFIG) > power - 0.01) {
+                    IMEMonitor monitor = getProxy().getStorage().getMEMonitor(stack.getStackType());
+                    if (monitor == null) return stack;
+
+                    IAEStack<?> notInjected;
+                    if (stack instanceof IAEItemStack ais && ItemFluidDrop.isFluidStack(ais)) {
+                        notInjected = getProxy().getStorage().getFluidInventory()
+                                .injectItems(ItemFluidDrop.getAeFluidStack(ais), mode, source);
                     } else {
-                        return getProxy().getStorage().getItemInventory().injectItems(items, mode, source);
+                        notInjected = monitor.injectItems(stack, mode, source);
+                    }
+
+                    if (notInjected != null) {
+                        if (idx != -1) {
+                            this.updateState(idx, LevelState.Export);
+                        }
+
+                        return notInjected;
+                    } else {
+                        return null;
                     }
                 }
             }
@@ -130,7 +136,7 @@ public class TileLevelMaintainer extends AENetworkTile
             AELog.debug(e);
         }
 
-        return items;
+        return stack;
     }
 
     @Override
@@ -289,7 +295,7 @@ public class TileLevelMaintainer extends AENetworkTile
                 // No jobs to submit, start calculating some item.
 
                 requests[itemToBeginIdx].job = craftingGrid
-                        .beginCraftingJob(getWorldObj(), grid, source, itemToBegin, null);
+                        .beginCraftingJob(this.worldObj, grid, source, itemToBegin, null);
                 this.updateState(itemToBeginIdx, LevelState.Craft);
 
                 // Try the next item next time.
