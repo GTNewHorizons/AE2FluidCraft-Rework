@@ -1,8 +1,10 @@
 package com.glodblock.github.common.parts;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import net.minecraft.item.ItemStack;
 
-import appeng.api.storage.StorageChannel;
+import appeng.api.storage.data.IAEStackType;
 import appeng.parts.misc.PartStorageBus;
 
 public class PartFluidStorageBus extends PartStorageBus {
@@ -12,7 +14,7 @@ public class PartFluidStorageBus extends PartStorageBus {
     }
 
     @Override
-    public StorageChannel getStorageChannel() {
-        return StorageChannel.FLUIDS;
+    public IAEStackType<?> getStackType() {
+        return FLUID_STACK_TYPE;
     }
 }

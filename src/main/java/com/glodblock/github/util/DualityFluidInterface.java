@@ -1,5 +1,8 @@
 package com.glodblock.github.util;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+import static appeng.util.item.AEItemStackType.ITEM_STACK_TYPE;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -18,7 +21,6 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
-import com.glodblock.github.inventory.MEMonitorIFluidHandler;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
@@ -36,7 +38,6 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageMonitorable;
-import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.IConfigManager;
@@ -44,6 +45,7 @@ import appeng.core.settings.TickRates;
 import appeng.helpers.IInterfaceHost;
 import appeng.me.GridAccessException;
 import appeng.me.helpers.AENetworkProxy;
+import appeng.me.storage.MEMonitorIFluidHandler;
 import appeng.me.storage.MEMonitorPassThrough;
 import appeng.me.storage.NullInventory;
 import appeng.util.ConfigManager;
@@ -67,10 +69,10 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     private int isWorking = -1;
     private final MEMonitorPassThrough<IAEItemStack> items = new MEMonitorPassThrough<IAEItemStack>(
             new NullInventory<>(),
-            StorageChannel.ITEMS);
+            ITEM_STACK_TYPE);
     private final MEMonitorPassThrough<IAEFluidStack> fluids = new MEMonitorPassThrough<IAEFluidStack>(
             new NullInventory<>(),
-            StorageChannel.FLUIDS);
+            FLUID_STACK_TYPE);
     private boolean resetConfigCache = true;
 
     public DualityFluidInterface(final AENetworkProxy networkProxy, final IInterfaceHost ih) {
