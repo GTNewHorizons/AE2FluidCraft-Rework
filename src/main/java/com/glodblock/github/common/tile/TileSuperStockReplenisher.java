@@ -70,6 +70,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     private long storedItemCount;
 
     public TileSuperStockReplenisher() {
+        super(false);
         getProxy().setIdlePowerUsage(4D);
         getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
         this.source = new MachineSource(this);
