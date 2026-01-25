@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
@@ -47,10 +46,8 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.StorageName;
-import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
-import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
@@ -168,8 +165,6 @@ public class TileLevelMaintainer extends AENetworkTile
         try {
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
             final IGrid grid = getProxy().getGrid();
-            final IItemList<IAEItemStack> invItems = getProxy().getStorage().getItemInventory().getStorageList();
-            final IItemList<IAEFluidStack> invFluid = getProxy().getStorage().getFluidInventory().getStorageList();
 
             // Check there are available crafting CPUs before doing any work.
             // This hopefully stops level maintainers busy-looping calculating
@@ -202,32 +197,17 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
-                IAEStack<?> aeItem = null;
-
                 IAEStack<?> craftItem = requests[i].stack.copy();
                 craftItem.setStackSize(batchSize);
+                IMEMonitor monitor = getProxy().getStorage().getMEMonitor(craftItem.getStackType());
+                if (monitor == null) continue;
 
-                if (craftItem instanceof IAEItemStack ais) {
-                    if (ModAndClassUtil.ThE && ThaumicEnergisticsCrafting.isAspectStack(ais.getItemStack())) {
-                        aeItem = ThaumicEnergisticsCrafting.convertAspectStack(ais);
-                    } else {
-                        aeItem = invItems.findPrecise(ais);
-                    }
-                } else if (craftItem instanceof IAEFluidStack afs) {
-                    aeItem = invFluid.findPrecise(afs);
-                }
+                IAEStack<?> stackInStorage = monitor.getStorageList().findPrecise(craftItem);
 
-                long stackSize = aeItem == null ? 0 : aeItem.getStackSize();
-
-                if (ModAndClassUtil.ThE) {
-                    if (aeItem instanceof IAEItemStack ais
-                            && ThaumicEnergisticsCrafting.isAspectStack(ais.getItemStack())) {
-                        stackSize = ThaumicEnergisticsCrafting.getEssentiaAmount(ais, grid);
-                    }
-                }
+                long stackSize = stackInStorage == null ? 0 : stackInStorage.getStackSize();
 
                 boolean isDone = this.isDone(i);
-                boolean isCraftable = aeItem != null && aeItem.isCraftable();
+                boolean isCraftable = stackInStorage != null && stackInStorage.isCraftable();
                 boolean shouldCraft = isCraftable && stackSize < quantity;
 
                 if (isDone) {
@@ -246,11 +226,11 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
-                if (craftingGrid.canEmitFor(aeItem)) {
+                if (craftingGrid.canEmitFor(stackInStorage)) {
                     continue;
                 }
 
-                if (craftingGrid.isRequesting(aeItem)) {
+                if (craftingGrid.isRequesting(stackInStorage)) {
                     continue;
                 }
 
@@ -650,6 +630,10 @@ public class TileLevelMaintainer extends AENetworkTile
             if (stack == null) {
                 throw new IllegalArgumentException("ItemStack cannot be null!");
             }
+
+            // Migrate old aspect stack
+            stack = ThaumicEnergisticsCrafting.convertItemAspectStack(stack);
+
             quantity = tag.getLong(NBT_QUANTITY);
             batchSize = tag.getLong(NBT_BATCH);
             enable = tag.getBoolean(NBT_ENABLE);
@@ -666,6 +650,10 @@ public class TileLevelMaintainer extends AENetworkTile
 
         public void loadFromNBT(NBTTagCompound tag) {
             stack = Platform.readStackNBT(tag.getCompoundTag(NBT_STACK), true);
+
+            // Migrate old aspect stack
+            stack = ThaumicEnergisticsCrafting.convertItemAspectStack(stack);
+
             quantity = tag.getLong(NBT_QUANTITY);
             batchSize = tag.getLong(NBT_BATCH);
             enable = tag.getBoolean(NBT_ENABLE);

@@ -15,7 +15,6 @@ import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.common.parts.PartFluidP2PInterface;
 import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.common.tile.TileWalrus;
-import com.glodblock.github.crossmod.thaumcraft.AspectUtil;
 import com.glodblock.github.crossmod.thaumcraft.ThaumicEnergisticsCrafting;
 import com.glodblock.github.inventory.external.AEFluidInterfaceHandler;
 import com.glodblock.github.inventory.item.WirelessMagnet;
@@ -89,9 +88,6 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         this.registerMovables();
-        if (ModAndClassUtil.ThE) {
-            AspectUtil.init();
-        }
     }
 
     public void postInit(FMLPostInitializationEvent event) {
