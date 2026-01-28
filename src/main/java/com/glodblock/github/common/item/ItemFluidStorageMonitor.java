@@ -3,9 +3,11 @@ package com.glodblock.github.common.item;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.parts.PartFluidStorageMonitor;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.util.NameConst;
@@ -35,6 +37,11 @@ public class ItemFluidStorageMonitor extends FCBaseItem implements IPartItem {
         GameRegistry.registerItem(this, NameConst.ITEM_PART_FLUID_STORAGE_MONITOR, FluidCraft.MODID);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
+    }
+
+    @Override
+    public IIcon getIconIndex(ItemStack p_77650_1_) {
+        return FCPartsTexture.PartTerminalBroad.getIcon();
     }
 
     public void registerIcons(IIconRegister _iconRegister) {}
