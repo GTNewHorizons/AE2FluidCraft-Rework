@@ -16,6 +16,6 @@ public class FluidCraftingTabs extends CreativeTabs {
 
     @Override
     public Item getTabIconItem() {
-        return ItemAndBlockHolder.DISCRETIZER.stack().getItem();
+        return ItemAndBlockHolder.WALRUS.stack().getItem();
     }
 }

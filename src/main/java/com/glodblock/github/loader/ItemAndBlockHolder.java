@@ -1,12 +1,9 @@
 package com.glodblock.github.loader;
 
-import static com.glodblock.github.common.storage.FluidCellInventory.singleByteAmount;
-
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.block.BlockCertusQuartzTank;
 import com.glodblock.github.common.block.BlockFluidAutoFiller;
 import com.glodblock.github.common.block.BlockFluidBuffer;
-import com.glodblock.github.common.block.BlockFluidDiscretizer;
 import com.glodblock.github.common.block.BlockFluidInterface;
 import com.glodblock.github.common.block.BlockFluidPacketDecoder;
 import com.glodblock.github.common.block.BlockFluidPatternEncoder;
@@ -56,7 +53,6 @@ public class ItemAndBlockHolder {
 
     public static BlockCertusQuartzTank CERTUS_QUARTZ_TANK = new BlockCertusQuartzTank().register();
     public static BlockFluidAutoFiller FLUID_AUTO_FILLER = new BlockFluidAutoFiller().register();
-    public static BlockFluidDiscretizer DISCRETIZER = new BlockFluidDiscretizer().register();
     public static BlockLevelMaintainer LEVEL_MAINTAINER = new BlockLevelMaintainer().register();
     public static BlockFluidPatternEncoder ENCODER = new BlockFluidPatternEncoder().register();
     public static BlockFluidPacketDecoder DECODER = new BlockFluidPacketDecoder().register();
@@ -133,7 +129,7 @@ public class ItemAndBlockHolder {
             4.5).register();
     public static ItemFluidExtremeStorageCell SINGULARITY_CELL = new ItemFluidExtremeStorageCell(
             NameConst.ITEM_SINGULARITY_FLUID_STORAGE,
-            Long.MAX_VALUE / (singleByteAmount * 2),
+            Long.MAX_VALUE / (256 * 8 * 2),
             8,
             1,
             5).register();
@@ -141,7 +137,7 @@ public class ItemAndBlockHolder {
             NameConst.ITEM_ARTIFICIAL_UNIVERSE_STORAGE,
             Long.MAX_VALUE / 2048,
             16384,
-            5,
+            63,
             600000D).register();
     public static ItemFluidVoidStorageCell FLUID_VOID_CELL = new ItemFluidVoidStorageCell().register();
     public static ItemCreativeFluidStorageCell CREATIVE_CELL = new ItemCreativeFluidStorageCell().register();

@@ -2,61 +2,36 @@ package com.glodblock.github.client.gui;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.api.registries.LevelState;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
-import com.glodblock.github.common.item.ItemWirelessUltraTerminal;
-import com.glodblock.github.common.parts.PartLevelTerminal;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
-import com.glodblock.github.inventory.item.IWirelessTerminal;
-import com.glodblock.github.inventory.item.WirelessLevelTerminalInventory;
-import com.glodblock.github.inventory.slot.SlotFluidConvertingFake;
-import com.glodblock.github.inventory.slot.SlotSingleItem;
-import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.CPacketLevelMaintainer;
 import com.glodblock.github.network.CPacketLevelMaintainer.Action;
-import com.glodblock.github.network.CPacketLevelTerminalCommands;
 import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
-import com.glodblock.github.util.Util;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.api.util.DimensionalCoord;
-import appeng.client.gui.AEBaseGui;
+import appeng.api.features.LevelState;
+import appeng.api.storage.data.IAEStack;
+import appeng.client.gui.GuiSub;
+import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.container.AEBaseContainer;
-import appeng.container.slot.SlotFake;
-import appeng.core.sync.network.NetworkHandler;
-import appeng.core.sync.packets.PacketNEIDragClick;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
-import codechicken.nei.VisiblityData;
-import codechicken.nei.api.INEIGuiHandler;
-import codechicken.nei.api.TaggedInventoryArea;
 import cofh.core.render.CoFHFontRenderer;
-import cpw.mods.fml.common.Optional;
 
-@Optional.Interface(modid = "NotEnoughItems", iface = "codechicken.nei.api.INEIGuiHandler")
-public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
+public class GuiLevelMaintainer extends GuiSub {
 
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_maintainer.png");
     private final ContainerLevelMaintainer cont;
@@ -64,11 +39,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
     private final CoFHFontRenderer render;
-    protected ItemStack icon = null;
-
-    protected GuiType originalGui;
-    protected Util.DimensionalCoordSide originalBlockPos;
-    protected GuiTabButton originalGuiBtn;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
@@ -80,48 +50,23 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                 TEX_BG,
                 Minecraft.getMinecraft().getTextureManager(),
                 true);
-
-        if (ipl.player.openContainer instanceof AEBaseContainer container) {
-            var target = container.getTarget();
-            if (target instanceof PartLevelTerminal terminal) {
-                icon = ItemAndBlockHolder.LEVEL_TERMINAL.stack();
-                originalGui = GuiType.LEVEL_TERMINAL;
-                DimensionalCoord blockPos = new DimensionalCoord(terminal.getTile());
-                originalBlockPos = new Util.DimensionalCoordSide(
-                        blockPos.x,
-                        blockPos.y,
-                        blockPos.z,
-                        blockPos.getDimension(),
-                        terminal.getSide(),
-                        "");
-            } else if (target instanceof IWirelessTerminal terminal && terminal.isUniversal(target)) {
-                icon = ItemAndBlockHolder.WIRELESS_ULTRA_TERM.stack();
-                originalGui = ItemWirelessUltraTerminal.readMode(terminal.getItemStack());
-                originalBlockPos = new Util.DimensionalCoordSide(
-                        terminal.getInventorySlot(),
-                        Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
-                        0,
-                        ipl.player.worldObj.provider.dimensionId,
-                        ForgeDirection.UNKNOWN,
-                        "");
-            } else if (target instanceof WirelessLevelTerminalInventory terminal) {
-                icon = ItemAndBlockHolder.LEVEL_TERMINAL.stack();
-                originalGui = GuiType.WIRELESS_LEVEL_TERMINAL;
-                originalBlockPos = new Util.DimensionalCoordSide(
-                        terminal.getInventorySlot(),
-                        Util.GuiHelper.encodeType(0, Util.GuiHelper.GuiType.ITEM),
-                        0,
-                        ipl.player.worldObj.provider.dimensionId,
-                        ForgeDirection.UNKNOWN,
-                        "");
-
-            }
-        }
     }
 
     @Override
     public void initGui() {
         super.initGui();
+
+        for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
+            VirtualMEPhantomSlot slot = new VirtualMEPhantomSlot(
+                    27,
+                    20 + i * 19,
+                    this.cont.getTile().getAEStackInventory(),
+                    i);
+            slot.setShowAmount(true);
+            slot.setShowAmountAlways(true);
+            this.registerVirtualSlots(slot);
+        }
+
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             component[i] = new Component(
                     new Widget(
@@ -137,20 +82,22 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                     new GuiFCImgButton(guiLeft + 105 + 47, guiTop + 17 + 19 * i, "SUBMIT", "SUBMIT", false),
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "ENABLE", "ENABLE", false),
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "DISABLE", "DISABLE", false),
-                    new FCGuiLineField(fontRendererObj, guiLeft + 47, guiTop + 33 + 19 * i, 125),
+                    new FCGuiLineField(fontRendererObj, guiLeft + 47, guiTop + 33 + 19 * i, 120),
                     this.buttonList,
                     this.cont);
         }
-        if (this.icon != null) {
-            this.originalGuiBtn = new GuiTabButton(
-                    this.guiLeft + 151,
-                    this.guiTop - 4,
-                    this.icon,
-                    this.icon.getDisplayName(),
-                    itemRender);
-            this.originalGuiBtn.setHideEdge(13);
-            this.buttonList.add(originalGuiBtn);
-        }
+    }
+
+    @Override
+    public void initPrimaryGuiButton() {
+        this.originalGuiBtn = new GuiTabButton(
+                this.guiLeft + 151,
+                this.guiTop - 4,
+                this.cont.getPrimaryGuiIcon(),
+                this.cont.getPrimaryGuiIcon().getDisplayName(),
+                itemRender);
+        this.originalGuiBtn.setHideEdge(13);
+        this.buttonList.add(originalGuiBtn);
     }
 
     @Override
@@ -177,36 +124,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
         fontRendererObj.drawString(getGuiDisplayName(NameConst.i18n(NameConst.GUI_LEVEL_MAINTAINER)), 8, 6, 0x404040);
         mouseRegions.render(mouseX, mouseY);
-    }
-
-    @Override
-    public void func_146977_a(final Slot s) {
-        if (drawSlot0(s)) super.func_146977_a(s);
-    }
-
-    public boolean drawSlot0(Slot slot) {
-        if (slot instanceof SlotFake) {
-            IAEItemStack stack = ((SlotFluidConvertingFake) slot).getAeStack();
-            super.func_146977_a(new SlotSingleItem(slot));
-            if (stack == null) return true;
-            IAEItemStack fake = stack.copy();
-
-            Widget qty = this.component[slot.getSlotIndex()].getQty();
-            qty.validate();
-            fake.setStackSize(qty.getAmount() != null ? qty.getAmount() : 0);
-
-            GL11.glTranslatef(0.0f, 0.0f, 200.0f);
-            aeRenderItem.setAeStack(fake);
-            aeRenderItem.renderItemOverlayIntoGUI(
-                    fontRendererObj,
-                    mc.getTextureManager(),
-                    fake.getItemStack(),
-                    slot.xDisplayPosition,
-                    slot.yDisplayPosition);
-            GL11.glTranslatef(0.0f, 0.0f, -200.0f);
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -253,83 +170,12 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
 
     @Override
     protected void actionPerformed(final GuiButton btn) {
-        if (btn == originalGuiBtn) {
-            switchGui();
-        } else {
-            super.actionPerformed(btn);
-            for (Component com : this.component) {
-                if (com.sendToServer(btn)) {
-                    break;
-                }
+        for (Component com : this.component) {
+            if (com.sendToServer(btn)) {
+                return;
             }
         }
-    }
-
-    public void switchGui() {
-        CPacketLevelTerminalCommands message = new CPacketLevelTerminalCommands(
-                CPacketLevelTerminalCommands.Action.BACK,
-                originalBlockPos.x,
-                originalBlockPos.y,
-                originalBlockPos.z,
-                originalBlockPos.getDimension(),
-                originalBlockPos.getSide());
-        if (originalGui != null) {
-            message.setOriginalGui(originalGui.ordinal());
-        }
-        FluidCraft.proxy.netHandler.sendToServer(message);
-    }
-
-    @Override
-    public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
-        return currentVisibility;
-    }
-
-    @Override
-    public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack item) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
-        return null;
-    }
-
-    @Override
-    protected void handleMouseClick(Slot slot, int slotIdx, int ctrlDown, int mouseButton) {
-        if (slot instanceof SlotFluidConvertingFake && this.cont.getPlayerInv().getItemStack() == null) {
-            slot.putStack(null);
-            this.component[slot.getSlotIndex()].reset();
-        }
-        super.handleMouseClick(slot, slotIdx, ctrlDown, mouseButton);
-    }
-
-    @Override
-    public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
-        if (draggedStack == null) {
-            return false;
-        }
-
-        draggedStack.stackSize = 0;
-        Slot slotAtPosition = this.getSlotAtPosition(mouseX, mouseY);
-        if (slotAtPosition == null) {
-            return false;
-        }
-
-        for (int i = 0; i < this.cont.getRequestSlots().length; i++) {
-            SlotFluidConvertingFake slot = this.cont.getRequestSlots()[i];
-            if (slotAtPosition.equals(slot)) {
-                slot.putStack(draggedStack);
-                component[i].reset();
-                NetworkHandler.instance.sendToServer(new PacketNEIDragClick(draggedStack, slot.getSlotIndex()));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
-        return false;
+        super.actionPerformed(btn);
     }
 
     public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state) {
@@ -383,8 +229,12 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             this.isEnable = enable;
         }
 
+        public IAEStack<?> getStack() {
+            return this.container.getTile().getAEStackInventory().getAEStackInSlot(this.getIndex());
+        }
+
         private void send(Widget widget) {
-            if (cont.inventorySlots.get(widget.componentIndex).getHasStack() && widget.getAmount() != null) {
+            if (this.getStack() != null && widget.getAmount() != null) {
                 FluidCraft.proxy.netHandler.sendToServer(
                         new CPacketLevelMaintainer(widget.action, widget.componentIndex, widget.getAmount()));
             }
@@ -416,7 +266,7 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
                 FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.Enable, this.getIndex()));
                 didSomething = true;
             } else if (this.disable == btn) {
-                if (this.container.getInventory().get(this.getIndex()) != null) {
+                if (this.getStack() != null) {
                     this.setEnable(true);
                     FluidCraft.proxy.netHandler
                             .sendToServer(new CPacketLevelMaintainer(Action.Disable, this.getIndex()));
@@ -525,15 +375,6 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
         public void setState(LevelState state) {
             this.state = state;
         }
-
-        public void reset() {
-            this.qty.textField.setText("0");
-            this.batch.textField.setText("0");
-            this.qty.validate();
-            this.batch.validate();
-            this.setEnable(false);
-            this.setState(LevelState.None);
-        }
     }
 
     private class Widget {
@@ -591,6 +432,12 @@ public class GuiLevelMaintainer extends AEBaseGui implements INEIGuiHandler {
             } else {
                 this.amount = (long) ArithHelper.round(result, 0);
                 this.textField.setTextColor(0xFFFFFF);
+            }
+
+            IAEStack<?> stack = component[this.componentIndex].getStack();
+            if (stack != null) {
+                Long amount = component[this.componentIndex].getQty().getAmount();
+                stack.setStackSize(amount != null ? amount : 0);
             }
         }
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -13,6 +14,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 
+import com.glodblock.github.client.FluidInterfaceButtons;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
@@ -32,16 +34,22 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.util.IConfigManager;
+import appeng.helpers.ICustomButtonDataObject;
+import appeng.helpers.ICustomButtonProvider;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.misc.TileInterface;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
-public class TileFluidInterface extends TileInterface implements IDualHost {
+public class TileFluidInterface extends TileInterface implements IDualHost, ICustomButtonProvider {
 
     private final IConfigManager dualityConfigManager = getInterfaceDuality().getConfigManager();
+
+    private ICustomButtonDataObject customButtonDataObject;
 
     private final DualityFluidInterface fluidDuality = new DualityFluidInterface(this.getProxy(), this) {
 
@@ -59,6 +67,7 @@ public class TileFluidInterface extends TileInterface implements IDualHost {
 
     public TileFluidInterface() {
         super.getInterfaceDuality().getConfigManager().registerSetting(Settings.SIDELESS_MODE, SidelessMode.SIDELESS);
+        this.customButtonDataObject = new FluidInterfaceButtons(true);
     }
 
     @MENetworkEventSubscribe
@@ -224,7 +233,41 @@ public class TileFluidInterface extends TileInterface implements IDualHost {
     @Override
     public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
         this.fluidDuality.addDrops(drops);
-        this.fluidDuality.convertDrops(drops, this.getInterfaceDuality().getWaitingToSend());
         super.getDrops(w, x, y, z, drops);
+    }
+
+    @Override
+    public ItemStack getPrimaryGuiIcon() {
+        return ItemAndBlockHolder.INTERFACE.stack();
+    }
+
+    @Override
+    public void writeCustomButtonData() {}
+
+    @Override
+    public void readCustomButtonData() {}
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void initCustomButtons(int guiLeft, int guiTop, int xSize, int ySize, int xOffset, int yOffset,
+            List<GuiButton> buttonList) {
+        if (customButtonDataObject != null)
+            customButtonDataObject.initCustomButtons(guiLeft, guiTop, xSize, ySize, xOffset, yOffset, buttonList);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean actionPerformedCustomButtons(final GuiButton btn) {
+        return customButtonDataObject != null && customButtonDataObject.actionPerformedCustomButtons(btn);
+    }
+
+    @Override
+    public ICustomButtonDataObject getDataObject() {
+        return customButtonDataObject;
+    }
+
+    @Override
+    public void setDataObject(ICustomButtonDataObject dataObject) {
+        customButtonDataObject = dataObject;
     }
 }

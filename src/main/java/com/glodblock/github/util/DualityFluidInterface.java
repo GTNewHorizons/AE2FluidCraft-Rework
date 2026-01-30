@@ -412,12 +412,9 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
         IAEFluidStack remove;
         if (doFill) {
             remove = fluidGrid.injectItems(AEFluidStack.create(resource), Actionable.MODULATE, this.mySource);
-            if (remove == null) {
-                onStackReturnedToNetwork(resource);
-            } else {
+            if (remove == null) {} else {
                 FluidStack copy = resource.copy();
                 copy.amount -= (int) remove.getStackSize();
-                onStackReturnedToNetwork(copy);
             }
         } else {
             remove = fluidGrid.injectItems(AEFluidStack.create(resource), Actionable.SIMULATE, this.mySource);
@@ -448,10 +445,6 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     @Override
     public FluidTankInfo[] getTankInfo(ForgeDirection from) {
         return this.tanks.getTankInfo(from);
-    }
-
-    private void onStackReturnedToNetwork(FluidStack fluidStack) {
-        this.iHost.getInterfaceDuality().onStackReturnedToNetwork(ItemFluidDrop.newAeStack(fluidStack));
     }
 
     private static class InterfaceInventory extends MEMonitorIFluidHandler {

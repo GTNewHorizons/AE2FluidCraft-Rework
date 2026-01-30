@@ -22,9 +22,6 @@ import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.storage.FluidCellInventoryHandler;
-import com.glodblock.github.util.ModAndClassUtil;
-import com.mitchej123.hodgepodge.textures.IPatchedTextureAtlasSprite;
 
 import appeng.api.AEApi;
 import appeng.api.config.TerminalFontSize;
@@ -33,6 +30,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.client.render.StackSizeRenderer;
 import appeng.core.localization.GuiText;
+import appeng.me.storage.FluidCellInventoryHandler;
 import appeng.util.Platform;
 import appeng.util.item.FluidList;
 import codechicken.nei.PositionedStack;
@@ -163,10 +161,6 @@ public class NEICellViewHandler implements IUsageHandler {
             final int color = this.stacks.get(i).color;
             final int line = i % ROW_ITEM_NUM;
             final int row = i / ROW_ITEM_NUM;
-
-            if (ModAndClassUtil.HODGEPODGE && icon instanceof IPatchedTextureAtlasSprite sprite) {
-                sprite.markNeedsAnimationUpdate();
-            }
 
             tessellator.setColorRGBA(color >> 16 & 0xFF, color >> 8 & 0xFF, color & 0xFF, 0xFF);
             tessellator.addVertexWithUV(

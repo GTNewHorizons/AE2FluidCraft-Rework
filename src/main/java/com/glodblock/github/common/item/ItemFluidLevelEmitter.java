@@ -1,5 +1,7 @@
 package com.glodblock.github.common.item;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -56,5 +58,12 @@ public class ItemFluidLevelEmitter extends FCBaseItem implements IPartItem {
     @SideOnly(Side.CLIENT)
     public int getSpriteNumber() {
         return 0;
+    }
+
+    @Override
+    public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> lines,
+            final boolean displayMoreInfo) {
+        lines.add("§4Deprecated, use regular level emitter, hold CTRL for get fluid of container.");
+        super.addInformation(stack, player, lines, displayMoreInfo);
     }
 }

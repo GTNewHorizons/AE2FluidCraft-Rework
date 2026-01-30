@@ -37,7 +37,7 @@ public class LevelMaintainerWailaDataProvider extends BaseWailaDataProvider {
                                 tileLevelMaintainer);
                         currentToolTip.add(
                                 Tooltip.tileLevelMaintainerFormat(
-                                        request.getAEItemStack().getItemStack().getDisplayName(),
+                                        request.getAEStack().getDisplayName(),
                                         request.getQuantity(),
                                         request.getBatchSize(),
                                         request.isEnable()));

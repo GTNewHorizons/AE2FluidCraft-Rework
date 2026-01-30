@@ -1,14 +1,12 @@
 package com.glodblock.github.util;
 
+import static com.glodblock.github.client.UltraTerminalButtons.restockItems;
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityBoosterCard;
 import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.infinityEnergyCard;
-import static com.glodblock.github.common.item.ItemBaseWirelessTerminal.restockItems;
 import static com.glodblock.github.util.Util.DimensionalCoordSide.hasEnergyCard;
 import static net.minecraft.init.Items.glass_bottle;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +22,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -145,6 +142,13 @@ public final class Util {
             return data.hasKey(restockItems) && data.getBoolean(restockItems);
         }
         return false;
+    }
+
+    public static void toggleRestock(ItemStack is) {
+        if (is.getItem() instanceof ItemWirelessUltraTerminal) {
+            NBTTagCompound data = Platform.openNbtData(is);
+            data.setBoolean(restockItems, !data.getBoolean(restockItems));
+        }
     }
 
     public static boolean hasInfinityBoosterCard(ItemStack is) {
@@ -281,28 +285,28 @@ public final class Util {
     }
 
     public static FluidStack getFluidFromItem(ItemStack stack) {
-        if (stack != null) {
-            FluidStack fluid = null;
+        if (stack == null) return null;
 
-            if (stack.getItem() instanceof IFluidContainerItem) {
-                fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
-            } else if (FluidContainerRegistry.isContainer(stack)) {
-                fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
-            } else if (stack.getItem() instanceof ItemFluidPacket) {
-                fluid = ItemFluidPacket.getFluidStack(stack);
-            } else if (stack.getItem() instanceof ItemFluidDrop) {
-                fluid = ItemFluidDrop.getFluidStack(Util.copyStackWithSize(stack, 1));
-            }
+        FluidStack fluid = null;
 
-            if (fluid == null) {
-                fluid = StackInfo.getFluid(Util.copyStackWithSize(stack, 1));
-            }
+        if (stack.getItem() instanceof IFluidContainerItem) {
+            fluid = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
+        } else if (FluidContainerRegistry.isContainer(stack)) {
+            fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
+        } else if (stack.getItem() instanceof ItemFluidPacket) {
+            fluid = ItemFluidPacket.getFluidStack(stack);
+        } else if (stack.getItem() instanceof ItemFluidDrop) {
+            fluid = ItemFluidDrop.getFluidStack(Util.copyStackWithSize(stack, 1));
+        }
 
-            if (fluid != null) {
-                FluidStack fluid0 = fluid.copy();
-                fluid0.amount *= stack.stackSize;
-                return fluid0;
-            }
+        if (fluid == null) {
+            fluid = StackInfo.getFluid(Util.copyStackWithSize(stack, 1));
+        }
+
+        if (fluid != null) {
+            FluidStack fluid0 = fluid.copy();
+            fluid0.amount *= stack.stackSize;
+            return fluid0;
         }
         return null;
     }
@@ -509,36 +513,6 @@ public final class Util {
         }
 
         public static final ItemStack water_bucket = new ItemStack(Items.water_bucket, 1);
-
-        public static void fluidTankInfoWriteToNBT(FluidTankInfo[] infos, NBTTagCompound data) {
-            int i = 0;
-            for (FluidTankInfo info : infos) {
-                if (info.fluid != null && info.fluid.amount > 0) {
-                    NBTTagCompound fs = new NBTTagCompound();
-                    info.fluid.writeToNBT(fs);
-                    fs.setInteger("capacity", info.capacity);
-                    data.setTag("#" + i, fs);
-                }
-                i++;
-            }
-            data.setInteger("fluidInvSize", i);
-        }
-
-        public static FluidTankInfo[] fluidTankInfoReadFromNBT(NBTTagCompound data) {
-            int i = 0;
-            List<FluidTankInfo> infos = new ArrayList<>();
-            while (data.hasKey("fluidInvSize") && i < data.getInteger("fluidInvSize")) {
-                if (data.hasKey("#" + i)) {
-                    NBTTagCompound tag = (NBTTagCompound) data.getTag("#" + i);
-                    FluidStack fs = FluidStack.loadFluidStackFromNBT(tag);
-                    infos.add(new FluidTankInfo(fs, tag.getInteger("capacity")));
-                } else {
-                    infos.add(new FluidTankInfo(null, 0));
-                }
-                i++;
-            }
-            return infos.toArray(new FluidTankInfo[0]);
-        }
 
         public static IAEFluidStack createAEFluidStack(Fluid fluid) {
             return createAEFluidStack(new FluidStack(fluid, FluidContainerRegistry.BUCKET_VOLUME));

@@ -1,5 +1,7 @@
 package com.glodblock.github.common.item;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -52,5 +54,11 @@ public class ItemPartFluidPatternTerminalEx extends FCBaseItem implements IPartI
     @SideOnly(Side.CLIENT)
     public int getSpriteNumber() {
         return 0;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> toolTip, boolean flag) {
+        toolTip.add("§4DEPRECATED!");
     }
 }

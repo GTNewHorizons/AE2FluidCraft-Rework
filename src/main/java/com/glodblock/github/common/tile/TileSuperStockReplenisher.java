@@ -34,10 +34,13 @@ import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
+import appeng.api.util.IConfigManager;
 import appeng.core.AELog;
 import appeng.items.storage.ItemBasicStorageCell;
 import appeng.me.GridAccessException;
@@ -46,16 +49,17 @@ import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
+import appeng.tile.inventory.BiggerAppEngInventory;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
 public class TileSuperStockReplenisher extends AENetworkInvTile
-        implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable {
+        implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable, ITerminalHost {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
-    private final AppEngInternalInventory invItems = new AppEngInternalInventory(this, 63);
+    private final BiggerAppEngInventory invItems = new BiggerAppEngInventory(this, 63);
     private final AEFluidInventory invFluids = new AEFluidInventory(this, 9, Integer.MAX_VALUE);
     private final AppEngInternalAEInventory configFluids = new AppEngInternalAEInventory(this, 9);
     private final AppEngInternalAEInventory configItems = new AppEngInternalAEInventory(this, 63);
@@ -66,6 +70,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     private long storedItemCount;
 
     public TileSuperStockReplenisher() {
+        super(false);
         getProxy().setIdlePowerUsage(4D);
         getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
         this.source = new MachineSource(this);
@@ -168,6 +173,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
                     storedItemCount += notInserted.getStackSize();
+
+                    saveChanges();
                 } else invItems.setInventorySlotContents(index, notInserted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
@@ -185,6 +192,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
                     storedItemCount += extracted.getStackSize();
+
+                    saveChanges();
                 } else invItems.setInventorySlotContents(index, extracted.getItemStack());
             }
         } catch (final GridAccessException ignored) {}
@@ -252,24 +261,24 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removed, ItemStack added) {
         switch (mc) {
             case setInventorySlotContents -> {
-                if (added != null) {
-                    if (inv == cell) {
+                if (inv == cell) {
+                    if (added != null) {
                         if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
                             totalBytes = ibsc.getBytesLong(added);
                         } else if (added.getItem() instanceof FCBaseItemCell fcbic) {
                             totalBytes = fcbic.getBytes(added);
                         }
                         getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
-                    } else if (inv == invItems) {
-                        storedItemCount += added.stackSize;
-                    }
-                }
-
-                if (removed != null) {
-                    if (inv == cell) {
+                    } else if (removed != null) {
                         totalBytes = 0;
                         getProxy().setIdlePowerUsage(4d);
-                    } else if (inv == invItems) {
+                    }
+                } else if (inv == invItems) {
+                    if (added != null) {
+                        storedItemCount += added.stackSize;
+                    }
+
+                    if (removed != null) {
                         storedItemCount -= removed.stackSize;
                     }
                 }
@@ -279,11 +288,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                     totalBytes = 0;
                     getProxy().setIdlePowerUsage(4d);
                 }
+
                 if (inv == invItems) {
                     storedItemCount -= removed.stackSize;
                 }
             }
-            case markDirty -> {}
+            case markDirty -> markDirty();
         }
 
         try {
@@ -291,8 +301,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         } catch (GridAccessException e) {
             AELog.error(e, "Couldn't wake up level emitter for delayed updates");
         }
-
-        markForUpdate();
     }
 
     public void fullRefund() {
@@ -361,7 +369,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Override
     public void onFluidInventoryChanged(IAEFluidTank inv, int slot) {
         saveChanges();
-        markForUpdate();
     }
 
     @Override
@@ -459,5 +466,20 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
         return doWork();
+    }
+
+    @Override
+    public IMEMonitor<IAEItemStack> getItemInventory() {
+        return null;
+    }
+
+    @Override
+    public IMEMonitor<IAEFluidStack> getFluidInventory() {
+        return null;
+    }
+
+    @Override
+    public IConfigManager getConfigManager() {
+        return null;
     }
 }

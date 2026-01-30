@@ -1,13 +1,9 @@
 package com.glodblock.github.client.gui;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
@@ -17,27 +13,22 @@ import com.glodblock.github.client.gui.container.ContainerFluidInterface;
 import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
-import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.gui.TankMouseHandler;
-import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.client.gui.AEBaseGui;
-import appeng.client.gui.widgets.GuiTabButton;
+import appeng.client.gui.GuiSub;
 import appeng.core.localization.GuiText;
 
-public class GuiFluidInterface extends AEBaseGui {
+public class GuiFluidInterface extends GuiSub {
 
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/interface_fluid.png");
     private static final int TANK_X = 35, TANK_X_OFF = 18, TANK_Y = 53;
     private static final int TANK_WIDTH = 16, TANK_HEIGHT = 68;
     private final ContainerFluidInterface cont;
 
-    private GuiTabButton switcher;
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
 
     public GuiFluidInterface(InventoryPlayer ipl, IDualHost tile) {
@@ -56,25 +47,6 @@ public class GuiFluidInterface extends AEBaseGui {
                     TANK_HEIGHT,
                     new TankMouseHandler(cont.getTile().getInternalFluid(), i));
         }
-    }
-
-    @Override
-    public void func_146977_a(final Slot s) {
-        try {
-            GuiContainer.class.getDeclaredMethod("func_146977_a_original", Slot.class).invoke(this, s);
-        } catch (final Exception ignore) {}
-    }
-
-    @Override
-    public void initGui() {
-        super.initGui();
-        this.switcher = new GuiTabButton(
-                this.guiLeft + 154,
-                this.guiTop,
-                isPart() ? ItemAndBlockHolder.FLUID_INTERFACE.stack() : ItemAndBlockHolder.INTERFACE.stack(),
-                StatCollector.translateToLocal("ae2fc.tooltip.switch_fluid_interface"),
-                itemRender);
-        this.buttonList.add(this.switcher);
     }
 
     @Override
@@ -110,14 +82,6 @@ public class GuiFluidInterface extends AEBaseGui {
     public void drawBG(int offsetX, int offsetY, int mouseX, int mouseY) {
         mc.getTextureManager().bindTexture(TEX_BG);
         drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
-    }
-
-    @Override
-    protected void actionPerformed(final GuiButton btn) {
-        super.actionPerformed(btn);
-        if (btn == this.switcher) {
-            InventoryHandler.switchGui(GuiType.DUAL_INTERFACE);
-        }
     }
 
     public void update(int id, IAEFluidStack stack) {
