@@ -63,7 +63,6 @@ item.fluid_storage_housing.1.name=Verbessertes ME-Flüssigkeitsspeichergehäuse
 item.fluid_storage_housing.2.name=ME-Mehrfach-Flüssigkeitsspeichergehäuse
 item.fluid_storage_housing.3.name=Verbessertes ME-Mehrfach-Flüssigkeitsspeichergehäuse
 
-tile.fluid_discretizer.name=Flüssigkeitsdiskretisierer
 tile.fluid_pattern_encoder.name=Flüssigkeits-Schablonenkodierer
 tile.fluid_packet_decoder.name=ME-Flüssigkeitspaketdekodierer
 tile.fluid_interface.name=ME-Dualschnittstelle
@@ -85,7 +84,6 @@ ae2fc.waila.disable=Aus
 ae2fc.tooltip.shift_for_more=§r> §3Shift§r halten für mehr Information
 ae2fc.tooltip.ctrl_for_more=§r> §3Strg§r halten für mehr Information
 ae2fc.tooltip.fluid_packet_decoder.desc=Der Flüssigkeitsdekodierer kann Flüssigkeitspakete dekodieren. Er muss mit einem ME-System und einem Ort um die Flüssigkeit einzuleiten verbunden sein, sonst funktioniert er nicht.
-ae2fc.tooltip.discretizer.desc=Wenn der Flüssigkeitsdiskretisierer an dein ME-System angeschlossen ist, stellt er den Flüssigkeitsvorrat in Lagerzellen (und Lagerbussen) in Tropfen dar. Sie sind das "Item-Äquivalent" zu Flüssigkeiten. Es ist nur eine andere Darstellung für Flüssigkeit, er konvertiert nichts.
 ae2fc.tooltip.fluid_buffer.desc=Das ist Highspeed-Flüssigkeitsübertragung
 ae2fc.tooltip.walrus.desc=GTNH ist wie Arbeiten
 ae2fc.tooltip.fluid_auto_filler=Erstellt automatisch eine Flüssigkeitsbefüllschablone im jeweiligen Container.
@@ -151,6 +149,7 @@ ae2fc.tooltip.interface_terminal_w=Schnittstellenkonsole
 ae2fc.tooltip.level_terminal_w=Füllstand-Konsole
 ae2fc.tooltip.pattern_terminal_ex_w=Verarbeitungsschablonenkonsole
 ae2fc.tooltip.wireless.installed=Installierte Karte:
+ae2fc.tooltip.PreconfiguredPriority=Preconfigured storage priority: §f%s
 
 ae2fc.tooltip.not_prio=Flüssigkeiten dürfen zuerst platziert werden
 ae2fc.tooltip.not_prio.hint=Aus
@@ -221,6 +220,11 @@ ae2fc.gui.color.StateError=FFFF5555
 error.unknown=Unbekannt
 
 ae2fc.key.OpenTerminal=Handkonsole öffnen
+ae2fc.key.OpenCraftingTerminal=Open Wireless Universal Crafting Terminal
+ae2fc.key.OpenLevelTerminal=Open Wireless Universal Level Terminal
+ae2fc.key.OpenInterfaceTerminal=Open Wireless Universal Interface Terminal
+ae2fc.key.OpenPatternTerminal=Open Wireless Universal Pattern Terminal
+ae2fc.key.OpenPatternExTerminal=Open Wireless Universal Processing Pattern Terminal
 ae2fc.key.Restock=Wiederauffüllen
 
 itemGroup.ae2fc=Flüssigkeitsfertigung für AE2
