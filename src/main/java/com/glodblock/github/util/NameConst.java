@@ -57,9 +57,7 @@ public class NameConst {
     public static final String ITEM_ENERGY_CARD = "energy_card";
 
     public static final String TT_KEY = FluidCraft.MODID + ".tooltip.";
-    public static final String TT_CRAFTING_COMPLETE = TT_KEY + "crafting_complete";
     public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";
-    public static final String TT_FLUID_TERMINAL_AMOUNT = TT_FLUID_TERMINAL + ".amount";
     public static final String TT_LEVEL_TERMINAL = TT_KEY + "level_terminal";
     public static final String TT_INVALID_FLUID = TT_KEY + "invalid_fluid";
     public static final String TT_FLUID_PACKET = TT_KEY + "fluid_packet";
@@ -94,8 +92,6 @@ public class NameConst {
     public static final String TT_LEVEL_MAINTAINER_NOT_FOUND_DESC = TT_LEVEL_MAINTAINER + "not_found_desc";
     public static final String TT_LEVEL_MAINTAINER_CANT_CRAFT = TT_LEVEL_MAINTAINER + "cant_craft";
     public static final String TT_LEVEL_MAINTAINER_CANT_CRAFT_DESC = TT_LEVEL_MAINTAINER + "cant_craft_desc";
-    public static final String TT_CELL_CONTENTS = TT_KEY + "cell_contents";
-    public static final String TT_CELL_EMPTY = TT_KEY + "cell_empty";
     public static final String TT_CELL_PORTABLE = TT_KEY + "cell_portable";
     public static final String TT_WIRELESS = TT_KEY + "wireless.";
     public static final String TT_WIRELESS_INSTALLED = TT_WIRELESS + "installed";
@@ -103,12 +99,10 @@ public class NameConst {
     public static final String TT_ULTRA_TERMINAL = TT_KEY + "ultra_terminal";
     public static final String TT_ULTRA_TERMINAL_TIPS = TT_ULTRA_TERMINAL + ".tips";
     public static final String TT_ULTRA_TERMINAL_TIPS_DESC = TT_ULTRA_TERMINAL_TIPS + ".desc";
-    public static final String TT_INFINITY_FLUID_STORAGE_TIPS = TT_KEY + "infinity_fluid";
     public static final String TT_ENERGY_CARD = TT_KEY + "energy_card";
     public static final String TT_ENERGY_CARD_DESC = TT_ENERGY_CARD + ".desc";
     public static final String TT_QUANTUM_BRIDGE_CARD = TT_KEY + "quantum_bridge_card";
     public static final String TT_QUANTUM_BRIDGE_CARD_DESC = TT_QUANTUM_BRIDGE_CARD + ".desc";
-    public static final String TT_ITEM_FLUID_VOID_CELL = TT_KEY + ITEM_FLUID_VOID_CELL;
 
     public static final String TT_ULTRA_TERMINAL_RESTOCK = TT_ULTRA_TERMINAL + ".restock";
     public static final String TT_ULTRA_TERMINAL_RESTOCK_ON = TT_ULTRA_TERMINAL_RESTOCK + ".on";
@@ -119,14 +113,9 @@ public class NameConst {
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
     public static final String WAILA_DISABLE = WAILA_KEY + "disable";
-    public static final String WAILA_SPEED = WAILA_KEY + "speed";
     public static final String RES_KEY = FluidCraft.MODID + ":";
 
     public static final String GUI_KEY = FluidCraft.MODID + ".gui.";
-    public static final String GUI_FLUID_LEVEL_EMITTER = GUI_KEY + ITEM_PART_FLUID_LEVEL_EMITTER;
-    public static final String GUI_FLUID_TERMINAL = GUI_KEY + ITEM_PART_FLUID_TERMINAL;
-    public static final String GUI_FLUID_PATTERN_TERMINAL = GUI_KEY + ITEM_PART_FLUID_PATTERN_TERMINAL;
-    public static final String GUI_FLUID_PATTERN_TERMINAL_EX = GUI_KEY + ITEM_PART_FLUID_PATTERN_TERMINAL_EX;
     public static final String GUI_LEVEL_MAINTAINER = GUI_KEY + BLOCK_LEVEL_MAINTAINER;
     public static final String GUI_LEVEL_TERMINAL = GUI_KEY + ITEM_PART_LEVEL_TERMINAL;
     public static final String GUI_FLUID_PATTERN_ENCODER = GUI_KEY + BLOCK_FLUID_PATTERN_ENCODER;
@@ -136,9 +125,6 @@ public class NameConst {
     public static final String GUI_LARGE_INGREDIENT_BUFFER = GUI_KEY + BLOCK_LARGE_INGREDIENT_BUFFER;
     public static final String GUI_FLUID_INTERFACE = GUI_KEY + BLOCK_FLUID_INTERFACE;
     public static final String GUI_OC_PATTERN_EDITOR = GUI_KEY + BLOCK_OC_PATTERN_EDITOR;
-    public static final String GUI_FLUID_IMPORT = GUI_KEY + ITEM_PART_FLUID_IMPORT;
-    public static final String GUI_FLUID_EXPORT = GUI_KEY + ITEM_PART_FLUID_EXPORT;
-    public static final String GUI_FLUID_STORAGE_BUS = GUI_KEY + ITEM_PART_FLUID_STORAGE_BUS;
 
     public static final String GUI_MAGNET_CARD = GUI_KEY + "magnet";
     public static final String GUI_MAGNET_CARD_NBT = GUI_MAGNET_CARD + ".nbt";
