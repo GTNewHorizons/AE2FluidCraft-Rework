@@ -6,7 +6,6 @@ import com.glodblock.github.common.Config;
 import com.glodblock.github.crossmod.opencomputers.OCDriverInit;
 import com.glodblock.github.crossmod.waila.WailaInit;
 import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.loader.CalculatorV2PluginLoader;
 import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.loader.RecipeLoader;
@@ -73,10 +72,6 @@ public class FluidCraft {
         }
         RecipeLoader.runTerminalRecipe();
         RecipeLoader.addDisassembleRecipe();
-
-        if (ModAndClassUtil.isV2) {
-            CalculatorV2PluginLoader.installCalculatorV2Plugins();
-        }
 
         proxy.postInit(event);
     }

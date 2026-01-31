@@ -67,7 +67,6 @@ tile.fluid_auto_filler.name=ME流体自动装填器
 tile.certus_quartz_tank.name=赛特斯石英水槽 - %s
 tile.certus_quartz_tank_empty.name=赛特斯石英水槽
 
-ae2fc.waila.speed=速度
 ae2fc.waila.enable=启用
 ae2fc.waila.disable=禁用
 
@@ -103,8 +102,6 @@ ae2fc.tooltip.ultra_terminal=Shift右击切换模式。
 ae2fc.tooltip.ultra_terminal.tips=使用提示:
 ae2fc.tooltip.ultra_terminal.tips.desc=1.你可以把它放到饰品栏内并用热键打开.\n2.接口模式按§3Shift§7切换出接口命名按钮.\n3.当你在合成计划界面时.\n按§3Shift§7点击取消按钮会自动添加合成缺失的物品到NEI收藏栏.
 
-ae2fc.tooltip.cell_contents=内含流体:
-ae2fc.tooltip.cell_empty=空存储
 ae2fc.tooltip.cell_portable=右键打开GUI,它就像一个背包，但你需要在使用前给它充能。
 ae2fc.tooltip.fluid_terminal=我们不再需要EC2了吗?
 ae2fc.tooltip.invalid_fluid=流体无效！
@@ -138,8 +135,6 @@ ae2fc.tooltip.not_fill_pattern=允许自动填充空白样板
 ae2fc.tooltip.fill_pattern.hint=启用
 ae2fc.tooltip.not_fill_pattern.hint=禁用
 
-ae2fc.gui.part_fluid_pattern_terminal=ME流体样板终端
-ae2fc.gui.part_fluid_pattern_terminal_ex=ME增广流体样板终端
 ae2fc.gui.fluid_pattern_encoder=流体适配型样板编码台
 ae2fc.gui.fluid_packet_decoder=ME流体封包解码器
 ae2fc.gui.ingredient_buffer=原材料缓存仓
@@ -154,11 +149,6 @@ ae2fc.gui.fluid_interface.4=西
 ae2fc.gui.fluid_interface.5=东
 ae2fc.gui.oc_pattern_editor=OC样板编辑器
 ae2fc.gui.button.set=设置
-ae2fc.gui.part_fluid_level_emitter=ME流体发信器
-ae2fc.gui.part_fluid_import=ME流体输入总线
-ae2fc.gui.part_fluid_export=ME流体输出总线
-ae2fc.gui.part_fluid_terminal=流体终端
-ae2fc.gui.part_fluid_storage_bus=ME流体存储总线
 ae2fc.gui.fluid_auto_filler=ME流体自动装填器
 
 error.unknown=未知流体

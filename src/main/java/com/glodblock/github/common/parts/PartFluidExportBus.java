@@ -1,5 +1,7 @@
 package com.glodblock.github.common.parts;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
@@ -15,6 +17,7 @@ import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IAEStackType;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartBaseExportBus;
 import appeng.tile.inventory.IAEStackInventory;
@@ -72,11 +75,11 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
     }
 
     @Override
-    protected void doFuzzy(IAEFluidStack aes, FuzzyMode fzMode, InventoryAdaptor destination, IEnergyGrid energy,
+    protected void doFuzzy(IAEFluidStack aes, FuzzyMode fzMode, IEnergyGrid energy,
             IMEMonitor<IAEFluidStack> gridInv) {}
 
     @Override
-    protected void doOreDict(InventoryAdaptor destination, IEnergyGrid energy, IMEMonitor<IAEFluidStack> gridInv) {}
+    protected void doOreDict(IEnergyGrid energy, IMEMonitor<IAEFluidStack> gridInv) {}
 
     // legacy
     @Override
@@ -90,5 +93,10 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
                 config.putAEStackInSlot(i, Util.getAEFluidFromItem(ais.getItemStack()));
             }
         }
+    }
+
+    @Override
+    public IAEStackType<IAEFluidStack> getStackType() {
+        return FLUID_STACK_TYPE;
     }
 }
