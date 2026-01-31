@@ -65,7 +65,7 @@ public class ItemPartFluidStorageBus extends FCBaseItem implements IPartItem {
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("priority")) {
             int priority = stack.getTagCompound().getInteger("priority");
             String priorityText = StatCollector
-                    .translateToLocalFormatted("ae2fc.tooltip.PreconfiguredPriority", priority);
+                    .translateToLocalFormatted("gui.tooltips.appliedenergistics2.PreconfiguredPriority", priority);
             lines.add(EnumChatFormatting.GRAY + priorityText);
         }
     }

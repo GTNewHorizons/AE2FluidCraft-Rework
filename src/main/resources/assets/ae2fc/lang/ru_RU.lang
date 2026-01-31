@@ -149,7 +149,6 @@ ae2fc.tooltip.interface_terminal_w=Терминал интерфейсов
 ae2fc.tooltip.level_terminal_w=Терминал уровня
 ae2fc.tooltip.pattern_terminal_ex_w=Терминал шаблонов обработки
 ae2fc.tooltip.wireless.installed=Установленные карты:
-ae2fc.tooltip.PreconfiguredPriority=Преднастроенный приоритет хранения: §f%s
 
 ae2fc.tooltip.not_prio=Помещать жидкость первой
 ae2fc.tooltip.not_prio.hint=Отключено

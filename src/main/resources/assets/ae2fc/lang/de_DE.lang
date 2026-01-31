@@ -149,7 +149,6 @@ ae2fc.tooltip.interface_terminal_w=Schnittstellenkonsole
 ae2fc.tooltip.level_terminal_w=Füllstand-Konsole
 ae2fc.tooltip.pattern_terminal_ex_w=Verarbeitungsschablonenkonsole
 ae2fc.tooltip.wireless.installed=Installierte Karte:
-ae2fc.tooltip.PreconfiguredPriority=Preconfigured storage priority: §f%s
 
 ae2fc.tooltip.not_prio=Flüssigkeiten dürfen zuerst platziert werden
 ae2fc.tooltip.not_prio.hint=Aus
