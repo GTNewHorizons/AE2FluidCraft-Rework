@@ -60,7 +60,6 @@ public class ItemPartFluidStorageBus extends FCBaseItem implements IPartItem {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> lines, boolean advanced) {
         super.addInformation(stack, player, lines, advanced);
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("priority")) {
