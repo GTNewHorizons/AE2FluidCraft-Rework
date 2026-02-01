@@ -27,11 +27,6 @@ public class Tooltip {
         return String.format("0 mB / %s mB", NumberFormat.getInstance().format(capacity));
     }
 
-    public static String partFluidBusFormat(int amount) {
-        return String
-                .format("%s: %s mB/t", I18n.format(NameConst.WAILA_SPEED), NumberFormat.getInstance().format(amount));
-    }
-
     public static String tileFluidInterfaceFormat(String name, int amount, int face) {
         return String.format(
                 "%s %s: %s mB",

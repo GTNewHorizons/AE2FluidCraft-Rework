@@ -77,7 +77,6 @@ tile.fluid_auto_filler.name=ME流体自动装填器
 tile.certus_quartz_tank.name=赛特斯石英水槽 - %s
 tile.certus_quartz_tank_empty.name=赛特斯石英水槽
 
-ae2fc.waila.speed=速度
 ae2fc.waila.enable=启用
 ae2fc.waila.disable=禁用
 
@@ -196,11 +195,6 @@ ae2fc.gui.fluid_interface.4=西
 ae2fc.gui.fluid_interface.5=东
 ae2fc.gui.oc_pattern_editor=OC样板编辑器
 ae2fc.gui.button.set=设置
-ae2fc.gui.part_fluid_level_emitter=ME流体发信器
-ae2fc.gui.part_fluid_import=ME流体输入总线
-ae2fc.gui.part_fluid_export=ME流体输出总线
-ae2fc.gui.part_fluid_terminal=流体终端
-ae2fc.gui.part_fluid_storage_bus=ME流体存储总线
 ae2fc.gui.fluid_auto_filler=ME流体自动装填器
 
 ae2fc.gui.magnet=Magnet Filter
