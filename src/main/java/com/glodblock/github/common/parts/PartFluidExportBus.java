@@ -83,7 +83,7 @@ public class PartFluidExportBus extends PartBaseExportBus<IAEFluidStack> {
     public void readFromNBT(NBTTagCompound extra) {
         super.readFromNBT(extra);
 
-        final IAEStackInventory config = this.getAEInventoryByName(StorageName.NONE);
+        final IAEStackInventory config = this.getAEInventoryByName(StorageName.CONFIG);
         for (int i = 0; i < config.getSizeInventory(); i++) {
             final IAEStack<?> stack = config.getAEStackInSlot(i);
             if (stack instanceof IAEItemStack ais) {
