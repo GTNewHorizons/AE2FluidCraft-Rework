@@ -22,7 +22,7 @@ public class PartFluidLevelEmitter extends PartLevelEmitter {
     public void readFromNBT(NBTTagCompound data) {
         super.readFromNBT(data);
 
-        final IAEStack<?> aes = this.getAEInventoryByName(null).getAEStackInSlot(0);
+        final IAEStack<?> aes = this.getAEInventoryByName(StorageName.CONFIG).getAEStackInSlot(0);
         if (aes instanceof IAEItemStack ais && ais.getItem() instanceof ItemFluidPacket) {
             this.getAEInventoryByName(StorageName.CONFIG).putAEStackInSlot(0, ItemFluidPacket.getFluidAEStack(ais));
         }
