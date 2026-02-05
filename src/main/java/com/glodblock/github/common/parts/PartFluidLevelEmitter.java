@@ -1,11 +1,11 @@
 package com.glodblock.github.common.parts;
 
-import appeng.api.storage.StorageName;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.common.item.ItemFluidPacket;
 
+import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.helpers.Reflected;
