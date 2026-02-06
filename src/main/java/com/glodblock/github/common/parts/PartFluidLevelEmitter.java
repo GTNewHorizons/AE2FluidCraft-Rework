@@ -5,6 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.glodblock.github.common.item.ItemFluidPacket;
 
+import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.helpers.Reflected;
@@ -21,9 +22,9 @@ public class PartFluidLevelEmitter extends PartLevelEmitter {
     public void readFromNBT(NBTTagCompound data) {
         super.readFromNBT(data);
 
-        final IAEStack<?> aes = this.getAEInventoryByName(null).getAEStackInSlot(0);
+        final IAEStack<?> aes = this.getAEInventoryByName(StorageName.CONFIG).getAEStackInSlot(0);
         if (aes instanceof IAEItemStack ais && ais.getItem() instanceof ItemFluidPacket) {
-            this.getAEInventoryByName(null).putAEStackInSlot(0, ItemFluidPacket.getFluidAEStack(ais));
+            this.getAEInventoryByName(StorageName.CONFIG).putAEStackInSlot(0, ItemFluidPacket.getFluidAEStack(ais));
         }
     }
 }
