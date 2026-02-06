@@ -1,16 +1,16 @@
 package com.glodblock.github.common.parts;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.util.BlockPos;
 import com.glodblock.github.util.Util;
 
 import appeng.api.config.Actionable;
@@ -23,6 +23,7 @@ import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IAEStackType;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartBaseImportBus;
 import appeng.tile.inventory.IAEStackInventory;
@@ -42,18 +43,14 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
 
     @Override
     protected Object getTarget() {
-        TileEntity self = this.getHost().getTile();
-        return this.getTileEntity(self, (new BlockPos(self)).getOffSet(this.getSide()));
-    }
+        final TileEntity self = this.getHost().getTile();
+        final TileEntity target = this.getTileEntity(
+                self,
+                self.xCoord + this.getSide().offsetX,
+                self.yCoord + this.getSide().offsetY,
+                self.zCoord + this.getSide().offsetZ);
 
-    private TileEntity getTileEntity(final TileEntity self, final BlockPos pos) {
-        final World w = self.getWorldObj();
-
-        if (w.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
-            return w.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
-        }
-
-        return null;
+        return target instanceof IFluidHandler handler ? handler : null;
     }
 
     @Override
@@ -89,6 +86,11 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
         } catch (final GridAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    protected int getAdaptorFlags() {
+        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_EXTRACTS;
     }
 
     @Override
@@ -173,7 +175,7 @@ public class PartFluidImportBus extends PartBaseImportBus<IAEFluidStack> {
     }
 
     @Override
-    protected int getAdaptorFlags() {
-        return InventoryAdaptor.ALLOW_FLUIDS | InventoryAdaptor.FOR_EXTRACTS;
+    public IAEStackType<IAEFluidStack> getStackType() {
+        return FLUID_STACK_TYPE;
     }
 }

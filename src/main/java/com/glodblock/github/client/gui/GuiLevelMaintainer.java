@@ -24,6 +24,7 @@ import com.glodblock.github.util.NameConst;
 
 import appeng.api.features.LevelState;
 import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IAEStackType;
 import appeng.client.gui.GuiSub;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
@@ -61,7 +62,8 @@ public class GuiLevelMaintainer extends GuiSub {
                     27,
                     20 + i * 19,
                     this.cont.getTile().getAEStackInventory(),
-                    i);
+                    i,
+                    GuiLevelMaintainer::acceptType);
             slot.setShowAmount(true);
             slot.setShowAmountAlways(true);
             this.registerVirtualSlots(slot);
@@ -191,6 +193,10 @@ public class GuiLevelMaintainer extends GuiSub {
     public void updateComponent(int index, LevelState state) {
         if (index < 0 || index >= TileLevelMaintainer.REQ_COUNT) return;
         component[index].setState(state);
+    }
+
+    private static boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {
+        return true;
     }
 
     private class Component {
