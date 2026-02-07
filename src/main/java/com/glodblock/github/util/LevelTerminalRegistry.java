@@ -1,4 +1,4 @@
-package com.glodblock.github.coremod.registries;
+package com.glodblock.github.util;
 
 import java.util.HashSet;
 import java.util.Map;

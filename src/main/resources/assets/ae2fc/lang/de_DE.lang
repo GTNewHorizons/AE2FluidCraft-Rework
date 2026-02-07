@@ -77,7 +77,6 @@ tile.fluid_auto_filler.name=ME-Flüssigkeits-Füllautomat
 tile.certus_quartz_tank.name=Certusquarztank - %s
 tile.certus_quartz_tank_empty.name=Certusquarztank
 
-ae2fc.waila.speed=Geschwindigkeit
 ae2fc.waila.enable=An
 ae2fc.waila.disable=Aus
 
@@ -120,14 +119,11 @@ ae2fc.tooltip.ultra_terminal.tips=Tool-Tipps:
 ae2fc.tooltip.ultra_terminal.tips.desc=1.Du kannst es in einen Schmuckslot packen, und einen Hotkey zum Öffnen benutzen.\n2.Schnittstellenmodus: Halte §3Shift§7 Schnittstellen-Umbenenn-Knopf.\n3.In der Fertigungsplan-Ansicht\nhalte §3Shift§7 und klicke den "Abbrechen"-Knopf, und die Fehlenden Items\nwerden als NEI-Lesezeichen eingefügt.
 ae2fc.tooltip.ultra_terminal.restock.on=Wiederauffüllen an
 ae2fc.tooltip.ultra_terminal.restock.off=Wiederauffüllen aus
-ae2fc.tooltip.infinity_fluid=§aUnendlich§r
 ae2fc.tooltip.fluid_storage.void=Wo nichts alles ist, und alles nichts
 
 ae2fc.tooltip.quantum_bridge_card.desc=Erlaubt es Handkonsolen, sich für unendliche Reichweite mit einer Quantenbrücke zu verbinden
 ae2fc.tooltip.energy_card.desc=Unendlich Energie für die Handkonsole
 
-ae2fc.tooltip.cell_contents=Enthält Flüssigkeit:
-ae2fc.tooltip.cell_empty=Zelle leer
 ae2fc.tooltip.cell_portable=Rechtsklick um Ansicht zu öffnen. Funktioniert wie ein Rucksack, aber du musst sie erst aufladen.
 ae2fc.tooltip.fluid_terminal=Also brauchen wir kein EC2 mehr?
 ae2fc.tooltip.level_terminal=Äääh...
@@ -179,8 +175,6 @@ ae2fc.tooltip.restock.on.hint=An
 ae2fc.tooltip.restock.off=Wiederauffüllen
 ae2fc.tooltip.restock.off.hint=Aus
 
-ae2fc.gui.part_fluid_pattern_terminal=Flüssigkeitsschablonenkonsole
-ae2fc.gui.part_fluid_pattern_terminal_ex=Flüssigkeitsverarbeitungsschablonenkonsole
 ae2fc.gui.part_level_terminal=Füllstand-Konsole
 ae2fc.gui.fluid_pattern_encoder=Flüssigkeitsschablonenkodierer
 ae2fc.gui.fluid_packet_decoder=ME-Flüssigkeitspaketdekodierer
@@ -196,11 +190,6 @@ ae2fc.gui.fluid_interface.4=W
 ae2fc.gui.fluid_interface.5=O
 ae2fc.gui.oc_pattern_editor=OC-Schabloneneditor
 ae2fc.gui.button.set=Setzen
-ae2fc.gui.part_fluid_level_emitter=ME-Flüssigkeitsfüllstandsemitter
-ae2fc.gui.part_fluid_import=ME-Flüssigkeits-Importbus
-ae2fc.gui.part_fluid_export=ME-Flüssigkeits-Exportbus
-ae2fc.gui.part_fluid_terminal=ME-Flüssigkeitskonsole
-ae2fc.gui.part_fluid_storage_bus=ME-Flüssigkeitsspeicherbus
 ae2fc.gui.fluid_auto_filler=ME-Flüssigkeits-Füllautomat
 
 ae2fc.gui.magnet=Magnetfilter

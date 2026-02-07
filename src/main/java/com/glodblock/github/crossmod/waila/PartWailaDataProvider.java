@@ -10,8 +10,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import com.glodblock.github.crossmod.waila.part.FluidInvWailaDataProvider;
-import com.glodblock.github.crossmod.waila.part.FluidMonitorWailaDataProvider;
-import com.glodblock.github.crossmod.waila.part.SpeedWailaDataProvider;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
@@ -30,10 +28,8 @@ public class PartWailaDataProvider implements IWailaDataProvider {
     private final Tracer tracer = new Tracer();
 
     public PartWailaDataProvider() {
-        final IPartWailaDataProvider speed = new SpeedWailaDataProvider();
         final IPartWailaDataProvider fluidInv = new FluidInvWailaDataProvider();
-        final IPartWailaDataProvider fluidMonitor = new FluidMonitorWailaDataProvider();
-        this.providers = Lists.newArrayList(speed, fluidInv, fluidMonitor);
+        this.providers = Lists.newArrayList(fluidInv);
     }
 
     @Override
