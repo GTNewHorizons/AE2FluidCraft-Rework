@@ -1,10 +1,12 @@
 package com.glodblock.github.client.gui;
 
+import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -30,7 +32,6 @@ import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
-import cofh.core.render.CoFHFontRenderer;
 
 public class GuiLevelMaintainer extends GuiSub {
 
@@ -39,14 +40,14 @@ public class GuiLevelMaintainer extends GuiSub {
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
-    private final CoFHFontRenderer render;
+    private final FontRenderer render;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
         this.cont = (ContainerLevelMaintainer) inventorySlots;
         this.xSize = 195;
         this.ySize = 214;
-        this.render = new CoFHFontRenderer(
+        this.render = new FontRenderer(
                 Minecraft.getMinecraft().gameSettings,
                 TEX_BG,
                 Minecraft.getMinecraft().getTextureManager(),
@@ -366,8 +367,20 @@ public class GuiLevelMaintainer extends GuiSub {
             } else {
                 message.add(NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE));
             }
-            this.line.setMessage(
-                    render.wrapFormattedStringToWidth(String.join("\n", message), (int) Math.floor(xSize * 0.8)));
+            try {
+                Method m;
+                try {
+                    m = FontRenderer.class.getDeclaredMethod("wrapFormattedStringToWidth", String.class, int.class);
+                } catch (NoSuchMethodException e) {
+                    m = FontRenderer.class.getDeclaredMethod("func_78280_d", String.class, int.class);
+                }
+
+                m.setAccessible(true);
+                this.line.setMessage(
+                        (String) m.invoke(render, String.join("\n", message), (int) Math.floor(xSize * 0.8)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             this.line.drawTextBox();
             if (this.isEnable) {
                 this.enable.visible = true;
@@ -408,20 +421,47 @@ public class GuiLevelMaintainer extends GuiSub {
                             + "\n"
                     : "";
             if (isShiftKeyDown()) {
-                this.setTooltip(
-                        render.wrapFormattedStringToWidth(
-                                StatCollector.translateToLocal(this.tooltip) + "\n"
-                                        + current
-                                        + "\n"
-                                        + StatCollector.translateToLocal(this.tooltip + ".hint"),
-                                xSize / 2));
+                try {
+                    Method m;
+                    try {
+                        m = FontRenderer.class.getDeclaredMethod("wrapFormattedStringToWidth", String.class, int.class);
+                    } catch (NoSuchMethodException e) {
+                        m = FontRenderer.class.getDeclaredMethod("func_78280_d", String.class, int.class);
+                    }
+
+                    m.setAccessible(true);
+                    this.setTooltip(
+                            (String) m.invoke(
+                                    render,
+                                    StatCollector.translateToLocal(this.tooltip) + "\n"
+                                            + current
+                                            + "\n"
+                                            + StatCollector.translateToLocal(this.tooltip + ".hint"),
+                                    xSize / 2));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
-                this.setTooltip(
-                        render.wrapFormattedStringToWidth(
-                                NameConst.i18n(this.tooltip, "\n", false) + "\n"
-                                        + current
-                                        + NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE),
-                                (int) Math.floor(xSize * 0.8)));
+                try {
+                    Method m;
+                    try {
+                        m = FontRenderer.class.getDeclaredMethod("wrapFormattedStringToWidth", String.class, int.class);
+                    } catch (NoSuchMethodException e) {
+                        m = FontRenderer.class.getDeclaredMethod("func_78280_d", String.class, int.class);
+                    }
+
+                    m.setAccessible(true);
+                    this.setTooltip(
+                            (String) m.invoke(
+                                    render,
+                                    NameConst.i18n(this.tooltip, "\n", false) + "\n"
+                                            + current
+                                            + NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE),
+                                    (int) Math.floor(xSize * 0.8)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             this.textField.drawTextBox();
         }
