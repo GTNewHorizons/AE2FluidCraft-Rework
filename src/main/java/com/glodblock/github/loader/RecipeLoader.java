@@ -182,8 +182,6 @@ public class RecipeLoader implements Runnable {
             GameRegistry.findItem("appliedenergistics2", "item.ItemMultiMaterial"),
             1,
             43);
-    public static final ItemStack THE_WIRELESS_TERM = GameRegistry
-            .findItemStack("thaumicenergistics", "wireless.essentia.terminal", 1);
     private static final ItemStack WCT_WIRELESS_TERM = GameRegistry
             .findItemStack("ae2wct", "wirelessCraftingTerminal", 1);
     public static final ItemStack BUCKET = new ItemStack(Items.bucket, 1);
@@ -748,7 +746,7 @@ public class RecipeLoader implements Runnable {
         }
 
         ItemStack[] term = { AE2_WIRELESS_TERMINAL, WIRELESS_PATTERN_TERM.stack(), WIRELESS_INTERFACE_TERM.stack(),
-                WIRELESS_LEVEL_TERM.stack(), THE_WIRELESS_TERM, WCT_WIRELESS_TERM };
+                WIRELESS_LEVEL_TERM.stack(), WCT_WIRELESS_TERM };
         GameRegistry.addShapelessRecipe(
                 WIRELESS_ULTRA_TERM.stack(),
                 Arrays.stream(term).filter(Objects::nonNull).toArray());
