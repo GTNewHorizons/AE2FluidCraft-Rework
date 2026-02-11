@@ -73,7 +73,7 @@ public final class Util {
     public static int drainItemPower(AEBaseContainer c, InventoryPlayer ip, int slot, int ticks, double pm,
             IFluidPortableCell wt) {
         if (slot != -1) {
-            final ItemStack currentItem = getWirelessTerminal(ip.player, slot);
+            final ItemStack currentItem = Platform.getItemFromPlayerInventoryBySlotIndex(ip.player, slot);
             if (wt != null) {
                 if (currentItem != wt.getItemStack()) {
                     if (currentItem != null) {
@@ -191,15 +191,6 @@ public final class Util {
             return null;
         }
         return new NullInventory<>();
-    }
-
-    public static ItemStack getWirelessTerminal(EntityPlayer player, int x) {
-        ImmutablePair<GuiHelper.InvType, Integer> result = GuiHelper.decodeInvType(x);
-        if (result.getLeft() == GuiHelper.InvType.PLAYER_INV) {
-            return player.inventory.getStackInSlot(result.getRight());
-        } else {
-            return BaublesApi.getBaubles(player).getStackInSlot(result.getRight());
-        }
     }
 
     public static ImmutablePair<Integer, ItemStack> getUltraWirelessTerm(EntityPlayer player) {

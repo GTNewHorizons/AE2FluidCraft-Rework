@@ -9,10 +9,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.glodblock.github.inventory.item.IItemInventory;
-import com.glodblock.github.util.Util;
 
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
+import appeng.util.Platform;
 
 public abstract class ItemGuiFactory<T> implements IGuiFactory {
 
@@ -30,7 +30,7 @@ public abstract class ItemGuiFactory<T> implements IGuiFactory {
     @Nullable
     @Override
     public Object createServerGui(EntityPlayer player, World world, int x, int y, int z, ForgeDirection face) {
-        ItemStack item = Util.getWirelessTerminal(player, x);
+        ItemStack item = Platform.getItemFromPlayerInventoryBySlotIndex(player, x);
         if (item == null || !(item.getItem() instanceof IItemInventory)) {
             return null;
         }
@@ -57,7 +57,7 @@ public abstract class ItemGuiFactory<T> implements IGuiFactory {
     @Nullable
     @Override
     public Object createClientGui(EntityPlayer player, World world, int x, int y, int z, ForgeDirection face) {
-        ItemStack item = Util.getWirelessTerminal(player, x);
+        ItemStack item = Platform.getItemFromPlayerInventoryBySlotIndex(player, x);
         if (item == null || !(item.getItem() instanceof IItemInventory)) {
             return null;
         }
