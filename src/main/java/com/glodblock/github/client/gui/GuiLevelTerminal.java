@@ -115,7 +115,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     public GuiLevelTerminal(InventoryPlayer inventoryPlayer, Container container) {
         super(inventoryPlayer, container);
         setScrollBar(new GuiScrollbar());
-        xSize = 208;
+        xSize = 209;
         ySize = 255;
         neiPresent = Loader.isModLoaded("NotEnoughItems");
 
@@ -183,7 +183,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         terminalStyleBox.xPosition = guiLeft - 18;
         terminalStyleBox.yPosition = guiTop + 8;
         craftingStatusBtn = new GuiTabButton(
-                guiLeft + xSize - 24,
+                guiLeft + xSize - 25,
                 guiTop - 4,
                 2 + 11 * 16,
                 GuiText.CraftingStatus.getLocal(),
