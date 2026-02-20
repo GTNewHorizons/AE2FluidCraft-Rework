@@ -61,14 +61,11 @@ import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 import baubles.api.BaublesApi;
 import codechicken.nei.recipe.StackInfo;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import io.netty.buffer.ByteBuf;
 
 public final class Util {
-
-    public static boolean isBaublesLoaded = Loader.isModLoaded("Baubles");
 
     public static int drainItemPower(AEBaseContainer c, InventoryPlayer ip, int slot, int ticks, double pm,
             IFluidPortableCell wt) {
@@ -204,7 +201,7 @@ public final class Util {
             }
         }
 
-        if (isBaublesLoaded) {
+        if (ModAndClassUtil.BAUBLES) {
             IInventory handler = BaublesApi.getBaubles(player);
             if (handler != null) {
                 invSize = handler.getSizeInventory();
