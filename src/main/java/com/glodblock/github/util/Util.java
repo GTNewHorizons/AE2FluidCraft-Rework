@@ -61,29 +61,24 @@ import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 import baubles.api.BaublesApi;
 import codechicken.nei.recipe.StackInfo;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import io.netty.buffer.ByteBuf;
 
 public final class Util {
 
-    public static boolean isBaublesLoaded = Loader.isModLoaded("Baubles");
-
     public static int drainItemPower(AEBaseContainer c, InventoryPlayer ip, int slot, int ticks, double pm,
             IFluidPortableCell wt) {
         if (slot != -1) {
-            final ItemStack currentItem = getWirelessTerminal(ip.player, slot);
+            final ItemStack currentItem = Platform.getItemFromPlayerInventoryBySlotIndex(ip.player, slot);
             if (wt != null) {
                 if (currentItem != wt.getItemStack()) {
                     if (currentItem != null) {
                         if (Platform.isSameItem(wt.getItemStack(), currentItem)) {
-                            if (GuiHelper.decodeInvType(slot).getLeft() == GuiHelper.InvType.PLAYER_INV) {
+                            if (slot <= Platform.baublesSlotsOffset) {
                                 ip.setInventorySlotContents(slot, wt.getItemStack());
                             } else {
-                                BaublesApi.getBaubles(ip.player).setInventorySlotContents(
-                                        GuiHelper.decodeInvType(slot).getRight(),
-                                        wt.getItemStack());
+                                BaublesApi.getBaubles(ip.player).setInventorySlotContents(slot, wt.getItemStack());
                             }
                         } else {
                             c.setValidContainer(false);
@@ -193,15 +188,6 @@ public final class Util {
         return new NullInventory<>();
     }
 
-    public static ItemStack getWirelessTerminal(EntityPlayer player, int x) {
-        ImmutablePair<GuiHelper.InvType, Integer> result = GuiHelper.decodeInvType(x);
-        if (result.getLeft() == GuiHelper.InvType.PLAYER_INV) {
-            return player.inventory.getStackInSlot(result.getRight());
-        } else {
-            return BaublesApi.getBaubles(player).getStackInSlot(result.getRight());
-        }
-    }
-
     public static ImmutablePair<Integer, ItemStack> getUltraWirelessTerm(EntityPlayer player) {
         int invSize = player.inventory.getSizeInventory();
 
@@ -215,14 +201,14 @@ public final class Util {
             }
         }
 
-        if (isBaublesLoaded) {
+        if (ModAndClassUtil.BAUBLES) {
             IInventory handler = BaublesApi.getBaubles(player);
             if (handler != null) {
                 invSize = handler.getSizeInventory();
                 for (int i = 0; i < invSize; ++i) {
                     ItemStack is = handler.getStackInSlot(i);
                     if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
-                        return new ImmutablePair<>(GuiHelper.encodeType(i, GuiHelper.InvType.PLAYER_BAUBLES), is);
+                        return new ImmutablePair<>(i + Platform.baublesSlotsOffset, is);
                     }
                 }
             }
@@ -470,26 +456,11 @@ public final class Util {
             return value | (type.ordinal() << 29) | y;
         }
 
-        public static int encodeType(int x, InvType type) {
-            if (Math.abs(x) > (1 << 28)) {
-                throw new IllegalArgumentException("out of range");
-            }
-            return value | (type.ordinal() << 29) | x;
-        }
-
         public static ImmutablePair<GuiType, Integer> decodeType(int y) {
             if (Math.abs(y) > (1 << 28)) {
                 return new ImmutablePair<>(GuiType.values()[y >> 29 & 1], y - (3 << 29 & y));
             } else {
                 return new ImmutablePair<>(GuiType.TILE, y);
-            }
-        }
-
-        public static ImmutablePair<InvType, Integer> decodeInvType(int x) {
-            if (Math.abs(x) > (1 << 28)) {
-                return new ImmutablePair<>(InvType.values()[x >> 29 & 1], x - (3 << 29 & x));
-            } else {
-                return new ImmutablePair<>(InvType.PLAYER_INV, x);
             }
         }
     }

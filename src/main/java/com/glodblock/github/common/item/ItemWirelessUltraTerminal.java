@@ -2,7 +2,6 @@ package com.glodblock.github.common.item;
 
 import static appeng.util.Platform.baublesSlotsOffset;
 import static appeng.util.Platform.nextEnum;
-import static com.glodblock.github.util.Util.GuiHelper.decodeInvType;
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
 
 import java.util.Arrays;
@@ -138,8 +137,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     private void openGui(final ItemStack is, final World w, final EntityPlayer player, final Object mode,
             final int slotIndex) {
         final GuiBridge aeGui;
-        final int slot = slotIndex == Integer.MIN_VALUE ? player.inventory.currentItem : slotIndex;
-        final ImmutablePair<Util.GuiHelper.InvType, Integer> invSlotPair = decodeInvType(slotIndex);
+        final int slot = slotIndex == Integer.MIN_VALUE ? player.inventory.currentItem : slotIndex;;
 
         switch (mode instanceof UltraTerminalModes utm ? utm : getMode(is)) {
             case CRAFTING -> aeGui = GuiBridge.GUI_CRAFTING_TERMINAL;
@@ -161,13 +159,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
             default -> aeGui = GuiBridge.GUI_ME;
         }
 
-        Platform.openGUI(
-                player,
-                null,
-                null,
-                aeGui,
-                invSlotPair.getLeft() == Util.GuiHelper.InvType.PLAYER_INV ? slotIndex
-                        : invSlotPair.getRight() + baublesSlotsOffset);
+        Platform.openGUI(player, null, null, aeGui, slotIndex);
     }
 
     @Override
@@ -191,12 +183,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
             if (handler != null) {
                 for (int i = 0; i < handler.getSizeInventory(); ++i) {
                     if (handler.getStackInSlot(i) == itemStack) {
-                        onUpdate(
-                                itemStack,
-                                null,
-                                player,
-                                Util.GuiHelper.encodeType(i, Util.GuiHelper.InvType.PLAYER_BAUBLES),
-                                false);
+                        onUpdate(itemStack, null, player, i + baublesSlotsOffset, false);
                     }
                 }
             }

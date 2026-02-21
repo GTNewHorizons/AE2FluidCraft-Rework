@@ -9,6 +9,7 @@ import com.glodblock.github.util.Util;
 import appeng.api.storage.ITerminalHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.guisync.GuiSync;
+import appeng.util.Platform;
 
 public abstract class FCBaseContainer extends AEBaseContainer {
 
@@ -37,7 +38,7 @@ public abstract class FCBaseContainer extends AEBaseContainer {
         if (isWirelessTerminal()) {
             if (this.host instanceof IFluidPortableCell) {
                 final int slotIndex = ((IFluidPortableCell) this.host).getInventorySlot();
-                if (Util.GuiHelper.decodeInvType(slotIndex).getLeft() == Util.GuiHelper.InvType.PLAYER_INV) {
+                if (slotIndex <= Platform.baublesSlotsOffset) {
                     this.lockPlayerInventorySlot(slotIndex);
                 }
                 return slotIndex;

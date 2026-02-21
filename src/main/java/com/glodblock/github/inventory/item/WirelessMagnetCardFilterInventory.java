@@ -266,7 +266,7 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
         public static WirelessMagnetCardFilterInventory getFilter(ItemStack is, int slot, IGridNode gridNode,
                 EntityPlayer player) {
             WirelessMagnetCardFilterInventory cachedInv = cache.get(player.getUniqueID());
-            if (cachedInv != null && cachedInv.checkCache(is)) {
+            if (cachedInv != null && cachedInv.checkCache(is) && gridNode == cachedInv.grid) {
                 return cachedInv;
             } else {
                 WirelessMagnetCardFilterInventory newInv = new WirelessMagnetCardFilterInventory(

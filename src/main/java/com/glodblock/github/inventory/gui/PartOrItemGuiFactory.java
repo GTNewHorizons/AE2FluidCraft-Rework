@@ -14,6 +14,7 @@ import com.glodblock.github.util.Util;
 
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
+import appeng.util.Platform;
 
 public abstract class PartOrItemGuiFactory<T> extends PartGuiFactory<T> {
 
@@ -31,7 +32,7 @@ public abstract class PartOrItemGuiFactory<T> extends PartGuiFactory<T> {
     public Object createServerGui(EntityPlayer player, World world, int x, int y, int z, ForgeDirection face) {
         ImmutablePair<Util.GuiHelper.GuiType, Integer> result = Util.GuiHelper.decodeType(y);
         if (result.getLeft() == Util.GuiHelper.GuiType.ITEM) {
-            ItemStack item = Util.getWirelessTerminal(player, x);
+            ItemStack item = Platform.getItemFromPlayerInventoryBySlotIndex(player, x);
             if (item == null || !(item.getItem() instanceof IItemInventory)) {
                 return null;
             }
@@ -62,7 +63,7 @@ public abstract class PartOrItemGuiFactory<T> extends PartGuiFactory<T> {
     public Object createClientGui(EntityPlayer player, World world, int x, int y, int z, ForgeDirection face) {
         ImmutablePair<Util.GuiHelper.GuiType, Integer> result = Util.GuiHelper.decodeType(y);
         if (result.left == Util.GuiHelper.GuiType.ITEM) {
-            ItemStack item = Util.getWirelessTerminal(player, x);
+            ItemStack item = Platform.getItemFromPlayerInventoryBySlotIndex(player, x);
             if (item == null || !(item.getItem() instanceof IItemInventory)) {
                 return null;
             }

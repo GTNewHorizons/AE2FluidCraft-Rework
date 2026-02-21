@@ -73,7 +73,6 @@ import appeng.integration.IntegrationRegistry;
 import appeng.integration.IntegrationType;
 import appeng.util.Platform;
 import appeng.util.ReadableNumberConverter;
-import cpw.mods.fml.common.Loader;
 
 public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextField, IGuiTooltipHandler {
 
@@ -94,7 +93,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
     private ItemStack tooltipStack;
     private boolean online;
-    private final boolean neiPresent;
     private int viewHeight;
 
     protected GuiTabButton craftingStatusBtn;
@@ -115,9 +113,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     public GuiLevelTerminal(InventoryPlayer inventoryPlayer, Container container) {
         super(inventoryPlayer, container);
         setScrollBar(new GuiScrollbar());
-        xSize = 208;
+        xSize = 209;
         ySize = 255;
-        neiPresent = Loader.isModLoaded("NotEnoughItems");
 
         searchFieldOutputs = new MEGuiTextField(86, 12, ButtonToolTips.SearchFieldOutputs.getLocal()) {
 
@@ -183,14 +180,14 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         terminalStyleBox.xPosition = guiLeft - 18;
         terminalStyleBox.yPosition = guiTop + 8;
         craftingStatusBtn = new GuiTabButton(
-                guiLeft + xSize - 24,
+                guiLeft + xSize - 25,
                 guiTop - 4,
                 2 + 11 * 16,
                 GuiText.CraftingStatus.getLocal(),
                 itemRender);
         craftingStatusBtn.setHideEdge(13);
 
-        if (ModAndClassUtil.isSearchBar && (AEConfig.instance.preserveSearchBar || isSubGui())) {
+        if (AEConfig.instance.preserveSearchBar || isSubGui()) {
             setSearchString();
         }
         buttonList.add(terminalStyleBox);
@@ -251,7 +248,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 ySize - 96 + 3,
                 GuiColors.InterfaceTerminalInventory.getColor());
 
-        if (!neiPresent && tooltipStack != null) {
+        if (!ModAndClassUtil.NEI && tooltipStack != null) {
             renderToolTip(tooltipStack, mouseX, mouseY);
         }
     }
@@ -290,7 +287,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     @Override
     protected void actionPerformed(final GuiButton btn) {
         if (actionPerformedCustomButtons(btn)) return;
-        if (ModAndClassUtil.isSaveText && btn == searchStringSave) {
+        if (btn == searchStringSave) {
 
             final boolean backwards = Mouse.isButtonDown(1);
             final GuiImgButton iBtn = (GuiImgButton) btn;
