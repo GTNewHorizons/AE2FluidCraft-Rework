@@ -1,6 +1,5 @@
 package com.glodblock.github.client.gui;
 
-import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -367,20 +366,8 @@ public class GuiLevelMaintainer extends GuiSub {
             } else {
                 message.add(NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE));
             }
-            try {
-                Method m;
-                try {
-                    m = FontRenderer.class.getDeclaredMethod("wrapFormattedStringToWidth", String.class, int.class);
-                } catch (NoSuchMethodException e) {
-                    m = FontRenderer.class.getDeclaredMethod("func_78280_d", String.class, int.class);
-                }
-
-                m.setAccessible(true);
-                this.line.setMessage(
-                        (String) m.invoke(render, String.join("\n", message), (int) Math.floor(xSize * 0.8)));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            this.line.setMessage(
+                    render.wrapFormattedStringToWidth(String.join("\n", message), (int) Math.floor(xSize * 0.8)));
             this.line.drawTextBox();
             if (this.isEnable) {
                 this.enable.visible = true;
@@ -421,47 +408,20 @@ public class GuiLevelMaintainer extends GuiSub {
                             + "\n"
                     : "";
             if (isShiftKeyDown()) {
-                try {
-                    Method m;
-                    try {
-                        m = FontRenderer.class.getDeclaredMethod("wrapFormattedStringToWidth", String.class, int.class);
-                    } catch (NoSuchMethodException e) {
-                        m = FontRenderer.class.getDeclaredMethod("func_78280_d", String.class, int.class);
-                    }
-
-                    m.setAccessible(true);
-                    this.setTooltip(
-                            (String) m.invoke(
-                                    render,
-                                    StatCollector.translateToLocal(this.tooltip) + "\n"
-                                            + current
-                                            + "\n"
-                                            + StatCollector.translateToLocal(this.tooltip + ".hint"),
-                                    xSize / 2));
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                this.setTooltip(
+                        render.wrapFormattedStringToWidth(
+                                StatCollector.translateToLocal(this.tooltip) + "\n"
+                                        + current
+                                        + "\n"
+                                        + StatCollector.translateToLocal(this.tooltip + ".hint"),
+                                xSize / 2));
             } else {
-                try {
-                    Method m;
-                    try {
-                        m = FontRenderer.class.getDeclaredMethod("wrapFormattedStringToWidth", String.class, int.class);
-                    } catch (NoSuchMethodException e) {
-                        m = FontRenderer.class.getDeclaredMethod("func_78280_d", String.class, int.class);
-                    }
-
-                    m.setAccessible(true);
-                    this.setTooltip(
-                            (String) m.invoke(
-                                    render,
-                                    NameConst.i18n(this.tooltip, "\n", false) + "\n"
-                                            + current
-                                            + NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE),
-                                    (int) Math.floor(xSize * 0.8)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                this.setTooltip(
+                        render.wrapFormattedStringToWidth(
+                                NameConst.i18n(this.tooltip, "\n", false) + "\n"
+                                        + current
+                                        + NameConst.i18n(NameConst.TT_SHIFT_FOR_MORE),
+                                (int) Math.floor(xSize * 0.8)));
             }
             this.textField.drawTextBox();
         }
