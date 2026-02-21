@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -30,7 +31,6 @@ import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
-import cofh.core.render.CoFHFontRenderer;
 
 public class GuiLevelMaintainer extends GuiSub {
 
@@ -39,14 +39,14 @@ public class GuiLevelMaintainer extends GuiSub {
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
-    private final CoFHFontRenderer render;
+    private final FontRenderer render;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
         this.cont = (ContainerLevelMaintainer) inventorySlots;
         this.xSize = 195;
         this.ySize = 214;
-        this.render = new CoFHFontRenderer(
+        this.render = new FontRenderer(
                 Minecraft.getMinecraft().gameSettings,
                 TEX_BG,
                 Minecraft.getMinecraft().getTextureManager(),
