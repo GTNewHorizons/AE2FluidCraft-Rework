@@ -24,7 +24,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
         modid = FluidCraft.MODID,
         version = FluidCraft.VERSION,
         name = FluidCraft.MODNAME,
-        dependencies = "required-after:appliedenergistics2@[rv3-beta-238,);required-after:CoFHCore;after:waila;after:thaumicenergistics;after:ae2wct")
+        dependencies = "required-after:appliedenergistics2@[rv3-beta-238,);after:waila;after:thaumicenergistics;after:ae2wct")
 public class FluidCraft {
 
     public static final String MODID = "ae2fc";
