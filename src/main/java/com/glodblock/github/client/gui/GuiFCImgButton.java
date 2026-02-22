@@ -67,6 +67,8 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             this.registerApp(22, "SWITCH", "DISABLE", "disable");
             this.registerApp(23, "CONFIG", "YES", "open_configuration");
             this.registerApp(24, "HIGHLIGHT", "YES", "block_highlight");
+            this.registerApp(26, "SWITCH_FLUID_INTERFACE", "NORMAL", "switch_fluid_interface");
+            this.registerApp(27, "SWITCH_FLUID_INTERFACE", "STATIC", "switch_fluid_interface");
             this.registerApp(30, "MAGNET_CARD", "INV", "magnet_card.inv");
             this.registerApp(30, "MAGNET_CARD", "ME", "magnet_card.me");
             this.registerApp(30, "MAGNET_CARD", "FILTER", "magnet_card.filter");

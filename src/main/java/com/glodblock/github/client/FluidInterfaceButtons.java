@@ -2,22 +2,20 @@ package com.glodblock.github.client;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Mouse;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.client.gui.GuiFCImgButton;
 import com.glodblock.github.network.CPacketCustomButtonUpdate;
 import com.glodblock.github.network.CPacketSwitchGuis;
 
 import appeng.api.config.Settings;
 import appeng.api.config.SidelessMode;
 import appeng.client.gui.widgets.GuiImgButton;
-import appeng.client.gui.widgets.GuiTabButton;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketConfigButton;
 import appeng.helpers.ICustomButtonDataObject;
@@ -28,7 +26,7 @@ import io.netty.buffer.ByteBuf;
 public class FluidInterfaceButtons implements ICustomButtonDataObject {
 
     private GuiImgButton sidelessMode;
-    private GuiTabButton switcher;
+    private GuiFCImgButton switcher;
     private final boolean fullBlock;
     public SidelessMode sidelessSate;
 
@@ -49,12 +47,14 @@ public class FluidInterfaceButtons implements ICustomButtonDataObject {
             buttonList.add(this.sidelessMode);
         }
 
-        this.switcher = new GuiTabButton(
-                guiLeft + 132,
-                guiTop,
-                !fullBlock ? ItemAndBlockHolder.FLUID_INTERFACE.stack() : ItemAndBlockHolder.INTERFACE.stack(),
-                StatCollector.translateToLocal("ae2fc.tooltip.switch_fluid_interface"),
-                RenderItem.getInstance());
+        this.switcher = new GuiFCImgButton(guiLeft + 132 + 6, guiTop - 4, "SWITCH_FLUID_INTERFACE", "NORMAL", false) {
+
+            @Override
+            public void drawButton(final Minecraft mc, final int mouseX, final int mouseY) {
+                this.set("NORMAL");
+                super.drawButton(mc, mouseX, mouseY);
+            }
+        };
         buttonList.add(this.switcher);
 
         FluidCraft.proxy.netHandler.sendToServer(new CPacketCustomButtonUpdate());
