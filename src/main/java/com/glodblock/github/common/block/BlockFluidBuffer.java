@@ -2,12 +2,13 @@ package com.glodblock.github.common.block;
 
 import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -15,7 +16,6 @@ import com.glodblock.github.client.render.RenderBlockFluidBuffer;
 import com.glodblock.github.common.item.FCBaseItemBlock;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileFluidBuffer;
-import com.glodblock.github.crossmod.waila.Tooltip;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
@@ -46,9 +46,9 @@ public class BlockFluidBuffer extends FCBaseBlock {
             if (player.isSneaking() && itemStack == null) return !tile.setFluid(null);
             IAEFluidStack ias = tile.getAEStoreFluidStack();
             if (fs == null && ias != null) {
-                player.addChatMessage(
-                        new ChatComponentText(
-                                Tooltip.fluidFormat(ias.getFluidStack().getLocalizedName(), ias.getStackSize())));
+                IChatComponent msg = Util.getFluidChatComponent(ias);
+                msg.appendText(": " + NumberFormat.getInstance().format(ias.getStackSize()) + " mB");
+                player.addChatMessage(msg);
                 return false;
             } else {
                 tile.setFluid(fs);

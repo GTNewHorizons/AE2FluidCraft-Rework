@@ -17,6 +17,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
@@ -348,6 +352,19 @@ public final class Util {
         fluid.setCountRequestable(i.getLong("Req"));
         fluid.setCraftable(i.getBoolean("Craft"));
         return fluid;
+    }
+
+    public static IChatComponent getFluidChatComponent(final IAEFluidStack fluidStack) {
+        if (fluidStack == null) {
+            return new ChatComponentText(StatCollector.translateToLocalFormatted("error.unknown"));
+        }
+
+        final String unlocalizedName = fluidStack.getUnlocalizedName();
+        if (unlocalizedName != null && !unlocalizedName.isEmpty() && StatCollector.canTranslate(unlocalizedName)) {
+            return new ChatComponentTranslation(unlocalizedName);
+        }
+
+        return new ChatComponentText(fluidStack.getDisplayName());
     }
 
     public static void mirrorFluidToPacket(IInventory packet, IAEFluidTank fluidTank) {
