@@ -231,21 +231,19 @@ public class WirelessMagnetCardFilterInventory extends BaseWirelessInventory imp
                             .sameOre(OreHelper.INSTANCE.isOre(is), OreHelper.INSTANCE.isOre(inputItemStack)))
                         return true;
                 }
+                boolean match;
                 if (ignoreMeta && ignoreNbt) {
-                    // ignore meta & nbt
-                    return is.getItem().equals(inputItemStack.getItem());
+                    match = is.getItem().equals(inputItemStack.getItem());
                 } else if (ignoreMeta) {
-                    // ignore meta only
-                    return ItemStack.areItemStackTagsEqual(is, inputItemStack)
+                    match = ItemStack.areItemStackTagsEqual(is, inputItemStack)
                             && is.getItem() == inputItemStack.getItem();
                 } else if (ignoreNbt) {
-                    // ignore nbt only
-                    return is.getItem() == inputItemStack.getItem()
+                    match = is.getItem() == inputItemStack.getItem()
                             && is.getItemDamage() == inputItemStack.getItemDamage();
                 } else {
-                    // ignore nothing/don't use oredict--must be exact match
-                    return is.isItemEqual(inputItemStack) && ItemStack.areItemStackTagsEqual(is, inputItemStack);
+                    match = is.isItemEqual(inputItemStack) && ItemStack.areItemStackTagsEqual(is, inputItemStack);
                 }
+                if (match) return true;
             }
         }
         return false;
