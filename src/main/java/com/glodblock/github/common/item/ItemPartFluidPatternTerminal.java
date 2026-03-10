@@ -37,7 +37,7 @@ public class ItemPartFluidPatternTerminal extends FCBaseItem implements IPartIte
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
             float xOffset, float yOffset, float zOffset) {
-        return AEApi.instance().partHelper().placeBus(player.getHeldItem(), x, y, z, side, player, world);
+        return AEApi.instance().partHelper().placeBus(stack, x, y, z, side, player, world);
     }
 
     @Override
