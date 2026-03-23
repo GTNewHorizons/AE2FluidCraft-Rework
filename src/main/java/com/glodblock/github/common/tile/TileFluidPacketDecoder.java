@@ -162,7 +162,7 @@ public class TileFluidPacketDecoder extends AENetworkTile
 
     @Override
     public void closeInventory() {
-        inventory.openInventory();
+        inventory.closeInventory();
     }
 
     @Override
