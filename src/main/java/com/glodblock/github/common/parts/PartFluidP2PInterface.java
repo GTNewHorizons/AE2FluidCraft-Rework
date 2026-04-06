@@ -25,6 +25,7 @@ import appeng.api.implementations.items.IMemoryCard;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.util.IConfigManager;
 import appeng.helpers.DualityInterface;
@@ -145,6 +146,11 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     @Override
     public DualityFluidInterface getDualityFluid() {
         return dualityFluid;
+    }
+
+    @Override
+    public IMEMonitor<IAEFluidStack> getFluidInventory() {
+        return this.dualityFluid.getFluidInventory();
     }
 
     @Override

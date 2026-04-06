@@ -27,6 +27,7 @@ import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.helpers.ICustomButtonDataObject;
 import appeng.helpers.ICustomButtonProvider;
@@ -76,6 +77,11 @@ public class PartFluidInterface extends PartInterface implements IDualHost, ICus
     @Override
     public AEFluidInventory getInternalFluid() {
         return fluidDuality.getTanks();
+    }
+
+    @Override
+    public IMEMonitor<IAEFluidStack> getFluidInventory() {
+        return this.fluidDuality.getFluidInventory();
     }
 
     @Override
