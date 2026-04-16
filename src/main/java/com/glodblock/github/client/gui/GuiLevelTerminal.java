@@ -512,7 +512,11 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 // draw a tooltip
                 GL11.glTranslatef(0f, 0f, TOOLTIP_Z);
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
-                drawHoveringText(Arrays.asList(toRender.getMessage()), relMouseX, relMouseY);
+                List<String> tooltip = new ArrayList<>();
+                tooltip.add(toRender.getMessage());
+                tooltip.add(StatCollector.translateToLocal(NameConst.TT_KEY + "level_terminal.hint_rename"));
+                tooltip.add(StatCollector.translateToLocal(NameConst.TT_KEY + "level_terminal.hint_open_gui"));
+                drawHoveringText(tooltip, relMouseX, relMouseY);
                 GL11.glTranslatef(0f, 0f, -TOOLTIP_Z);
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
             }
