@@ -51,6 +51,12 @@ public class PartFluidInterface extends PartInterface implements IDualHost, ICus
         this.customButtonDataObject = new FluidInterfaceButtons(false);
     }
 
+    @Override
+    public void getDrops(final List<ItemStack> drops, final boolean wrenched) {
+        this.fluidDuality.addDrops(drops);
+        super.getDrops(drops, wrenched);
+    }
+
     @MENetworkEventSubscribe
     public void stateChange(final MENetworkChannelsChanged c) {
         fluidDuality.onChannelStateChange(c);
