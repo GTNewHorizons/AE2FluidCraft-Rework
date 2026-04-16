@@ -153,13 +153,13 @@ ae2fc.tooltip.prio.hint=Enabled
 ae2fc.tooltip.submit=Submit
 ae2fc.tooltip.enable=Enabled
 ae2fc.tooltip.disable=Disabled
-ae2fc.tooltip.edit=Edit
+ae2fc.tooltip.rename=Rename
 ae2fc.tooltip.view=View
 ae2fc.tooltip.fill_pattern=Allow auto fill blank pattern
 ae2fc.tooltip.not_fill_pattern=Allow auto fill blank pattern
 ae2fc.tooltip.fill_pattern.hint=Enabled
 ae2fc.tooltip.not_fill_pattern.hint=Disabled
-ae2fc.tooltip.open_configuration=Open configuration
+ae2fc.tooltip.open_gui=Open GUI
 ae2fc.tooltip.block_highlight=Highlight Block
 
 ae2fc.tooltip.magnet_card.off=Magnet Card

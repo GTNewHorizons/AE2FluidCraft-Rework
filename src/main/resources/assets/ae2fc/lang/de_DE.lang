@@ -153,13 +153,11 @@ ae2fc.tooltip.prio.hint=An
 ae2fc.tooltip.submit=Speichern
 ae2fc.tooltip.enable=An
 ae2fc.tooltip.disable=Aus
-ae2fc.tooltip.edit=Editieren
 ae2fc.tooltip.view=Ansehen
 ae2fc.tooltip.fill_pattern=Automatisches Füllen von leerer Schablone
 ae2fc.tooltip.not_fill_pattern=Automatisches Füllen von leerer Schablone
 ae2fc.tooltip.fill_pattern.hint=An
 ae2fc.tooltip.not_fill_pattern.hint=Aus
-ae2fc.tooltip.open_configuration=Konfiguration öffnen
 ae2fc.tooltip.block_highlight=Block hervorheben
 
 ae2fc.tooltip.magnet_card.off=Magnetkarte

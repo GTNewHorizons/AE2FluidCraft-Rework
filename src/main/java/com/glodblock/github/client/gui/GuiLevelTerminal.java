@@ -499,10 +499,10 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             entry.renameButton.yPosition = viewY + 1;
             entry.configButton.yPosition = viewY + 1;
             GuiFCImgButton toRender;
-            if (isCtrlKeyDown() && isShiftKeyDown()) {
-                toRender = entry.configButton;
-            } else if (isShiftKeyDown()) {
+            if (isShiftKeyDown()) {
                 toRender = entry.renameButton;
+            } else if (isCtrlKeyDown()) {
+                toRender = entry.configButton;
             } else {
                 toRender = entry.highlightButton;
             }
@@ -1185,8 +1185,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 }
             }
             highlightButton = new GuiFCImgButton(1, 0, "HIGHLIGHT", "YES");
-            renameButton = new GuiFCImgButton(1, 0, "EDIT", "YES");
-            configButton = new GuiFCImgButton(1, 0, "CONFIG", "YES");
+            renameButton = new GuiFCImgButton(1, 0, "RENAME", "YES");
+            configButton = new GuiFCImgButton(1, 0, "OPEN_GUI", "YES");
             guiHeight = 18 * rows + 1;
             filteredRecipes = new boolean[rows * rowSize];
         }
@@ -1221,16 +1221,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         dim,
                         ForgeDirection.getOrientation(side),
                         "");
-                if (isCtrlKeyDown() && isShiftKeyDown()) {
-                    FluidCraft.proxy.netHandler.sendToServer(
-                            new CPacketLevelTerminalCommands(
-                                    Action.EDIT,
-                                    blockPos.x,
-                                    blockPos.y,
-                                    blockPos.z,
-                                    blockPos.getDimension(),
-                                    blockPos.getSide()));
-                } else if (isShiftKeyDown()) {
+                if (isShiftKeyDown()) {
                     FluidCraft.proxy.netHandler.sendToServer(
                             new CPacketLevelTerminalCommands(
                                     Action.RENAME,
@@ -1239,7 +1230,15 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                                     blockPos.z,
                                     blockPos.getDimension(),
                                     blockPos.getSide()));
-
+                } else if (isCtrlKeyDown()) {
+                    FluidCraft.proxy.netHandler.sendToServer(
+                            new CPacketLevelTerminalCommands(
+                                    Action.EDIT,
+                                    blockPos.x,
+                                    blockPos.y,
+                                    blockPos.z,
+                                    blockPos.getDimension(),
+                                    blockPos.getSide()));
                 } else {
                     BlockPosHighlighter.highlightBlocks(
                             mc.thePlayer,
