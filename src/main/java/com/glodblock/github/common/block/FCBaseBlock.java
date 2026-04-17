@@ -1,10 +1,8 @@
 package com.glodblock.github.common.block;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
@@ -16,8 +14,6 @@ import appeng.core.features.AEFeature;
 import appeng.core.features.ActivityState;
 import appeng.core.features.BlockStackSrc;
 import appeng.tile.AEBaseTile;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class FCBaseBlock extends AEBaseTileBlock implements IRegister<FCBaseBlock> {
 
@@ -44,15 +40,6 @@ public abstract class FCBaseBlock extends AEBaseTileBlock implements IRegister<F
     @Override
     public void setFeature(final EnumSet<AEFeature> f) {
         super.setFeature(f);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void addInformation(final ItemStack itemStack, final EntityPlayer player, final List<String> toolTip,
-            final boolean advancedToolTips) {}
-
-    public void addCheckedInformation(ItemStack itemStack, EntityPlayer player, List<String> toolTip,
-            boolean advancedToolTips) {
-        this.addInformation(itemStack, player, toolTip, advancedToolTips);
     }
 
     public ItemStack stack(int size) {
