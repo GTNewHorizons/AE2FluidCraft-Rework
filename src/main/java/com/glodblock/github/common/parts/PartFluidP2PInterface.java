@@ -52,6 +52,12 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     }
 
     @Override
+    public void getDrops(final List<ItemStack> drops, final boolean wrenched) {
+        this.dualityFluid.addDrops(drops);
+        super.getDrops(drops, wrenched);
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public IIcon getTypeTexture() {
         return ItemAndBlockHolder.INTERFACE.getBlockTextureFromSide(0);

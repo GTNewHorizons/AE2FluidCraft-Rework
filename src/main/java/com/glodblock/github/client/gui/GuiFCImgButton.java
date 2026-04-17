@@ -49,7 +49,7 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             this.registerApp(2, "FORCE_PRIO", "DO_PRIO", "prio");
             this.registerApp(3, "NOT_PRIO", "DONT_PRIO", "not_prio");
             this.registerApp(4, "SUBMIT", "SUBMIT", "submit");
-            this.registerApp(5, "EDIT", "YES", "edit");
+            this.registerApp(5, "RENAME", "YES", "rename");
             this.registerApp(6, "DISABLE", "DISABLE", "disable");
             this.registerApp(7, "ENABLE", "ENABLE", "enable");
             this.registerApp(10, "FLUID_TEM", "YES", "fluid_terminal_w");
@@ -65,7 +65,7 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             this.registerApp(22, "SWITCH", "OFF", "view");
             this.registerApp(21, "SWITCH", "ENABLE", "enable");
             this.registerApp(22, "SWITCH", "DISABLE", "disable");
-            this.registerApp(23, "CONFIG", "YES", "open_configuration");
+            this.registerApp(23, "OPEN_GUI", "YES", "open_gui");
             this.registerApp(24, "HIGHLIGHT", "YES", "block_highlight");
             this.registerApp(30, "MAGNET_CARD", "INV", "magnet_card.inv");
             this.registerApp(30, "MAGNET_CARD", "ME", "magnet_card.me");

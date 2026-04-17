@@ -499,10 +499,10 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             entry.renameButton.yPosition = viewY + 1;
             entry.configButton.yPosition = viewY + 1;
             GuiFCImgButton toRender;
-            if (isCtrlKeyDown() && isShiftKeyDown()) {
-                toRender = entry.configButton;
-            } else if (isShiftKeyDown()) {
+            if (isShiftKeyDown() && entry.isInPlayerDimension()) {
                 toRender = entry.renameButton;
+            } else if (isCtrlKeyDown() && entry.isInPlayerDimension()) {
+                toRender = entry.configButton;
             } else {
                 toRender = entry.highlightButton;
             }
@@ -512,7 +512,16 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 // draw a tooltip
                 GL11.glTranslatef(0f, 0f, TOOLTIP_Z);
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
-                drawHoveringText(Arrays.asList(toRender.getMessage()), relMouseX, relMouseY);
+                List<String> tooltip = new ArrayList<>();
+                tooltip.add(toRender.getMessage());
+                if (entry.isInPlayerDimension()) {
+                    tooltip.add(StatCollector.translateToLocal(NameConst.TT_KEY + "level_terminal.hint_rename"));
+                    tooltip.add(StatCollector.translateToLocal(NameConst.TT_KEY + "level_terminal.hint_open_gui"));
+                } else {
+                    tooltip.add(
+                            StatCollector.translateToLocal(NameConst.TT_KEY + "level_terminal.hint_other_dimension"));
+                }
+                drawHoveringText(tooltip, relMouseX, relMouseY);
                 GL11.glTranslatef(0f, 0f, -TOOLTIP_Z);
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
             }
@@ -1185,8 +1194,8 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 }
             }
             highlightButton = new GuiFCImgButton(1, 0, "HIGHLIGHT", "YES");
-            renameButton = new GuiFCImgButton(1, 0, "EDIT", "YES");
-            configButton = new GuiFCImgButton(1, 0, "CONFIG", "YES");
+            renameButton = new GuiFCImgButton(1, 0, "RENAME", "YES");
+            configButton = new GuiFCImgButton(1, 0, "OPEN_GUI", "YES");
             guiHeight = 18 * rows + 1;
             filteredRecipes = new boolean[rows * rowSize];
         }
@@ -1206,6 +1215,10 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             return this;
         }
 
+        private boolean isInPlayerDimension() {
+            return mc != null && mc.thePlayer != null && mc.thePlayer.dimension == this.dim;
+        }
+
         public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
             if (!section.visible || mouseButton < 0 || mouseButton > 2) {
                 return false;
@@ -1221,16 +1234,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                         dim,
                         ForgeDirection.getOrientation(side),
                         "");
-                if (isCtrlKeyDown() && isShiftKeyDown()) {
-                    FluidCraft.proxy.netHandler.sendToServer(
-                            new CPacketLevelTerminalCommands(
-                                    Action.EDIT,
-                                    blockPos.x,
-                                    blockPos.y,
-                                    blockPos.z,
-                                    blockPos.getDimension(),
-                                    blockPos.getSide()));
-                } else if (isShiftKeyDown()) {
+                if (isShiftKeyDown() && isInPlayerDimension()) {
                     FluidCraft.proxy.netHandler.sendToServer(
                             new CPacketLevelTerminalCommands(
                                     Action.RENAME,
@@ -1239,7 +1243,15 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                                     blockPos.z,
                                     blockPos.getDimension(),
                                     blockPos.getSide()));
-
+                } else if (isCtrlKeyDown() && isInPlayerDimension()) {
+                    FluidCraft.proxy.netHandler.sendToServer(
+                            new CPacketLevelTerminalCommands(
+                                    Action.EDIT,
+                                    blockPos.x,
+                                    blockPos.y,
+                                    blockPos.z,
+                                    blockPos.getDimension(),
+                                    blockPos.getSide()));
                 } else {
                     BlockPosHighlighter.highlightBlocks(
                             mc.thePlayer,

@@ -147,13 +147,11 @@ ae2fc.tooltip.prio.hint=启用
 ae2fc.tooltip.submit=提交
 ae2fc.tooltip.enable=启用
 ae2fc.tooltip.disable=禁用
-ae2fc.tooltip.edit=编辑
 ae2fc.tooltip.view=View
 ae2fc.tooltip.fill_pattern=允许自动填充空白样板
 ae2fc.tooltip.not_fill_pattern=允许自动填充空白样板
 ae2fc.tooltip.fill_pattern.hint=启用
 ae2fc.tooltip.not_fill_pattern.hint=禁用
-ae2fc.tooltip.open_configuration=Open configuration
 ae2fc.tooltip.block_highlight=Highlight Block
 
 ae2fc.tooltip.magnet_card.off=Magnet Card
