@@ -4,17 +4,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tile.TileWalrus;
+import com.glodblock.github.proxy.ClientProxy;
 
 public class RenderBlockWalrus extends TileEntitySpecialRenderer {
 
-    IModelCustom modelWalrus = AdvancedModelLoader.loadModel(FluidCraft.resource("models/walrus.obj"));
     ResourceLocation textureWalrus = FluidCraft.resource("textures/blocks/walrus.png");
 
     @Override
@@ -42,7 +40,7 @@ public class RenderBlockWalrus extends TileEntitySpecialRenderer {
                 break;
         }
         GL11.glScalef(scale, scale, scale);
-        this.modelWalrus.renderAll();
+        ClientProxy.getWalrusModel().renderAll();
         GL11.glPopMatrix();
     }
 }
