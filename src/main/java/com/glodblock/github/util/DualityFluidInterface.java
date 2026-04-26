@@ -75,7 +75,6 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     private final IAEFluidStack[] requireWork;
     private int isWorking = -1;
     private final Map<IAEStackType<?>, MEMonitorPassThrough<?>> monitorMap;
-    private boolean resetConfigCache = true;
 
     public DualityFluidInterface(final AENetworkProxy networkProxy, final IInterfaceHost ih) {
         this.gridProxy = networkProxy;
@@ -223,10 +222,7 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     @SuppressWarnings("unchecked")
     public IMEMonitor<IAEFluidStack> getFluidInventory() {
         if (this.hasConfig) {
-            if (this.resetConfigCache) {
-                this.resetConfigCache = false;
-                return new InterfaceInventory(this);
-            }
+            return new InterfaceInventory(this);
         }
         return (IMEMonitor<IAEFluidStack>) this.monitorMap.get(FLUID_STACK_TYPE);
     }
@@ -264,7 +260,6 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
                 had = this.hasConfig;
                 this.readConfig();
                 if (had != this.hasConfig) {
-                    this.resetConfigCache = true;
                     this.notifyNeighbors();
                 }
             } else if (inventory == this.tanks) {
