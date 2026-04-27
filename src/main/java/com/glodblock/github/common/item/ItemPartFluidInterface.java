@@ -46,7 +46,7 @@ public class ItemPartFluidInterface extends FCBaseItem implements IPartItem {
 
     @Override
     protected String getIconString() {
-        return NameConst.RES_KEY + "fluid_interface";
+        return NameConst.RES_KEY + "part_fluid_interface";
     }
 
     @Override
