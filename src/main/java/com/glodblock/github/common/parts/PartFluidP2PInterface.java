@@ -2,6 +2,7 @@ package com.glodblock.github.common.parts;
 
 import java.util.List;
 
+import appeng.api.storage.data.IAEStackType;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -37,6 +38,12 @@ import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
+
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+import static appeng.util.item.AEItemStackType.ITEM_STACK_TYPE;
 
 public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost, ICustomButtonProvider {
 
@@ -157,6 +164,18 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     @Override
     public IMEMonitor<IAEFluidStack> getFluidInventory() {
         return this.dualityFluid.getFluidInventory();
+    }
+
+    @Override
+    @Nullable
+    public IMEMonitor<?> getMEMonitor(@NotNull IAEStackType<?> type) {
+        if (type == ITEM_STACK_TYPE) {
+            return this.getItemInventory();
+        } else if (type == FLUID_STACK_TYPE) {
+            return this.getFluidInventory();
+        }
+
+        return this.dualityFluid.getMEMonitor(type);
     }
 
     @Override
