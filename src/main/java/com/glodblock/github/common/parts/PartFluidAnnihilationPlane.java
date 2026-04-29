@@ -1,6 +1,5 @@
 package com.glodblock.github.common.parts;
 
-import com.glodblock.github.client.textures.FCPartsTexture;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -11,6 +10,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
 
+import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.util.Util;
 
 import appeng.api.config.Actionable;

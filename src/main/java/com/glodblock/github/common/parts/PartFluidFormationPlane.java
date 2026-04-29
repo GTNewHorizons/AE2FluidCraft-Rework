@@ -1,7 +1,7 @@
 package com.glodblock.github.common.parts;
 
-import appeng.api.storage.data.IAEStackType;
-import com.glodblock.github.client.textures.FCPartsTexture;
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -10,6 +10,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
+
+import com.glodblock.github.client.textures.FCPartsTexture;
 
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGridNode;
@@ -21,12 +23,11 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStackType;
 import appeng.api.util.DimensionalCoord;
 import appeng.me.GridAccessException;
 import appeng.parts.automation.PartBaseFormationPlane;
 import appeng.util.Platform;
-
-import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
 
 public class PartFluidFormationPlane extends PartBaseFormationPlane implements IGridTickable {
 
@@ -68,7 +69,7 @@ public class PartFluidFormationPlane extends PartBaseFormationPlane implements I
 
     @Override
     protected void updateHandler() {
-       this.onNeighborChanged();
+        this.onNeighborChanged();
     }
 
     public boolean doWork() {
@@ -124,6 +125,11 @@ public class PartFluidFormationPlane extends PartBaseFormationPlane implements I
 
     @Override
     public boolean supportItemDrop() {
+        return false;
+    }
+
+    @Override
+    public boolean supportFuzzy() {
         return false;
     }
 
