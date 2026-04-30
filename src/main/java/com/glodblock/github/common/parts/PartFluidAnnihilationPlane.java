@@ -63,13 +63,15 @@ public class PartFluidAnnihilationPlane extends PartBaseAnnihilationPlane {
         } else if (meta == 0) {
             if (fluidBlock == Blocks.flowing_water) {
                 final IAEFluidStack toInject = Util.FluidUtil.createAEFluidStack(FluidRegistry.WATER);
-                final IAEFluidStack notInjected = monitor.injectItems(toInject, Actionable.SIMULATE, src);
+                final IAEFluidStack notInjected = Platform
+                        .poweredInsert(power, monitor, toInject, src, Actionable.SIMULATE);
                 if (notInjected != null) return;
                 Platform.poweredInsert(power, monitor, toInject, src, Actionable.MODULATE);
                 world.setBlockToAir(self.x + side.offsetX, self.y + side.offsetY, self.z + side.offsetZ);
             } else if (fluidBlock == Blocks.flowing_lava) {
                 final IAEFluidStack toInject = Util.FluidUtil.createAEFluidStack(FluidRegistry.LAVA);
-                final IAEFluidStack notInjected = monitor.injectItems(toInject, Actionable.SIMULATE, src);
+                final IAEFluidStack notInjected = Platform
+                        .poweredInsert(power, monitor, toInject, src, Actionable.SIMULATE);
                 if (notInjected != null) return;
                 Platform.poweredInsert(power, monitor, toInject, src, Actionable.MODULATE);
                 world.setBlockToAir(self.x + side.offsetX, self.y + side.offsetY, self.z + side.offsetZ);

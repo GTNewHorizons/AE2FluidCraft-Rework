@@ -82,7 +82,7 @@ public class PartFluidFormationPlane extends PartBaseFormationPlane implements I
 
         final World world = this.tile.getWorldObj();
         final Block worldBlock = world.getBlock(x, y, z);
-        if (worldBlock != null && worldBlock != Blocks.air) this.blocked = true;
+        if (worldBlock != null && worldBlock != Blocks.air) return this.blocked = true;
 
         final IMEMonitor<IAEFluidStack> monitor;
         final IEnergyGrid power;
