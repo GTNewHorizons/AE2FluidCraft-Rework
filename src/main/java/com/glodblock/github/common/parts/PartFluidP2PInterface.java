@@ -1,6 +1,11 @@
 package com.glodblock.github.common.parts;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+import static appeng.util.item.AEItemStackType.ITEM_STACK_TYPE;
+
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +16,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.glodblock.github.client.FluidInterfaceButtons;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -27,6 +34,7 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStackType;
 import appeng.api.util.IConfigManager;
 import appeng.helpers.DualityInterface;
 import appeng.helpers.ICustomButtonDataObject;
@@ -157,6 +165,18 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     @Override
     public IMEMonitor<IAEFluidStack> getFluidInventory() {
         return this.dualityFluid.getFluidInventory();
+    }
+
+    @Override
+    @Nullable
+    public IMEMonitor<?> getMEMonitor(@NotNull IAEStackType<?> type) {
+        if (type == ITEM_STACK_TYPE) {
+            return this.getItemInventory();
+        } else if (type == FLUID_STACK_TYPE) {
+            return this.getFluidInventory();
+        }
+
+        return this.dualityFluid.getMEMonitor(type);
     }
 
     @Override
