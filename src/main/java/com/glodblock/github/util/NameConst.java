@@ -55,6 +55,8 @@ public class NameConst {
     public static final String ITEM_FLUID_STORAGE_HOUSING = "fluid_storage_housing";
     public static final String ITEM_QUANTUM_BRIDGE_CARD = "quantum_bridge_card";
     public static final String ITEM_ENERGY_CARD = "energy_card";
+    public static final String ITEM_PART_FLUID_FORMATION_PLANE = "part_fluid_formation_plane";
+    public static final String ITEM_PART_FLUID_ANNIHILATION_PLANE = "part_fluid_annihilation_plane";
 
     public static final String TT_KEY = FluidCraft.MODID + ".tooltip.";
     public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";

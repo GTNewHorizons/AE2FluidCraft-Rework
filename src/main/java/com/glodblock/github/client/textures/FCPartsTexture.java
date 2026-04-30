@@ -30,7 +30,11 @@ public enum FCPartsTexture {
     BlockInterface_Face("fluid_interface"),
     PartFluidLevelEmitter("fluid_level_emitter"),
     BlockLevelMaintainer("level_maintainer"),
-    BlockLevelMaintainer_Active("level_maintainer_active");
+    BlockLevelMaintainer_Active("level_maintainer_active"),
+    PartFluidFormationPlane("fluid_formation_plane"),
+    PartFluidAnnihilationPlane("fluid_annihilation_plane"),
+    PartFluidFormationPlaneOn("fluid_formation_plane_on"),
+    PartFluidAnnihilationPlaneOn("fluid_annihilation_plane_on"),;
 
     private final String name;
     public net.minecraft.util.IIcon IIcon;

@@ -17,11 +17,13 @@ import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
 import com.glodblock.github.common.item.ItemBasicFluidStoragePart;
 import com.glodblock.github.common.item.ItemCreativeFluidStorageCell;
 import com.glodblock.github.common.item.ItemEnergyCard;
+import com.glodblock.github.common.item.ItemFluidAnnihilationPlane;
 import com.glodblock.github.common.item.ItemFluidConversionMonitor;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemFluidExportBus;
 import com.glodblock.github.common.item.ItemFluidExtremeStorageCell;
+import com.glodblock.github.common.item.ItemFluidFormationPlane;
 import com.glodblock.github.common.item.ItemFluidImportBus;
 import com.glodblock.github.common.item.ItemFluidLevelEmitter;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -84,6 +86,9 @@ public class ItemAndBlockHolder {
     public static ItemWirelessUltraTerminal WIRELESS_ULTRA_TERM = new ItemWirelessUltraTerminal().register();
     public static ItemWirelessInterfaceTerminal WIRELESS_INTERFACE_TERM = new ItemWirelessInterfaceTerminal()
             .register();
+    public static ItemFluidFormationPlane FLUID_FORMATION_PLANE = new ItemFluidFormationPlane().register();
+    public static ItemFluidAnnihilationPlane FLUID_ANNIHILATION_PLANE = new ItemFluidAnnihilationPlane().register();
+
     public static ItemFluidPacket PACKET = new ItemFluidPacket().register();
     public static ItemBasicFluidStorageCell CELL1K = new ItemBasicFluidStorageCell(CellType.Cell1kPart, 0, 1)
             .register();
