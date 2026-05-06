@@ -10,6 +10,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidPacket;
 
 import appeng.api.networking.GridFlags;
@@ -60,13 +61,22 @@ public class TileFluidPacketDecoder extends AENetworkTile
         return new TickingRequest(5, 120, false, true);
     }
 
+    private FluidStack getFluidStack() {
+        final ItemStack stack = inventory.getStackInSlot(0);
+        if (stack == null) return null;
+
+        if (stack.getItem() instanceof ItemFluidPacket) {
+            return ItemFluidPacket.getFluidStack(stack);
+        } else if (stack.getItem() instanceof ItemFluidDrop) {
+            return ItemFluidDrop.getFluidStack(stack);
+        }
+
+        return null;
+    }
+
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int ticksSinceLastCall) {
-        ItemStack stack = inventory.getStackInSlot(0);
-        if (stack == null || !(stack.getItem() instanceof ItemFluidPacket)) {
-            return TickRateModulation.SLEEP;
-        }
-        FluidStack fluid = ItemFluidPacket.getFluidStack(stack);
+        final FluidStack fluid = getFluidStack();
         if (fluid == null || fluid.amount <= 0) {
             inventory.setInventorySlotContents(0, null);
             return TickRateModulation.SLEEP;
@@ -182,34 +192,27 @@ public class TileFluidPacketDecoder extends AENetworkTile
 
     private FluidStack drain(FluidStack requestFluid, boolean doDrain) {
         if (requestFluid == null || requestFluid.amount <= 0) return null;
-        ItemStack fluidPacket = this.inventory.getStackInSlot(0);
-        if (fluidPacket != null) {
-            FluidStack fs = ItemFluidPacket.getFluidStack(fluidPacket);
-            if (fs == null) return null;
-            if (fs.isFluidEqual(requestFluid)) {
-                if (fs.amount > requestFluid.amount) {
-                    fs.amount -= requestFluid.amount;
-                    if (doDrain) this.inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(fs));
-                    return requestFluid;
-                } else {
-                    if (doDrain) this.inventory.setInventorySlotContents(0, null);
-                    return fs;
-                }
+        final FluidStack fs = this.getFluidStack();
+        if (fs != null && fs.isFluidEqual(requestFluid)) {
+            if (fs.amount > requestFluid.amount) {
+                fs.amount -= requestFluid.amount;
+                if (doDrain) this.inventory.setInventorySlotContents(0, ItemFluidPacket.newStack(fs));
+                return requestFluid;
+            } else {
+                if (doDrain) this.inventory.setInventorySlotContents(0, null);
+                return fs;
             }
         }
+
         return null;
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-        ItemStack fluidPacket = this.inventory.getStackInSlot(0);
-        if (fluidPacket != null) {
-            FluidStack requestFluid = ItemFluidPacket.getFluidStack(fluidPacket);
-            if (requestFluid == null) return null;
-            requestFluid.amount = maxDrain;
-            return this.drain(requestFluid, doDrain);
-        }
-        return null;
+        final FluidStack requestFluid = this.getFluidStack();
+        if (requestFluid == null) return null;
+        requestFluid.amount = maxDrain;
+        return this.drain(requestFluid, doDrain);
     }
 
     @Override
@@ -224,13 +227,8 @@ public class TileFluidPacketDecoder extends AENetworkTile
 
     @Override
     public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-        ItemStack fluidPacket = this.inventory.getStackInSlot(0);
-        if (fluidPacket == null) {
-            return new FluidTankInfo[0];
-        } else {
-            FluidStack fs = ItemFluidPacket.getFluidStack(fluidPacket);
-            if (fs == null) return new FluidTankInfo[0];
-            return new FluidTankInfo[] { new FluidTankInfo(fs, fs.amount) };
-        }
+        final FluidStack fs = this.getFluidStack();
+        if (fs == null) return new FluidTankInfo[0];
+        return new FluidTankInfo[] { new FluidTankInfo(fs, fs.amount) };
     }
 }

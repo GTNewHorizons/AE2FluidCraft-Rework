@@ -1,5 +1,8 @@
 package com.glodblock.github.inventory.slot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -17,9 +20,21 @@ public class FCSlotRestrictedInput extends SlotRestrictedInput {
         MutablePair<Boolean, ItemStack> isItemValid(final ItemStack inputItem);
     }
 
-    private final Filter filter;
+    private final List<Filter> filter = new ArrayList<>();
     private final InventoryPlayer p;
     private ItemStack validItem = null;
+
+    public FCSlotRestrictedInput(List<ItemStack> validList, IInventory i, int slotIndex, int x, int y,
+            InventoryPlayer p) {
+        super(PlacableItemType.INSCRIBER_PLATE, i, slotIndex, x, y, p);
+        validList.forEach(
+                valid -> filter.add(
+                        (inputItem) -> new MutablePair<>(
+                                valid.getItem().getClass().isAssignableFrom(inputItem.getItem().getClass()),
+                                valid)));
+        this.p = p;
+        this.validItem = validList.get(0);
+    }
 
     public FCSlotRestrictedInput(ItemStack valid, IInventory i, int slotIndex, int x, int y, InventoryPlayer p) {
         this(
@@ -36,14 +51,15 @@ public class FCSlotRestrictedInput extends SlotRestrictedInput {
 
     public FCSlotRestrictedInput(Filter filter, IInventory i, int slotIndex, int x, int y, InventoryPlayer p) {
         super(PlacableItemType.INSCRIBER_PLATE, i, slotIndex, x, y, p);
-        this.filter = filter;
+        this.filter.add(filter);
         this.p = p;
     }
 
     @Override
     public boolean isItemValid(final ItemStack inputItem) {
-        MutablePair<Boolean, ItemStack> result = this.filter.isItemValid(inputItem);
-        return result.left;
+        for (Filter filter : this.filter) if (filter.isItemValid(inputItem).left) return true;
+
+        return false;
     }
 
     public boolean getAllowEdit() {
