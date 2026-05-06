@@ -85,7 +85,7 @@ ae2fc.waila.disable=Disable
 
 ae2fc.tooltip.shift_for_more=§r> Hold §3Shift§r for more information
 ae2fc.tooltip.ctrl_for_more=§r> Hold §3Ctrl§r for more information
-ae2fc.tooltip.fluid_packet_decoder.desc=The Fluid Decoder can decode Fluid packets. It has to be connected to a ME System and a place to store the liquid in, otherwise it won't work.
+ae2fc.tooltip.fluid_packet_decoder.desc=The Fluid Decoder can decode Fluid packets/drops. It has to be connected to a ME System and a place to store the liquid in, otherwise it won't work.
 ae2fc.tooltip.fluid_buffer.desc=This is a high speed fluid IO
 ae2fc.tooltip.walrus.desc=GTNH is like a job
 ae2fc.tooltip.fluid_auto_filler=Creates a fluid canning pattern with the given container automatically.
@@ -132,7 +132,7 @@ ae2fc.tooltip.fluid_terminal=uh So we don't need EC2 anymore?
 ae2fc.tooltip.level_terminal=uh...
 ae2fc.tooltip.invalid_fluid=Invalid fluid!
 ae2fc.tooltip.encode_pattern=Encode Pattern
-ae2fc.tooltip.fluid_packet=Use a Fluid Packet Decoder to\nconvert this back into fluid.
+ae2fc.tooltip.fluid_packet=Use a Fluid Packet/Drops Decoder to\nconvert this back into fluid.
 ae2fc.tooltip.empty=Empty
 ae2fc.tooltip.dump_tank=Dump Tank Contents
 ae2fc.tooltip.switch_fluid_interface=Switch ME Dual Interface GUI
