@@ -104,6 +104,8 @@ public class ItemFluidPacket extends FCBaseItem {
         } else {
             tooltip.add(EnumChatFormatting.RED + StatCollector.translateToLocalFormatted(NameConst.TT_INVALID_FLUID));
         }
+
+        tooltip.add(StatCollector.translateToLocal(NameConst.TT_FLUID_PACKET_TIPS));
     }
 
     public static void setFluidAmount(ItemStack stack, long amount) {
