@@ -62,6 +62,7 @@ public class NameConst {
     public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";
     public static final String TT_LEVEL_TERMINAL = TT_KEY + "level_terminal";
     public static final String TT_INVALID_FLUID = TT_KEY + "invalid_fluid";
+    public static final String TT_FLUID_PACKET_TIPS = TT_KEY + "item_fluid_packet";
     public static final String TT_FLUID_PACKET = TT_KEY + "fluid_packet";
     public static final String TT_ENCODE_PATTERN = TT_KEY + "encode_pattern";
     public static final String TT_EMPTY = TT_KEY + "empty";
