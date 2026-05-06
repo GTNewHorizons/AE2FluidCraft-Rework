@@ -2,6 +2,7 @@ package com.glodblock.github.common.tile;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -177,7 +178,8 @@ public class TileFluidPacketDecoder extends AENetworkTile
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
-        return stack.getItem() instanceof ItemFluidPacket;
+        final Item item = stack.getItem();
+        return item instanceof ItemFluidPacket || item instanceof ItemFluidDrop;
     }
 
     @Override
