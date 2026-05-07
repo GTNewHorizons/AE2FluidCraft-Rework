@@ -155,9 +155,9 @@ public class ContainerLevelTerminal extends FCBaseContainer {
                                 if (update == null) update = new SPacketLevelTerminalUpdate();
                                 update.addOverwriteSlotEntry(knownTracker.id, i, null);
                             } else if (!Platform.isStacksIdentical(prev[i].stack, curr[i].stack)
-                                    || prev[i].quantity == curr[i].quantity
-                                    || prev[i].batchSize == curr[i].batchSize
-                                    || prev[i].state == curr[i].state) {
+                                    || prev[i].quantity != curr[i].quantity
+                                    || prev[i].batchSize != curr[i].batchSize
+                                    || prev[i].state != curr[i].state) {
                                         knownTracker.infoList[i] = curr[i];
                                         if (update == null) update = new SPacketLevelTerminalUpdate();
                                         update.addOverwriteSlotEntry(knownTracker.id, i, curr[i]);
