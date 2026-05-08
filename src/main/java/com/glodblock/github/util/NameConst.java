@@ -23,12 +23,7 @@ public class NameConst {
     public static final String BLOCK_SUPER_STOCK_REPLENISHER = "super_stock_replenisher";
     public static final String ITEM_FLUID_DROP = "fluid_drop";
     public static final String ITEM_FLUID_ENCODED_PATTERN = "fluid_encoded_pattern";
-    public static final String ITEM_PART_FLUID_STORAGE_MONITOR = "part_fluid_storage_monitor";
-    public static final String ITEM_PART_FLUID_CONVERSION_MONITOR = "part_fluid_conversion_monitor";
-    public static final String ITEM_PART_FLUID_TERMINAL = "part_fluid_terminal";
     public static final String ITEM_PART_LEVEL_TERMINAL = "part_level_terminal";
-    public static final String ITEM_PART_FLUID_PATTERN_TERMINAL = "part_fluid_pattern_terminal";
-    public static final String ITEM_PART_FLUID_PATTERN_TERMINAL_EX = "part_fluid_pattern_terminal_ex";
     public static final String ITEM_PART_FLUID_INTERFACE = "part_fluid_interface";
     public static final String ITEM_PART_FLUID_P2P_INTERFACE = "part_fluid_p2p_interface";
     public static final String ITEM_PART_FLUID_IMPORT = "part_fluid_import";
@@ -46,7 +41,6 @@ public class NameConst {
     public static final String ITEM_INFINITY_WATER_FLUID_STORAGE = ITEM_INFINITY_FLUID_STORAGE + ".water";
     public static final String ITEM_CREATIVE_FLUID_STORAGE = "creative_" + ITEM_FLUID_STORAGE;
     public static final String ITEM_FLUID_PORTABLE_CELL = "portable_fluid_cell";
-    public static final String ITEM_WIRELESS_FLUID_TERMINAL = "wireless_fluid_terminal";
     public static final String ITEM_WIRELESS_INTERFACE_TERMINAL = "wireless_interface_terminal";
     public static final String ITEM_WIRELESS_LEVEL_TERMINAL = "wireless_level_terminal";
     public static final String ITEM_WIRELESS_ULTRA_TERMINAL = "wireless_ultra_terminal";
@@ -59,7 +53,6 @@ public class NameConst {
     public static final String ITEM_PART_FLUID_ANNIHILATION_PLANE = "part_fluid_annihilation_plane";
 
     public static final String TT_KEY = FluidCraft.MODID + ".tooltip.";
-    public static final String TT_FLUID_TERMINAL = TT_KEY + "fluid_terminal";
     public static final String TT_LEVEL_TERMINAL = TT_KEY + "level_terminal";
     public static final String TT_INVALID_FLUID = TT_KEY + "invalid_fluid";
     public static final String TT_FLUID_PACKET_TIPS = TT_KEY + "item_fluid_packet";
