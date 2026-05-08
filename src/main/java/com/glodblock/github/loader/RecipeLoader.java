@@ -26,17 +26,12 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.ENCODER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.ENERGY_CARD;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_AUTO_FILLER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_BUFFER;
-import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_CONVERSION_MONITOR;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_EXPORT_BUS;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_IMPORT_BUS;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_INTERFACE;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_INTERFACE_P2P;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_LEVEL_EMITTER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_BUS;
-import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_MONITOR;
-import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERM;
-import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL;
-import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_TERMINAL_EX;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_VOID_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INTERFACE;
@@ -50,7 +45,6 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_BRIDGE_CARD
 import static com.glodblock.github.loader.ItemAndBlockHolder.QUANTUM_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.SINGULARITY_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WALRUS;
-import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_FLUID_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_INTERFACE_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_LEVEL_TERM;
 import static com.glodblock.github.loader.ItemAndBlockHolder.WIRELESS_PATTERN_TERM;
@@ -281,27 +275,6 @@ public class RecipeLoader implements Runnable {
         GameRegistry.addShapelessRecipe(FLUID_STORAGE_BUS.stack(), INTERFACE, STICKY_PISTON, PISTON);
         GameRegistry.addRecipe(
                 new ShapedOreRecipe(
-                        FLUID_STORAGE_MONITOR.stack(),
-                        "EIP",
-                        "P  ",
-                        'I',
-                        "itemIlluminatedPanel",
-                        'E',
-                        AE2_LEVEL_EMITTER,
-                        'P',
-                        "dyeBlue"));
-        GameRegistry.addRecipe(
-                new ShapedOreRecipe(
-                        FLUID_CONVERSION_MONITOR.stack(),
-                        "ASF",
-                        'A',
-                        AE2_CORE_ANN,
-                        'S',
-                        FLUID_STORAGE_MONITOR,
-                        'F',
-                        AE2_CORE_FOM));
-        GameRegistry.addRecipe(
-                new ShapedOreRecipe(
                         BUFFER.stack(),
                         "ILI",
                         "AGF",
@@ -342,11 +315,7 @@ public class RecipeLoader implements Runnable {
                 .addShapelessRecipe(LEVEL_MAINTAINER.stack(), AE2_CRAFTING_CP_UNIT, ENCODER, AE2_PATTERN_CAPACITY_CARD);
 
         // Deprecated
-        GameRegistry.addShapelessRecipe(AE2_TERMINAL, FLUID_TERM.stack());
-        GameRegistry.addShapelessRecipe(AE2_WIRELESS_TERMINAL, WIRELESS_FLUID_TERM.stack());
         GameRegistry.addShapelessRecipe(AE2_LEVEL_EMITTER, FLUID_LEVEL_EMITTER.stack());
-        GameRegistry.addShapelessRecipe(AE2_PATTERN_TERM, FLUID_TERMINAL.stack());
-        GameRegistry.addShapelessRecipe(AE2_PATTERN_TERM_EX, FLUID_TERMINAL_EX.stack());
 
         if (Config.fluidCells) {
             OreDictionary.registerOre("anyCertusCrystal", AE2_PURE_CERTUS);
