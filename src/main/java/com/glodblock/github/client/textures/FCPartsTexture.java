@@ -12,12 +12,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public enum FCPartsTexture {
 
-    PartFluidTerminal_Bright("fluid_terminal_bright"),
-    PartFluidTerminal_Dark("fluid_terminal_dark"),
-    PartFluidTerminal_Colored("fluid_terminal_medium"),
-    PartFluidPatternTerminal_Bright("pattern_terminal_bright"),
-    PartFluidPatternTerminal_Dark("pattern_terminal_dark"),
-    PartFluidPatternTerminal_Colored("pattern_terminal_medium"),
     PartLevelTerminal_Bright("level_terminal_bright"),
     PartLevelTerminal_Dark("level_terminal_dark"),
     PartLevelTerminal_Colored("level_terminal_medium"),
@@ -28,13 +22,12 @@ public enum FCPartsTexture {
     BlockFluidInterfaceAlternate_Arrow("fluid_interface_arrow"),
     BlockInterfaceAlternate("fluid_interface_a"),
     BlockInterface_Face("fluid_interface"),
-    PartFluidLevelEmitter("fluid_level_emitter"),
     BlockLevelMaintainer("level_maintainer"),
     BlockLevelMaintainer_Active("level_maintainer_active"),
     PartFluidFormationPlane("fluid_formation_plane"),
     PartFluidAnnihilationPlane("fluid_annihilation_plane"),
     PartFluidFormationPlaneOn("fluid_formation_plane_on"),
-    PartFluidAnnihilationPlaneOn("fluid_annihilation_plane_on"),;
+    PartFluidAnnihilationPlaneOn("fluid_annihilation_plane_on");
 
     private final String name;
     public net.minecraft.util.IIcon IIcon;

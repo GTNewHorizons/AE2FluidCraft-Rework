@@ -1,19 +1,12 @@
 item.fluid_drop.name=drop of %s
 item.fluid_encoded_pattern.name=Encoded Pattern
-item.part_fluid_terminal.name=ME Fluid Terminal
-item.part_fluid_pattern_terminal.name=ME Fluid Pattern Terminal
-item.part_fluid_pattern_terminal_ex.name=ME Fluid Processing Pattern Terminal
 item.part_fluid_interface.name=ME Dual Interface
 item.part_fluid_p2p_interface.name=P2P Tunnel - ME Dual Interface
 item.part_fluid_import.name=ME Fluid Import Bus
 item.part_fluid_export.name=ME Fluid Export Bus
 item.part_fluid_storage_bus.name=ME Fluid Storage Bus
-item.part_fluid_level_emitter.name=ME Fluid Level Emitter
-item.part_fluid_storage_monitor.name=ME Fluid Storage Monitor
-item.part_fluid_conversion_monitor.name=ME Fluid Conversion Monitor
 item.part_level_terminal.name=ME Level Terminal
 item.portable_fluid_cell.name=Portable Fluid Cell
-item.wireless_fluid_terminal.name=Wireless Fluid Terminal
 item.wireless_level_terminal.name=Wireless Level Terminal
 item.wireless_fluid_pattern_terminal.name=Wireless Pattern Terminal
 item.wireless_interface_terminal.name=Wireless Interface Terminal
@@ -223,16 +216,3 @@ ae2fc.key.OpenPatternExTerminal=Open Wireless Universal Processing Pattern Termi
 ae2fc.key.Restock=Toggle Restock
 
 itemGroup.ae2fc=Fluid Craft For AE2
-
-item.ec2placeholder.oc.upgrade.name=[EC2 PLACEHOLDER] ME Upgrade
-item.ec2placeholder.part.base.name=[EC2 PLACEHOLDER] ME Fluid Bus
-item.ec2placeholder.pattern.fluid.name=[EC2 PLACEHOLDER] ME Fluid Pattern
-item.ec2placeholder.storage.casing.name=[EC2 PLACEHOLDER] Storage Housing
-item.ec2placeholder.storage.component.name=[EC2 PLACEHOLDER] ME Storage Component
-item.ec2placeholder.storage.fluid.name=[EC2 PLACEHOLDER] ME Fluid Storage
-item.ec2placeholder.storage.physical.advanced.quantum.name=[EC2 PLACEHOLDER] ME Quantum Storage
-item.ec2placeholder.storage.physical.advanced.singularity.name=[EC2 PLACEHOLDER] ME Digital Singularity
-item.ec2placeholder.storage.physical.name=[EC2 PLACEHOLDER] ME Storage
-item.ec2placeholder.storage.physical.void.name=[EC2 PLACEHOLDER] ME Void Storage
-item.ec2placeholder.terminal.fluid.wireless.name=[EC2 PLACEHOLDER] Wireless Fluid Terminal
-item.ec2placeholder.terminal.universal.wireless.name=[EC2 PLACEHOLDER] Wireless Universal Terminal
