@@ -1,19 +1,12 @@
 item.fluid_drop.name=Tropfen %s
 item.fluid_encoded_pattern.name=Kodierte ME-Flüssigkeitsschablone
-item.part_fluid_terminal.name=ME-Flüssigkeitskonsole
-item.part_fluid_pattern_terminal.name=ME-Flüssigkeitsschablonenkonsole
-item.part_fluid_pattern_terminal_ex.name=ME-Flüssigkeitsverarbeitungsschablonenkonsole
 item.part_fluid_interface.name=ME-Dualschnittstelle
 item.part_fluid_p2p_interface.name=P2P-Tunnel - ME-Dualschnittstelle
 item.part_fluid_import.name=ME-Flüssigkeits-Importbus
 item.part_fluid_export.name=ME-Flüssigkeits-Exportbus
 item.part_fluid_storage_bus.name=ME-Flüssigkeitsspeicherbus
-item.part_fluid_level_emitter.name=ME-Flüssigkeitsfüllstandsemitter
-item.part_fluid_storage_monitor.name=ME-Flüssigkeitsspeicherkonsole
-item.part_fluid_conversion_monitor.name=ME-Flüssigkeitsumwandlungskonsole
 item.part_level_terminal.name=ME-Füllstandkonsole
 item.portable_fluid_cell.name=Tragbare Flüssigkeitszelle
-item.wireless_fluid_terminal.name=Flüssigkeits-Handkonsole
 item.wireless_level_terminal.name=Füllstands-Handkonsole
 item.wireless_fluid_pattern_terminal.name=Flüssigkeitsschablonen-Handkonsole
 item.wireless_interface_terminal.name=Schnittstellen-Handkonsole
@@ -214,16 +207,3 @@ ae2fc.key.OpenPatternExTerminal=Open Wireless Universal Processing Pattern Termi
 ae2fc.key.Restock=Wiederauffüllen
 
 itemGroup.ae2fc=Flüssigkeitsfertigung für AE2
-
-item.ec2placeholder.oc.upgrade.name=[EC2 PLACEHOLDER] ME-Upgrade
-item.ec2placeholder.part.base.name=[EC2 PLACEHOLDER] ME-Flüssigkeitsbus
-item.ec2placeholder.pattern.fluid.name=[EC2 PLACEHOLDER] ME-Flüssigkeitsschablone
-item.ec2placeholder.storage.casing.name=[EC2 PLACEHOLDER] Speichergehäuse
-item.ec2placeholder.storage.component.name=[EC2 PLACEHOLDER] ME-Speicherkomponente
-item.ec2placeholder.storage.fluid.name=[EC2 PLACEHOLDER] ME-Flüssigkeitsspeicher
-item.ec2placeholder.storage.physical.advanced.quantum.name=[EC2 PLACEHOLDER] ME-Quantenspeicher
-item.ec2placeholder.storage.physical.advanced.singularity.name=[EC2 PLACEHOLDER] ME-Digitale Singularität
-item.ec2placeholder.storage.physical.name=[EC2 PLACEHOLDER] ME-Speicher
-item.ec2placeholder.storage.physical.void.name=[EC2 PLACEHOLDER] Void-ME-Speicher
-item.ec2placeholder.terminal.fluid.wireless.name=[EC2 PLACEHOLDER] Flüssigkeits-Handkonsole
-item.ec2placeholder.terminal.universal.wireless.name=[EC2 PLACEHOLDER] Universelle Handkonsole
