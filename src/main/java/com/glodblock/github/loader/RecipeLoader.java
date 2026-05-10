@@ -30,7 +30,6 @@ import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_EXPORT_BUS;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_IMPORT_BUS;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_INTERFACE;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_INTERFACE_P2P;
-import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_LEVEL_EMITTER;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_STORAGE_BUS;
 import static com.glodblock.github.loader.ItemAndBlockHolder.FLUID_VOID_CELL;
 import static com.glodblock.github.loader.ItemAndBlockHolder.INFINITY_WATER_CELL;
@@ -313,9 +312,6 @@ public class RecipeLoader implements Runnable {
                         : ModAndClassUtil.EC2 ? ItemEnum.STORAGECOMPONENT.getDamagedStack(4) : null);
         GameRegistry
                 .addShapelessRecipe(LEVEL_MAINTAINER.stack(), AE2_CRAFTING_CP_UNIT, ENCODER, AE2_PATTERN_CAPACITY_CARD);
-
-        // Deprecated
-        GameRegistry.addShapelessRecipe(AE2_LEVEL_EMITTER, FLUID_LEVEL_EMITTER.stack());
 
         if (Config.fluidCells) {
             OreDictionary.registerOre("anyCertusCrystal", AE2_PURE_CERTUS);

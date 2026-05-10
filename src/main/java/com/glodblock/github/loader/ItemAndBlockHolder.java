@@ -24,7 +24,6 @@ import com.glodblock.github.common.item.ItemFluidExportBus;
 import com.glodblock.github.common.item.ItemFluidExtremeStorageCell;
 import com.glodblock.github.common.item.ItemFluidFormationPlane;
 import com.glodblock.github.common.item.ItemFluidImportBus;
-import com.glodblock.github.common.item.ItemFluidLevelEmitter;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.item.ItemFluidStorageHousing;
 import com.glodblock.github.common.item.ItemFluidVoidStorageCell;
@@ -67,7 +66,6 @@ public class ItemAndBlockHolder {
     public static ItemFluidImportBus FLUID_IMPORT_BUS = new ItemFluidImportBus().register();
     public static ItemFluidExportBus FLUID_EXPORT_BUS = new ItemFluidExportBus().register();
     public static ItemPartFluidStorageBus FLUID_STORAGE_BUS = new ItemPartFluidStorageBus().register();
-    public static ItemFluidLevelEmitter FLUID_LEVEL_EMITTER = new ItemFluidLevelEmitter().register();
     public static ItemPortableFluidCell PORTABLE_FLUID_CELL = new ItemPortableFluidCell().register();
     public static ItemWirelessLevelTerminal WIRELESS_LEVEL_TERM = new ItemWirelessLevelTerminal().register();
     public static ItemWirelessPatternTerminal WIRELESS_PATTERN_TERM = new ItemWirelessPatternTerminal().register();

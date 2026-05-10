@@ -29,7 +29,6 @@ public class NameConst {
     public static final String ITEM_PART_FLUID_IMPORT = "part_fluid_import";
     public static final String ITEM_PART_FLUID_EXPORT = "part_fluid_export";
     public static final String ITEM_PART_FLUID_STORAGE_BUS = "part_fluid_storage_bus";
-    public static final String ITEM_PART_FLUID_LEVEL_EMITTER = "part_fluid_level_emitter";
     public static final String ITEM_FLUID_PACKET = "fluid_packet";
     public static final String ITEM_FLUID_STORAGE = "fluid_storage";
     public static final String ITEM_MULTI_FLUID_STORAGE = "multi_fluid_storage";
