@@ -38,7 +38,6 @@ import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.config.SecurityPermissions;
-import appeng.api.implementations.tiles.IWirelessAccessPoint;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -50,12 +49,10 @@ import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.DimensionalCoord;
-import appeng.api.util.WorldCoord;
 import appeng.container.AEBaseContainer;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.me.storage.NullInventory;
 import appeng.tile.networking.TileCableBus;
-import appeng.tile.networking.TileWireless;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
@@ -105,32 +102,6 @@ public final class Util {
         return ticks;
     }
 
-    public static boolean rangeCheck(ItemStack is, EntityPlayer player, IGridNode grid) {
-        if (grid.getGrid() == null) return false;
-        return rangeCheck(is, player, grid.getGrid());
-    }
-
-    public static boolean rangeCheck(ItemStack is, EntityPlayer player, IGrid grid) {
-        boolean canConnect = false;
-        if (hasInfinityBoosterCard(is)) {
-            canConnect = true;
-        } else {
-            for (IGridNode node : grid.getMachines(TileWireless.class)) {
-                IWirelessAccessPoint accessPoint = (IWirelessAccessPoint) node.getMachine();
-                if (accessPoint.isActive() && accessPoint.getLocation().getDimension() == player.dimension) {
-                    WorldCoord distance = accessPoint.getLocation()
-                            .subtract((int) player.posX, (int) player.posY, (int) player.posZ);
-                    int squaredDistance = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z;
-                    if (squaredDistance <= accessPoint.getRange() * accessPoint.getRange()) {
-                        canConnect = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return canConnect;
-    }
-
     public static boolean isRestock(ItemStack is) {
         if (is.getItem() instanceof ItemBaseWirelessTerminal) {
             NBTTagCompound data = Platform.openNbtData(is);
@@ -166,26 +137,27 @@ public final class Util {
     }
 
     public static IMEInventoryHandler<?> getWirelessInv(ItemStack is, EntityPlayer player, StorageChannel channel) {
-        if (Platform.isServer()) {
-            IGridNode gridNode = getWirelessGrid(is);
-            if (gridNode != null) {
-                IGrid grid = gridNode.getGrid();
-                if (grid != null) {
-                    if (rangeCheck(is, player, grid)) {
-                        IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
-                        if (gridCache != null) {
-                            if (channel == StorageChannel.FLUIDS) {
-                                return gridCache.getFluidInventory();
-                            } else {
-                                return gridCache.getItemInventory();
-                            }
-                        }
-                    }
+        if (Platform.isClient()) return new NullInventory<>();
+
+        IGridNode gridNode = getWirelessGrid(is);
+        if (gridNode == null) return null;
+
+        IGrid grid = gridNode.getGrid();
+        if (grid == null) return null;
+
+        boolean inRange = AEApi.instance().registries().wireless().checkRange(is, player);
+        if (inRange) {
+            IStorageGrid gridCache = grid.getCache(IStorageGrid.class);
+            if (gridCache != null) {
+                if (channel == StorageChannel.FLUIDS) {
+                    return gridCache.getFluidInventory();
+                } else {
+                    return gridCache.getItemInventory();
                 }
             }
-            return null;
         }
-        return new NullInventory<>();
+
+        return null;
     }
 
     public static ImmutablePair<Integer, ItemStack> getUltraWirelessTerm(EntityPlayer player) {

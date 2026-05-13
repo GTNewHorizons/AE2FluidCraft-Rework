@@ -21,6 +21,7 @@ import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IItemInventory;
 import com.glodblock.github.util.BlockPos;
+import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.UltraTerminalModes;
 
@@ -54,9 +55,11 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
     }
 
     private ItemStack removeInfinityBoosterCard(final EntityPlayer player, ItemStack is) {
-        if (hasInfinityBoosterCard(is)) {
-            if (!player.inventory.addItemStackToInventory(getInfinityBoosterCard())) {
-                player.entityDropItem(getInfinityBoosterCard(), 0);
+        if (ModAndClassUtil.WCT && hasInfinityBoosterCard(is)) {
+            ItemStack infinityBoosterCardStack = getInfinityBoosterCard();
+            if (infinityBoosterCardStack == null) return is;
+            if (!player.inventory.addItemStackToInventory(infinityBoosterCardStack)) {
+                player.entityDropItem(infinityBoosterCardStack, 0);
             }
             is.getTagCompound().setBoolean(infinityBoosterCard, false);
         }
@@ -70,8 +73,11 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         super.addCheckedInformation(stack, player, lines, displayMoreInfo);
         if (GuiScreen.isCtrlKeyDown()) {
             lines.add(NameConst.i18n(NameConst.TT_WIRELESS_INSTALLED));
-            if (hasInfinityBoosterCard(stack)) {
-                lines.add("  " + EnumChatFormatting.GOLD + getInfinityBoosterCard().getDisplayName());
+            if (ModAndClassUtil.WCT && hasInfinityBoosterCard(stack)) {
+                ItemStack infinityBoosterCardStack = getInfinityBoosterCard();
+                if (infinityBoosterCardStack != null) {
+                    lines.add("  " + EnumChatFormatting.GOLD + infinityBoosterCardStack.getDisplayName());
+                }
             }
             if (hasEnergyCard(stack)) {
                 lines.add("  " + EnumChatFormatting.GOLD + getEnergyCard().getDisplayName());
