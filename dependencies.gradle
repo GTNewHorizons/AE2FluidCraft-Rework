@@ -44,9 +44,7 @@ dependencies {
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.35:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ForestryMC:4.11.19:dev')
     compileOnly('com.github.GTNewHorizons:EnderIO:5.2.62:dev')
-    compileOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
     compileOnly('com.github.GTNewHorizons:OpenComputers:1.12.39-GTNH:dev') { transitive = false }
-    compileOnly('com.github.GTNewHorizons:ThaumicEnergistics:1.7.48-GTNH:dev') { transitive = false }
 
     compileOnly("org.jetbrains:annotations:26.1.0")
 
