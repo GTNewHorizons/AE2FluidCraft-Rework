@@ -15,6 +15,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
@@ -36,8 +38,10 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.ITerminalHost;
+import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
 import appeng.api.util.IConfigManager;
@@ -47,27 +51,43 @@ import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkInvTile;
-import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.BiggerAppEngInventory;
+import appeng.tile.inventory.IAEStackInventory;
+import appeng.tile.inventory.IIAEStackInventory;
 import appeng.tile.inventory.InvOperation;
-import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
-public class TileSuperStockReplenisher extends AENetworkInvTile
-        implements IAEFluidInventory, IFluidHandler, IPowerChannelState, IGridTickable, ITerminalHost {
+public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFluidInventory, IFluidHandler,
+        IPowerChannelState, IGridTickable, ITerminalHost, IIAEStackInventory {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
     private final BiggerAppEngInventory invItems = new BiggerAppEngInventory(this, 63);
     private final AEFluidInventory invFluids = new AEFluidInventory(this, 9, Integer.MAX_VALUE);
-    private final AppEngInternalAEInventory configFluids = new AppEngInternalAEInventory(this, 9);
-    private final AppEngInternalAEInventory configItems = new AppEngInternalAEInventory(this, 63);
+    private final IAEStackInventory configFluids = new IAEStackInventory(this, 9, StorageName.NONE) {
+
+        @Override
+        public void readFromNBT(@Nullable NBTTagCompound data, String name) {
+            super.readFromNBT(data, name);
+
+            for (int i = 0; i < this.getSizeInventory(); i++) {
+                final IAEStack<?> aes = this.getAEStackInSlot(i);
+                if (aes instanceof IAEItemStack ais && ais.getItem() instanceof ItemFluidPacket) {
+                    this.putAEStackInSlot(i, ItemFluidPacket.getFluidAEStack(ais));
+                }
+            }
+        }
+    };
+    private final IAEStackInventory configItems = new IAEStackInventory(this, 63, StorageName.CONFIG);
     private final BaseActionSource source;
     private boolean isPowered;
     private long totalBytes;
     private long storedFluidCount;
     private long storedItemCount;
+
+    private boolean needReCountStoredFluids = true;
+    private boolean needReCountStoredItems = true;
 
     public TileSuperStockReplenisher() {
         super(false);
@@ -78,11 +98,16 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     }
 
     private TickRateModulation doWork() {
+        this.fletchFluids();
+        this.fletchItems();
+        return TickRateModulation.SAME;
+    }
+
+    private void fletchFluids() {
         for (int i = 0; i < 9; i++) {
             IAEFluidStack invFluid = invFluids.getFluidInSlot(i);
-            IAEItemStack configFluid = configFluids.getAEStackInSlot(i);
-            if (configFluid != null) {
-                IAEFluidStack fs = AEFluidStack.create(ItemFluidPacket.getFluidStack(configFluid));
+            IAEStack<?> configFluid = configFluids.getAEStackInSlot(i);
+            if (configFluid instanceof IAEFluidStack fs) {
                 if (invFluid == null) requestFluid(fs, i);
                 else if (invFluid.equals(fs)) {
                     long invSize = invFluid.getStackSize();
@@ -101,12 +126,15 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
             }
         }
 
+        this.needReCountStoredFluids = true;
+    }
+
+    private void fletchItems() {
         for (int i = 0; i < 63; i++) {
             ItemStack invItem = invItems.getStackInSlot(i);
-            IAEItemStack configItem = configItems.getAEStackInSlot(i);
-
-            if (configItem != null) {
-                IAEItemStack is = configItem.copy();
+            IAEStack<?> configItem = configItems.getAEStackInSlot(i);
+            if (configItem instanceof IAEItemStack ais) {
+                IAEItemStack is = ais.copy();
                 if (invItem == null) requestItem(is, i);
                 else if (is.equals(invItem)) {
                     int confSize = (int) is.getStackSize();
@@ -124,7 +152,29 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
             }
         }
 
-        return TickRateModulation.SAME;
+        this.needReCountStoredItems = true;
+    }
+
+    private void countFluids() {
+        if (this.needReCountStoredFluids) {
+            this.needReCountStoredFluids = false;
+            this.storedFluidCount = 0;
+            for (int i = 0; i < this.invFluids.getSlots(); i++) {
+                final IAEFluidStack fs = this.invFluids.getFluidInSlot(i);
+                if (fs != null) this.storedFluidCount += fs.getStackSize();
+            }
+        }
+    }
+
+    private void countItems() {
+        if (this.needReCountStoredItems) {
+            this.needReCountStoredItems = false;
+            this.storedItemCount = 0;
+            for (int i = 0; i < this.invItems.getSizeInventory(); i++) {
+                final ItemStack is = this.invItems.getStackInSlot(i);
+                if (is != null) this.storedItemCount += is.stackSize;
+            }
+        }
     }
 
     private void returnFluid(int index, long amount) {
@@ -210,12 +260,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         return invItems;
     }
 
-    public AppEngInternalAEInventory getConfigFluid() {
-        return configFluids;
+    public IAEStackInventory getConfigFluids() {
+        return this.configFluids;
     }
 
-    public AppEngInternalAEInventory getConfigItems() {
-        return configItems;
+    public IAEStackInventory getConfigItems() {
+        return this.configItems;
     }
 
     public AppEngInternalInventory getCell() {
@@ -228,6 +278,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     }
 
     public long getRemainingFluidCount() {
+        this.countFluids();
         final double remaining = (double) getFreeBytes() * 2048 + this.getUnusedFluidCount();
         if (remaining > Long.MAX_VALUE) return Long.MAX_VALUE;
         return remaining > 0 ? (long) remaining : 0;
@@ -242,6 +293,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     }
 
     public long getRemainingItemCount() {
+        this.countItems();
         final long remaining = getFreeBytes() * 8 + this.getUnusedItemCount();
 
         return remaining > 0 ? remaining : 0;
@@ -273,24 +325,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
                         totalBytes = 0;
                         getProxy().setIdlePowerUsage(4d);
                     }
-                } else if (inv == invItems) {
-                    if (added != null) {
-                        storedItemCount += added.stackSize;
-                    }
-
-                    if (removed != null) {
-                        storedItemCount -= removed.stackSize;
-                    }
                 }
             }
             case decreaseStackSize -> {
                 if (inv == cell) {
                     totalBytes = 0;
                     getProxy().setIdlePowerUsage(4d);
-                }
-
-                if (inv == invItems) {
-                    storedItemCount -= removed.stackSize;
                 }
             }
             case markDirty -> markDirty();
@@ -339,16 +379,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-        FluidStack fs = invFluids.drain(from, resource, doDrain);
-        if (doDrain && fs != null) storedFluidCount -= fs.amount;
-        return fs;
+        return invFluids.drain(from, resource, doDrain);
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-        FluidStack fs = invFluids.drain(from, maxDrain, doDrain);
-        if (doDrain && fs != null) storedFluidCount -= fs.amount;
-        return fs;
+        return invFluids.drain(from, maxDrain, doDrain);
     }
 
     @Override
@@ -368,7 +404,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
 
     @Override
     public void onFluidInventoryChanged(IAEFluidTank inv, int slot) {
-        saveChanges();
+        this.markDirty();
     }
 
     @Override
@@ -396,8 +432,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         configFluids.readFromNBT(data, "configFluids");
         cell.readFromNBT(data, "cellHolder");
         totalBytes = data.getLong("totalBytes");
-        storedFluidCount = data.getLong("storedFluidCount");
-        storedItemCount = data.getLong("storedItemCount");
         getProxy().setIdlePowerUsage(data.getDouble("powerDraw"));
     }
 
@@ -409,8 +443,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
         configFluids.writeToNBT(data, "configFluids");
         cell.writeToNBT(data, "cellHolder");
         data.setLong("totalBytes", totalBytes);
-        data.setLong("storedFluidCount", storedFluidCount);
-        data.setLong("storedItemCount", storedItemCount);
         data.setDouble("powerDraw", getProxy().getIdlePowerUsage());
         return data;
     }
@@ -481,5 +513,19 @@ public class TileSuperStockReplenisher extends AENetworkInvTile
     @Override
     public IConfigManager getConfigManager() {
         return null;
+    }
+
+    @Override
+    public void saveAEStackInv() {
+        this.markDirty();
+    }
+
+    @Override
+    public IAEStackInventory getAEInventoryByName(StorageName name) {
+        return switch (name) {
+            case NONE -> this.configFluids;
+            case CONFIG -> this.configItems;
+            default -> null;
+        };
     }
 }
