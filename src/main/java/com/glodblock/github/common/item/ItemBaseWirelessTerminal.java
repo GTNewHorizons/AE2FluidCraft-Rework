@@ -2,7 +2,7 @@ package com.glodblock.github.common.item;
 
 import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.MODE;
 import static com.glodblock.github.loader.recipe.WirelessTerminalEnergyRecipe.getEnergyCard;
-import static com.glodblock.github.loader.recipe.WirelessTerminalRecipe.getInfinityBoosterCard;
+import static com.glodblock.github.loader.recipe.WirelessTerminalQuantumBridgeRecipe.getQuantumBridgeCard;
 import static com.glodblock.github.util.Util.DimensionalCoordSide.hasEnergyCard;
 import static com.glodblock.github.util.Util.hasInfinityBoosterCard;
 
@@ -21,7 +21,6 @@ import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.inventory.item.IItemInventory;
 import com.glodblock.github.util.BlockPos;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.UltraTerminalModes;
 
@@ -49,17 +48,16 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
 
     @Override
     public ItemStack onItemRightClick(final ItemStack item, final World w, final EntityPlayer player) {
-        if (player.isSneaking()) return removeInfinityBoosterCard(player, item); // todo: doesn't work in universal
-                                                                                 // terminal
+        if (player.isSneaking()) return removeQuantumBridgeCard(player, item); // todo: doesn't work in universal
+                                                                               // terminal
         return super.onItemRightClick(item, w, player);
     }
 
-    private ItemStack removeInfinityBoosterCard(final EntityPlayer player, ItemStack is) {
-        if (ModAndClassUtil.WCT && hasInfinityBoosterCard(is)) {
-            ItemStack infinityBoosterCardStack = getInfinityBoosterCard();
-            if (infinityBoosterCardStack == null) return is;
-            if (!player.inventory.addItemStackToInventory(infinityBoosterCardStack)) {
-                player.entityDropItem(infinityBoosterCardStack, 0);
+    private ItemStack removeQuantumBridgeCard(final EntityPlayer player, ItemStack is) {
+        if (hasInfinityBoosterCard(is)) {
+            ItemStack quantumBridgeCardStack = getQuantumBridgeCard().copy();
+            if (!player.inventory.addItemStackToInventory(quantumBridgeCardStack)) {
+                player.entityDropItem(quantumBridgeCardStack, 0);
             }
             is.getTagCompound().setBoolean(infinityBoosterCard, false);
         }
@@ -73,11 +71,8 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         super.addCheckedInformation(stack, player, lines, displayMoreInfo);
         if (GuiScreen.isCtrlKeyDown()) {
             lines.add(NameConst.i18n(NameConst.TT_WIRELESS_INSTALLED));
-            if (ModAndClassUtil.WCT && hasInfinityBoosterCard(stack)) {
-                ItemStack infinityBoosterCardStack = getInfinityBoosterCard();
-                if (infinityBoosterCardStack != null) {
-                    lines.add("  " + EnumChatFormatting.GOLD + infinityBoosterCardStack.getDisplayName());
-                }
+            if (hasInfinityBoosterCard(stack)) {
+                lines.add("  " + EnumChatFormatting.GOLD + getQuantumBridgeCard().getDisplayName());
             }
             if (hasEnergyCard(stack)) {
                 lines.add("  " + EnumChatFormatting.GOLD + getEnergyCard().getDisplayName());

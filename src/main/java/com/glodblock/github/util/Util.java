@@ -126,8 +126,8 @@ public final class Util {
     }
 
     public static IGridNode getWirelessGrid(ItemStack is) {
-        if (is.getItem() instanceof ToolWirelessTerminal) {
-            String key = ((ToolWirelessTerminal) is.getItem()).getEncryptionKey(is);
+        if (is.getItem() instanceof ToolWirelessTerminal wirelessTerminal) {
+            String key = wirelessTerminal.getEncryptionKey(is);
             IGridHost securityTerminal = (IGridHost) AEApi.instance().registries().locatable()
                     .getLocatableBy(Long.parseLong(key));
             if (securityTerminal == null) return null;
