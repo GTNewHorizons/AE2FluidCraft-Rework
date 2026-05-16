@@ -4,8 +4,6 @@ import static com.glodblock.github.common.Config.reStockTime;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -29,7 +27,6 @@ public class ClientProxy extends CommonProxy {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
     private static long refreshTick = System.currentTimeMillis();
-    private static IModelCustom modelWalrus;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -42,7 +39,6 @@ public class ClientProxy extends CommonProxy {
         (new ListenerLoader()).run();
         (new RenderLoader()).run();
         (new KeybindLoader()).run();
-        modelWalrus = AdvancedModelLoader.loadModel(FluidCraft.resource("models/walrus.obj"));
     }
 
     @Override
@@ -68,9 +64,5 @@ public class ClientProxy extends CommonProxy {
             }
             refreshTick = System.currentTimeMillis();
         }
-    }
-
-    public static IModelCustom getWalrusModel() {
-        return modelWalrus;
     }
 }

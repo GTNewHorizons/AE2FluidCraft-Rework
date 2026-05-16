@@ -1,23 +1,16 @@
 package com.glodblock.github.client.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tile.TileWalrus;
-import com.glodblock.github.proxy.ClientProxy;
 
 public class RenderBlockWalrus extends TileEntitySpecialRenderer {
 
-    ResourceLocation textureWalrus = FluidCraft.resource("textures/blocks/walrus.png");
-
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTickTime) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(this.textureWalrus);
         if (!(tileentity instanceof TileWalrus Tile)) return;
         float scale = Tile.getWalrusScale();
         GL11.glPushMatrix();
@@ -40,7 +33,7 @@ public class RenderBlockWalrus extends TileEntitySpecialRenderer {
                 break;
         }
         GL11.glScalef(scale, scale, scale);
-        ClientProxy.getWalrusModel().renderAll();
+        WalrusRenderer.render();
         GL11.glPopMatrix();
     }
 }
