@@ -70,7 +70,8 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
             return mainTank.drain(fluid, amount, doDrain, false);
         }
 
-        if (this.getFluid() == null) {
+        Fluid currentFluid = this.getFluid();
+        if (currentFluid == null) {
             return null;
         }
 
@@ -84,10 +85,10 @@ public class TileCertusQuartzTank extends TileEntity implements IFluidHandler {
         if (drained < amount) {
             TileCertusQuartzTank tankBelow = this.getTankBelow();
             if (tankBelow != null) {
-                FluidStack externallyDrained = tankBelow.drain(this.getFluid(), amount - drained, doDrain, false);
+                FluidStack externallyDrained = tankBelow.drain(currentFluid, amount - drained, doDrain, false);
 
                 if (externallyDrained != null) {
-                    return new FluidStack(this.getFluid(), drained + externallyDrained.amount);
+                    return new FluidStack(currentFluid, drained + externallyDrained.amount);
                 }
             }
         }
