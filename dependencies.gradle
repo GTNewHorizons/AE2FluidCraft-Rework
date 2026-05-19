@@ -37,7 +37,7 @@ dependencies {
     api('com.github.GTNewHorizons:NotEnoughItems:2.8.96-GTNH:dev')
     api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-936-GTNH:dev')
     api('com.github.GTNewHorizons:waila:1.19.25:dev')
-    api("com.github.GTNewHorizons:GTNHLib:0.9.62:dev")
+    api("com.github.GTNewHorizons:GTNHLib:0.10.0:dev")
 
     compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.2.14-GTNH:dev')
     compileOnly('com.github.GTNewHorizons:BuildCraft:7.1.57:dev') {transitive = false}
