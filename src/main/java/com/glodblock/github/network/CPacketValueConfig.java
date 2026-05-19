@@ -72,8 +72,9 @@ public class CPacketValueConfig implements IMessage {
                                                             : NameConst.TT_ULTRA_TERMINAL_RESTOCK_OFF)));
                         } else {
                             IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
-                            if (gridNode != null && Util.isRestock(wirelessTerm)
-                                    && Util.rangeCheck(wirelessTerm, player, gridNode)) {
+                            boolean inRange = AEApi.instance().registries().wireless().checkRange(wirelessTerm, player);
+
+                            if (gridNode != null && Util.isRestock(wirelessTerm) && inRange) {
                                 restockItems(wirelessTerm, gridNode, result.getLeft(), player);
                             }
                         }

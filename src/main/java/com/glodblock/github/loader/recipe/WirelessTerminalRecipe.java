@@ -9,35 +9,41 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.p455w0rd.wirelesscraftingterminal.items.ItemEnum;
-import net.p455w0rd.wirelesscraftingterminal.items.ItemInfinityBooster;
 
 import com.glodblock.github.common.item.ItemBaseWirelessTerminal;
+import com.glodblock.github.util.ModAndClassUtil;
 
 import appeng.util.Platform;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class WirelessTerminalRecipe extends ShapelessRecipes {
 
-    private static final ItemStack infinityBoosterCard = ItemEnum.BOOSTER_CARD.getStack();
+    private static ItemStack infinityBoosterCard;
     private final ItemStack installedTerm;
 
     public WirelessTerminalRecipe(ItemStack term) {
-        super(term, Arrays.asList(term, infinityBoosterCard));
+        super(term, Arrays.asList(term, getInfinityBoosterCard()));
         this.installedTerm = installInfinityBoosterCard(term);
     }
 
     @Override
     public boolean matches(InventoryCrafting inv, World w) {
         ItemStack term = inv.getStackInSlot(0);
-        ItemStack infinityBoosterCard = inv.getStackInSlot(1);
+        ItemStack card = inv.getStackInSlot(1);
+        ItemStack recipeCard = getInfinityBoosterCard();
         return term != null && term.getItem() instanceof ItemBaseWirelessTerminal
                 && !hasInfinityBoosterCard(term)
-                && infinityBoosterCard != null
-                && infinityBoosterCard.getItem() instanceof ItemInfinityBooster;
+                && card != null
+                && recipeCard != null
+                && card.getItem() == recipeCard.getItem();
     }
 
     public static ItemStack getInfinityBoosterCard() {
-        return infinityBoosterCard.copy();
+        if (!ModAndClassUtil.WCT) return null;
+        if (infinityBoosterCard == null) {
+            infinityBoosterCard = GameRegistry.findItemStack("ae2wct", "infinityBoosterCard", 1);
+        }
+        return infinityBoosterCard == null ? null : infinityBoosterCard.copy();
     }
 
     @Override

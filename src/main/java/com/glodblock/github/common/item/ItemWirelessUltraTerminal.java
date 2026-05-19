@@ -167,15 +167,6 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
         this.openGui(is, w, player, mode, Integer.MIN_VALUE);
     }
 
-    public static boolean hasInfinityBoosterCard(EntityPlayer player) {
-        ImmutablePair<Integer, ItemStack> term = Util.getUltraWirelessTerm(player);
-        if (term == null) return false;
-        if (term.getRight().getItem() instanceof ItemWirelessUltraTerminal) {
-            return Util.hasInfinityBoosterCard(term.getRight());
-        }
-        return false;
-    }
-
     @Override
     public void onWornTick(ItemStack itemStack, EntityLivingBase entityLivingBase) {
         if (Platform.isServer() && entityLivingBase instanceof EntityPlayer player) {
