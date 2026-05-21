@@ -19,6 +19,7 @@ import appeng.api.storage.data.IAEStackType;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.slots.VirtualMEPatternSlot;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
+import appeng.client.gui.slots.VirtualMESlot;
 import appeng.core.localization.GuiText;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.item.AEFluidStackType;
@@ -34,9 +35,16 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     private final VirtualMEPatternSlot[] configFluidsSlots = new VirtualMEPatternSlot[9];
     private final VirtualMEPatternSlot[] configItemsSlots = new VirtualMEPatternSlot[63];
 
+    private final IAEStackInventory configFluids;
+    private final IAEStackInventory configItems;
+
     public GuiSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(new ContainerSuperStockReplenisher(ipl, tile));
+
         this.containerSuperStockReplenisher = (ContainerSuperStockReplenisher) inventorySlots;
+        this.configFluids = this.containerSuperStockReplenisher.getTile().getConfigFluids();
+        this.configItems = this.containerSuperStockReplenisher.getTile().getConfigItems();
+
         this.ySize = 251;
         this.xSize = 216;
     }
@@ -48,13 +56,17 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     }
 
     private void initSlots() {
-        final IAEStackInventory configFluids = this.containerSuperStockReplenisher.getTile().getConfigFluids();
-        final IAEStackInventory configItems = this.containerSuperStockReplenisher.getTile().getConfigItems();
+
         final int xo = 8;
         final int yo = 8;
 
         for (int i = 0; i < 9; i++) {
-            VirtualMEPatternSlot slot = new VirtualMEPatternSlot(xo + i * 18, yo, configFluids, i, this::acceptType);
+            VirtualMEPatternSlot slot = new VirtualMEPatternSlot(
+                    xo + i * 18,
+                    yo,
+                    this.configFluids,
+                    i,
+                    this::acceptType);
             this.configFluidsSlots[i] = slot;
             this.registerVirtualSlots(slot);
         }
@@ -65,7 +77,7 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
                 VirtualMEPatternSlot slot = new VirtualMEPatternSlot(
                         xo + ix * 18,
                         iyo + y * 18,
-                        configItems,
+                        this.configItems,
                         y * 9 + ix,
                         this::acceptType);
                 this.configItemsSlots[y * 9 + ix] = slot;
@@ -127,5 +139,11 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     private boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {
         if (slot.getStorageName() == StorageName.NONE) return type == AEFluidStackType.FLUID_STACK_TYPE;
         else return type == AEItemStackType.ITEM_STACK_TYPE;
+    }
+
+    @Override
+    protected boolean handleVirtualSlotClick(VirtualMESlot slot, int mouseButton) {
+        this.containerSuperStockReplenisher.markDirty();
+        return super.handleVirtualSlotClick(slot, mouseButton);
     }
 }

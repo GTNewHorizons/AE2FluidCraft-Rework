@@ -1,7 +1,5 @@
 package com.glodblock.github.client.gui.container;
 
-import static appeng.util.Platform.isServer;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,27 +23,26 @@ import appeng.api.storage.data.IAEStack;
 import appeng.container.AEBaseContainer;
 import appeng.container.ContainerOpenContext;
 import appeng.container.PrimaryGui;
-import appeng.container.interfaces.IVirtualSlotHolder;
 import appeng.container.interfaces.IVirtualSlotSource;
 import appeng.container.slot.SlotRestrictedInput;
+import appeng.container.sync.SyncManager;
+import appeng.container.sync.handlers.AEStackInventorySyncHandler;
 import appeng.items.storage.ItemBasicStorageCell;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
-public class ContainerSuperStockReplenisher extends AEBaseContainer implements IVirtualSlotHolder, IVirtualSlotSource {
+public class ContainerSuperStockReplenisher extends AEBaseContainer implements IVirtualSlotSource {
 
     private final TileSuperStockReplenisher tile;
 
-    private boolean isFirstUpdate = true;
-    private int lastUpdated = 0;
+    private int lastUpdated = 1337;
 
     private final IAEStackInventory configFluids;
-    private final IAEStack<?>[] configFluidsClientSlots = new IAEStack[9];
+    public final AEStackInventorySyncHandler configFluidsSlots;
 
     private final IAEStackInventory configItems;
-    private final IAEStack<?>[] configItemsClientSlots = new IAEStack[63];
+    public final AEStackInventorySyncHandler configItemsSlots;
 
     public ContainerSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(ipl, tile);
@@ -53,6 +50,10 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         this.configFluids = tile.getConfigFluids();
         this.configItems = tile.getConfigItems();
         final IInventory cell = tile.getCell();
+
+        final SyncManager sm = this.getSyncManager();
+        this.configFluidsSlots = sm.root().aeStackInventory("fluidConfig", this.configFluids);
+        this.configItemsSlots = sm.root().aeStackInventory("itemConfig", this.configItems);
 
         this.addSlotToContainer(
                 new SlotRestrictedInput(
@@ -77,16 +78,16 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         super.detectAndSendChanges();
         if (Platform.isClient()) return;
 
-        if (this.isFirstUpdate || this.lastUpdated > 20) {
-            lastUpdated = 0;
+        if (this.lastUpdated > 20) {
+            this.lastUpdated = 0;
             Map<Integer, IAEStack<?>> tmp = new HashMap<>();
 
-            for (int i = 0; i < tile.getInternalFluid().getSlots(); i++) {
-                tmp.put(i, tile.getInternalFluid().getFluidInSlot(i));
+            for (int i = 0; i < this.tile.getInternalFluid().getSlots(); i++) {
+                tmp.put(i, this.tile.getInternalFluid().getFluidInSlot(i));
             }
 
-            for (int i = 0; i < tile.getInternalInventory().getSizeInventory(); i++) {
-                tmp.put(i + 100, AEItemStack.create(tile.getInternalInventory().getStackInSlot(i)));
+            for (int i = 0; i < this.tile.getInternalInventory().getSizeInventory(); i++) {
+                tmp.put(i + 100, AEItemStack.create(this.tile.getInternalInventory().getStackInSlot(i)));
             }
 
             for (final Object g : this.crafters) {
@@ -95,21 +96,16 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                 }
             }
         }
-        lastUpdated++;
 
-        if (this.isFirstUpdate) {
-            this.updateVirtualSlots(StorageName.NONE, this.configFluids, this.configFluidsClientSlots);
-            this.updateVirtualSlots(StorageName.CONFIG, this.configItems, this.configItemsClientSlots);
-            this.isFirstUpdate = false;
-        }
+        this.lastUpdated++;
     }
 
     private boolean isConfigurated() {
-        for (int i = 0; i < configItems.getSizeInventory(); i++)
-            if (configItems.getAEStackInSlot(i) != null) return true;
+        for (int i = 0; i < this.configItems.getSizeInventory(); i++)
+            if (this.configItems.getAEStackInSlot(i) != null) return true;
 
-        for (int i = 0; i < configFluids.getSizeInventory(); i++)
-            if (configFluids.getAEStackInSlot(i) != null) return true;
+        for (int i = 0; i < this.configFluids.getSizeInventory(); i++)
+            if (this.configFluids.getAEStackInSlot(i) != null) return true;
         return false;
     }
 
@@ -152,22 +148,9 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                 context.getSide());
     }
 
-    @Override
-    public void receiveSlotStacks(StorageName invName, Int2ObjectMap<IAEStack<?>> slotStacks) {
-        switch (invName) {
-            case NONE -> {
-                for (var entry : slotStacks.int2ObjectEntrySet())
-                    this.configFluids.putAEStackInSlot(entry.getIntKey(), entry.getValue());
-                if (isServer())
-                    this.updateVirtualSlots(StorageName.NONE, this.configFluids, this.configFluidsClientSlots);
-            }
-            case CONFIG -> {
-                for (var entry : slotStacks.int2ObjectEntrySet())
-                    this.configItems.putAEStackInSlot(entry.getIntKey(), entry.getValue());
-                if (isServer())
-                    this.updateVirtualSlots(StorageName.CONFIG, this.configItems, this.configItemsClientSlots);
-            }
-        }
+    public void markDirty() {
+        this.configFluidsSlots.markDirty();
+        this.configItemsSlots.markDirty();
     }
 
     @Override
@@ -176,11 +159,11 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         switch (invName) {
             case NONE -> {
                 this.configFluids.putAEStackInSlot(slotId, aes);
-                this.updateVirtualSlots(StorageName.NONE, this.configFluids, this.configFluidsClientSlots);
+                this.configFluidsSlots.markDirty();
             }
             case CONFIG -> {
                 this.configItems.putAEStackInSlot(slotId, aes);
-                this.updateVirtualSlots(StorageName.CONFIG, this.configItems, this.configItemsClientSlots);
+                this.configItemsSlots.markDirty();
             }
         }
     }
