@@ -50,9 +50,4 @@ public abstract class FCBaseItemCell extends AEBaseCell {
     public ItemStack stack() {
         return new ItemStack(this, 1);
     }
-
-    @Override
-    public int getTypeWeight() {
-        return 8 * 256;
-    }
 }
