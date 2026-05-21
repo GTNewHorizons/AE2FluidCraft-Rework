@@ -1,7 +1,5 @@
 package com.glodblock.github.crossmod.thaumcraft;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -9,13 +7,10 @@ import net.minecraft.nbt.NBTTagList;
 
 import com.glodblock.github.util.ModAndClassUtil;
 
+import appeng.api.storage.data.AEStackTypeRegistry;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
-import cpw.mods.fml.common.Optional.Method;
 import cpw.mods.fml.common.registry.GameRegistry;
-import thaumcraft.api.aspects.Aspect;
-import thaumicenergistics.common.items.ItemCraftingAspect;
-import thaumicenergistics.common.storage.AEEssentiaStack;
 
 public class ThaumicEnergisticsCrafting {
 
@@ -37,18 +32,23 @@ public class ThaumicEnergisticsCrafting {
     }
 
     public static IAEStack<?> convertItemAspectStack(IAEStack<?> stack) {
-        if (stack instanceof IAEItemStack ais && isAspectStack(ais.getItemStack())) {
-            Aspect aspect = getAspect(ais.getItemStack());
-            if (aspect == null) return stack;
+        if (AEStackTypeRegistry.getType("essentia") == null) return stack;
 
-            return new AEEssentiaStack(aspect, stack.getStackSize());
+        if (stack instanceof IAEItemStack ais && isAspectStack(ais.getItemStack())) {
+            String aspectTag = getAspectTag(ais.getItemStack());
+            if (aspectTag == null || aspectTag.isEmpty()) return stack;
+
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.setString("StackType", "essentia");
+            tag.setString("AspectTag", aspectTag);
+            tag.setLong("Cnt", stack.getStackSize());
+            return IAEStack.fromNBTGeneric(tag);
         } else {
             return stack;
         }
     }
 
-    @Method(modid = "thaumicenergistics")
-    private static @Nullable Aspect getAspect(ItemStack stack) {
+    private static String getAspectTag(ItemStack stack) {
         if (stack == null) return null;
 
         if (stack.getItem() == neiAddonAspect) {
@@ -58,11 +58,14 @@ public class ThaumicEnergisticsCrafting {
             String aspect = aspects.getCompoundTagAt(0).getString("key");
             if (aspect.isEmpty()) return null;
 
-            return Aspect.getAspect(aspect);
+            return aspect;
         }
 
         if (stack.getItem() == thaumicEnergisticsAspect) {
-            return Aspect.getAspect(ItemCraftingAspect.getAspect(stack).getTag());
+            NBTTagCompound tag = stack.getTagCompound();
+            if (tag != null && tag.hasKey("Aspect")) {
+                return tag.getString("Aspect");
+            }
         }
 
         return null;

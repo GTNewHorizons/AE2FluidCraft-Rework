@@ -3,7 +3,6 @@ package com.glodblock.github.proxy;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 
@@ -54,7 +53,6 @@ public class CommonProxy {
                 EntityPlayer player = e.entityPlayer;
                 EntityItem itemEntity = e.item;
                 ItemStack stack = itemEntity.getEntityItem();
-                World world = player.getEntityWorld();
 
                 ImmutablePair<Integer, ItemStack> result = Util.getUltraWirelessTerm(player);
                 if (result != null) {
@@ -62,7 +60,9 @@ public class CommonProxy {
                     WirelessMagnet.Mode mode = WirelessMagnet.getMode(wirelessTerm);
                     if (mode == WirelessMagnet.Mode.ME) {
                         IGridNode gridNode = Util.getWirelessGrid(wirelessTerm);
-                        if (gridNode != null && Util.rangeCheck(wirelessTerm, player, gridNode)) {
+                        boolean inRange = AEApi.instance().registries().wireless().checkRange(wirelessTerm, player);
+
+                        if (gridNode != null && inRange) {
                             WirelessMagnetCardFilterInventory inv = FilterCache
                                     .getFilter(wirelessTerm, result.getLeft(), gridNode, player);
 

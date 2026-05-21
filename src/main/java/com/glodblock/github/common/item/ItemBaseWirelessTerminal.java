@@ -2,7 +2,7 @@ package com.glodblock.github.common.item;
 
 import static com.glodblock.github.common.item.ItemWirelessUltraTerminal.MODE;
 import static com.glodblock.github.loader.recipe.WirelessTerminalEnergyRecipe.getEnergyCard;
-import static com.glodblock.github.loader.recipe.WirelessTerminalRecipe.getInfinityBoosterCard;
+import static com.glodblock.github.loader.recipe.WirelessTerminalQuantumBridgeRecipe.getQuantumBridgeCard;
 import static com.glodblock.github.util.Util.DimensionalCoordSide.hasEnergyCard;
 import static com.glodblock.github.util.Util.hasInfinityBoosterCard;
 
@@ -48,15 +48,16 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
 
     @Override
     public ItemStack onItemRightClick(final ItemStack item, final World w, final EntityPlayer player) {
-        if (player.isSneaking()) return removeInfinityBoosterCard(player, item); // todo: doesn't work in universal
-                                                                                 // terminal
+        if (player.isSneaking()) return removeQuantumBridgeCard(player, item); // todo: doesn't work in universal
+                                                                               // terminal
         return super.onItemRightClick(item, w, player);
     }
 
-    private ItemStack removeInfinityBoosterCard(final EntityPlayer player, ItemStack is) {
+    private ItemStack removeQuantumBridgeCard(final EntityPlayer player, ItemStack is) {
         if (hasInfinityBoosterCard(is)) {
-            if (!player.inventory.addItemStackToInventory(getInfinityBoosterCard())) {
-                player.entityDropItem(getInfinityBoosterCard(), 0);
+            ItemStack quantumBridgeCardStack = getQuantumBridgeCard().copy();
+            if (!player.inventory.addItemStackToInventory(quantumBridgeCardStack)) {
+                player.entityDropItem(quantumBridgeCardStack, 0);
             }
             is.getTagCompound().setBoolean(infinityBoosterCard, false);
         }
@@ -71,7 +72,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         if (GuiScreen.isCtrlKeyDown()) {
             lines.add(NameConst.i18n(NameConst.TT_WIRELESS_INSTALLED));
             if (hasInfinityBoosterCard(stack)) {
-                lines.add("  " + EnumChatFormatting.GOLD + getInfinityBoosterCard().getDisplayName());
+                lines.add("  " + EnumChatFormatting.GOLD + getQuantumBridgeCard().getDisplayName());
             }
             if (hasEnergyCard(stack)) {
                 lines.add("  " + EnumChatFormatting.GOLD + getEnergyCard().getDisplayName());
