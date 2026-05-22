@@ -108,13 +108,14 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             IAEFluidStack invFluid = invFluids.getFluidInSlot(i);
             IAEStack<?> configFluid = configFluids.getAEStackInSlot(i);
             if (configFluid instanceof IAEFluidStack fs) {
-                if (invFluid == null) requestFluid(fs, i);
-                else if (invFluid.equals(fs)) {
+                IAEFluidStack ifs = fs.copy();
+                if (invFluid == null) requestFluid(ifs, i);
+                else if (invFluid.equals(ifs)) {
                     long invSize = invFluid.getStackSize();
-                    long confSize = fs.getStackSize();
+                    long confSize = ifs.getStackSize();
                     if (invSize < confSize / 2f) {
-                        fs.setStackSize(confSize - invSize);
-                        requestFluid(fs, i);
+                        ifs.setStackSize(confSize - invSize);
+                        requestFluid(ifs, i);
                     } else if (invSize > confSize) {
                         returnFluid(i, invSize - confSize);
                     }
@@ -273,12 +274,14 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     }
 
     public long getFreeBytes() {
+        this.countFluids();
+        this.countItems();
+
         return totalBytes - (((storedItemCount + getUnusedItemCount()) / 8)
                 + ((storedFluidCount + getUnusedFluidCount()) / 2048));
     }
 
     public long getRemainingFluidCount() {
-        this.countFluids();
         final double remaining = (double) getFreeBytes() * 2048 + this.getUnusedFluidCount();
         if (remaining > Long.MAX_VALUE) return Long.MAX_VALUE;
         return remaining > 0 ? (long) remaining : 0;
@@ -293,7 +296,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     }
 
     public long getRemainingItemCount() {
-        this.countItems();
         final long remaining = getFreeBytes() * 8 + this.getUnusedItemCount();
 
         return remaining > 0 ? remaining : 0;
