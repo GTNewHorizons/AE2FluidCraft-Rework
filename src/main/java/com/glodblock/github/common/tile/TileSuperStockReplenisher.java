@@ -100,6 +100,10 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     private TickRateModulation doWork() {
         this.fletchFluids();
         this.fletchItems();
+
+        this.needReCountStoredFluids = true;
+        this.needReCountStoredItems = true;
+
         return TickRateModulation.SAME;
     }
 
@@ -126,8 +130,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 returnFluid(i, Long.MAX_VALUE);
             }
         }
-
-        this.needReCountStoredFluids = true;
     }
 
     private void fletchItems() {
@@ -152,8 +154,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 returnItem(i, Integer.MAX_VALUE);
             }
         }
-
-        this.needReCountStoredItems = true;
     }
 
     private void countFluids() {
