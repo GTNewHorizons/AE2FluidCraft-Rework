@@ -134,10 +134,6 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         return super.isValidForSlot(s, is);
     }
 
-    public TileSuperStockReplenisher getTile() {
-        return tile;
-    }
-
     @Override
     public PrimaryGui createPrimaryGui() {
         ContainerOpenContext context = getOpenContext();
@@ -146,11 +142,6 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                 ItemAndBlockHolder.SUPER_STOCK_RERPLENISHER.stack(),
                 context.getTile(),
                 context.getSide());
-    }
-
-    public void markDirty() {
-        this.configFluidsSlots.markDirty();
-        this.configItemsSlots.markDirty();
     }
 
     @Override
