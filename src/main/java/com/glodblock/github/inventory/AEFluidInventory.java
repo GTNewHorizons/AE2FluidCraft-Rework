@@ -433,8 +433,8 @@ public class AEFluidInventory implements IAEFluidTank {
                 if (getFluid() == null) AEFluidInventory.this
                         .setFluidInSlot(this.slot, AEFluidStack.create(new FluidStack(resource.getFluid(), acc)));
                 else {
-                    AEFluidInventory.this.onContentChanged(this.slot);
                     getFluid().amount += acc;
+                    AEFluidInventory.this.onContentChanged(this.slot);
                 }
             }
             return acc;

@@ -212,10 +212,11 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 is.stackSize = is.stackSize - amount;
                 is = is.copy();
                 is.stackSize = amount;
-                storedItemCount -= is.stackSize;
             } else {
                 invItems.setInventorySlotContents(index, null);
             }
+
+            this.storedItemCount -= is.stackSize;
 
             IAEItemStack notInserted = this.getProxy().getStorage().getItemInventory()
                     .injectItems(AEItemStack.create(is), Actionable.MODULATE, this.source);
@@ -223,10 +224,11 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 ItemStack tempStack = invItems.getStackInSlot(index);
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
-                    storedItemCount += notInserted.getStackSize();
 
                     saveChanges();
                 } else invItems.setInventorySlotContents(index, notInserted.getItemStack());
+
+                this.storedItemCount += notInserted.getStackSize();
             }
         } catch (final GridAccessException ignored) {}
     }
