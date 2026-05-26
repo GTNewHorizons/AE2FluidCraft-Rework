@@ -22,7 +22,9 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
+import com.gtnewhorizon.gtnhlib.item.ItemStackNBT;
 
+import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.IPowerChannelState;
@@ -56,6 +58,8 @@ import appeng.tile.inventory.BiggerAppEngInventory;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.tile.inventory.IIAEStackInventory;
 import appeng.tile.inventory.InvOperation;
+import appeng.util.Platform;
+import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
@@ -366,12 +370,26 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public void getDrops(World w, int x, int y, int z, List<ItemStack> drops) {
+        this.fullRefund();
+
         if (cell.getStackInSlot(0) != null) drops.add(cell.getStackInSlot(0));
+        final ItemStack container = AEApi.instance().definitions().items().itemMEStackPacket().maybeStack(1).get();
+
         for (int i = 0; i < 9; i++) {
-            ItemStack ifp = ItemFluidPacket.newStack(invFluids.getFluidStackInSlot(i));
-            if (ifp != null) drops.add(ifp);
+            final FluidStack fs = this.invFluids.getFluidStackInSlot(i);
+            if (fs == null) continue;
+            final ItemStack temp = container.copy();
+            Platform.writeStackNBT(AEFluidStack.create(fs), ItemStackNBT.get(temp));
+            drops.add(temp);
         }
-        super.getDrops(w, x, y, z, drops);
+
+        for (int i = 0; i < 63; i++) {
+            final ItemStack is = this.invItems.getStackInSlot(i);
+            if (is == null) continue;
+            final ItemStack temp = container.copy();
+            Platform.writeStackNBT(AEItemStack.create(is), ItemStackNBT.get(temp));
+            drops.add(temp);
+        }
     }
 
     @Override
