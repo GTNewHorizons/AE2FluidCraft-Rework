@@ -432,7 +432,10 @@ public class AEFluidInventory implements IAEFluidTank {
             if (doFill) {
                 if (getFluid() == null) AEFluidInventory.this
                         .setFluidInSlot(this.slot, AEFluidStack.create(new FluidStack(resource.getFluid(), acc)));
-                else getFluid().amount += acc;
+                else {
+                    getFluid().amount += acc;
+                    AEFluidInventory.this.onContentChanged(this.slot);
+                }
             }
             return acc;
         }
@@ -446,7 +449,10 @@ public class AEFluidInventory implements IAEFluidTank {
             if (doDrain) {
                 if (amt == getFluid().amount) {
                     AEFluidInventory.this.setFluidInSlot(this.slot, null);
-                } else getFluid().amount -= amt;
+                } else {
+                    getFluid().amount -= amt;
+                    AEFluidInventory.this.onContentChanged(this.slot);
+                }
             }
             return remove;
         }

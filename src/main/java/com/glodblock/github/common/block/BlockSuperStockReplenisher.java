@@ -1,6 +1,5 @@
 package com.glodblock.github.common.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -45,15 +44,6 @@ public class BlockSuperStockReplenisher extends FCBaseBlock {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void breakBlock(World w, int x, int y, int z, Block a, int b) {
-        final TileSuperStockReplenisher tss = this.getTileEntity(w, x, y, z);
-        if (tss != null) {
-            tss.fullRefund();
-        }
-        super.breakBlock(w, x, y, z, a, b);
     }
 
     @Override
