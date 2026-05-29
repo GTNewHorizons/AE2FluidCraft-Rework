@@ -1,24 +1,18 @@
 package com.glodblock.github.client.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
-import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.tile.TileWalrus;
 import com.glodblock.github.loader.ItemAndBlockHolder;
-import com.glodblock.github.proxy.ClientProxy;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 
 public class ItemWalrusRender implements IItemRenderer {
-
-    ResourceLocation textureWalrus = FluidCraft.resource("textures/blocks/walrus.png");
 
     public ItemWalrusRender() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileWalrus.class, new RenderBlockWalrus());
@@ -32,7 +26,6 @@ public class ItemWalrusRender implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(this.textureWalrus);
         GL11.glPushMatrix();
         switch (type) {
             case EQUIPPED_FIRST_PERSON -> {
@@ -42,7 +35,7 @@ public class ItemWalrusRender implements IItemRenderer {
             case INVENTORY -> GL11.glTranslatef(-0.5F, -0.5F, -0.1F);
             default -> {}
         }
-        ClientProxy.getWalrusModel().renderAll();
+        WalrusRenderer.render();
         GL11.glPopMatrix();
     }
 
