@@ -159,6 +159,8 @@ ae2fc.tooltip.restock.on=Toggle Restock
 ae2fc.tooltip.restock.on.hint=Enable
 ae2fc.tooltip.restock.off=Toggle Restock
 ae2fc.tooltip.restock.off.hint=Disable
+ae2fc.tooltip.Full-stock.mode=Full-stock Mode
+ae2fc.tooltip.Normal.mode=Normal Mode
 
 ae2fc.gui.part_level_terminal=Level Terminal
 ae2fc.gui.fluid_pattern_encoder=流体适配型样板编码台

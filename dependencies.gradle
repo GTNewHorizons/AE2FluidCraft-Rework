@@ -43,7 +43,7 @@ dependencies {
     compileOnly('com.github.GTNewHorizons:BuildCraft:7.1.60:dev') {transitive = false}
     compileOnly('com.github.GTNewHorizons:ExtraCells2:2.5.35:dev') { transitive = false }
     compileOnly('com.github.GTNewHorizons:ForestryMC:4.11.23:dev')
-    compileOnly('com.github.GTNewHorizons:EnderIO:5.2.62:dev')
+    compileOnly('com.github.GTNewHorizons:EnderIO:2.10.27:dev')
     compileOnly('com.github.GTNewHorizons:OpenComputers:1.12.42-GTNH:dev') { transitive = false }
 
     compileOnly("org.jetbrains:annotations:26.1.0")
