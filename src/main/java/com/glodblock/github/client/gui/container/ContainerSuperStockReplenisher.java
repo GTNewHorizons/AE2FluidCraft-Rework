@@ -92,7 +92,9 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
 
             for (final Object g : this.crafters) {
                 if (g instanceof EntityPlayer) {
-                    FluidCraft.proxy.netHandler.sendTo(new SPacketSuperStockReplenisherUpdate(tmp), (EntityPlayerMP) g);
+                    FluidCraft.proxy.netHandler.sendTo(
+                            new SPacketSuperStockReplenisherUpdate(tmp, this.tile.isFullStockMode()),
+                            (EntityPlayerMP) g);
                 }
             }
         }
@@ -157,5 +159,13 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                 this.configItemsSlots.markDirty();
             }
         }
+    }
+
+    public TileSuperStockReplenisher getTile() {
+        return this.tile;
+    }
+
+    public void forceUpdate() {
+        this.lastUpdated = 21;
     }
 }

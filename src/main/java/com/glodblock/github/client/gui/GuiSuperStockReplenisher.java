@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -12,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
+import com.glodblock.github.network.CPacketSuperStockReplenisherUpdate;
 
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEStack;
@@ -29,14 +31,18 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     private final DecimalFormat df = new DecimalFormat("#.#");
     private Map<Integer, IAEStack<?>> list = new HashMap<>();
     private final ContainerSuperStockReplenisher containerSuperStockReplenisher;
+    private final TileSuperStockReplenisher tileSuperStockReplenisher;
 
     private final VirtualMEPhantomSlotPrecise[] configFluidsSlots = new VirtualMEPhantomSlotPrecise[9];
     private final VirtualMEPhantomSlotPrecise[] configItemsSlots = new VirtualMEPhantomSlotPrecise[63];
+
+    private GuiFCImgButton StockModeButton;
 
     public GuiSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(new ContainerSuperStockReplenisher(ipl, tile));
 
         this.containerSuperStockReplenisher = (ContainerSuperStockReplenisher) inventorySlots;
+        this.tileSuperStockReplenisher = (TileSuperStockReplenisher) tile;
 
         this.ySize = 251;
         this.xSize = 216;
@@ -45,6 +51,15 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     @Override
     public void initGui() {
         super.initGui();
+
+        this.StockModeButton = new GuiFCImgButton(
+                guiLeft - 18,
+                guiTop + 8,
+                "stock mode button",
+                this.tileSuperStockReplenisher.isFullStockMode() ? "fullstockMode" : "normalMode",
+                true);
+
+        buttonList.add(this.StockModeButton);
         this.initSlots();
     }
 
@@ -125,8 +140,21 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
         this.drawTexturedModalRect(offsetX, offsetY, 0, 0, xSize, ySize);
     }
 
-    public void update(Map<Integer, IAEStack<?>> map) {
+    @Override
+    protected void actionPerformed(final GuiButton btn) {
+        if (actionPerformedCustomButtons(btn)) return;
+        if (btn == StockModeButton) {
+            boolean newMode = !tileSuperStockReplenisher.isFullStockMode();
+            this.tileSuperStockReplenisher.setFullStockMode(newMode);
+            StockModeButton.set(newMode ? "fullstockMode" : "normalMode");
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketSuperStockReplenisherUpdate(newMode));
+        }
+        super.actionPerformed(btn);
+    }
+
+    public void update(Map<Integer, IAEStack<?>> map, boolean fullStockMode) {
         this.list = map;
+        this.tileSuperStockReplenisher.setFullStockMode(fullStockMode);
     }
 
     private boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {

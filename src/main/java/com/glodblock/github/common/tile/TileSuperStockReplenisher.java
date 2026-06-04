@@ -91,16 +91,20 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     private long totalBytes;
     private long storedFluidCount;
     private long storedItemCount;
+    protected boolean isFullStockMode;
+    protected boolean isSlotsAccessible;
 
     private boolean needReCountStoredFluids = true;
     private boolean needReCountStoredItems = true;
 
     public TileSuperStockReplenisher() {
         super(false);
-        getProxy().setIdlePowerUsage(4D);
-        getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
+        this.getProxy().setIdlePowerUsage(4D);
+        this.getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
         this.source = new MachineSource(this);
         invItems.setMaxStackSize(Integer.MAX_VALUE);
+        this.isFullStockMode = false;
+        this.isSlotsAccessible = true;
     }
 
     private TickRateModulation doWork() {
@@ -123,7 +127,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 else if (invFluid.equals(ifs)) {
                     long invSize = invFluid.getStackSize();
                     long confSize = ifs.getStackSize();
-                    if (invSize < confSize / 2f) {
+                    if (invSize < confSize / 2f || (this.isFullStockMode() && (invSize < confSize))) {
                         ifs.setStackSize(confSize - invSize);
                         requestFluid(ifs, i);
                     } else if (invSize > confSize) {
@@ -147,7 +151,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 if (invItem == null) requestItem(is, i);
                 else if (is.equals(invItem)) {
                     int confSize = (int) is.getStackSize();
-                    if (invItem.stackSize < confSize / 2f) {
+                    if (invItem.stackSize < confSize / 2f
+                            || (this.isFullStockMode() && (invItem.stackSize < confSize))) {
                         is.setStackSize(confSize - invItem.stackSize);
                         requestItem(is, i);
                     } else if (invItem.stackSize > confSize) {
@@ -207,6 +212,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             if (extracted != null) {
                 storedFluidCount += extracted.getStackSize();
                 invFluids.fill(index, extracted, true);
+                checkSlotsAccessible();
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -250,6 +256,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 ItemStack tempStack = invItems.getStackInSlot(index);
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
+                    checkSlotsAccessible();
 
                     saveChanges();
                 } else invItems.setInventorySlotContents(index, extracted.getItemStack());
@@ -259,9 +266,79 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         } catch (final GridAccessException ignored) {}
     }
 
+    public boolean isFullStockMode() {
+        return this.isFullStockMode;
+    }
+
+    public void setFullStockMode(boolean fullStockMode) {
+
+        if (this.isFullStockMode == fullStockMode) return;
+
+        this.isFullStockMode = fullStockMode;
+        checkSlotsAccessible();
+        markDirty();
+    }
+
+    public boolean isSlotsAccessible() {
+        return this.isSlotsAccessible;
+    }
+
+    public void setSlotsAccessible(boolean isSlotsAccessible) {
+        if (this.isSlotsAccessible != isSlotsAccessible) {
+            this.isSlotsAccessible = isSlotsAccessible;
+            this.notifyNeighbors();
+        }
+        this.isSlotsAccessible = isSlotsAccessible;
+    }
+
+    public void checkSlotsAccessible() {
+        if (this.isFullStockMode()) {
+            this.setSlotsAccessible(this.isFullyStocked());
+        } else {
+            this.setSlotsAccessible(true);
+        }
+    }
+
+    private boolean isFullyStocked() {
+
+        for (int i = 0; i < 9; i++) {
+            IAEStack<?> config = configFluids.getAEStackInSlot(i);
+
+            if (config instanceof IAEFluidStack cfg) {
+                IAEFluidStack inv = invFluids.getFluidInSlot(i);
+
+                if (inv == null || inv.getStackSize() < cfg.getStackSize()) {
+                    return false;
+                }
+            }
+        }
+
+        for (int i = 0; i < 63; i++) {
+            IAEStack<?> config = configItems.getAEStackInSlot(i);
+
+            if (config instanceof IAEItemStack cfg) {
+                ItemStack inv = invItems.getStackInSlot(i);
+
+                if (inv == null || inv.stackSize < cfg.getStackSize()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public int[] getAccessibleSlotsBySide(ForgeDirection whichSide) {
-        return IntStream.rangeClosed(0, 62).toArray();
+        return ((this.isFullStockMode() && !this.isSlotsAccessible()) ? new int[0]
+                : IntStream.rangeClosed(0, 62).toArray());
+    }
+
+    public void notifyNeighbors() {
+        if (this != null && this.getWorldObj() != null) {
+            this.getWorldObj().notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
+            this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+        }
     }
 
     @Nonnull
@@ -352,6 +429,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         } catch (GridAccessException e) {
             AELog.error(e, "Couldn't wake up level emitter for delayed updates");
         }
+
+        checkSlotsAccessible();
     }
 
     public void fullRefund() {
@@ -404,12 +483,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-        return invFluids.drain(from, resource, doDrain);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? null : invFluids.drain(from, resource, doDrain);
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-        return invFluids.drain(from, maxDrain, doDrain);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? null : invFluids.drain(from, maxDrain, doDrain);
     }
 
     @Override
@@ -419,17 +498,19 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
-        return invFluids.canDrain(from, fluid);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? false : invFluids.canDrain(from, fluid);
     }
 
     @Override
     public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-        return invFluids.getTankInfo(from);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? new FluidTankInfo[0]
+                : invFluids.getTankInfo(from);
     }
 
     @Override
     public void onFluidInventoryChanged(IAEFluidTank inv, int slot) {
         this.markDirty();
+        checkSlotsAccessible();
     }
 
     @Override

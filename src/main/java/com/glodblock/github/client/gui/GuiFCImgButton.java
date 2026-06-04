@@ -75,6 +75,8 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             this.registerApp(33, "DISABLE_12x", "DISABLE", "disable");
             this.registerApp(34, "RESTOCK", "ENABLE", "restock.on");
             this.registerApp(35, "RESTOCK", "DISABLE", "restock.off");
+            this.registerApp(36, "stock mode button", "fullstockMode", "Full-stock.mode");
+            this.registerApp(37, "stock mode button", "normalMode", "Normal.mode");
         }
     }
 
