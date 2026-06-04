@@ -241,12 +241,12 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 StatCollector.translateToLocal(NameConst.GUI_LEVEL_TERMINAL),
                 8,
                 6,
-                GuiColors.InterfaceTerminalTitle.getColor());
+                GuiColors.GuiTextColorGray.getColor());
         fontRendererObj.drawString(
                 GuiText.inventory.getLocal(),
                 GuiLevelTerminal.offsetX + 2,
                 ySize - 96 + 3,
-                GuiColors.InterfaceTerminalInventory.getColor());
+                GuiColors.GuiTextColorGray.getColor());
 
         if (!ModAndClassUtil.NEI && tooltipStack != null) {
             renderToolTip(tooltipStack, mouseX, mouseY);
@@ -395,7 +395,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         int title;
         int renderY = 0;
         final int sectionBottom = viewY + section.getHeight() - 1;
-        final int fontColor = GuiColors.InterfaceTerminalInventory.getColor();
+        final int fontColor = GuiColors.GuiTextColorGray.getColor();
         /*
          * Render title
          */
