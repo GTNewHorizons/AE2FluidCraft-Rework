@@ -143,6 +143,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 returnFluid(i, Long.MAX_VALUE);
             }
         }
+        checkSlotsAccessible();
     }
 
     private void fletchItems() {
@@ -153,10 +154,10 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 IAEItemStack is = ais.copy();
                 if (invItem == null) requestItem(is, i);
                 else if (is.equals(invItem)) {
+                    int invSize = invItem.stackSize;
                     int confSize = (int) is.getStackSize();
-                    if (invItem.stackSize < confSize / 2f
-                            || (this.isFullStockMode() && (invItem.stackSize < confSize))) {
-                        is.setStackSize(confSize - invItem.stackSize);
+                    if (invSize < confSize / 2f || (this.isFullStockMode() && (invSize < confSize))) {
+                        is.setStackSize(confSize - invSize);
                         requestItem(is, i);
                     } else if (invItem.stackSize > confSize) {
                         returnItem(i, invItem.stackSize - confSize);
@@ -168,6 +169,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 returnItem(i, Integer.MAX_VALUE);
             }
         }
+        checkSlotsAccessible();
     }
 
     private void countFluids() {
@@ -215,7 +217,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             if (extracted != null) {
                 storedFluidCount += extracted.getStackSize();
                 invFluids.fill(index, extracted, true);
-                checkSlotsAccessible();
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -259,7 +260,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 ItemStack tempStack = invItems.getStackInSlot(index);
                 if (tempStack != null) {
                     tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
-                    checkSlotsAccessible();
 
                     saveChanges();
                 } else invItems.setInventorySlotContents(index, extracted.getItemStack());
@@ -283,7 +283,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     }
 
     public boolean isSlotsAccessible() {
-        return this.isSlotsAccessible;
+        return !this.isFullStockMode() || this.isFullyStocked();
+        // return this.isSlotsAccessible;
     }
 
     public void setSlotsAccessible(boolean isSlotsAccessible) {
@@ -308,9 +309,11 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             IAEStack<?> config = configFluids.getAEStackInSlot(i);
 
             if (config instanceof IAEFluidStack cfg) {
+                IAEFluidStack cfgFis = cfg.copy();
+
                 IAEFluidStack inv = invFluids.getFluidInSlot(i);
 
-                if (inv == null || inv.getStackSize() < cfg.getStackSize()) {
+                if (inv == null || inv.getStackSize() < cfgFis.getStackSize()) {
                     return false;
                 }
             }
@@ -319,10 +322,13 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         for (int i = 0; i < 63; i++) {
             IAEStack<?> config = configItems.getAEStackInSlot(i);
 
+            System.out.println("Checking slot " + i + ": " + config);
+
             if (config instanceof IAEItemStack cfg) {
+                IAEItemStack cfgIs = cfg.copy();
                 ItemStack inv = invItems.getStackInSlot(i);
 
-                if (inv == null || inv.stackSize < cfg.getStackSize()) {
+                if (inv == null || inv.stackSize < (int) cfgIs.getStackSize()) {
                     return false;
                 }
             }
@@ -333,12 +339,13 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public int[] getAccessibleSlotsBySide(ForgeDirection whichSide) {
-        return ((this.isFullStockMode() && !this.isSlotsAccessible()) ? new int[0]
+        return ((this.isFullStockMode() && !this.isFullyStocked()) ? new int[0]
                 : IntStream.rangeClosed(0, 62).toArray());
     }
 
     public void notifyNeighbors() {
         if (this != null && this.getWorldObj() != null) {
+            this.markDirty();
             this.getWorldObj().notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
             this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
         }
