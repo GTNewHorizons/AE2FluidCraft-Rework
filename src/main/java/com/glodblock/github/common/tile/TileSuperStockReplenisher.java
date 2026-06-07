@@ -134,7 +134,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                     long invSize = invFluid.getStackSize();
                     long confSize = ifs.getStackSize();
                     if (!this.isFullStockMode() && (invSize < confSize / 2f)
-                            || (this.isFullStockMode() && needsFullyStocked())) {
+                            || (this.isFullStockMode() && (invSize < confSize))) {
                         ifs.setStackSize(confSize - invSize);
                         requestFluid(ifs, i);
                     } else if (invSize > confSize) {
@@ -206,6 +206,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             if (notInserted != null) {
                 invFluids.fill(index, notInserted, true);
                 storedFluidCount += notInserted.getStackSize();
+                checkSlotsAccessible();
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -220,6 +221,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             if (extracted != null) {
                 storedFluidCount += extracted.getStackSize();
                 invFluids.fill(index, extracted, true);
+                checkSlotsAccessible();
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -303,8 +305,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     }
 
     public void setSlotsAccessible() {
-        if (((this.isFullStockMode() && this.needsFullyStocked()) && (this.isSlotsAccessible()))
-                || (this.hasModeChanged())) {
+        if (((this.isFullStockMode() && this.isFullyStocked()) && (!this.isSlotsAccessible()))
+                || (!this.isFullStockMode())) {
             try {
                 this.getProxy().getGrid().postEvent(
                         new MENetworkStorageEvent(
@@ -312,10 +314,10 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                                 this.invItems.getMEInventory().getStackType()));
             } catch (GridAccessException ignored) {}
 
-            this.isSlotsAccessible = false;
+            this.isSlotsAccessible = true;
 
-        } else if (((this.isFullStockMode() && this.isFullyStocked()) && (!this.isSlotsAccessible()))
-                || (!this.isFullStockMode())) {
+        } else if (((this.isFullStockMode() && this.needsFullyStocked()) && (this.isSlotsAccessible()))
+                || (this.hasModeChanged())) {
                     try {
                         this.getProxy().getGrid().postEvent(
                                 new MENetworkStorageEvent(
@@ -323,9 +325,18 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                                         this.invItems.getMEInventory().getStackType()));
                     } catch (GridAccessException ignored) {}
 
-                    this.isSlotsAccessible = true;
+                    this.isSlotsAccessible = false;
 
-                }
+                } else
+            if ((this.isFullStockMode() && this.isFullyStocked()) && (this.isSlotsAccessible())) {
+                try {
+                    this.getProxy().getGrid().postEvent(
+                            new MENetworkStorageEvent(
+                                    this.getProxy().getStorage().getItemInventory(),
+                                    this.invItems.getMEInventory().getStackType()));
+                } catch (GridAccessException ignored) {}
+
+            }
 
         System.out.println(this.isSlotsAccessible());
 
@@ -368,7 +379,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             }
         }
 
-        return emptySlots == configSlots;
+        return (emptySlots == configSlots) && (configSlots > 0);
     }
 
     private boolean isFullyStocked() {
@@ -619,6 +630,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         configFluids.readFromNBT(data, "configFluids");
         cell.readFromNBT(data, "cellHolder");
         isFullStockMode = data.getBoolean("isFullStockMode");
+        checkSlotsAccessible();
         isSlotsAccessible = data.getBoolean("isSlotsAccessible");
         totalBytes = data.getLong("totalBytes");
         getProxy().setIdlePowerUsage(data.getDouble("powerDraw"));
