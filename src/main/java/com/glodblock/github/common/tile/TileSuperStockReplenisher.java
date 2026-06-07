@@ -326,7 +326,18 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                     } catch (GridAccessException ignored) {}
 
                     this.isSlotsAccessible = false;
+                    this.isSlotsAccessible = false;
 
+                } else
+            if ((this.isFullStockMode() && this.isFullyStocked()) && (this.isSlotsAccessible())) {
+                try {
+                    this.getProxy().getGrid().postEvent(
+                            new MENetworkStorageEvent(
+                                    this.getProxy().getStorage().getItemInventory(),
+                                    this.invItems.getMEInventory().getStackType()));
+                } catch (GridAccessException ignored) {}
+
+            }
                 } else
             if ((this.isFullStockMode() && this.isFullyStocked()) && (this.isSlotsAccessible())) {
                 try {
