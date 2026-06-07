@@ -8,6 +8,9 @@ import javax.annotation.Nonnull;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -33,6 +36,7 @@ import appeng.api.networking.IGridNode;
 import appeng.api.networking.events.MENetworkBootingStatusChange;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
+import appeng.api.networking.events.MENetworkStorageEvent;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
@@ -69,6 +73,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
     private final BiggerAppEngInventory invItems = new BiggerAppEngInventory(this, 63);
     private final AEFluidInventory invFluids = new AEFluidInventory(this, 9, Integer.MAX_VALUE);
+    private final IAEStackInventory configItems = new IAEStackInventory(this, 63, StorageName.CONFIG);
     private final IAEStackInventory configFluids = new IAEStackInventory(this, 9, StorageName.NONE) {
 
         @Override
@@ -85,22 +90,27 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             }
         }
     };
-    private final IAEStackInventory configItems = new IAEStackInventory(this, 63, StorageName.CONFIG);
     private final BaseActionSource source;
     private boolean isPowered;
     private long totalBytes;
     private long storedFluidCount;
     private long storedItemCount;
+    protected boolean isFullStockMode;
+    protected boolean isSlotsAccessible;
+    protected boolean modeChange;
 
     private boolean needReCountStoredFluids = true;
     private boolean needReCountStoredItems = true;
 
     public TileSuperStockReplenisher() {
         super(false);
-        getProxy().setIdlePowerUsage(4D);
-        getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
+        this.getProxy().setIdlePowerUsage(4D);
+        this.getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
         this.source = new MachineSource(this);
         invItems.setMaxStackSize(Integer.MAX_VALUE);
+        this.isFullStockMode = false;
+        this.isSlotsAccessible = true;
+        this.modeChange = false;
     }
 
     private TickRateModulation doWork() {
@@ -123,7 +133,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 else if (invFluid.equals(ifs)) {
                     long invSize = invFluid.getStackSize();
                     long confSize = ifs.getStackSize();
-                    if (invSize < confSize / 2f) {
+                    if (!this.isFullStockMode() && (invSize < confSize / 2f)
+                            || (this.isFullStockMode() && (invSize < confSize))) {
                         ifs.setStackSize(confSize - invSize);
                         requestFluid(ifs, i);
                     } else if (invSize > confSize) {
@@ -146,9 +157,11 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 IAEItemStack is = ais.copy();
                 if (invItem == null) requestItem(is, i);
                 else if (is.equals(invItem)) {
+                    int invSize = invItem.stackSize;
                     int confSize = (int) is.getStackSize();
-                    if (invItem.stackSize < confSize / 2f) {
-                        is.setStackSize(confSize - invItem.stackSize);
+                    if ((!this.isFullStockMode() && (invSize < confSize / 2f))
+                            || ((this.isFullStockMode()) && (invSize < confSize))) {
+                        is.setStackSize(confSize - invSize);
                         requestItem(is, i);
                     } else if (invItem.stackSize > confSize) {
                         returnItem(i, invItem.stackSize - confSize);
@@ -193,6 +206,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             if (notInserted != null) {
                 invFluids.fill(index, notInserted, true);
                 storedFluidCount += notInserted.getStackSize();
+                checkSlotsAccessible();
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -207,6 +221,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             if (extracted != null) {
                 storedFluidCount += extracted.getStackSize();
                 invFluids.fill(index, extracted, true);
+                checkSlotsAccessible();
             }
         } catch (final GridAccessException ignored) {}
     }
@@ -227,13 +242,15 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             IAEItemStack notInserted = this.getProxy().getStorage().getItemInventory()
                     .injectItems(AEItemStack.create(is), Actionable.MODULATE, this.source);
             if (notInserted != null) {
-                ItemStack tempStack = invItems.getStackInSlot(index);
-                if (tempStack != null) {
+                if (invItems.getStackInSlot(index) != null) {
+                    ItemStack tempStack = invItems.getStackInSlot(index).copy();
                     tempStack.stackSize = tempStack.stackSize + (int) notInserted.getStackSize();
-
-                    saveChanges();
-                } else invItems.setInventorySlotContents(index, notInserted.getItemStack());
-
+                    invItems.setInventorySlotContents(index, tempStack);
+                    checkSlotsAccessible();
+                } else {
+                    invItems.setInventorySlotContents(index, notInserted.getItemStack());
+                    checkSlotsAccessible();
+                }
                 this.storedItemCount += notInserted.getStackSize();
             }
         } catch (final GridAccessException ignored) {}
@@ -247,21 +264,166 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             IAEItemStack extracted = this.getProxy().getStorage().getItemInventory()
                     .extractItems(is, Actionable.MODULATE, this.source);
             if (extracted != null) {
-                ItemStack tempStack = invItems.getStackInSlot(index);
-                if (tempStack != null) {
+                if (invItems.getStackInSlot(index) != null) {
+                    ItemStack tempStack = invItems.getStackInSlot(index).copy();
                     tempStack.stackSize = tempStack.stackSize + (int) extracted.getStackSize();
+                    invItems.setInventorySlotContents(index, tempStack);
+                    checkSlotsAccessible();
 
-                    saveChanges();
-                } else invItems.setInventorySlotContents(index, extracted.getItemStack());
+                    // saveChanges();
+                } else {
+                    invItems.setInventorySlotContents(index, extracted.getItemStack());
+                    checkSlotsAccessible();
+                }
 
                 this.storedItemCount += extracted.getStackSize();
             }
         } catch (final GridAccessException ignored) {}
     }
 
+    public boolean isFullStockMode() {
+        return this.isFullStockMode;
+    }
+
+    public void setFullStockMode(boolean fullStockMode) {
+
+        if (this.isFullStockMode == fullStockMode) return;
+
+        if (fullStockMode) this.modeChange = true;
+
+        this.isFullStockMode = fullStockMode;
+        checkSlotsAccessible();
+        this.modeChange = false;
+    }
+
+    public boolean isSlotsAccessible() {
+        return this.isSlotsAccessible;
+    }
+
+    public boolean hasModeChanged() {
+        return this.modeChange;
+    }
+
+    public void setSlotsAccessible() {
+        if (((this.isFullStockMode() && this.isFullyStocked()) && (!this.isSlotsAccessible()))
+                || (!this.isFullStockMode())) {
+            try {
+                this.getProxy().getGrid().postEvent(
+                        new MENetworkStorageEvent(
+                                this.getProxy().getStorage().getItemInventory(),
+                                this.invItems.getMEInventory().getStackType()));
+            } catch (GridAccessException ignored) {}
+
+            this.isSlotsAccessible = true;
+
+        } else if (((this.isFullStockMode() && this.needsFullyStocked()) && (this.isSlotsAccessible()))
+                || (this.hasModeChanged())) {
+                    try {
+                        this.getProxy().getGrid().postEvent(
+                                new MENetworkStorageEvent(
+                                        this.getProxy().getStorage().getItemInventory(),
+                                        this.invItems.getMEInventory().getStackType()));
+                    } catch (GridAccessException ignored) {}
+
+                    this.isSlotsAccessible = false;
+
+                } else
+            if ((this.isFullStockMode() && this.isFullyStocked()) && (this.isSlotsAccessible())) {
+                try {
+                    this.getProxy().getGrid().postEvent(
+                            new MENetworkStorageEvent(
+                                    this.getProxy().getStorage().getItemInventory(),
+                                    this.invItems.getMEInventory().getStackType()));
+                } catch (GridAccessException ignored) {}
+
+            }
+
+    }
+
+    public void checkSlotsAccessible() {
+        this.setSlotsAccessible();
+        this.notifyNeighbors();
+    }
+
+    private boolean needsFullyStocked() {
+        int configSlots = 0;
+        int emptySlots = 0;
+
+        for (int i = 0; i < 9; i++) {
+            IAEStack<?> config = configFluids.getAEStackInSlot(i);
+
+            if (config instanceof IAEFluidStack cfg) {
+                configSlots++;
+                IAEFluidStack inv = invFluids.getFluidInSlot(i);
+
+                if (inv == null) {
+                    emptySlots++;
+                }
+            }
+        }
+
+        for (int i = 0; i < 63; i++) {
+            IAEStack<?> config = configItems.getAEStackInSlot(i);
+
+            if (config instanceof IAEItemStack cfg) {
+                configSlots++;
+                ItemStack inv = invItems.getStackInSlot(i);
+
+                if (inv == null) {
+                    emptySlots++;
+                }
+            }
+        }
+
+        return (emptySlots == configSlots) && (configSlots > 0);
+    }
+
+    private boolean isFullyStocked() {
+
+        for (int i = 0; i < 9; i++) {
+            IAEStack<?> config = configFluids.getAEStackInSlot(i);
+
+            if (config instanceof IAEFluidStack cfg) {
+                IAEFluidStack cfgFis = cfg.copy();
+                IAEFluidStack inv = invFluids.getFluidInSlot(i);
+
+                if (inv == null || inv.getStackSize() < cfgFis.getStackSize()) {
+                    return false;
+                }
+            }
+        }
+
+        for (int i = 0; i < 63; i++) {
+            IAEStack<?> config = configItems.getAEStackInSlot(i);
+
+            if (config instanceof IAEItemStack cfg) {
+                IAEItemStack cfgIs = cfg.copy();
+                ItemStack inv = invItems.getStackInSlot(i);
+
+                if (inv == null || inv.stackSize < (int) cfgIs.getStackSize()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public int[] getAccessibleSlotsBySide(ForgeDirection whichSide) {
-        return IntStream.rangeClosed(0, 62).toArray();
+        return ((this.isSlotsAccessible()) ? IntStream.rangeClosed(0, 62).toArray() : new int[0]);
+    }
+
+    @Override
+    public boolean canExtractItem(int slotIndex, ItemStack itemStackIn, int side) {
+        return this.isSlotsAccessible();
+    }
+
+    public void notifyNeighbors() {
+        if (this != null && this.getWorldObj() != null) {
+            this.markDirty();
+            this.getWorldObj().notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
+            this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+        }
     }
 
     @Nonnull
@@ -352,6 +514,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         } catch (GridAccessException e) {
             AELog.error(e, "Couldn't wake up level emitter for delayed updates");
         }
+
+        checkSlotsAccessible();
     }
 
     public void fullRefund() {
@@ -404,12 +568,12 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-        return invFluids.drain(from, resource, doDrain);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? null : invFluids.drain(from, resource, doDrain);
     }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-        return invFluids.drain(from, maxDrain, doDrain);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? null : invFluids.drain(from, maxDrain, doDrain);
     }
 
     @Override
@@ -419,17 +583,19 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
-        return invFluids.canDrain(from, fluid);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? false : invFluids.canDrain(from, fluid);
     }
 
     @Override
     public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-        return invFluids.getTankInfo(from);
+        return (this.isFullStockMode() && !this.isSlotsAccessible()) ? new FluidTankInfo[0]
+                : invFluids.getTankInfo(from);
     }
 
     @Override
     public void onFluidInventoryChanged(IAEFluidTank inv, int slot) {
         this.markDirty();
+        checkSlotsAccessible();
     }
 
     @Override
@@ -456,6 +622,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         configItems.readFromNBT(data, "configItems");
         configFluids.readFromNBT(data, "configFluids");
         cell.readFromNBT(data, "cellHolder");
+        isFullStockMode = data.getBoolean("isFullStockMode");
+        checkSlotsAccessible();
+        isSlotsAccessible = data.getBoolean("isSlotsAccessible");
         totalBytes = data.getLong("totalBytes");
         getProxy().setIdlePowerUsage(data.getDouble("powerDraw"));
     }
@@ -467,6 +636,8 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         configItems.writeToNBT(data, "configItems");
         configFluids.writeToNBT(data, "configFluids");
         cell.writeToNBT(data, "cellHolder");
+        data.setBoolean("isFullStockMode", isFullStockMode);
+        data.setBoolean("isSlotsAccessible", isSlotsAccessible);
         data.setLong("totalBytes", totalBytes);
         data.setDouble("powerDraw", getProxy().getIdlePowerUsage());
         return data;
@@ -552,5 +723,21 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             case CONFIG -> this.configItems;
             default -> null;
         };
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+
+        NBTTagCompound tag = new NBTTagCompound();
+
+        this.writeToNBT(tag);
+
+        return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+
+        this.readFromNBT(pkt.func_148857_g());
     }
 }
