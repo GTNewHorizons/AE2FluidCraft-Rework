@@ -405,7 +405,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 }
             }
         }
-
         return true;
     }
 
