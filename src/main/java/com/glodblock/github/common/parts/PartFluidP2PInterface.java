@@ -25,6 +25,7 @@ import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.DualHostSettings;
 import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.Util;
 
@@ -43,6 +44,7 @@ import appeng.parts.p2p.PartP2PInterface;
 import appeng.parts.p2p.PartP2PTunnel;
 import appeng.tile.inventory.AppEngInternalAEInventory;
 import appeng.util.Platform;
+import appeng.util.SettingsFrom;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -72,12 +74,20 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     }
 
     @Override
+    public NBTTagCompound getMemoryCardData() {
+        NBTTagCompound output = super.getMemoryCardData();
+        DualHostSettings.downloadSettings(this, output);
+        return output;
+    }
+
+    @Override
     public PartP2PTunnel<?> applyMemoryCard(EntityPlayer player, IMemoryCard memoryCard, ItemStack is) {
         PartP2PTunnel<?> newTunnel = super.applyMemoryCard(player, memoryCard, is);
         if (Platform.isClient()) return newTunnel;
         NBTTagCompound data = memoryCard.getData(is);
         if (newTunnel instanceof PartFluidP2PInterface p2PInterface) {
             p2PInterface.duality.getConfigManager().readFromNBT(data);
+            DualHostSettings.uploadSettings(p2PInterface, data);
         }
         return newTunnel;
     }
@@ -90,7 +100,22 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
             IConfigManager config = fromInterface.duality.getConfigManager();
             config.getSettings()
                     .forEach(setting -> newDuality.getConfigManager().putSetting(setting, config.getSetting(setting)));
+            DualHostSettings.copySettings(this, fromInterface);
         }
+    }
+
+    @Override
+    public void uploadSettings(@NotNull SettingsFrom from, @NotNull NBTTagCompound compound) {
+        super.uploadSettings(from, compound);
+        DualHostSettings.uploadSettings(this, compound);
+    }
+
+    @Override
+    @NotNull
+    public NBTTagCompound downloadSettings(SettingsFrom from) {
+        NBTTagCompound output = super.downloadSettings(from);
+        DualHostSettings.downloadSettings(this, output);
+        return output;
     }
 
     @Override

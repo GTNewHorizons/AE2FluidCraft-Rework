@@ -24,6 +24,7 @@ import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.loader.ItemAndBlockHolder;
+import com.glodblock.github.util.DualHostSettings;
 import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.Util;
 
@@ -41,6 +42,7 @@ import appeng.helpers.ICustomButtonDataObject;
 import appeng.helpers.ICustomButtonProvider;
 import appeng.parts.misc.PartInterface;
 import appeng.tile.inventory.AppEngInternalAEInventory;
+import appeng.util.SettingsFrom;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -154,6 +156,20 @@ public class PartFluidInterface extends PartInterface implements IDualHost, ICus
         super.writeToNBT(data);
         config.writeToNBT(data, "ConfigInv");
         getInternalFluid().writeToNBT(data, "FluidInv");
+    }
+
+    @Override
+    public void uploadSettings(@NotNull SettingsFrom from, @NotNull NBTTagCompound compound) {
+        super.uploadSettings(from, compound);
+        DualHostSettings.uploadSettings(this, compound);
+    }
+
+    @Override
+    @NotNull
+    public NBTTagCompound downloadSettings(SettingsFrom from) {
+        NBTTagCompound output = super.downloadSettings(from);
+        DualHostSettings.downloadSettings(this, output);
+        return output;
     }
 
     @Override
