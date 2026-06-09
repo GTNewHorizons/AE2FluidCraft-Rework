@@ -12,7 +12,6 @@ import com.google.common.base.Optional;
 
 import appeng.api.storage.data.IAEStackType;
 import appeng.items.AEBaseCell;
-import cpw.mods.fml.common.Loader;
 
 public abstract class FCBaseItemCell extends AEBaseCell {
 
@@ -54,8 +53,6 @@ public abstract class FCBaseItemCell extends AEBaseCell {
 
     @Override
     public boolean storableInStorageCell() {
-
-        // Loader.isModLoaded uses ModID!
-        return Loader.isModLoaded("hodgepodge");
+        return true;
     }
 }
