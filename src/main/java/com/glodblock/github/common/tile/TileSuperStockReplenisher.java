@@ -300,43 +300,40 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         return this.isSlotsAccessible;
     }
 
-    public boolean hasModeChanged() {
+    public boolean hasModeChangedToTrue() {
         return this.modeChange;
     }
 
     public void setSlotsAccessible() {
-        if (((this.isFullStockMode() && this.isFullyStocked()) && (!this.isSlotsAccessible()))
-                || (!this.isFullStockMode())) {
-            try {
-                this.getProxy().getGrid().postEvent(
-                        new MENetworkStorageEvent(
-                                this.getProxy().getStorage().getItemInventory(),
-                                this.invItems.getMEInventory().getStackType()));
-            } catch (GridAccessException ignored) {}
+        if (this.isFullStockMode()) {
+
+            if (this.hasModeChangedToTrue()) {
+
+                this.isSlotsAccessible = false;
+
+            }
+            if ((this.needsFullyStocked()) && (this.isSlotsAccessible())) {
+
+                this.isSlotsAccessible = false;
+
+            } else if ((this.isFullyStocked()) && (!this.isSlotsAccessible())) {
+
+                this.isSlotsAccessible = true;
+
+            }
+
+        } else {
 
             this.isSlotsAccessible = true;
 
-        } else if (((this.isFullStockMode() && this.needsFullyStocked()) && (this.isSlotsAccessible()))
-                || (this.hasModeChanged())) {
-                    try {
-                        this.getProxy().getGrid().postEvent(
-                                new MENetworkStorageEvent(
-                                        this.getProxy().getStorage().getItemInventory(),
-                                        this.invItems.getMEInventory().getStackType()));
-                    } catch (GridAccessException ignored) {}
+        }
 
-                    this.isSlotsAccessible = false;
-
-                } else
-            if ((this.isFullStockMode() && this.isFullyStocked()) && (this.isSlotsAccessible())) {
-                try {
-                    this.getProxy().getGrid().postEvent(
-                            new MENetworkStorageEvent(
-                                    this.getProxy().getStorage().getItemInventory(),
-                                    this.invItems.getMEInventory().getStackType()));
-                } catch (GridAccessException ignored) {}
-
-            }
+        try {
+            this.getProxy().getGrid().postEvent(
+                    new MENetworkStorageEvent(
+                            this.getProxy().getStorage().getItemInventory(),
+                            this.invItems.getMEInventory().getStackType()));
+        } catch (GridAccessException ignored) {}
 
     }
 
