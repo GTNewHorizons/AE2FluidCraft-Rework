@@ -97,6 +97,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     private long storedItemCount;
     protected boolean isFullStockMode;
     protected boolean isSlotsAccessible;
+        protected boolean isNeedsFullyStocked;
     protected boolean modeChange;
 
     private boolean needReCountStoredFluids = true;
@@ -110,6 +111,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         invItems.setMaxStackSize(Integer.MAX_VALUE);
         this.isFullStockMode = false;
         this.isSlotsAccessible = true;
+        this.isNeedsFullyStocked = false;
         this.modeChange = false;
     }
 
@@ -120,7 +122,11 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         this.needReCountStoredFluids = true;
         this.needReCountStoredItems = true;
 
-        return TickRateModulation.SAME;
+        if (this.isFullStockMode()) {
+            if (this.isNeedsFullyStocked()) {
+                return TickRateModulation.FASTER;
+            } else return TickRateModulation.SLOWER;
+        } else return TickRateModulation.SAME;
     }
 
     private void fletchFluids() {
@@ -300,6 +306,10 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         return this.isSlotsAccessible;
     }
 
+    public boolean isNeedsFullyStocked() {
+        return this.isNeedsFullyStocked;
+    }
+
     public boolean hasModeChangedToTrue() {
         return this.modeChange;
     }
@@ -372,7 +382,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             }
         }
 
-        return (emptySlots == configSlots) && (configSlots > 0);
+        this.isNeedsFullyStocked = (emptySlots == configSlots) && (configSlots > 0) 
+
+        return isNeedsFullyStocked;
     }
 
     private boolean isFullyStocked() {
@@ -685,7 +697,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(120, 120, false, false);
+        if (isFullStockMode()) {
+            return new TickingRequest(10, 120, false, false);
+        } else return new TickingRequest(120, 120, false, false);
     }
 
     @Override
