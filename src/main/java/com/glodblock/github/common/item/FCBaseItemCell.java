@@ -50,4 +50,9 @@ public abstract class FCBaseItemCell extends AEBaseCell {
     public ItemStack stack() {
         return new ItemStack(this, 1);
     }
+
+    @Override
+    public boolean storableInStorageCell() {
+        return true;
+    }
 }
