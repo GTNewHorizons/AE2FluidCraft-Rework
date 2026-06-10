@@ -312,13 +312,13 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                 this.isSlotsAccessible = false;
 
             }
-            if ((this.needsFullyStocked()) && (this.isSlotsAccessible())) {
+            if (this.isSlotsAccessible()) {
 
-                this.isSlotsAccessible = false;
+                if ((this.needsFullyStocked())) this.isSlotsAccessible = false;
 
-            } else if ((this.isFullyStocked()) && (!this.isSlotsAccessible())) {
+            } else {
 
-                this.isSlotsAccessible = true;
+                if (this.isFullyStocked()) this.isSlotsAccessible = true;
 
             }
 
