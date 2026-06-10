@@ -52,7 +52,6 @@ import appeng.api.util.DimensionalCoord;
 import appeng.container.AEBaseContainer;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.me.storage.NullInventory;
-import appeng.tile.networking.TileCableBus;
 import appeng.util.Platform;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
@@ -341,13 +340,6 @@ public final class Util {
             return ItemFluidPacket.getFluidStack(virtual);
         } else if (virtual.getItem() instanceof ItemFluidDrop) {
             return ItemFluidDrop.getFluidStack(virtual);
-        }
-        return null;
-    }
-
-    public static IPart getPart(Object te, ForgeDirection face) {
-        if (te instanceof TileCableBus) {
-            return ((TileCableBus) te).getPart(face);
         }
         return null;
     }

@@ -12,8 +12,6 @@ import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.util.BlockPos;
 
 import appeng.api.parts.ILevelEmitter;
-import appeng.api.parts.IPart;
-import appeng.api.parts.IPartHost;
 import appeng.container.AEBaseContainer;
 import appeng.container.PrimaryGui;
 import appeng.container.interfaces.IContainerSubGui;
@@ -125,16 +123,13 @@ public class CPacketLevelTerminalCommands implements IMessage {
                     TileEntity tile = DimensionManager.getWorld(message.dim)
                             .getTileEntity(message.x, message.y, message.z);
 
-                    if (tile instanceof IPartHost host) {
-                        IPart part = host.getPart(message.side);
-                        if (part instanceof ILevelEmitter) {
-                            InventoryHandler.openGui(
-                                    player,
-                                    tile.getWorldObj(),
-                                    new BlockPos(tile),
-                                    message.side,
-                                    GuiType.LEVEL_EMITTER_PROXY);
-                        }
+                    if (Platform.getPartFromTE(tile, message.side) instanceof ILevelEmitter) {
+                        InventoryHandler.openGui(
+                                player,
+                                tile.getWorldObj(),
+                                new BlockPos(tile),
+                                message.side,
+                                GuiType.LEVEL_EMITTER_PROXY);
                     } else {
                         InventoryHandler.openGui(
                                 player,

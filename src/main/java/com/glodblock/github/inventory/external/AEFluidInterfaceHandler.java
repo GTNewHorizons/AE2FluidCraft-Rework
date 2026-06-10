@@ -3,13 +3,12 @@ package com.glodblock.github.inventory.external;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.glodblock.github.util.Util;
-
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.storage.IExternalStorageHandler;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.StorageChannel;
+import appeng.util.Platform;
 
 public class AEFluidInterfaceHandler implements IExternalStorageHandler {
 
@@ -18,7 +17,7 @@ public class AEFluidInterfaceHandler implements IExternalStorageHandler {
         if (channel == StorageChannel.FLUIDS) {
             if (te instanceof ITileStorageMonitorable) {
                 return true;
-            } else return Util.getPart(te, d.getOpposite()) instanceof ITileStorageMonitorable;
+            } else return Platform.getPartFromTE(te, d.getOpposite()) instanceof ITileStorageMonitorable;
         }
         return false;
     }
@@ -30,8 +29,8 @@ public class AEFluidInterfaceHandler implements IExternalStorageHandler {
             if (te instanceof ITileStorageMonitorable
                     && ((ITileStorageMonitorable) te).getMonitorable(d, src) != null) {
                 return ((ITileStorageMonitorable) te).getMonitorable(d, src).getFluidInventory();
-            } else if (Util.getPart(te, d.getOpposite()) instanceof ITileStorageMonitorable part
-                    && ((ITileStorageMonitorable) Util.getPart(te, d.getOpposite())).getMonitorable(d, src) != null) {
+            } else if (Platform.getPartFromTE(te, d.getOpposite()) instanceof ITileStorageMonitorable part
+                    && part.getMonitorable(d, src) != null) {
                         return part.getMonitorable(d, src).getFluidInventory();
                     }
         }
