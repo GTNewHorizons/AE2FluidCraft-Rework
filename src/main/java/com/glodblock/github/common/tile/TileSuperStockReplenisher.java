@@ -97,7 +97,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     private long storedItemCount;
     protected boolean isFullStockMode;
     protected boolean isSlotsAccessible;
-        protected boolean isNeedsFullyStocked;
+    protected boolean isNeedsFullyStocked;
     protected boolean modeChange;
 
     private boolean needReCountStoredFluids = true;
@@ -382,7 +382,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             }
         }
 
-        this.isNeedsFullyStocked = (emptySlots == configSlots) && (configSlots > 0) 
+        this.isNeedsFullyStocked = (emptySlots == configSlots) && (configSlots > 0);
 
         return isNeedsFullyStocked;
     }
