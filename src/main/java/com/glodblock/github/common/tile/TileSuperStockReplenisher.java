@@ -685,7 +685,9 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(120, 120, false, false);
+        if (isFullStockMode()) {
+            return new TickingRequest(10, 120, false, false);
+        } else return new TickingRequest(120, 120, false, false);
     }
 
     @Override
