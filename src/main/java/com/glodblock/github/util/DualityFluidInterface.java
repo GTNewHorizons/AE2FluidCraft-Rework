@@ -147,6 +147,16 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
         this.readConfig();
     }
 
+    public void writeConfigToNBT(NBTTagCompound data, String name) {
+        this.config.writeToNBT(data, name);
+    }
+
+    public void readConfigFromNBT(NBTTagCompound data, String name) {
+        this.config.readFromNBT(data, name);
+        this.readConfig();
+        this.saveChanges();
+    }
+
     public AEFluidInventory getConfig() {
         return this.config;
     }
