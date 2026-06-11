@@ -13,7 +13,6 @@ import org.lwjgl.opengl.GL11;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
-import com.glodblock.github.network.CPacketSuperStockReplenisherUpdate;
 
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEStack;
@@ -42,7 +41,7 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
         super(new ContainerSuperStockReplenisher(ipl, tile));
 
         this.containerSuperStockReplenisher = (ContainerSuperStockReplenisher) inventorySlots;
-        this.tileSuperStockReplenisher = (TileSuperStockReplenisher) tile;
+        this.tileSuperStockReplenisher = tile;
 
         this.ySize = 251;
         this.xSize = 216;
@@ -144,17 +143,16 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     protected void actionPerformed(final GuiButton btn) {
         if (actionPerformedCustomButtons(btn)) return;
         if (btn == StockModeButton) {
-            boolean newMode = !tileSuperStockReplenisher.isFullStockMode();
-            this.tileSuperStockReplenisher.setFullStockMode(newMode);
+            boolean newMode = !containerSuperStockReplenisher.isFullStockMode();
+            this.containerSuperStockReplenisher.setFullStockMode(newMode);
             StockModeButton.set(newMode ? "fullstockMode" : "normalMode");
-            FluidCraft.proxy.netHandler.sendToServer(new CPacketSuperStockReplenisherUpdate(newMode));
+            this.containerSuperStockReplenisher.forceUpdate();
         }
         super.actionPerformed(btn);
     }
 
-    public void update(Map<Integer, IAEStack<?>> map, boolean fullStockMode) {
+    public void update(Map<Integer, IAEStack<?>> map) {
         this.list = map;
-        this.tileSuperStockReplenisher.setFullStockMode(fullStockMode);
     }
 
     private boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {

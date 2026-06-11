@@ -19,19 +19,16 @@ import io.netty.buffer.ByteBuf;
 public class SPacketSuperStockReplenisherUpdate implements IMessage {
 
     private Map<Integer, IAEStack<?>> list;
-    private boolean isFullStockMode;
 
     public SPacketSuperStockReplenisherUpdate() {}
 
-    public SPacketSuperStockReplenisherUpdate(Map<Integer, IAEStack<?>> data, boolean isFullStockMode) {
+    public SPacketSuperStockReplenisherUpdate(Map<Integer, IAEStack<?>> data) {
         this.list = data;
-        this.isFullStockMode = isFullStockMode;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         this.list = new HashMap<>();
-        this.isFullStockMode = buf.readBoolean();
         try {
             Util.readAEStackMapFromBuf(this.list, buf);
         } catch (IOException e) {
@@ -41,7 +38,6 @@ public class SPacketSuperStockReplenisherUpdate implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeBoolean(this.isFullStockMode);
         try {
             Util.writeAEStackMapToBuf(this.list, buf);
         } catch (IOException e) {
@@ -55,7 +51,7 @@ public class SPacketSuperStockReplenisherUpdate implements IMessage {
         public IMessage onMessage(SPacketSuperStockReplenisherUpdate message, MessageContext ctx) {
             final GuiScreen gs = Minecraft.getMinecraft().currentScreen;
             if (gs instanceof GuiSuperStockReplenisher gss) {
-                gss.update(message.list, message.isFullStockMode);
+                gss.update(message.list);
             }
             return null;
         }
