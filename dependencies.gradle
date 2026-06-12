@@ -35,7 +35,7 @@
  */
 dependencies {
     api('com.github.GTNewHorizons:NotEnoughItems:2.8.100-GTNH:dev')
-    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-971-GTNH:dev')
+    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-982-GTNH:dev')
     api('com.github.GTNewHorizons:waila:1.19.29:dev')
     api("com.github.GTNewHorizons:GTNHLib:0.11.4:dev")
 
