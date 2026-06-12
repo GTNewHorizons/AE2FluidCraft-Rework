@@ -116,13 +116,13 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     }
 
     private TickRateModulation doWork() {
-        String tickRateModulation = "IDLE";
+        final TickRateModulation tickRateModulation;
 
         if (this.isFullStockMode()) {
             if (this.isNeedsFullyStocked()) {
-                tickRateModulation = "FASTER";
-            } else tickRateModulation = "SLOWER";
-        }
+                tickRateModulation = TickRateModulation.FASTER;
+            } else tickRateModulation = TickRateModulation.SLOWER;
+        } else tickRateModulation = TickRateModulation.IDLE;
 
         this.fletchFluids();
         this.fletchItems();
@@ -130,7 +130,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         this.needReCountStoredFluids = true;
         this.needReCountStoredItems = true;
 
-        return TickRateModulation.valueOf(tickRateModulation);
+        return tickRateModulation;
     }
 
     private void fletchFluids() {
