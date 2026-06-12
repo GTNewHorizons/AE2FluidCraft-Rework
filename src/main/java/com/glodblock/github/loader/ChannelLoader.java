@@ -6,7 +6,6 @@ import com.glodblock.github.network.CPacketDumpTank;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.network.CPacketLevelMaintainer;
 import com.glodblock.github.network.CPacketLevelTerminalCommands;
-import com.glodblock.github.network.CPacketSuperStockReplenisherUpdate;
 import com.glodblock.github.network.CPacketSwitchGuis;
 import com.glodblock.github.network.CPacketValueConfig;
 import com.glodblock.github.network.SPacketCustomButtonUpdate;
@@ -40,12 +39,6 @@ public class ChannelLoader implements Runnable {
                 SPacketSuperStockReplenisherUpdate.class,
                 id++,
                 Side.CLIENT);
-        netHandler.registerMessage(
-                new CPacketSuperStockReplenisherUpdate.Handler(),
-                CPacketSuperStockReplenisherUpdate.class,
-                id++,
-                Side.SERVER);
-
         netHandler.registerMessage(new CPacketValueConfig.Handler(), CPacketValueConfig.class, id++, Side.SERVER);
         netHandler
                 .registerMessage(new CPacketLevelMaintainer.Handler(), CPacketLevelMaintainer.class, id++, Side.SERVER);
