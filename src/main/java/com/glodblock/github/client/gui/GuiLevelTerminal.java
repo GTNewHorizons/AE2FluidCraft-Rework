@@ -62,7 +62,6 @@ import appeng.container.AEBaseContainer;
 import appeng.container.slot.AppEngSlot;
 import appeng.core.AEConfig;
 import appeng.core.localization.ButtonToolTips;
-import appeng.core.localization.GuiColors;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.PlayerMessages;
 import appeng.core.sync.GuiBridge;
@@ -241,12 +240,12 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 StatCollector.translateToLocal(NameConst.GUI_LEVEL_TERMINAL),
                 8,
                 6,
-                GuiColors.GuiTextColorGray.getColor());
+                FCGuiColors.guiTextColorGray.getColor());
         fontRendererObj.drawString(
                 GuiText.inventory.getLocal(),
                 GuiLevelTerminal.offsetX + 2,
                 ySize - 96 + 3,
-                GuiColors.GuiTextColorGray.getColor());
+                FCGuiColors.guiTextColorGray.getColor());
 
         if (!ModAndClassUtil.NEI && tooltipStack != null) {
             renderToolTip(tooltipStack, mouseX, mouseY);
@@ -395,7 +394,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         int title;
         int renderY = 0;
         final int sectionBottom = viewY + section.getHeight() - 1;
-        final int fontColor = GuiColors.GuiTextColorGray.getColor();
+        final int fontColor = FCGuiColors.guiTextColorGray.getColor();
         /*
          * Render title
          */
@@ -563,11 +562,11 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     aes.drawOverlayInGui(mc, 0, 0, false, false, false, false);
                     GL11.glTranslatef(0.0f, 0.0f, ITEM_STACK_OVERLAY_Z - ITEM_STACK_Z);
                     int color = switch (state) {
-                        case Idle -> FCGuiColors.StateIdle.getColor();
-                        case Craft -> FCGuiColors.StateCraft.getColor();
-                        case Export -> FCGuiColors.StateExport.getColor();
-                        case Error, NotFound, CantCraft -> FCGuiColors.StateError.getColor();
-                        case None -> FCGuiColors.StateNone.getColor();
+                        case Idle -> FCGuiColors.stateIdle.getColor();
+                        case Craft -> FCGuiColors.stateCraft.getColor();
+                        case Export -> FCGuiColors.stateExport.getColor();
+                        case Error, NotFound, CantCraft -> FCGuiColors.stateError.getColor();
+                        case None -> FCGuiColors.stateNone.getColor();
                     };
                     int offset = 0;
                     int size = 4;
@@ -585,7 +584,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     if (!tooltip) {
                         if (entry.filteredRecipes[slotIdx]) {
                             GL11.glTranslatef(0.0f, 0.0f, ITEM_STACK_OVERLAY_Z);
-                            drawRect(0, 0, 16, 16, GuiColors.ItemSlotOverlayUnpowered.getColor());
+                            drawRect(0, 0, 16, 16, FCGuiColors.itemSlotOverlayUnpowered.getColor());
                         }
                     } else {
                         tooltipStack = Platform.stackConvert(aes).getItemStack();
@@ -594,7 +593,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 } else if (entry.filteredRecipes[slotIdx]) {
                     GL11.glPushMatrix();
                     GL11.glTranslatef(colLeft, viewY + rowYTop + 1, ITEM_STACK_OVERLAY_Z);
-                    drawRect(0, 0, 16, 16, GuiColors.ItemSlotOverlayUnpowered.getColor());
+                    drawRect(0, 0, 16, 16, FCGuiColors.itemSlotOverlayUnpowered.getColor());
                     GL11.glPopMatrix();
                 }
                 if (tooltip) {
