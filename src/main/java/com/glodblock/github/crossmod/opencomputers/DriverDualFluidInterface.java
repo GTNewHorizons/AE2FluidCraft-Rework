@@ -13,7 +13,7 @@ import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
-import appeng.api.parts.IPartHost;
+import appeng.util.Platform;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.NamedBlock;
 import li.cil.oc.api.driver.SidedBlock;
@@ -104,20 +104,19 @@ public class DriverDualFluidInterface implements SidedBlock {
             if (te instanceof TileFluidInterface) {
                 return true;
             }
-            if (te instanceof IPartHost) {
-                return ((IPartHost) te).getPart(face) instanceof PartFluidInterface;
-            }
+
+            return Platform.getPartFromTE(te, face) instanceof PartFluidInterface;
         }
         return false;
     }
 
     private static DualityFluidInterface getInterface(TileEntity te, ForgeDirection face) {
         if (te != null) {
-            if (te instanceof TileFluidInterface) {
-                return ((TileFluidInterface) te).getDualityFluid();
+            if (te instanceof TileFluidInterface tile) {
+                return tile.getDualityFluid();
             }
-            if (te instanceof IPartHost && ((IPartHost) te).getPart(face) instanceof PartFluidInterface) {
-                return ((PartFluidInterface) ((IPartHost) te).getPart(face)).getDualityFluid();
+            if (Platform.getPartFromTE(te, face) instanceof PartFluidInterface part) {
+                return part.getDualityFluid();
             }
         }
         return null;

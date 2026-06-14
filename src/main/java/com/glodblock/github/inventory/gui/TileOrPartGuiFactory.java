@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import appeng.api.parts.IPart;
-import appeng.api.parts.IPartHost;
+import appeng.util.Platform;
 
 public abstract class TileOrPartGuiFactory<T> extends TileGuiFactory<T> {
 
@@ -17,12 +17,11 @@ public abstract class TileOrPartGuiFactory<T> extends TileGuiFactory<T> {
     @Nullable
     @Override
     protected T getInventory(TileEntity tile, ForgeDirection face) {
-        if (tile instanceof IPartHost) {
-            IPart part = ((IPartHost) tile).getPart(face);
-            if (invClass.isInstance(part)) {
-                return invClass.cast(part);
-            }
+        IPart part = Platform.getPartFromTE(tile, face);
+        if (invClass.isInstance(part)) {
+            return invClass.cast(part);
         }
+
         return super.getInventory(tile, face);
     }
 }
