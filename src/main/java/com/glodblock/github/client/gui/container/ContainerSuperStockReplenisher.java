@@ -27,6 +27,7 @@ import appeng.container.interfaces.IVirtualSlotSource;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.container.sync.SyncManager;
 import appeng.container.sync.handlers.AEStackInventorySyncHandler;
+import appeng.container.sync.handlers.BooleanSyncHandler;
 import appeng.items.storage.ItemBasicStorageCell;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;
@@ -44,6 +45,8 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
     private final IAEStackInventory configItems;
     public final AEStackInventorySyncHandler configItemsSlots;
 
+    private final BooleanSyncHandler fullStockModeSync;
+
     public ContainerSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(ipl, tile);
         this.tile = tile;
@@ -54,6 +57,8 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         final SyncManager sm = this.getSyncManager();
         this.configFluidsSlots = sm.root().aeStackInventory("fluidConfig", this.configFluids);
         this.configItemsSlots = sm.root().aeStackInventory("itemConfig", this.configItems);
+        this.fullStockModeSync = sm.root().booleanSync("fullstockMode").onClientChange((oldValue, newValue) -> {})
+                .onServerChange((oldValue, newValue) -> this.tile.setFullStockMode(newValue));
 
         this.addSlotToContainer(
                 new SlotRestrictedInput(
@@ -95,6 +100,9 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                     FluidCraft.proxy.netHandler.sendTo(new SPacketSuperStockReplenisherUpdate(tmp), (EntityPlayerMP) g);
                 }
             }
+
+            if (Platform.isServer()) this.setFullStockMode(this.tile.isFullStockMode());
+
         }
 
         this.lastUpdated++;
@@ -157,5 +165,22 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                 this.configItemsSlots.markDirty();
             }
         }
+    }
+
+    public TileSuperStockReplenisher getTile() {
+        return this.tile;
+    }
+
+    public void forceUpdate() {
+        this.lastUpdated = 21;
+        this.detectAndSendChanges();
+    }
+
+    public boolean isFullStockMode() {
+        return this.fullStockModeSync.get();
+    }
+
+    public void setFullStockMode(final boolean fullStockMode) {
+        this.fullStockModeSync.set(fullStockMode);
     }
 }
