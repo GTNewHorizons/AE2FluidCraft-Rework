@@ -280,10 +280,10 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
                     invItems.setInventorySlotContents(index, tempStack);
                     checkSlotsAccessible();
 
-                    // saveChanges();
                 } else {
                     invItems.setInventorySlotContents(index, extracted.getItemStack());
                     checkSlotsAccessible();
+
                 }
 
                 this.storedItemCount += extracted.getStackSize();
