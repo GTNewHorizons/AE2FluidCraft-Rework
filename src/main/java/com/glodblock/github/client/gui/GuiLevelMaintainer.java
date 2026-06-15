@@ -307,43 +307,43 @@ public class GuiLevelMaintainer extends GuiSub {
             message.add(NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_TITLE) + "\n");
             switch (this.state) {
                 case Idle -> {
-                    this.line.setColor(FCGuiColors.StateIdle.getColor());
+                    this.line.setColor(FCGuiColors.stateIdle.getColor());
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_IDLE));
                 }
                 case Craft -> {
-                    this.line.setColor(FCGuiColors.StateCraft.getColor());
+                    this.line.setColor(FCGuiColors.stateCraft.getColor());
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_LINK));
                 }
                 case Export -> {
-                    this.line.setColor(FCGuiColors.StateExport.getColor());
+                    this.line.setColor(FCGuiColors.stateExport.getColor());
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_EXPORT));
                 }
                 case Error -> {
-                    this.line.setColor(FCGuiColors.StateError.getColor());
+                    this.line.setColor(FCGuiColors.stateError.getColor());
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_ERROR));
                 }
                 case NotFound -> {
-                    this.line.setColor(FCGuiColors.StateError.getColor());
+                    this.line.setColor(FCGuiColors.stateError.getColor());
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_NOT_FOUND));
                 }
                 case CantCraft -> {
-                    this.line.setColor(FCGuiColors.StateError.getColor());
+                    this.line.setColor(FCGuiColors.stateError.getColor());
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CANT_CRAFT));
                 }
                 default -> {
-                    this.line.setColor(FCGuiColors.StateNone.getColor());
+                    this.line.setColor(FCGuiColors.stateNone.getColor());
                     message.add(
                             NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
                                     + NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_NONE));

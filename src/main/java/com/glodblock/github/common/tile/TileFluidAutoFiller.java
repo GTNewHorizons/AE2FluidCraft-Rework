@@ -77,15 +77,27 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     public TileFluidAutoFiller() {
         getProxy().setIdlePowerUsage(1D);
         getProxy().setFlags(GridFlags.REQUIRE_CHANNEL);
-        inventory.setInventorySlotContents(0, BUCKET);
+        inventory.setInventorySlotContents(0, BUCKET.copy());
     }
 
+    @Nonnull
     public ItemStack getContainerItem() {
+        normalizeContainerItem();
         return getInventory().getStackInSlot(0);
     }
 
     public void setContainerItem(ItemStack is) {
         getInventory().setInventorySlotContents(0, is);
+        normalizeContainerItem();
+    }
+
+    private void normalizeContainerItem() {
+        ItemStack is = getInventory().getStackInSlot(0);
+        if (is == null) {
+            is = BUCKET.copy();
+            getInventory().setInventorySlotContents(0, is);
+        }
+        is.stackSize = 1;
     }
 
     @Override
@@ -102,18 +114,15 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     }
 
     public void updatePattern() {
-        ItemStack is = inventory.getStackInSlot(0);
-        if (is == null) return;
-        this.setContainerItem(is);
+        normalizeContainerItem();
         postEvent();
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public void readFromNBTEvent(NBTTagCompound data) {
         inventory.readFromNBT(data, "Inv");
-        if (inventory.getStackInSlot(0) == null) {
-            inventory.setInventorySlotContents(0, BUCKET);
-        }
+        ItemStack container = inventory.getStackInSlot(0);
+        this.setContainerItem(container);
     }
 
     @TileEvent(TileEventType.WORLD_NBT_WRITE)
@@ -150,21 +159,21 @@ public class TileFluidAutoFiller extends AENetworkInvTile
     public void provideCrafting(ICraftingProviderHelper craftingTracker) {
         IStorageGrid storage = getStorageGrid();
         if (storage == null) return;
+        ItemStack containerItem = this.getContainerItem();
+
         if (this.fluids.isEmpty()) {
             this.fluids = storage.getFluidInventory().getStorageList();
         }
         for (IAEFluidStack fluidStack : this.fluids) {
             Fluid fluid = fluidStack.getFluid();
             if (fluid == null) continue;
-            int maxCapacity = Util.FluidUtil.getCapacity(this.getContainerItem(), fluid);
+            int maxCapacity = Util.FluidUtil.getCapacity(containerItem, fluid);
             if (maxCapacity == 0) continue;
             MutablePair<Integer, ItemStack> filled = Util.FluidUtil
-                    .fillStack(this.getContainerItem().copy(), new FluidStack(fluid, maxCapacity));
+                    .fillStack(containerItem.copy(), new FluidStack(fluid, maxCapacity));
+            if (filled == null) continue;
             if (filled.right == null) continue;
-            ItemStack pattern = getPattern(
-                    this.getContainerItem(),
-                    filled.right,
-                    fluidStack.copy().setStackSize(maxCapacity));
+            ItemStack pattern = getPattern(containerItem, filled.right, fluidStack.copy().setStackSize(maxCapacity));
             ICraftingPatternItem patter = (ICraftingPatternItem) pattern.getItem();
             craftingTracker.addCraftingOption(this, patter.getPatternForItem(pattern, getWorldObj()));
         }

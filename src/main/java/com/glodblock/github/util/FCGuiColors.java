@@ -1,46 +1,20 @@
 package com.glodblock.github.util;
 
-import net.minecraft.util.StatCollector;
+import com.gtnewhorizon.gtnhlib.color.ColorResource;
 
-import appeng.core.AELog;
+public class FCGuiColors {
 
-public enum FCGuiColors {
+    private static final ColorResource.Factory color = new ColorResource.Factory("ae2fc");
 
-    // ARGB Colors: Name and default value
-    StateNone(0x00000000),
-    StateIdle(0xFF55FF55),
-    StateCraft(0xFFFFFF55),
-    StateExport(0xFFAA00AA),
-    StateError(0xFFFF5555);
+    public static final ColorResource
+    // spotless:off
+        guiTextColorGray            = color.rgb("guiTextColorGray",             "0x404040"),
 
-    private final String root;
-    private final int color;
-
-    FCGuiColors() {
-        this.root = "ae2fc.gui.color";
-        this.color = 0x000000;
-    }
-
-    FCGuiColors(final int hex) {
-        this.root = "ae2fc.gui.color";
-        this.color = hex;
-    }
-
-    public int getColor() {
-        String hex = StatCollector.translateToLocal(this.getUnlocalized());
-        int color = this.color;
-
-        if (hex.length() <= 8) {
-            try {
-                color = Integer.parseUnsignedInt(hex, 16);
-            } catch (final NumberFormatException e) {
-                AELog.warn("Couldn't format color correctly for: " + this.root + " -> " + hex);
-            }
-        }
-        return color;
-    }
-
-    public String getUnlocalized() {
-        return this.root + '.' + this.toString();
-    }
+        stateNone                   = color.argb("stateNone",                   "0x00000000"),
+        stateIdle                   = color.argb("stateIdle",                   "0xFF55FF55"),
+        stateCraft                  = color.argb("stateCraft",                  "0xFFFFFF55"),
+        stateExport                 = color.argb("stateExport",                 "0xFFAA00AA"),
+        stateError                  = color.argb("stateError",                  "0xFFFF5555"),
+        itemSlotOverlayUnpowered    = color.argb("itemSlotOverlayUnpowered",    "0x66111111");
+    // spotless:on
 }
