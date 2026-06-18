@@ -131,19 +131,15 @@ public class GuiLevelMaintainer extends GuiSub {
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
         if (btn == 0) {
-            if (focusedWidget != null) {
-                focusedWidget.textField.setFocused(false);
-            }
             for (Component com : this.component) {
                 Widget textField = com.isMouseIn(xCoord, yCoord);
                 if (textField != null) {
-                    textField.textField.setFocused(true);
-                    this.focusedWidget = textField;
+                    this.focusWidget(textField);
                     super.mouseClicked(xCoord, yCoord, btn);
                     return;
                 }
             }
-            this.focusedWidget = null;
+            this.focusWidget(null);
         }
         super.mouseClicked(xCoord, yCoord, btn);
     }
@@ -164,10 +160,46 @@ public class GuiLevelMaintainer extends GuiSub {
 
             if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
                 this.component[this.focusedWidget.componentIndex].submit();
-                this.focusedWidget.textField.setFocused(false);
-                this.focusedWidget = null;
+                this.focusWidget(null);
+            }
+
+            if (key == Keyboard.KEY_TAB) {
+                this.focusAdjacentWidget(isShiftKeyDown());
             }
         }
+    }
+
+    private void focusWidget(@Nullable Widget widget) {
+        if (this.focusedWidget != null) {
+            this.focusedWidget.textField.setFocused(false);
+        }
+        this.focusedWidget = widget;
+        if (this.focusedWidget != null) {
+            this.focusedWidget.textField.setFocused(true);
+        }
+    }
+
+    private void focusAdjacentWidget(boolean backwards) {
+        this.focusedWidget.validate();
+        this.focusWidget(this.getAdjacentWidget(backwards));
+    }
+
+    private Widget getAdjacentWidget(boolean backwards) {
+        int index = this.focusedWidget.componentIndex;
+        boolean isBatch = this.focusedWidget.action == Action.Batch;
+
+        if (backwards) {
+            if (isBatch) {
+                return this.component[index].getQty();
+            }
+            return this.component[(index + TileLevelMaintainer.REQ_COUNT - 1) % TileLevelMaintainer.REQ_COUNT]
+                    .getBatch();
+        }
+
+        if (isBatch) {
+            return this.component[(index + 1) % TileLevelMaintainer.REQ_COUNT].getQty();
+        }
+        return this.component[index].getBatch();
     }
 
     @Override
