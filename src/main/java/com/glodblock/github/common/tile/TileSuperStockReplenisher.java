@@ -36,7 +36,6 @@ import appeng.api.networking.IGridNode;
 import appeng.api.networking.events.MENetworkBootingStatusChange;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
-import appeng.api.networking.events.MENetworkStorageEvent;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.networking.security.MachineSource;
 import appeng.api.networking.ticking.IGridTickable;
@@ -341,14 +340,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             this.isSlotsAccessible = true;
 
         }
-
-        try {
-            this.getProxy().getGrid().postEvent(
-                    new MENetworkStorageEvent(
-                            this.getProxy().getStorage().getItemInventory(),
-                            this.invItems.getMEInventory().getStackType()));
-        } catch (GridAccessException ignored) {}
-
     }
 
     public void checkSlotsAccessible() {
