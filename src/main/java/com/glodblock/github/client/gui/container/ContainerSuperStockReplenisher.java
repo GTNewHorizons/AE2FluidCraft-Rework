@@ -11,7 +11,6 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.gui.GuiFCImgButton;
 import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -33,8 +32,6 @@ import appeng.items.storage.ItemBasicStorageCell;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerSuperStockReplenisher extends AEBaseContainer implements IVirtualSlotSource {
 
@@ -50,9 +47,6 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
 
     public final BooleanSyncHandler fullStockModeSync;
 
-    @SideOnly(Side.CLIENT)
-    private GuiFCImgButton StockModeButton;
-
     public ContainerSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(ipl, tile);
         this.tile = tile;
@@ -63,11 +57,9 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         final SyncManager sm = this.getSyncManager();
         this.configFluidsSlots = sm.root().aeStackInventory("fluidConfig", this.configFluids);
         this.configItemsSlots = sm.root().aeStackInventory("itemConfig", this.configItems);
-        this.fullStockModeSync = sm.root().booleanSync("fullstockMode").onClientChange((oldValue, newValue) -> {
-            if (this.StockModeButton != null) {
-                this.StockModeButton.set(newValue ? "fullstockMode" : "normalMode");
-            }
-        }).onServerChange((oldValue, newValue) -> this.tile.setFullStockMode(newValue));
+        this.fullStockModeSync = sm.root().booleanSync("fullstockMode")
+                .onClientChange((oldValue, newValue) -> this.setFullStockMode(newValue))
+                .onServerChange((oldValue, newValue) -> this.tile.setFullStockMode(newValue));
 
         this.addSlotToContainer(
                 new SlotRestrictedInput(
