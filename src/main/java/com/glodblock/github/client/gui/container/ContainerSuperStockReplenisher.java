@@ -171,11 +171,6 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         return this.tile;
     }
 
-    public void forceUpdate() {
-        this.lastUpdated = 21;
-        this.detectAndSendChanges();
-    }
-
     public boolean isFullStockMode() {
         return this.fullStockModeSync.get();
     }
