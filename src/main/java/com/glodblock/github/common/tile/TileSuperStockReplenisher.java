@@ -738,19 +738,19 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         };
     }
 
-    // @Override
-    // public Packet getDescriptionPacket() {
+    @Override
+    public Packet getDescriptionPacket() {
 
-    //     NBTTagCompound tag = new NBTTagCompound();
+        NBTTagCompound tag = new NBTTagCompound();
 
-    //     this.writeToNBT(tag);
+        this.writeToNBT(tag);
 
-    //     return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tag);
-    // }
+        return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tag);
+    }
 
-    // @Override
-    // public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 
-    //     this.readFromNBT(pkt.func_148857_g());
-    // }
+        this.readFromNBT(pkt.func_148857_g());
+    }
 }

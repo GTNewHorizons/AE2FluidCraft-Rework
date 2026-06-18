@@ -146,6 +146,8 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
             boolean newMode = !containerSuperStockReplenisher.isFullStockMode();
             this.containerSuperStockReplenisher.setFullStockMode(newMode);
             StockModeButton.set(newMode ? "fullstockMode" : "normalMode");
+
+            this.containerSuperStockReplenisher.markDirty();
             this.flushPendingSync();
         }
         super.actionPerformed(btn);
