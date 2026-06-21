@@ -55,9 +55,9 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
                 guiLeft - 18,
                 guiTop + 8,
                 "stock mode button",
-                this.tileSuperStockReplenisher.isFullStockMode() ? "fullstockMode" : "normalMode",
+                this.containerSuperStockReplenisher.isFullStockMode() ? "fullstockMode" : "normalMode",
                 true);
-
+        this.containerSuperStockReplenisher.setModeButton(this.StockModeButton);
         buttonList.add(this.StockModeButton);
         this.initSlots();
     }
@@ -147,7 +147,6 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
             this.containerSuperStockReplenisher.setFullStockMode(newMode);
             StockModeButton.set(newMode ? "fullstockMode" : "normalMode");
 
-            this.containerSuperStockReplenisher.markDirty();
             this.flushPendingSync();
         }
         super.actionPerformed(btn);
