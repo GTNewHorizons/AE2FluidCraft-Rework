@@ -423,7 +423,6 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         if (this.getWorldObj() != null) {
             this.markDirty();
             this.getWorldObj().notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
-            this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
         }
     }
 
