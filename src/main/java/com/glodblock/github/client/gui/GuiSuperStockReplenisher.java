@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -29,14 +30,18 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     private final DecimalFormat df = new DecimalFormat("#.#");
     private Map<Integer, IAEStack<?>> list = new HashMap<>();
     private final ContainerSuperStockReplenisher containerSuperStockReplenisher;
+    private final TileSuperStockReplenisher tileSuperStockReplenisher;
 
     private final VirtualMEPhantomSlotPrecise[] configFluidsSlots = new VirtualMEPhantomSlotPrecise[9];
     private final VirtualMEPhantomSlotPrecise[] configItemsSlots = new VirtualMEPhantomSlotPrecise[63];
+
+    private GuiFCImgButton StockModeButton;
 
     public GuiSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(new ContainerSuperStockReplenisher(ipl, tile));
 
         this.containerSuperStockReplenisher = (ContainerSuperStockReplenisher) inventorySlots;
+        this.tileSuperStockReplenisher = tile;
 
         this.ySize = 251;
         this.xSize = 216;
@@ -45,6 +50,15 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     @Override
     public void initGui() {
         super.initGui();
+
+        this.StockModeButton = new GuiFCImgButton(
+                guiLeft - 18,
+                guiTop + 8,
+                "stock mode button",
+                this.containerSuperStockReplenisher.isFullStockMode() ? "fullstockMode" : "normalMode",
+                true);
+        this.containerSuperStockReplenisher.setModeButton(this.StockModeButton);
+        buttonList.add(this.StockModeButton);
         this.initSlots();
     }
 
@@ -123,6 +137,19 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
     public void drawBG(int offsetX, int offsetY, int mouseX, int mouseY) {
         this.bindTexture(TEX_BG);
         this.drawTexturedModalRect(offsetX, offsetY, 0, 0, xSize, ySize);
+    }
+
+    @Override
+    protected void actionPerformed(final GuiButton btn) {
+        if (actionPerformedCustomButtons(btn)) return;
+        if (btn == StockModeButton) {
+            boolean newMode = !containerSuperStockReplenisher.isFullStockMode();
+            this.containerSuperStockReplenisher.setFullStockMode(newMode);
+            StockModeButton.set(newMode ? "fullstockMode" : "normalMode");
+
+            this.flushPendingSync();
+        }
+        super.actionPerformed(btn);
     }
 
     public void update(Map<Integer, IAEStack<?>> map) {

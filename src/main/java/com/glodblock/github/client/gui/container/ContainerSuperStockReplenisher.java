@@ -11,6 +11,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.gui.GuiFCImgButton;
 import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 import com.glodblock.github.inventory.gui.GuiType;
@@ -27,10 +28,13 @@ import appeng.container.interfaces.IVirtualSlotSource;
 import appeng.container.slot.SlotRestrictedInput;
 import appeng.container.sync.SyncManager;
 import appeng.container.sync.handlers.AEStackInventorySyncHandler;
+import appeng.container.sync.handlers.BooleanSyncHandler;
 import appeng.items.storage.ItemBasicStorageCell;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerSuperStockReplenisher extends AEBaseContainer implements IVirtualSlotSource {
 
@@ -44,6 +48,11 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
     private final IAEStackInventory configItems;
     public final AEStackInventorySyncHandler configItemsSlots;
 
+    public final BooleanSyncHandler fullStockModeSync;
+
+    @SideOnly(Side.CLIENT)
+    private GuiFCImgButton modeButton;
+
     public ContainerSuperStockReplenisher(InventoryPlayer ipl, TileSuperStockReplenisher tile) {
         super(ipl, tile);
         this.tile = tile;
@@ -54,6 +63,11 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
         final SyncManager sm = this.getSyncManager();
         this.configFluidsSlots = sm.root().aeStackInventory("fluidConfig", this.configFluids);
         this.configItemsSlots = sm.root().aeStackInventory("itemConfig", this.configItems);
+        this.fullStockModeSync = sm.root().booleanSync("fullstockMode").onClientChange((oldValue, newValue) -> {
+            if (this.modeButton != null) {
+                this.modeButton.set(newValue ? "fullstockMode" : "normalMode");
+            }
+        }).onServerChange((oldValue, newValue) -> this.tile.setFullStockMode(newValue));
 
         this.addSlotToContainer(
                 new SlotRestrictedInput(
@@ -65,6 +79,11 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                         this.getInventoryPlayer()));
 
         bindPlayerInventory(ipl, 0, 251 - 82);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void setModeButton(GuiFCImgButton button) {
+        this.modeButton = button;
     }
 
     @Override
@@ -95,6 +114,9 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                     FluidCraft.proxy.netHandler.sendTo(new SPacketSuperStockReplenisherUpdate(tmp), (EntityPlayerMP) g);
                 }
             }
+
+            if (Platform.isServer()) this.setFullStockMode(this.tile.isFullStockMode());
+
         }
 
         this.lastUpdated++;
@@ -157,5 +179,21 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
                 this.configItemsSlots.markDirty();
             }
         }
+    }
+
+    public TileSuperStockReplenisher getTile() {
+        return this.tile;
+    }
+
+    public boolean isFullStockMode() {
+        return this.fullStockModeSync.get();
+    }
+
+    public void setFullStockMode(final boolean fullStockMode) {
+        this.fullStockModeSync.set(fullStockMode);
+    }
+
+    public void markDirty() {
+        this.fullStockModeSync.markDirty();
     }
 }
