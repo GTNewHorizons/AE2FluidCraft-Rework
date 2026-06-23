@@ -12,13 +12,13 @@ import net.minecraft.item.ItemStack;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.GuiFCImgButton;
-import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
 import com.glodblock.github.inventory.gui.GuiType;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.network.SPacketSuperStockReplenisherUpdate;
 import com.glodblock.github.util.FluidPrimaryGui;
 
+import appeng.api.implementations.items.IStorageCell;
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEStack;
 import appeng.container.AEBaseContainer;
@@ -29,7 +29,6 @@ import appeng.container.slot.SlotRestrictedInput;
 import appeng.container.sync.SyncManager;
 import appeng.container.sync.handlers.AEStackInventorySyncHandler;
 import appeng.container.sync.handlers.BooleanSyncHandler;
-import appeng.items.storage.ItemBasicStorageCell;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
@@ -137,17 +136,9 @@ public class ContainerSuperStockReplenisher extends AEBaseContainer implements I
             long currentBytes = 0;
             long newBytes = -1;
 
-            if (s.getStack().getItem() instanceof ItemBasicStorageCell ibsc) {
-                currentBytes = ibsc.getBytesLong(is);
-            } else if (s.getStack().getItem() instanceof FCBaseItemCell fcbic) {
-                currentBytes = fcbic.getBytes(is);
-            }
+            if (s.getStack().getItem() instanceof IStorageCell isc) currentBytes = isc.getBytesLong(is);
 
-            if (is.getItem() instanceof ItemBasicStorageCell ibsc) {
-                newBytes = ibsc.getBytesLong(is);
-            } else if (is.getItem() instanceof FCBaseItemCell fcbic) {
-                newBytes = fcbic.getBytes(is);
-            }
+            if (is.getItem() instanceof IStorageCell isc) newBytes = isc.getBytesLong(is);
 
             if (currentBytes > newBytes) {
                 return false;

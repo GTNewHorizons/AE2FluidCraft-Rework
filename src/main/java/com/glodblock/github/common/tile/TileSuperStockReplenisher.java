@@ -17,7 +17,6 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.glodblock.github.common.item.FCBaseItemCell;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.inventory.AEFluidInventory;
 import com.glodblock.github.inventory.IAEFluidInventory;
@@ -28,6 +27,7 @@ import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.IPowerChannelState;
+import appeng.api.implementations.items.IStorageCell;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.events.MENetworkBootingStatusChange;
@@ -48,7 +48,6 @@ import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
 import appeng.api.util.IConfigManager;
 import appeng.core.AELog;
-import appeng.items.storage.ItemBasicStorageCell;
 import appeng.me.GridAccessException;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
@@ -488,11 +487,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
             case setInventorySlotContents -> {
                 if (inv == cell) {
                     if (added != null) {
-                        if (added.getItem() instanceof ItemBasicStorageCell ibsc) {
-                            totalBytes = ibsc.getBytesLong(added);
-                        } else if (added.getItem() instanceof FCBaseItemCell fcbic) {
-                            totalBytes = fcbic.getBytes(added);
-                        }
+                        if (added.getItem() instanceof IStorageCell isc) totalBytes = isc.getBytesLong(added);
                         getProxy().setIdlePowerUsage(Math.sqrt(Math.pow(totalBytes, 0.576D)));
                     } else if (removed != null) {
                         totalBytes = 0;
