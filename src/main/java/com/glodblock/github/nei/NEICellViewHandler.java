@@ -119,7 +119,7 @@ public class NEICellViewHandler implements IUsageHandler {
         final String usedBytes = Platform.formatByteDouble(cellHandler.getUsedBytes());
         final String totalBytes = Platform.formatByteDouble(cellHandler.getTotalBytes());
         fontRenderer.drawString(
-                usedBytes + " " + GuiText.Of.getLocal() + ' ' + totalBytes + ' ' + GuiText.BytesUsed.getLocal(),
+                usedBytes + " " + GuiText.Of.getLocal() + ' ' + totalBytes + ' ' + GuiText.FromStoragePercent.getLocal(),
                 OFFSET_X,
                 INFO_OFFSET_Y,
                 0);
