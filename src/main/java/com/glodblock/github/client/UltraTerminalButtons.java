@@ -230,6 +230,7 @@ public class UltraTerminalButtons implements ICustomButtonDataObject {
         this.reStock = buf.readBoolean();
         this.magnetMode = WirelessMagnet.Mode.values()[buf.readInt()];
         this.terminalMode = UltraTerminalModes.values()[buf.readInt()];
+        ItemWirelessUltraTerminal.setMode(this.terminal, this.terminalMode);
 
         toggleMagnetButtonsVisibility();
         toggleRestockVisibility();
