@@ -269,6 +269,7 @@ public class RecipeLoader implements Runnable {
                         'W',
                         AE2_WORK_BENCH));
         GameRegistry.addShapelessRecipe(FLUID_STORAGE_BUS.stack(), FLUID_INTERFACE, STICKY_PISTON, PISTON);
+        GameRegistry.addShapelessRecipe(FLUID_STORAGE_BUS.stack(), FLUID_STORAGE_BUS);
         GameRegistry.addShapelessRecipe(FLUID_STORAGE_BUS.stack(), INTERFACE, STICKY_PISTON, PISTON);
         GameRegistry.addRecipe(
                 new ShapedOreRecipe(
