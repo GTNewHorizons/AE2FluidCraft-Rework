@@ -28,13 +28,17 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.DualHostSettings;
 import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.Util;
+import com.google.common.collect.ImmutableSet;
 
+import appeng.api.config.Actionable;
 import appeng.api.implementations.items.IMemoryCard;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.crafting.ICraftingLink;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IAEStackType;
 import appeng.api.util.IConfigManager;
 import appeng.helpers.DualityInterface;
@@ -138,6 +142,26 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
         } else {
             return fluid;
         }
+    }
+
+    @Override
+    public ImmutableSet<ICraftingLink> getRequestedJobs() {
+        return ImmutableSet.<ICraftingLink>builder().addAll(super.getRequestedJobs())
+                .addAll(dualityFluid.getRequestedJobs()).build();
+    }
+
+    @Override
+    public IAEStack<?> injectCraftedItems(final ICraftingLink link, final IAEStack<?> items, final Actionable mode) {
+        if (items instanceof IAEFluidStack) {
+            return dualityFluid.injectCraftedItems(link, items, mode);
+        }
+        return super.injectCraftedItems(link, items, mode);
+    }
+
+    @Override
+    public void jobStateChange(final ICraftingLink link) {
+        super.jobStateChange(link);
+        dualityFluid.jobStateChange(link);
     }
 
     @Override
