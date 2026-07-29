@@ -123,6 +123,23 @@ public class PartFluidP2PInterface extends PartP2PInterface implements IDualHost
     }
 
     @Override
+    public void readFromNBT(final NBTTagCompound data) {
+        super.readFromNBT(data);
+        config.readFromNBT(data, "ConfigInv");
+        dualityFluid.loadConfigFromPacket(this.config);
+        dualityFluid.getInternalFluid().readFromNBT(data, "FluidInv");
+        dualityFluid.readCraftingTrackerFromNBT(data);
+    }
+
+    @Override
+    public void writeToNBT(final NBTTagCompound data) {
+        super.writeToNBT(data);
+        config.writeToNBT(data, "ConfigInv");
+        dualityFluid.getInternalFluid().writeToNBT(data, "FluidInv");
+        dualityFluid.writeCraftingTrackerToNBT(data);
+    }
+
+    @Override
     public TickingRequest getTickingRequest(IGridNode node) {
         TickingRequest item = duality.getTickingRequest(node);
         TickingRequest fluid = dualityFluid.getTickingRequest(node);
