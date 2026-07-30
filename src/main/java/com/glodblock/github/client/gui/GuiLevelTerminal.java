@@ -130,7 +130,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 masterList.markDirty();
             }
         };
-        searchFieldNames.setFocused(true);
         extraOptionsText.add(ButtonToolTips.HighlightInterface.getLocal());
         online = true;
     }
@@ -175,6 +174,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
         searchFieldNames.x = guiLeft + Math.max(32, offsetX) + 99;
         searchFieldNames.y = guiTop + 38;
+        searchFieldNames.setFocused(true);
 
         terminalStyleBox.xPosition = guiLeft - 18;
         terminalStyleBox.yPosition = guiTop + 8;
