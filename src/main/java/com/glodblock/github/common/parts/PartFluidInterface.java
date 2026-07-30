@@ -27,9 +27,12 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.DualHostSettings;
 import com.glodblock.github.util.DualityFluidInterface;
 import com.glodblock.github.util.Util;
+import com.google.common.collect.ImmutableSet;
 
+import appeng.api.config.Actionable;
 import appeng.api.config.Upgrades;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.crafting.ICraftingLink;
 import appeng.api.networking.events.MENetworkChannelsChanged;
 import appeng.api.networking.events.MENetworkEventSubscribe;
 import appeng.api.networking.events.MENetworkPowerStatusChange;
@@ -37,6 +40,7 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.data.IAEFluidStack;
+import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IAEStackType;
 import appeng.helpers.ICustomButtonDataObject;
 import appeng.helpers.ICustomButtonProvider;
@@ -149,6 +153,7 @@ public class PartFluidInterface extends PartInterface implements IDualHost, ICus
         config.readFromNBT(data, "ConfigInv");
         fluidDuality.loadConfigFromPacket(this.config);
         getInternalFluid().readFromNBT(data, "FluidInv");
+        fluidDuality.readCraftingTrackerFromNBT(data);
     }
 
     @Override
@@ -156,6 +161,7 @@ public class PartFluidInterface extends PartInterface implements IDualHost, ICus
         super.writeToNBT(data);
         config.writeToNBT(data, "ConfigInv");
         getInternalFluid().writeToNBT(data, "FluidInv");
+        fluidDuality.writeCraftingTrackerToNBT(data);
     }
 
     @Override
@@ -175,6 +181,26 @@ public class PartFluidInterface extends PartInterface implements IDualHost, ICus
     @Override
     public int getInstalledUpgrades(final Upgrades u) {
         return getInterfaceDuality().getInstalledUpgrades(u);
+    }
+
+    @Override
+    public ImmutableSet<ICraftingLink> getRequestedJobs() {
+        return ImmutableSet.<ICraftingLink>builder().addAll(super.getRequestedJobs())
+                .addAll(fluidDuality.getRequestedJobs()).build();
+    }
+
+    @Override
+    public IAEStack<?> injectCraftedItems(final ICraftingLink link, final IAEStack<?> items, final Actionable mode) {
+        if (items instanceof IAEFluidStack) {
+            return fluidDuality.injectCraftedItems(link, items, mode);
+        }
+        return super.injectCraftedItems(link, items, mode);
+    }
+
+    @Override
+    public void jobStateChange(final ICraftingLink link) {
+        super.jobStateChange(link);
+        fluidDuality.jobStateChange(link);
     }
 
     @Override
