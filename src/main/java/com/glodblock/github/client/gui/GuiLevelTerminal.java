@@ -130,7 +130,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                 masterList.markDirty();
             }
         };
-        searchFieldNames.setFocused(true);
         extraOptionsText.add(ButtonToolTips.HighlightInterface.getLocal());
         online = true;
     }
@@ -175,6 +174,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
         searchFieldNames.x = guiLeft + Math.max(32, offsetX) + 99;
         searchFieldNames.y = guiTop + 38;
+        searchFieldNames.setFocused(true);
 
         terminalStyleBox.xPosition = guiLeft - 18;
         terminalStyleBox.yPosition = guiTop + 8;
@@ -587,7 +587,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                             drawRect(0, 0, 16, 16, FCGuiColors.itemSlotOverlayUnpowered.getColor());
                         }
                     } else {
-                        tooltipStack = Platform.stackConvert(aes).getItemStack();
+                        tooltipStack = aes.getItemStackForNEI();
                     }
                     GL11.glPopMatrix();
                 } else if (entry.filteredRecipes[slotIdx]) {
@@ -859,18 +859,13 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
         }
     }
 
-    private boolean itemStackMatchesSearchTerm(final ItemStack itemStack, final String searchTerm) {
-        if (itemStack == null) {
+    private boolean stackMatchesSearchTerm(final IAEStack<?> stack, final String searchTerm) {
+        if (stack == null) {
             return false;
         }
 
-        final String displayName = Platform.getItemDisplayName(itemStack).toLowerCase();
-
-        if (displayName.contains(searchTerm)) {
-            return true;
-        }
-
-        return false;
+        final String displayName = stack.getDisplayName();
+        return displayName != null && displayName.toLowerCase().contains(searchTerm);
     }
 
     @Override
@@ -1108,9 +1103,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                             continue;
                         }
 
-                        if (itemStackMatchesSearchTerm(
-                                Platform.stackConvert(entry.infoList[i].stack).getItemStack(),
-                                output)) {
+                        if (stackMatchesSearchTerm(entry.infoList[i].stack, output)) {
                             shouldAdd = true;
                             entry.filteredRecipes[i] = false;
                         } else {
