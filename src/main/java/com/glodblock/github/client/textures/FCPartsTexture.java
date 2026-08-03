@@ -28,9 +28,9 @@ public enum FCPartsTexture {
     PartFluidAnnihilationPlane("fluid_annihilation_plane"),
     PartFluidFormationPlaneOn("fluid_formation_plane_on"),
     PartFluidAnnihilationPlaneOn("fluid_annihilation_plane_on"),
-    BlockMEChestFluid_Bright("fluid_terminal_bright"),
-    BlockMEChestFluid_Dark("fluid_terminal_dark"),
-    BlockMEChestFluid_Medium("fluid_terminal_medium");
+    BlockMEChestFluid_Bright("BlockMEChestFluids_Light"),
+    BlockMEChestFluid_Dark("BlockMEChestFluids_Dark"),
+    BlockMEChestFluid_Medium("BlockMEChestFluids_Medium");
 
     private final String name;
     public net.minecraft.util.IIcon IIcon;
