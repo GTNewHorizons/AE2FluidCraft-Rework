@@ -1,5 +1,6 @@
 package com.glodblock.github.util;
 
+import appeng.api.storage.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -10,11 +11,6 @@ import com.glodblock.github.common.item.FCBaseItemCell;
 
 import appeng.api.implementations.items.IStorageCell;
 import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.storage.ICellHandler;
-import appeng.api.storage.IMEInventory;
-import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.ISaveProvider;
-import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEStackType;
 import appeng.core.sync.GuiBridge;
 import appeng.me.storage.CellInventory;
@@ -71,7 +67,8 @@ public class FluidCellHandler implements ICellHandler {
 
     @Override
     public double cellIdleDrain(final ItemStack is, @SuppressWarnings("rawtypes") final IMEInventory handler) {
-        return 0.0;
+        //return EnumEssentiaStorageTypes.fromIndex[itemStack.getItemDamage()].idleAEPowerDrain;
+        return ((ICellInventoryHandler) handler).getCellInv().getIdleDrain();
     }
 
     @Override
