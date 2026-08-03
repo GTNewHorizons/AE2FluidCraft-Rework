@@ -4,12 +4,14 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 
 import com.glodblock.github.FluidCraft;
+import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.storage.CellType;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
@@ -18,13 +20,20 @@ import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
 import com.google.common.base.Optional;
 
+import appeng.api.AEApi;
 import appeng.api.exceptions.MissingDefinition;
+import appeng.api.implementations.tiles.IChestOrDrive;
+import appeng.api.storage.ICellHandler;
+import appeng.api.storage.IMEInventory;
+import appeng.api.storage.IMEInventoryHandler;
+import appeng.api.storage.StorageChannel;
 import appeng.core.features.AEFeature;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemBasicFluidStorageCell extends FCBaseItemCell implements IRegister<ItemBasicFluidStorageCell> {
+public class ItemBasicFluidStorageCell extends FCBaseItemCell
+        implements IRegister<ItemBasicFluidStorageCell>, ICellHandler {
 
     private static final HashMap<Integer, IIcon> icon = new HashMap<>();
     private final int housingValue;
@@ -77,6 +86,9 @@ public class ItemBasicFluidStorageCell extends FCBaseItemCell implements IRegist
                 this.perType = 8;
             }
         }
+
+        // Add the handler to AE2
+        AEApi.instance().registries().cell().addCellHandler(this);
     }
 
     @Override
@@ -122,5 +134,47 @@ public class ItemBasicFluidStorageCell extends FCBaseItemCell implements IRegist
         GameRegistry.registerItem(this, NameConst.ITEM_FLUID_STORAGE + this.totalBytes / 1024, FluidCraft.MODID);
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
+    }
+
+    @Override
+    public boolean isCell(ItemStack is) {
+        return false;
+    }
+
+    @Override
+    public void openChestGui(EntityPlayer player, IChestOrDrive chest, ICellHandler cellHandler,
+            IMEInventoryHandler inv, ItemStack is, StorageChannel chan) {
+
+    }
+
+    @Override
+    public int getStatusForCell(ItemStack is, IMEInventory handler) {
+        return 0;
+    }
+
+    @Override
+    public double cellIdleDrain(ItemStack is, IMEInventory handler) {
+        return 0;
+    }
+
+    /**
+     * ME Chest icon
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getTopTexture_Dark() {
+        return FCPartsTexture.BlockMEChestFluid_Dark.getIcon();
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getTopTexture_Light() {
+        return FCPartsTexture.BlockMEChestFluid_Bright.getIcon();
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getTopTexture_Medium() {
+        return FCPartsTexture.BlockMEChestFluid_Medium.getIcon();
     }
 }
