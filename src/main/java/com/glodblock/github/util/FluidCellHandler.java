@@ -4,6 +4,8 @@ import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
 
 import appeng.api.implementations.items.IStorageCell;
 import appeng.me.storage.CellInventory;
+import com.glodblock.github.common.item.ItemFluidExtremeStorageCell;
+import com.glodblock.github.common.item.ItemMultiFluidStorageCell;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -27,7 +29,8 @@ public class FluidCellHandler implements ICellHandler {
 
     @Override
     public boolean isCell(final ItemStack is) {
-        return FluidCellInventory.isCell(is);
+        return is != null && (is.getItem() instanceof ItemBasicFluidStorageCell
+            || is.getItem() instanceof ItemMultiFluidStorageCell || is.getItem() instanceof ItemFluidExtremeStorageCell);
     }
 
     /**
