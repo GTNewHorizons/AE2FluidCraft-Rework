@@ -1,17 +1,21 @@
 package com.glodblock.github.util;
 
+import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
+
+import appeng.api.implementations.items.IStorageCell;
+import appeng.me.storage.CellInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
+import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
 
+import appeng.api.exceptions.AppEngException;
 import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.storage.ICellHandler;
-import appeng.api.storage.IMEInventory;
-import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.StorageChannel;
+import appeng.api.storage.*;
+import appeng.api.storage.data.IAEStackType;
 import appeng.core.sync.GuiBridge;
 import appeng.me.storage.FluidCellInventory;
 import appeng.me.storage.FluidCellInventoryHandler;
@@ -65,5 +69,13 @@ public class FluidCellHandler implements ICellHandler {
     @Override
     public double cellIdleDrain(final ItemStack is, @SuppressWarnings("rawtypes") final IMEInventory handler) {
         return 0.0;
+    }
+
+    @Override
+    public IMEInventoryHandler getCellInventory(ItemStack fluidCell, ISaveProvider saveProvider, IAEStackType<?> type) {
+        if (fluidCell != null && fluidCell.getItem() instanceof IStorageCell cell && cell.getStackType() == type) {
+            return CellInventory.getCell(fluidCell, saveProvider, type);
+        }
+        return null;
     }
 }

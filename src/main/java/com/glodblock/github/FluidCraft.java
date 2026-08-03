@@ -62,7 +62,7 @@ public class FluidCraft {
     @Mod.EventHandler
     public static void postInit(FMLPostInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(FluidCraft.INSTANCE, new InventoryHandler());
-        //AEApi.instance().registries().cell().addCellHandler(new FluidCellHandler());
+        AEApi.instance().registries().cell().addCellHandler(new FluidCellHandler());
         ItemAndBlockHolder.loadSetting();
 
         if (!Config.removeRecipe) {
