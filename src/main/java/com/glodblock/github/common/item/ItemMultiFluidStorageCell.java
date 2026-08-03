@@ -4,15 +4,12 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 
 import com.glodblock.github.FluidCraft;
-import com.glodblock.github.client.textures.FCPartsTexture;
 import com.glodblock.github.common.Config;
 import com.glodblock.github.common.storage.CellType;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
@@ -22,21 +19,12 @@ import com.glodblock.github.util.NameConst;
 import com.google.common.base.Optional;
 
 import appeng.api.exceptions.MissingDefinition;
-import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.storage.ICellHandler;
-import appeng.api.storage.IMEInventory;
-import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.StorageChannel;
 import appeng.core.features.AEFeature;
-import appeng.core.sync.GuiBridge;
-import appeng.me.storage.FluidCellInventoryHandler;
-import appeng.util.Platform;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemMultiFluidStorageCell extends FCBaseItemCell
-        implements IRegister<ItemMultiFluidStorageCell>, ICellHandler {
+public class ItemMultiFluidStorageCell extends FCBaseItemCell implements IRegister<ItemMultiFluidStorageCell> {
 
     private static final HashMap<Integer, IIcon> icon = new HashMap<>();
     private final int housingValue;
@@ -44,7 +32,6 @@ public class ItemMultiFluidStorageCell extends FCBaseItemCell
     @SuppressWarnings("Guava")
     public ItemMultiFluidStorageCell(final CellType whichCell, final int housingValue, final long kilobytes) {
         super(Optional.of(kilobytes + "k"));
-
         this.setFeature(EnumSet.of(AEFeature.StorageCells));
         this.setMaxStackSize(1);
         this.totalBytes = kilobytes * 1024;
@@ -137,51 +124,4 @@ public class ItemMultiFluidStorageCell extends FCBaseItemCell
         setCreativeTab(FluidCraftingTabs.INSTANCE);
         return this;
     }
-
-    @Override
-    public void openChestGui(final EntityPlayer player, final IChestOrDrive chest, final ICellHandler cellHandler,
-            @SuppressWarnings("rawtypes") final IMEInventoryHandler inv, final ItemStack itemStack,
-            final StorageChannel channel) {
-        Platform.openGUI(player, (TileEntity) chest, chest.getUp(), GuiBridge.GUI_ME);
-    }
-
-    @Override
-    public int getStatusForCell(ItemStack is, IMEInventory handler) {
-        if (handler instanceof FluidCellInventoryHandler ci) {
-            return ci.getStatusForCell();
-        }
-        return 0;
-    }
-
-    @Override
-    public double cellIdleDrain(ItemStack is, IMEInventory handler) {
-        return this.idleDrain;
-    }
-
-    @Override
-    public boolean isCell(ItemStack is) {
-        return is.getItem() == this;
-    }
-
-    /**
-     * ME Chest icon
-     */
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getTopTexture_Dark() {
-        return FCPartsTexture.BlockMEChestFluid_Dark.getIcon();
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getTopTexture_Light() {
-        return FCPartsTexture.BlockMEChestFluid_Bright.getIcon();
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getTopTexture_Medium() {
-        return FCPartsTexture.BlockMEChestFluid_Medium.getIcon();
-    }
-
 }

@@ -10,8 +10,10 @@ import com.glodblock.github.loader.ChannelLoader;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.loader.RecipeLoader;
 import com.glodblock.github.proxy.CommonProxy;
+import com.glodblock.github.util.FluidCellHandler;
 import com.glodblock.github.util.ModAndClassUtil;
 
+import appeng.api.AEApi;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -60,7 +62,7 @@ public class FluidCraft {
     @Mod.EventHandler
     public static void postInit(FMLPostInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(FluidCraft.INSTANCE, new InventoryHandler());
-
+        //AEApi.instance().registries().cell().addCellHandler(new FluidCellHandler());
         ItemAndBlockHolder.loadSetting();
 
         if (!Config.removeRecipe) {
