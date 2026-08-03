@@ -1,25 +1,23 @@
 package com.glodblock.github.util;
 
-import static appeng.util.item.AEFluidStackType.FLUID_STACK_TYPE;
-
-import appeng.api.implementations.items.IStorageCell;
-import appeng.me.storage.CellInventory;
-import com.glodblock.github.common.item.ItemFluidExtremeStorageCell;
-import com.glodblock.github.common.item.ItemMultiFluidStorageCell;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 
 import com.glodblock.github.client.textures.FCPartsTexture;
-import com.glodblock.github.common.item.ItemBasicFluidStorageCell;
+import com.glodblock.github.common.item.FCBaseItemCell;
 
-import appeng.api.exceptions.AppEngException;
+import appeng.api.implementations.items.IStorageCell;
 import appeng.api.implementations.tiles.IChestOrDrive;
-import appeng.api.storage.*;
+import appeng.api.storage.ICellHandler;
+import appeng.api.storage.IMEInventory;
+import appeng.api.storage.IMEInventoryHandler;
+import appeng.api.storage.ISaveProvider;
+import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEStackType;
 import appeng.core.sync.GuiBridge;
-import appeng.me.storage.FluidCellInventory;
+import appeng.me.storage.CellInventory;
 import appeng.me.storage.FluidCellInventoryHandler;
 import appeng.util.Platform;
 import cpw.mods.fml.relauncher.Side;
@@ -29,8 +27,10 @@ public class FluidCellHandler implements ICellHandler {
 
     @Override
     public boolean isCell(final ItemStack is) {
-        return is != null && (is.getItem() instanceof ItemBasicFluidStorageCell
-            || is.getItem() instanceof ItemMultiFluidStorageCell || is.getItem() instanceof ItemFluidExtremeStorageCell);
+        /*
+         * FCBaseItemCell covers Basic, Multi, and Extreme fluid storage
+         */
+        return is != null && is.getItem() instanceof FCBaseItemCell;
     }
 
     /**
