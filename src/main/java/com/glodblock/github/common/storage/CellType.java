@@ -19,6 +19,8 @@ public enum CellType {
     Cell4096kPart(6, AEFeature.StorageCells),
     Cell16384kPart(7, AEFeature.StorageCells);
 
+    public static final CellType[] VALUES = values();
+
     private final EnumSet<AEFeature> features;
     private int damageValue;
     private Item itemInstance;
@@ -53,7 +55,7 @@ public enum CellType {
     }
 
     public static EnumChatFormatting getTypeColor(int type) {
-        return getTypeColor(CellType.values()[type % CellType.values().length]);
+        return getTypeColor(CellType.VALUES[type % CellType.VALUES.length]);
     }
 
     public static EnumChatFormatting getTypeColor(CellType type) {
