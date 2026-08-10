@@ -5,5 +5,7 @@ public enum UltraTerminalModes {
     PATTERN,
     PATTERN_EX,
     INTERFACE,
-    LEVEL
+    LEVEL;
+
+    public static final UltraTerminalModes[] VALUES = values();
 }
