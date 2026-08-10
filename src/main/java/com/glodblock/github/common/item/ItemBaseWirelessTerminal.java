@@ -103,7 +103,7 @@ public class ItemBaseWirelessTerminal extends ToolWirelessTerminal implements II
         Item item = is.getItem();
         if (item instanceof ItemWirelessUltraTerminal) {
             if (!is.hasTagCompound()) is.setTagCompound(new NBTTagCompound());
-            return UltraTerminalModes.values()[is.getTagCompound().getInteger(MODE)];
+            return UltraTerminalModes.VALUES[is.getTagCompound().getInteger(MODE)];
         } else if (item instanceof ItemWirelessPatternTerminal) {
             return UltraTerminalModes.PATTERN;
         } else if (item instanceof ItemWirelessInterfaceTerminal) {

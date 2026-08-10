@@ -215,7 +215,7 @@ public class UltraTerminalButtons implements ICustomButtonDataObject {
     public void readData(NBTTagCompound tag) {
         this.reStock = tag.getBoolean(restockItems);
         this.magnetMode = WirelessMagnet.Mode.values()[tag.getInteger(modeKey)];
-        this.terminalMode = UltraTerminalModes.values()[tag.getInteger(MODE)];
+        this.terminalMode = UltraTerminalModes.VALUES[tag.getInteger(MODE)];
     }
 
     @Override
@@ -229,7 +229,7 @@ public class UltraTerminalButtons implements ICustomButtonDataObject {
     public void readByte(ByteBuf buf) {
         this.reStock = buf.readBoolean();
         this.magnetMode = WirelessMagnet.Mode.values()[buf.readInt()];
-        this.terminalMode = UltraTerminalModes.values()[buf.readInt()];
+        this.terminalMode = UltraTerminalModes.VALUES[buf.readInt()];
         ItemWirelessUltraTerminal.setMode(this.terminal, this.terminalMode);
 
         toggleMagnetButtonsVisibility();

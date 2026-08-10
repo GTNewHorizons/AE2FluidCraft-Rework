@@ -194,7 +194,7 @@ public class ItemWirelessUltraTerminal extends ItemBaseWirelessTerminal
     public IGuiItemObject getGuiObject(ItemStack is, World world, EntityPlayer p, int x, int y, int z) {
         final IWirelessTermHandler wh = AEApi.instance().registries().wireless().getWirelessTerminalHandler(is);
         if (wh == null) return null;
-        return switch (y != Integer.MIN_VALUE ? UltraTerminalModes.values()[y] : getMode(is)) {
+        return switch (y != Integer.MIN_VALUE ? UltraTerminalModes.VALUES[y] : getMode(is)) {
             case CRAFTING -> new WirelessCraftingTerminalGuiObject(wh, is, p, world, x, y, z);
             case PATTERN, PATTERN_EX -> new WirelessPatternTerminalGuiObject(wh, is, p, world, x, y, z);
             case INTERFACE -> new WirelessInterfaceTerminalGuiObject(wh, is, x);

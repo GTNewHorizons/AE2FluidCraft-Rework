@@ -54,7 +54,7 @@ public class CPacketSwitchGuis implements IMessage {
     @Override
     public void fromBytes(ByteBuf byteBuf) {
         final int ord = byteBuf.readInt();
-        mode = ord != -1 ? UltraTerminalModes.values()[ord] : null;
+        mode = ord != -1 ? UltraTerminalModes.VALUES[ord] : null;
         switchTerminal = byteBuf.readBoolean();
     }
 
