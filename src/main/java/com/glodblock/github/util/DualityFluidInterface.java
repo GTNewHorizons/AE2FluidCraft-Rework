@@ -191,6 +191,8 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     }
 
     private IMEMonitor<IAEFluidStack> getFluidGrid() {
+        if (!this.gridProxy.isActive()) return null;
+
         try {
             return gridProxy.getGrid().<IStorageGrid>getCache(IStorageGrid.class).getFluidInventory();
         } catch (GridAccessException e) {
