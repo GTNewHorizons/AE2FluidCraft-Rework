@@ -160,11 +160,12 @@ public final class Util {
     }
 
     public static ImmutablePair<Integer, ItemStack> getUltraWirelessTerm(EntityPlayer player) {
-        int invSize = player.inventory.getSizeInventory();
+        final ImmutablePair<Integer, ItemStack> baublesTerminal = getBaublesUltraWirelessTerm(player);
+        return baublesTerminal != null ? baublesTerminal : getInventoryUltraWirelessTerm(player);
+    }
 
-        if (invSize <= 0) {
-            return null;
-        }
+    private static ImmutablePair<Integer, ItemStack> getInventoryUltraWirelessTerm(EntityPlayer player) {
+        final int invSize = player.inventory.getSizeInventory();
         for (int i = 0; i < invSize; ++i) {
             ItemStack is = player.inventory.getStackInSlot(i);
             if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {
@@ -172,10 +173,14 @@ public final class Util {
             }
         }
 
+        return null;
+    }
+
+    private static ImmutablePair<Integer, ItemStack> getBaublesUltraWirelessTerm(EntityPlayer player) {
         if (ModAndClassUtil.BAUBLES) {
-            IInventory handler = BaublesApi.getBaubles(player);
+            final IInventory handler = BaublesApi.getBaubles(player);
             if (handler != null) {
-                invSize = handler.getSizeInventory();
+                final int invSize = handler.getSizeInventory();
                 for (int i = 0; i < invSize; ++i) {
                     ItemStack is = handler.getStackInSlot(i);
                     if (is != null && is.getItem() instanceof ItemWirelessUltraTerminal) {

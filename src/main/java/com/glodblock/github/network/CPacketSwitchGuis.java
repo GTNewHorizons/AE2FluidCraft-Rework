@@ -28,6 +28,7 @@ import appeng.container.ContainerOpenContext;
 import appeng.container.PrimaryGui;
 import appeng.container.interfaces.IContainerSubGui;
 import appeng.helpers.ICustomButtonProvider;
+import appeng.util.Platform;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -75,7 +76,7 @@ public class CPacketSwitchGuis implements IMessage {
             // switch terminal
 
             if (message.switchTerminal) {
-                ImmutablePair<Integer, ItemStack> temp = Util.getUltraWirelessTerm(player);
+                ImmutablePair<Integer, ItemStack> temp = getTerminalToSwitch(player, cont);
                 if (temp != null && temp.getRight().getItem() instanceof ItemWirelessUltraTerminal iwut) {
                     if (message.mode != null && cont instanceof AEBaseContainer abc) {
                         abc.setSwitchAbleGuiNext(message.mode.ordinal());
@@ -117,6 +118,21 @@ public class CPacketSwitchGuis implements IMessage {
                 }
             }
             return null;
+        }
+
+        private static ImmutablePair<Integer, ItemStack> getTerminalToSwitch(EntityPlayerMP player, Container cont) {
+            if (cont instanceof AEBaseContainer aeBaseContainer) {
+                final int slot = aeBaseContainer.getTargetSlotIndex();
+                if (slot == Integer.MIN_VALUE) return null;
+
+                final ItemStack terminal = Platform.getItemFromPlayerInventoryBySlotIndex(player, slot);
+                return terminal != null && terminal.getItem() instanceof ItemWirelessUltraTerminal
+                        ? new ImmutablePair<>(slot, terminal)
+                        : null;
+            }
+
+            // Global terminal hotkeys have no open item GUI from which to obtain an exact slot.
+            return Util.getUltraWirelessTerm(player);
         }
     }
 
