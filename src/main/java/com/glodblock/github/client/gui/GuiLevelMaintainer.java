@@ -94,7 +94,7 @@ public class GuiLevelMaintainer extends GuiSub {
         this.buttonList.add(
                 this.liteMode = new GuiToggleButton(
                         guiLeft - 18,
-                        guiTop + 60,
+                        guiTop + 2,
                         178,
                         194,
                         GuiText.CraftingModeLite.getLocal(),

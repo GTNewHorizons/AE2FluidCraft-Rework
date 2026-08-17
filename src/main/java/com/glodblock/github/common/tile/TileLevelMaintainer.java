@@ -536,12 +536,14 @@ public class TileLevelMaintainer extends AENetworkTile
     public boolean readFromStream(final ByteBuf data) {
         final boolean oldPower = isPowered;
         isPowered = data.readBoolean();
+        isLiteMode = data.readBoolean();
         return isPowered != oldPower;
     }
 
     @TileEvent(TileEventType.NETWORK_WRITE)
     public void writeToStream(final ByteBuf data) {
         data.writeBoolean(isActive());
+        data.writeBoolean(isLiteMode);
     }
 
     @Override
