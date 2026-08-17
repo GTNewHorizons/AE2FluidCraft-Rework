@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
+import appeng.api.config.CraftingMode;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.features.ILevelViewable;
 import appeng.api.features.LevelItemInfo;
@@ -50,6 +51,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
+import appeng.me.cache.CraftingGridCache;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
@@ -78,6 +80,7 @@ public class TileLevelMaintainer extends AENetworkTile
     private int firstRequest = 0;
     private final BaseActionSource source;
     private boolean isPowered = false;
+    private boolean isLiteMode = false;
 
     public TileLevelMaintainer() {
         getProxy().setIdlePowerUsage(1D);
@@ -164,6 +167,7 @@ public class TileLevelMaintainer extends AENetworkTile
         }
         try {
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
+            final CraftingGridCache craftingGridCache = (CraftingGridCache) craftingGrid;
             final IGrid grid = getProxy().getGrid();
 
             // Check there are available crafting CPUs before doing any work.
@@ -273,9 +277,14 @@ public class TileLevelMaintainer extends AENetworkTile
                 }
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
-
-                requests[itemToBeginIdx].job = craftingGrid
-                        .beginCraftingJob(this.worldObj, grid, source, itemToBegin, null);
+                requests[itemToBeginIdx].job = craftingGridCache.beginCraftingJob(
+                        this.worldObj,
+                        grid,
+                        source,
+                        itemToBegin,
+                        CraftingMode.STANDARD,
+                        isLiteMode,
+                        null);
                 this.updateState(itemToBeginIdx, LevelState.Craft);
 
                 // Try the next item next time.
@@ -367,6 +376,16 @@ public class TileLevelMaintainer extends AENetworkTile
             requests[idx] = new RequestInfo(stack, this);
         }
         this.saveChanges();
+    }
+
+    public boolean isLiteMode() {
+        return this.isLiteMode;
+    }
+
+    public void setLiteMode(boolean liteMode) {
+        this.isLiteMode = liteMode;
+        this.saveChanges();
+        this.markForUpdate();
     }
 
     private void updateLink(int idx, @Nullable ICraftingLink link) {

@@ -29,6 +29,8 @@ import appeng.api.storage.data.IAEStackType;
 import appeng.client.gui.GuiSub;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
+import appeng.client.gui.widgets.GuiToggleButton;
+import appeng.core.localization.GuiText;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
 
@@ -40,6 +42,7 @@ public class GuiLevelMaintainer extends GuiSub {
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
     private final FontRenderer render;
+    private GuiToggleButton liteMode;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
@@ -88,6 +91,15 @@ public class GuiLevelMaintainer extends GuiSub {
                     this.buttonList,
                     this.cont);
         }
+        this.buttonList.add(
+                this.liteMode = new GuiToggleButton(
+                        guiLeft - 18,
+                        guiTop + 60,
+                        178,
+                        194,
+                        GuiText.CraftingModeLite.getLocal(),
+                        GuiText.CraftingModeLiteDesc.getLocal()));
+        this.liteMode.setState(this.cont.getTile().isLiteMode());
     }
 
     @Override
@@ -208,6 +220,13 @@ public class GuiLevelMaintainer extends GuiSub {
             if (com.sendToServer(btn)) {
                 return;
             }
+        }
+        if (btn == this.liteMode) {
+            boolean newState = !this.cont.getTile().isLiteMode();
+            this.liteMode.setState(newState);
+            FluidCraft.proxy.netHandler
+                    .sendToServer(new CPacketLevelMaintainer(CPacketLevelMaintainer.Action.LiteMode, newState));
+            return;
         }
         super.actionPerformed(btn);
     }
