@@ -58,6 +58,7 @@ import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.tile.inventory.InvOperation;
+import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.SettingsFrom;
 import appeng.util.item.AEItemStack;
@@ -206,7 +207,7 @@ public class TileLevelMaintainer extends AENetworkTile
                 IMEMonitor monitor = getProxy().getStorage().getMEMonitor(craftItem.getStackType());
                 if (monitor == null) continue;
 
-                IAEStack<?> stackInStorage = monitor.getStorageList().findPrecise(craftItem);
+                IAEStack<?> stackInStorage = monitor.getAvailableItem(craftItem, IterationCounter.fetchNewId());
 
                 long stackSize = stackInStorage == null ? 0 : stackInStorage.getStackSize();
 
