@@ -42,6 +42,12 @@ public class ItemPacketRender implements IItemRenderer {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        final boolean entity = type.equals(ItemRenderType.ENTITY);
+        if (entity) {
+            GL11.glPushMatrix();
+            GL11.glRotated(90.0D, 0.0D, 1.0D, 0.0D);
+            GL11.glTranslated(-0.5D, -0.6D, 0.0D);
+        }
 
         FluidStack fluid = ItemFluidPacket.getFluidStack(item);
         int RGB = fluid == null ? 0xFFFFFF : fluid.getFluid().getColor(fluid);
@@ -65,6 +71,9 @@ public class ItemPacketRender implements IItemRenderer {
                     0.0625F);
         }
 
+        if (entity) {
+            GL11.glPopMatrix();
+        }
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
     }
