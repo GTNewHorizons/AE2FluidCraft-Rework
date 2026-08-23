@@ -22,30 +22,26 @@ public class CPacketLevelMaintainer implements IMessage {
     private Action action;
     private long size;
     private int slotIndex;
-    private boolean liteMode;
 
     @SuppressWarnings("unused")
     public CPacketLevelMaintainer() {}
+
+    public CPacketLevelMaintainer(Action action) {
+        this.action = action;
+        this.slotIndex = -1;
+        this.size = 0;
+    }
 
     public CPacketLevelMaintainer(Action action, int slotIndex) {
         this.action = action;
         this.slotIndex = slotIndex;
         this.size = 0;
-        this.liteMode = false;
     }
 
     public CPacketLevelMaintainer(Action action, int slotIndex, long size) {
         this.action = action;
         this.slotIndex = slotIndex;
         this.size = size;
-        this.liteMode = false;
-    }
-
-    public CPacketLevelMaintainer(Action action, boolean liteMode) {
-        this.action = action;
-        this.slotIndex = -1;
-        this.size = 0;
-        this.liteMode = liteMode;
     }
 
     @Override
@@ -53,7 +49,6 @@ public class CPacketLevelMaintainer implements IMessage {
         this.action = Action.values()[buf.readInt()];
         this.slotIndex = buf.readInt();
         this.size = buf.readLong();
-        this.liteMode = buf.readBoolean();
     }
 
     @Override
@@ -61,7 +56,6 @@ public class CPacketLevelMaintainer implements IMessage {
         buf.writeInt(this.action.ordinal());
         buf.writeInt(this.slotIndex);
         buf.writeLong(this.size);
-        buf.writeBoolean(this.liteMode);
     }
 
     public static class Handler implements IMessageHandler<CPacketLevelMaintainer, IMessage> {
@@ -75,7 +69,7 @@ public class CPacketLevelMaintainer implements IMessage {
                     case Batch -> clm.getTile().updateBatchSize(message.slotIndex, message.size);
                     case Enable -> clm.getTile().updateStatus(message.slotIndex, false);
                     case Disable -> clm.getTile().updateStatus(message.slotIndex, true);
-                    case LiteMode -> clm.getTile().setLiteMode(message.liteMode);
+                    case LiteMode -> clm.getTile().toggleLiteMode();
                 }
                 clm.updateGui();
             }

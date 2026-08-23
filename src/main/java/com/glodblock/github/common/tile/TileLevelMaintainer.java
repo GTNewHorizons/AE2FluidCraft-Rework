@@ -389,6 +389,10 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
+    public void toggleLiteMode() {
+        this.setLiteMode(!this.isLiteMode());
+    }
+
     private void updateLink(int idx, @Nullable ICraftingLink link) {
         if (requests[idx] == null) return;
         requests[idx].link = link;
