@@ -75,6 +75,7 @@ public class TileLevelMaintainer extends AENetworkTile
     public static final String NBT_ENABLE = "enable";
     public static final String NBT_STATE = "state";
     public static final String NBT_LINK = "link";
+    public static final String NBT_LITE_MODE = "lite_mode";
 
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
     private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests);
@@ -386,7 +387,6 @@ public class TileLevelMaintainer extends AENetworkTile
     public void setLiteMode(boolean liteMode) {
         this.isLiteMode = liteMode;
         this.saveChanges();
-        this.markForUpdate();
     }
 
     private void updateLink(int idx, @Nullable ICraftingLink link) {
@@ -436,6 +436,7 @@ public class TileLevelMaintainer extends AENetworkTile
             }
         }
         data.setTag(NBT_REQUESTS, tagList);
+        data.setBoolean(NBT_LITE_MODE, isLiteMode());
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
@@ -519,6 +520,9 @@ public class TileLevelMaintainer extends AENetworkTile
                 this.requests[i].quantity = quantyties[i];
             }
         }
+        if (data.hasKey(NBT_LITE_MODE)) {
+            this.isLiteMode = data.getBoolean(NBT_LITE_MODE);
+        }
     }
 
     // Remove old format NBT data from ItemStack
@@ -536,14 +540,12 @@ public class TileLevelMaintainer extends AENetworkTile
     public boolean readFromStream(final ByteBuf data) {
         final boolean oldPower = isPowered;
         isPowered = data.readBoolean();
-        isLiteMode = data.readBoolean();
         return isPowered != oldPower;
     }
 
     @TileEvent(TileEventType.NETWORK_WRITE)
     public void writeToStream(final ByteBuf data) {
         data.writeBoolean(isActive());
-        data.writeBoolean(isLiteMode);
     }
 
     @Override

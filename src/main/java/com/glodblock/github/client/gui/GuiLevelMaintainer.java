@@ -246,6 +246,10 @@ public class GuiLevelMaintainer extends GuiSub {
         component[index].setState(state);
     }
 
+    public void updateComponent(boolean isLiteMode) {
+        this.liteMode.setState(isLiteMode);
+    }
+
     private static boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {
         return true;
     }

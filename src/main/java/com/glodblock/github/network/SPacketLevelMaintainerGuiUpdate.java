@@ -18,13 +18,15 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
 
     private Info[] infoList;
     private boolean onlyState;
+    private boolean isLiteMode;
 
     @SuppressWarnings("unused")
     public SPacketLevelMaintainerGuiUpdate() {}
 
-    public SPacketLevelMaintainerGuiUpdate(RequestInfo[] requests, boolean onlyState) {
+    public SPacketLevelMaintainerGuiUpdate(RequestInfo[] requests, boolean onlyState, boolean isLiteMode) {
         this.infoList = new Info[REQ_COUNT];
         this.onlyState = onlyState;
+        this.isLiteMode = isLiteMode;
 
         for (int i = 0; i < REQ_COUNT; i++) {
             if (requests[i] == null) {
@@ -43,6 +45,7 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
     public void fromBytes(ByteBuf buf) {
         this.infoList = new Info[REQ_COUNT];
         this.onlyState = buf.readBoolean();
+        this.isLiteMode = buf.readBoolean();
 
         for (int i = 0; i < REQ_COUNT; i++) {
             if (buf.readBoolean()) {
@@ -64,6 +67,7 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeBoolean(this.onlyState);
+        buf.writeBoolean(this.isLiteMode);
         for (Info info : this.infoList) {
             buf.writeBoolean(info != null);
             if (info == null) continue;
@@ -114,6 +118,8 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
                         gui.updateComponent(i, info.quantity, info.batchSize, info.enable, info.state);
                     }
                 }
+
+                gui.updateComponent(message.isLiteMode);
             }
 
             return null;
