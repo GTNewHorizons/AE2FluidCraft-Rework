@@ -82,6 +82,7 @@ public class TileLevelMaintainer extends AENetworkTile
     private int firstRequest = 0;
     private final BaseActionSource source;
     private boolean isPowered = false;
+    private boolean isLiteModeOverridden = false;
     private boolean isLiteMode = false;
 
     public TileLevelMaintainer() {
@@ -285,7 +286,7 @@ public class TileLevelMaintainer extends AENetworkTile
                         source,
                         itemToBegin,
                         CraftingMode.STANDARD,
-                        isLiteMode,
+                        isLiteMode(),
                         null);
                 this.updateState(itemToBeginIdx, LevelState.Craft);
 
@@ -380,17 +381,33 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
+    private boolean getLiteModeDefault() {
+        try {
+            final ICraftingGrid craftingGrid = getProxy().getCrafting();
+            if (craftingGrid instanceof CraftingGridCache cache) {
+                return cache.getLiteCraftingDefault();
+            }
+        } catch (GridAccessException ignored) {}
+        return false;
+    }
+
     public boolean isLiteMode() {
-        return this.isLiteMode;
+        return this.isLiteModeOverridden ? this.isLiteMode : getLiteModeDefault();
     }
 
     public void setLiteMode(boolean liteMode) {
+        this.isLiteModeOverridden = true;
         this.isLiteMode = liteMode;
         this.saveChanges();
     }
 
     public void toggleLiteMode() {
         this.setLiteMode(!this.isLiteMode());
+    }
+
+    public void clearLiteMode() {
+        this.isLiteModeOverridden = false;
+        this.saveChanges();
     }
 
     private void updateLink(int idx, @Nullable ICraftingLink link) {
@@ -440,7 +457,9 @@ public class TileLevelMaintainer extends AENetworkTile
             }
         }
         data.setTag(NBT_REQUESTS, tagList);
-        data.setBoolean(NBT_LITE_MODE, isLiteMode());
+        if (this.isLiteModeOverridden) {
+            data.setBoolean(NBT_LITE_MODE, this.isLiteMode);
+        }
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
@@ -525,6 +544,7 @@ public class TileLevelMaintainer extends AENetworkTile
             }
         }
         if (data.hasKey(NBT_LITE_MODE)) {
+            this.isLiteModeOverridden = true;
             this.isLiteMode = data.getBoolean(NBT_LITE_MODE);
         }
     }

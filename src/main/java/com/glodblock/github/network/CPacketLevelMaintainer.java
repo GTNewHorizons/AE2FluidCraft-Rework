@@ -16,7 +16,8 @@ public class CPacketLevelMaintainer implements IMessage {
         Batch,
         Enable,
         Disable,
-        LiteMode,
+        ToggleLiteMode,
+        ClearLiteMode,
     }
 
     private Action action;
@@ -69,7 +70,8 @@ public class CPacketLevelMaintainer implements IMessage {
                     case Batch -> clm.getTile().updateBatchSize(message.slotIndex, message.size);
                     case Enable -> clm.getTile().updateStatus(message.slotIndex, false);
                     case Disable -> clm.getTile().updateStatus(message.slotIndex, true);
-                    case LiteMode -> clm.getTile().toggleLiteMode();
+                    case ToggleLiteMode -> clm.getTile().toggleLiteMode();
+                    case ClearLiteMode -> clm.getTile().clearLiteMode();
                 }
                 clm.updateGui();
             }

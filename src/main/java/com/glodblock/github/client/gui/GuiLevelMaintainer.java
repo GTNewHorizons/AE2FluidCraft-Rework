@@ -98,7 +98,7 @@ public class GuiLevelMaintainer extends GuiSub {
                         178,
                         194,
                         GuiText.CraftingModeLite.getLocal(),
-                        GuiText.CraftingModeLiteDesc.getLocal()));
+                        NameConst.TT_LEVEL_MAINTAINER_LITE_CRAFT_DESC));
         this.liteMode.setState(false);
     }
 
@@ -222,8 +222,11 @@ public class GuiLevelMaintainer extends GuiSub {
             }
         }
         if (btn == this.liteMode) {
-            FluidCraft.proxy.netHandler
-                    .sendToServer(new CPacketLevelMaintainer(CPacketLevelMaintainer.Action.LiteMode));
+            if (isShiftKeyDown()) {
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.ClearLiteMode));
+            } else {
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.ToggleLiteMode));
+            }
             return;
         }
         super.actionPerformed(btn);
