@@ -589,6 +589,12 @@ public class TileLevelMaintainer extends AENetworkTile
                 }
             }
         }
+        if (compound.hasKey(NBT_LITE_MODE)) {
+            this.isLiteModeOverridden = true;
+            this.isLiteMode = compound.getBoolean(NBT_LITE_MODE);
+        } else {
+            this.isLiteModeOverridden = false;
+        }
         this.saveChanges();
     }
 
@@ -605,6 +611,9 @@ public class TileLevelMaintainer extends AENetworkTile
             }
         }
         compound.setTag(NBT_REQUESTS, tagList);
+        if (isLiteModeOverridden) {
+            compound.setBoolean(NBT_LITE_MODE, isLiteMode);
+        }
         return compound;
     }
 
