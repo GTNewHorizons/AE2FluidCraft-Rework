@@ -29,6 +29,8 @@ import appeng.api.storage.data.IAEStackType;
 import appeng.client.gui.GuiSub;
 import appeng.client.gui.slots.VirtualMEPhantomSlot;
 import appeng.client.gui.widgets.GuiTabButton;
+import appeng.client.gui.widgets.GuiToggleButton;
+import appeng.core.localization.GuiText;
 import appeng.util.calculators.ArithHelper;
 import appeng.util.calculators.Calculator;
 
@@ -40,6 +42,7 @@ public class GuiLevelMaintainer extends GuiSub {
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
     private final FontRenderer render;
+    private GuiToggleButton liteMode;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
@@ -88,6 +91,15 @@ public class GuiLevelMaintainer extends GuiSub {
                     this.buttonList,
                     this.cont);
         }
+        this.buttonList.add(
+                this.liteMode = new GuiToggleButton(
+                        guiLeft - 18,
+                        guiTop + 2,
+                        178,
+                        194,
+                        GuiText.CraftingModeLite.getLocal(),
+                        NameConst.TT_LEVEL_MAINTAINER_LITE_CRAFT_DESC));
+        this.liteMode.setState(false);
     }
 
     @Override
@@ -209,6 +221,14 @@ public class GuiLevelMaintainer extends GuiSub {
                 return;
             }
         }
+        if (btn == this.liteMode) {
+            if (isShiftKeyDown()) {
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.ClearLiteMode));
+            } else {
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.ToggleLiteMode));
+            }
+            return;
+        }
         super.actionPerformed(btn);
     }
 
@@ -225,6 +245,10 @@ public class GuiLevelMaintainer extends GuiSub {
     public void updateComponent(int index, LevelState state) {
         if (index < 0 || index >= TileLevelMaintainer.REQ_COUNT) return;
         component[index].setState(state);
+    }
+
+    public void updateComponent(boolean isLiteMode) {
+        this.liteMode.setState(isLiteMode);
     }
 
     private static boolean acceptType(VirtualMEPhantomSlot slot, IAEStackType<?> type, int mouseButton) {

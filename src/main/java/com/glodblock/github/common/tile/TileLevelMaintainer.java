@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
+import appeng.api.config.CraftingMode;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.features.ILevelViewable;
 import appeng.api.features.LevelItemInfo;
@@ -50,12 +51,14 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
+import appeng.me.cache.CraftingGridCache;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.tile.inventory.InvOperation;
+import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.SettingsFrom;
 import appeng.util.item.AEItemStack;
@@ -72,12 +75,15 @@ public class TileLevelMaintainer extends AENetworkTile
     public static final String NBT_ENABLE = "enable";
     public static final String NBT_STATE = "state";
     public static final String NBT_LINK = "link";
+    public static final String NBT_LITE_MODE = "lite_mode";
 
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
     private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests);
     private int firstRequest = 0;
     private final BaseActionSource source;
     private boolean isPowered = false;
+    private boolean isLiteModeOverridden = false;
+    private boolean isLiteMode = false;
 
     public TileLevelMaintainer() {
         getProxy().setIdlePowerUsage(1D);
@@ -164,6 +170,7 @@ public class TileLevelMaintainer extends AENetworkTile
         }
         try {
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
+            final CraftingGridCache craftingGridCache = (CraftingGridCache) craftingGrid;
             final IGrid grid = getProxy().getGrid();
 
             // Check there are available crafting CPUs before doing any work.
@@ -202,7 +209,7 @@ public class TileLevelMaintainer extends AENetworkTile
                 IMEMonitor monitor = getProxy().getStorage().getMEMonitor(craftItem.getStackType());
                 if (monitor == null) continue;
 
-                IAEStack<?> stackInStorage = monitor.getStorageList().findPrecise(craftItem);
+                IAEStack<?> stackInStorage = monitor.getAvailableItem(craftItem, IterationCounter.fetchNewId());
 
                 long stackSize = stackInStorage == null ? 0 : stackInStorage.getStackSize();
 
@@ -273,9 +280,14 @@ public class TileLevelMaintainer extends AENetworkTile
                 }
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
-
-                requests[itemToBeginIdx].job = craftingGrid
-                        .beginCraftingJob(this.worldObj, grid, source, itemToBegin, null);
+                requests[itemToBeginIdx].job = craftingGridCache.beginCraftingJob(
+                        this.worldObj,
+                        grid,
+                        source,
+                        itemToBegin,
+                        CraftingMode.STANDARD,
+                        isLiteMode(),
+                        null);
                 this.updateState(itemToBeginIdx, LevelState.Craft);
 
                 // Try the next item next time.
@@ -369,6 +381,35 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
+    private boolean getLiteModeDefault() {
+        try {
+            final ICraftingGrid craftingGrid = getProxy().getCrafting();
+            if (craftingGrid instanceof CraftingGridCache cache) {
+                return cache.getLiteCraftingDefault();
+            }
+        } catch (GridAccessException ignored) {}
+        return false;
+    }
+
+    public boolean isLiteMode() {
+        return this.isLiteModeOverridden ? this.isLiteMode : getLiteModeDefault();
+    }
+
+    public void setLiteMode(boolean liteMode) {
+        this.isLiteModeOverridden = true;
+        this.isLiteMode = liteMode;
+        this.saveChanges();
+    }
+
+    public void toggleLiteMode() {
+        this.setLiteMode(!this.isLiteMode());
+    }
+
+    public void clearLiteMode() {
+        this.isLiteModeOverridden = false;
+        this.saveChanges();
+    }
+
     private void updateLink(int idx, @Nullable ICraftingLink link) {
         if (requests[idx] == null) return;
         requests[idx].link = link;
@@ -416,6 +457,9 @@ public class TileLevelMaintainer extends AENetworkTile
             }
         }
         data.setTag(NBT_REQUESTS, tagList);
+        if (this.isLiteModeOverridden) {
+            data.setBoolean(NBT_LITE_MODE, this.isLiteMode);
+        }
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
@@ -499,6 +543,10 @@ public class TileLevelMaintainer extends AENetworkTile
                 this.requests[i].quantity = quantyties[i];
             }
         }
+        if (data.hasKey(NBT_LITE_MODE)) {
+            this.isLiteModeOverridden = true;
+            this.isLiteMode = data.getBoolean(NBT_LITE_MODE);
+        }
     }
 
     // Remove old format NBT data from ItemStack
@@ -541,6 +589,12 @@ public class TileLevelMaintainer extends AENetworkTile
                 }
             }
         }
+        if (compound.hasKey(NBT_LITE_MODE)) {
+            this.isLiteModeOverridden = true;
+            this.isLiteMode = compound.getBoolean(NBT_LITE_MODE);
+        } else {
+            this.isLiteModeOverridden = false;
+        }
         this.saveChanges();
     }
 
@@ -557,6 +611,9 @@ public class TileLevelMaintainer extends AENetworkTile
             }
         }
         compound.setTag(NBT_REQUESTS, tagList);
+        if (isLiteModeOverridden) {
+            compound.setBoolean(NBT_LITE_MODE, isLiteMode);
+        }
         return compound;
     }
 

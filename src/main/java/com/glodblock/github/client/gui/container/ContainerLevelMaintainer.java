@@ -110,7 +110,7 @@ public class ContainerLevelMaintainer extends ContainerSubGui implements IVirtua
                     (EntityPlayerMP) this.getInventoryPlayer().player);
         }
         FluidCraft.proxy.netHandler.sendTo(
-                new SPacketLevelMaintainerGuiUpdate(this.tile.requests, !this.isFirstUpdate),
+                new SPacketLevelMaintainerGuiUpdate(this.tile.requests, !this.isFirstUpdate, this.tile.isLiteMode()),
                 (EntityPlayerMP) this.getInventoryPlayer().player);
         this.isFirstUpdate = false;
         this.updateCount = 0;
@@ -126,7 +126,7 @@ public class ContainerLevelMaintainer extends ContainerSubGui implements IVirtua
                 NetworkHandler.instance
                         .sendTo(new PacketVirtualSlot(StorageName.NONE, slotStacks), (EntityPlayerMP) player);
                 FluidCraft.proxy.netHandler.sendTo(
-                        new SPacketLevelMaintainerGuiUpdate(this.tile.requests, false),
+                        new SPacketLevelMaintainerGuiUpdate(this.tile.requests, false, this.tile.isLiteMode()),
                         (EntityPlayerMP) player);
             }
         }
