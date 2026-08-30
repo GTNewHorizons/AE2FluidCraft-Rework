@@ -144,6 +144,11 @@ public class GuiMagnetFilter extends GuiSub {
         this.components[1].setVar(this.cont.meta);
         this.components[2].setVar(this.cont.ore);
         this.components[3].setVar(this.cont.oreDict);
+        // the synced value arrives after initGui, so re-apply it while the field is not being edited
+        if (!oreDict.isFocused() && this.cont.oreDictFilter != null
+                && !this.cont.oreDictFilter.equals(oreDict.getText())) {
+            oreDict.setText(this.cont.oreDictFilter, true);
+        }
         for (Component c : components) {
             c.draw();
         }
