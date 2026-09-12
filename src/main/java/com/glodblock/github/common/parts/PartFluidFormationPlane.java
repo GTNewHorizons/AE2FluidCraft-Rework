@@ -69,7 +69,9 @@ public class PartFluidFormationPlane extends PartBaseFormationPlane implements I
 
     @Override
     protected void updateHandler() {
-        this.onNeighborChanged();
+        if (this.getProxy().isReady()) {
+            this.onNeighborChanged();
+        }
     }
 
     public boolean doWork() {
