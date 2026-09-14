@@ -4,7 +4,10 @@ import java.util.EnumSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -13,6 +16,7 @@ import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileFluidInterface;
 import com.glodblock.github.util.NameConst;
 
+import appeng.api.util.AEColor;
 import appeng.api.util.IOrientable;
 import appeng.block.AEBaseItemBlock;
 import appeng.core.features.AEFeature;
@@ -24,6 +28,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockFluidInterface extends FCBaseBlock {
+
+    private static final String[] COLORED_TEXTURES = { "fluid_interface", "fluid_interface_a",
+            "fluid_interface_arrow" };
+
+    @SideOnly(Side.CLIENT)
+    private IIcon[][] coloredTextures;
 
     public BlockFluidInterface() {
         super(Material.iron, NameConst.BLOCK_FLUID_INTERFACE);
@@ -37,6 +47,38 @@ public class BlockFluidInterface extends FCBaseBlock {
     @SideOnly(Side.CLIENT)
     protected RenderBlockFluidInterface getRenderer() {
         return new RenderBlockFluidInterface();
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerBlockIcons(final IIconRegister iconRegistry) {
+        super.registerBlockIcons(iconRegistry);
+        this.coloredTextures = new IIcon[COLORED_TEXTURES.length][AEColor.VALUES.length];
+
+        for (final AEColor color : AEColor.VALID_COLORS) {
+            for (int id = 0; id < COLORED_TEXTURES.length; id++) {
+                this.coloredTextures[id][color.ordinal()] = iconRegistry
+                        .registerIcon("ae2fc:interface/" + COLORED_TEXTURES[id] + "_" + color.name());
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public IIcon getColoredTexture(final int id, final AEColor color) {
+        return this.coloredTextures[id][color.ordinal()];
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(final IBlockAccess world, final int x, final int y, final int z, final int side) {
+        final TileInterface tile = this.getTileEntity(world, x, y, z);
+        if (tile != null && tile.getForward() == ForgeDirection.UNKNOWN) {
+            final AEColor color = tile.getProxy().getColor();
+            if (color != AEColor.Transparent) {
+                return this.getColoredTexture(0, color);
+            }
+        }
+        return super.getIcon(world, x, y, z, side);
     }
 
     @Override
