@@ -22,6 +22,7 @@ import com.glodblock.github.common.tile.TileFluidPatternEncoder;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.slot.ISlotFluid;
 import com.glodblock.github.inventory.slot.SlotSingleItem;
+import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.storage.data.IAEItemStack;
@@ -73,8 +74,13 @@ public class GuiFluidPatternEncoder extends AEBaseGui {
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        fontRendererObj.drawString(getGuiDisplayName(I18n.format(NameConst.GUI_FLUID_PATTERN_ENCODER)), 8, 6, 0x404040);
-        fontRendererObj.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
+        fontRendererObj.drawString(
+                getGuiDisplayName(I18n.format(NameConst.GUI_FLUID_PATTERN_ENCODER)),
+                8,
+                6,
+                FCGuiColors.guiTextColorGray.getColor());
+        fontRendererObj
+                .drawString(GuiText.inventory.getLocal(), 8, ySize - 94, FCGuiColors.guiTextColorGray.getColor());
         mouseRegions.render(mouseX, mouseY);
     }
 

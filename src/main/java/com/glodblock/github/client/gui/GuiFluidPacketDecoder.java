@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerFluidPacketDecoder;
 import com.glodblock.github.common.tile.TileFluidPacketDecoder;
+import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 
 import appeng.client.gui.AEBaseGui;
@@ -28,7 +29,12 @@ public class GuiFluidPacketDecoder extends AEBaseGui {
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        fontRendererObj.drawString(getGuiDisplayName(I18n.format(NameConst.GUI_FLUID_PACKET_DECODER)), 8, 6, 0x404040);
-        fontRendererObj.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
+        fontRendererObj.drawString(
+                getGuiDisplayName(I18n.format(NameConst.GUI_FLUID_PACKET_DECODER)),
+                8,
+                6,
+                FCGuiColors.guiTextColorGray.getColor());
+        fontRendererObj
+                .drawString(GuiText.inventory.getLocal(), 8, ySize - 94, FCGuiColors.guiTextColorGray.getColor());
     }
 }

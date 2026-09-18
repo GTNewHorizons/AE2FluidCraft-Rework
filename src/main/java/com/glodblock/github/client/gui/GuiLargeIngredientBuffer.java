@@ -15,6 +15,7 @@ import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.gui.ButtonMouseHandler;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.gui.TankMouseHandler;
+import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 
@@ -66,9 +67,13 @@ public class GuiLargeIngredientBuffer extends AEBaseGui {
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
+        fontRendererObj.drawString(
+                getGuiDisplayName(I18n.format(NameConst.GUI_LARGE_INGREDIENT_BUFFER)),
+                8,
+                6,
+                FCGuiColors.guiTextColorGray.getColor());
         fontRendererObj
-                .drawString(getGuiDisplayName(I18n.format(NameConst.GUI_LARGE_INGREDIENT_BUFFER)), 8, 6, 0x404040);
-        fontRendererObj.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
+                .drawString(GuiText.inventory.getLocal(), 8, ySize - 94, FCGuiColors.guiTextColorGray.getColor());
         GL11.glColor4f(1F, 1F, 1F, 1F);
 
         IAEFluidTank fluidInv = cont.getTile().getInternalFluid();

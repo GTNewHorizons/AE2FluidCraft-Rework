@@ -15,6 +15,7 @@ import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.inventory.gui.TankMouseHandler;
+import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 
@@ -51,15 +52,24 @@ public class GuiFluidInterface extends GuiSub {
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        fontRendererObj.drawString(getGuiDisplayName(I18n.format(NameConst.GUI_FLUID_INTERFACE)), 8, 6, 0x404040);
-        fontRendererObj.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
+        fontRendererObj.drawString(
+                getGuiDisplayName(I18n.format(NameConst.GUI_FLUID_INTERFACE)),
+                8,
+                6,
+                FCGuiColors.guiTextColorGray.getColor());
+        fontRendererObj
+                .drawString(GuiText.inventory.getLocal(), 8, ySize - 94, FCGuiColors.guiTextColorGray.getColor());
         GL11.glColor4f(1F, 1F, 1F, 1F);
 
         IAEFluidTank fluidInv = cont.getTile().getInternalFluid();
         mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         for (int i = 0; i < 6; i++) {
             if (!isPart()) {
-                fontRendererObj.drawString(dirName(i), TANK_X + i * TANK_X_OFF + 5, 22, 0x404040);
+                fontRendererObj.drawString(
+                        dirName(i),
+                        TANK_X + i * TANK_X_OFF + 5,
+                        22,
+                        FCGuiColors.guiTextColorGray.getColor());
             }
             RenderUtil.renderFluidIntoGui(
                     this,

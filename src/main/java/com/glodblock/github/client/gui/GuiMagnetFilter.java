@@ -10,6 +10,7 @@ import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerMagnetFilter;
 import com.glodblock.github.inventory.item.WirelessMagnet;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
+import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 
 import appeng.api.config.ActionItems;
@@ -136,10 +137,23 @@ public class GuiMagnetFilter extends GuiSub {
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD), 8, 6, 0x404040);
-        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD_NBT), 61, 22, 0x404040);
-        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD_META), 61, 34, 0x404040);
-        this.fontRendererObj.drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD_ORE), 61, 46, 0x404040);
+        this.fontRendererObj
+                .drawString(NameConst.i18n(NameConst.GUI_MAGNET_CARD), 8, 6, FCGuiColors.guiTextColorGray.getColor());
+        this.fontRendererObj.drawString(
+                NameConst.i18n(NameConst.GUI_MAGNET_CARD_NBT),
+                61,
+                22,
+                FCGuiColors.guiTextColorGray.getColor());
+        this.fontRendererObj.drawString(
+                NameConst.i18n(NameConst.GUI_MAGNET_CARD_META),
+                61,
+                34,
+                FCGuiColors.guiTextColorGray.getColor());
+        this.fontRendererObj.drawString(
+                NameConst.i18n(NameConst.GUI_MAGNET_CARD_ORE),
+                61,
+                46,
+                FCGuiColors.guiTextColorGray.getColor());
         this.components[0].setVar(this.cont.nbt);
         this.components[1].setVar(this.cont.meta);
         this.components[2].setVar(this.cont.ore);

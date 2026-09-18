@@ -600,7 +600,12 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     // overlay highlight
                     GL11.glDisable(GL11.GL_LIGHTING);
                     GL11.glTranslatef(0.0f, 0.0f, SLOT_HOVER_Z);
-                    drawRect(colLeft, viewY + 1 + rowYTop, -2 + colRight, viewY - 1 + rowYBot, 0x77FFFFFF);
+                    drawRect(
+                            colLeft,
+                            viewY + 1 + rowYTop,
+                            -2 + colRight,
+                            viewY - 1 + rowYBot,
+                            FCGuiColors.guiLevelTerminalOverlayHighlight.getColor());
                     GL11.glTranslatef(0.0f, 0.0f, -SLOT_HOVER_Z);
                 }
                 GL11.glDisable(GL11.GL_LIGHTING);

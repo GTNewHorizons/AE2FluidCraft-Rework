@@ -136,7 +136,11 @@ public class GuiLevelMaintainer extends GuiSub {
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        fontRendererObj.drawString(getGuiDisplayName(NameConst.i18n(NameConst.GUI_LEVEL_MAINTAINER)), 8, 6, 0x404040);
+        fontRendererObj.drawString(
+                getGuiDisplayName(NameConst.i18n(NameConst.GUI_LEVEL_MAINTAINER)),
+                8,
+                6,
+                FCGuiColors.guiTextColorGray.getColor());
         mouseRegions.render(mouseX, mouseY);
     }
 
@@ -490,10 +494,10 @@ public class GuiLevelMaintainer extends GuiSub {
             final double result = Calculator.conversion(this.textField.getText());
             if (Double.isNaN(result) || result < 0) {
                 this.amount = null;
-                this.textField.setTextColor(0xFF0000);
+                this.textField.setTextColor(FCGuiColors.guiLevelMaintainerError.getColor());
             } else {
                 this.amount = (long) ArithHelper.round(result, 0);
-                this.textField.setTextColor(0xFFFFFF);
+                this.textField.setTextColor(FCGuiColors.guiTextColorGray.getColor());
             }
 
             IAEStack<?> stack = component[this.componentIndex].getStack();

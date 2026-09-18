@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerSuperStockReplenisher;
 import com.glodblock.github.common.tile.TileSuperStockReplenisher;
+import com.glodblock.github.util.FCGuiColors;
 
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEStack;
@@ -129,7 +130,8 @@ public class GuiSuperStockReplenisher extends AEBaseGui {
 
     @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
-        fontRendererObj.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
+        fontRendererObj
+                .drawString(GuiText.inventory.getLocal(), 8, ySize - 94, FCGuiColors.guiTextColorGray.getColor());
         this.drawVirtualSlots();
     }
 
