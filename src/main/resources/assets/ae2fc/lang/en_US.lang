@@ -75,6 +75,7 @@ tile.certus_quartz_tank_empty.name=Certus Quartz Tank
 
 ae2fc.waila.enable=Enable
 ae2fc.waila.disable=Disable
+ae2fc.waila.next_request=§aNext request in %ss (every %ss)
 
 ae2fc.tooltip.shift_for_more=§r> Hold §3Shift§r for more information
 ae2fc.tooltip.ctrl_for_more=§r> Hold §3Ctrl§r for more information
@@ -102,6 +103,8 @@ ae2fc.tooltip.level_maintainer.cant_craft_desc=The Requester is trying to schedu
 ae2fc.tooltip.level_maintainer.lite_craft_desc=Toggle lite crafting mode. Shift-click to clear override and restore network defaults.
 ae2fc.tooltip.level_maintainer.batch_size=§6Crafting Batch Size§r
 ae2fc.tooltip.level_maintainer.batch_size.hint=When craft requests are emitted, the Requester will use the batch size for the request. Using larger batches will increase the speed of stocking up items but will require more crafting storage.
+ae2fc.tooltip.level_maintainer.refresh_rate=§6Refresh Rate§r
+ae2fc.tooltip.level_maintainer.refresh_rate.hint=How long the Requester waits between re-checks of its request list, in seconds. The server limits this between its own minimum and maximum; 0 restores the server default.
 ae2fc.tooltip.level_maintainer.request_size=§6Amount to Maintain§r
 ae2fc.tooltip.level_maintainer.request_size.hint=The count defines how many items should be held in stock before the Requester starts requesting new crafts.
 ae2fc.tooltip.ultra_terminal.WIRELESS_CRAFTING_TERMINAL=Mode: Crafting Terminal
@@ -187,6 +190,7 @@ ae2fc.gui.ingredient_buffer=Ingredient Buffer
 ae2fc.gui.large_ingredient_buffer=Large Ingredient Buffer
 ae2fc.gui.fluid_interface=ME Dual Interface
 ae2fc.gui.level_maintainer=ME Level Maintainer
+ae2fc.gui.level_maintainer.refresh_rate=Refresh:
 ae2fc.gui.fluid_interface.0=D
 ae2fc.gui.fluid_interface.1=U
 ae2fc.gui.fluid_interface.2=N

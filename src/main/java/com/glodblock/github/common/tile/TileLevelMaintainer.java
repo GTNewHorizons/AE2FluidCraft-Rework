@@ -76,14 +76,29 @@ public class TileLevelMaintainer extends AENetworkTile
     public static final String NBT_STATE = "state";
     public static final String NBT_LINK = "link";
     public static final String NBT_LITE_MODE = "lite_mode";
+    public static final String NBT_REFRESH = "refresh_ticks";
+    public static final int TICKS_PER_SECOND = 20;
+    /**
+     * Hard bounds for the re-check interval. The lower bound is one second, the upper one a day; anything slower than
+     * that is better served by disabling the request.
+     */
+    public static final int MIN_REFRESH_TICKS = TICKS_PER_SECOND;
+    public static final int MAX_REFRESH_TICKS = 24 * 60 * 60 * TICKS_PER_SECOND;
 
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
     private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests);
     private int firstRequest = 0;
+    /** World time the tick manager last ran this tile. Transient; only used for tooltips. */
+    private long lastCheckTick = 0;
     private final BaseActionSource source;
     private boolean isPowered = false;
     private boolean isLiteModeOverridden = false;
     private boolean isLiteMode = false;
+    /**
+     * How long it waits between re-checks, in ticks. This is the block's only interval, used whether or not there is
+     * work to submit. 0 follows {@link Config#levelMaintainerMaxTicks}.
+     */
+    private int refreshTicks = 0;
 
     public TileLevelMaintainer() {
         getProxy().setIdlePowerUsage(1D);
@@ -156,11 +171,17 @@ public class TileLevelMaintainer extends AENetworkTile
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(Config.levelMaintainerMinTicks, Config.levelMaintainerMaxTicks, false, true);
+        // Both ends are the interval, so the tracker starts and stays on it instead of on the midpoint of a range, and
+        // the grid cannot drift off the value the GUI shows. The tile still answers SAME while it is working and IDLE
+        // once every request is satisfied, being crafted, or has no pattern.
+        final int refresh = getRefreshTicks();
+        return new TickingRequest(refresh, refresh, false, true);
     }
 
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
+        // Remember when the tick manager ran us, so tooltips can count down to the next check.
+        this.lastCheckTick = this.getWorldObj() == null ? 0 : this.getWorldObj().getTotalWorldTime();
         return canDoBusWork() ? doWork() : TickRateModulation.IDLE;
     }
 
@@ -381,6 +402,74 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
+    /** Interval between re-checks, in ticks, effective for this block. */
+    public int getRefreshTicks() {
+        // The config default goes through the same clamp, so every interval the block reports sits inside the bounds
+        // the GUI and the Waila line show.
+        return clampRefreshTicks(
+                this.refreshTicks <= 0 ? Math.max(1, Config.levelMaintainerMaxTicks) : this.refreshTicks);
+    }
+
+    /** Stores the interval a player typed in the GUI; 0 restores the server default. */
+    public void setRefreshTicks(int ticks) {
+        this.refreshTicks = readRefreshTicks(ticks);
+        this.saveChanges();
+        this.notifyTickRateChange();
+    }
+
+    private void notifyTickRateChange() {
+        // The tick manager only reads the request when the tile registers or is told to, so without this the new rate
+        // would not take effect until the chunk or the grid is rebuilt.
+        final IGridNode node = this.getProxy().getNode();
+        if (node == null) return;
+        try {
+            this.getProxy().getTick().updateTickRate(node);
+            // The grid restarted its timer as part of that call, so the next check is a full interval away. Re-base the
+            // deadline the tooltips count down to, or they would point at a time that has already passed.
+            if (this.getWorldObj() != null) {
+                this.lastCheckTick = this.getWorldObj().getTotalWorldTime();
+            }
+        } catch (final GridAccessException ignored) {}
+    }
+
+    /** World time the next check is due at, or 0 before the tile has been ticked at all. */
+    public long getNextCheckTick() {
+        if (this.lastCheckTick <= 0) return 0L;
+        return this.lastCheckTick + getRefreshTicks();
+    }
+
+    /** Smallest refresh interval a player may set, from the config, on a whole second and inside the hard bounds. */
+    private static int minRefreshTicks() {
+        return configBound(Config.levelMaintainerMinRefreshTicks);
+    }
+
+    /** Largest refresh interval a player may set, never below the smallest. */
+    private static int maxRefreshTicks() {
+        return Math.max(minRefreshTicks(), configBound(Config.levelMaintainerMaxRefreshTicks));
+    }
+
+    /** A configured bound, forced into the hard bounds and onto a whole second. */
+    private static int configBound(int ticks) {
+        return snapToSeconds(Math.max(MIN_REFRESH_TICKS, Math.min(MAX_REFRESH_TICKS, ticks)));
+    }
+
+    /**
+     * Keeps an interval inside the configured range and on a whole second, so the seconds shown in the GUI and in Waila
+     * are exactly the interval the block uses.
+     */
+    private static int clampRefreshTicks(int ticks) {
+        return Math.max(minRefreshTicks(), Math.min(maxRefreshTicks(), snapToSeconds(ticks)));
+    }
+
+    private static int snapToSeconds(int ticks) {
+        return Math.max(1, Math.round(ticks / (float) TICKS_PER_SECOND)) * TICKS_PER_SECOND;
+    }
+
+    /** Reads a stored refresh interval; anything absent or non-positive means "follow the config". */
+    private static int readRefreshTicks(int stored) {
+        return stored > 0 ? clampRefreshTicks(stored) : 0;
+    }
+
     private boolean getLiteModeDefault() {
         try {
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
@@ -460,10 +549,16 @@ public class TileLevelMaintainer extends AENetworkTile
         if (this.isLiteModeOverridden) {
             data.setBoolean(NBT_LITE_MODE, this.isLiteMode);
         }
+        if (this.refreshTicks != 0) {
+            data.setInteger(NBT_REFRESH, this.refreshTicks);
+        }
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public void readFromNBTEvent(NBTTagCompound data) {
+        // getInteger answers 0 for a missing key, which is exactly the "follow the config" value, so old tiles load
+        // unchanged.
+        this.refreshTicks = readRefreshTicks(data.getInteger(NBT_REFRESH));
         if (data.hasKey(NBT_REQUESTS)) {
             NBTTagList tagList = data.getTagList(NBT_REQUESTS, Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < tagList.tagCount(); i++) {
@@ -595,7 +690,11 @@ public class TileLevelMaintainer extends AENetworkTile
         } else {
             this.isLiteModeOverridden = false;
         }
+        // A card from a block that follows the config default arrives without the key, so this block falls back to the
+        // config default as well.
+        this.refreshTicks = readRefreshTicks(compound.getInteger(NBT_REFRESH));
         this.saveChanges();
+        this.notifyTickRateChange();
     }
 
     @Override
@@ -613,6 +712,9 @@ public class TileLevelMaintainer extends AENetworkTile
         compound.setTag(NBT_REQUESTS, tagList);
         if (isLiteModeOverridden) {
             compound.setBoolean(NBT_LITE_MODE, isLiteMode);
+        }
+        if (this.refreshTicks != 0) {
+            compound.setInteger(NBT_REFRESH, this.refreshTicks);
         }
         return compound;
     }

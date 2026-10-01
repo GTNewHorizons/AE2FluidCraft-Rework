@@ -20,8 +20,9 @@ public class Config {
     public static int packetSize;
     public static int packetRate;
     public static boolean replaceEC2;
-    public static int levelMaintainerMinTicks;
     public static int levelMaintainerMaxTicks;
+    public static int levelMaintainerMinRefreshTicks;
+    public static int levelMaintainerMaxRefreshTicks;
     public static int reStockTime;
     public static int magnetRange;
 
@@ -71,9 +72,23 @@ public class Config {
                 true,
                 "Set true to handle missing item mappings from EC2. Note to work properly, you must have all relevant parts.");
 
-        levelMaintainerMinTicks = Config.get("LevelMaintainer", "minTick", 5, "Number on ticks for minimal request")
+        levelMaintainerMaxTicks = Config.get(
+                "LevelMaintainer",
+                "maxTick",
+                120,
+                "Default refresh interval, in ticks (120 = 6 seconds), used by requesters that have not set their own. Values are clamped into the minRefreshTicks/maxRefreshTicks range and to whole seconds.")
                 .getInt();
-        levelMaintainerMaxTicks = Config.get("LevelMaintainer", "maxTick", 120, "Number on ticks for maximal request")
+        levelMaintainerMinRefreshTicks = Config.get(
+                "LevelMaintainer",
+                "minRefreshTicks",
+                20,
+                "Smallest refresh interval a player may set on a requester, in ticks (20 = 1 second)").getInt();
+        levelMaintainerMaxRefreshTicks = Config
+                .get(
+                        "LevelMaintainer",
+                        "maxRefreshTicks",
+                        1728000,
+                        "Largest refresh interval a player may set on a requester, in ticks (1728000 = 24 hours)")
                 .getInt();
 
         reStockTime = Config.get("UltraWireless", "reStockTime", 1000, "Time between restocks").getInt();

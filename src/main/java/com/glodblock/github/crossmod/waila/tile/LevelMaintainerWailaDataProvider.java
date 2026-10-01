@@ -19,12 +19,25 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public class LevelMaintainerWailaDataProvider extends BaseWailaDataProvider {
 
+    /** Refresh interval in effect, in ticks. Sent even when the block follows the config default. */
+    private static final String NBT_RATE = "ae2fc_rate";
+    /** World time the next check is due at, or 0 before the tile has been ticked. */
+    private static final String NBT_NEXT = "ae2fc_next";
+
     @Override
     public List<String> getWailaBody(final ItemStack itemStack, final List<String> currentToolTip,
             final IWailaDataAccessor accessor, final IWailaConfigHandler config) {
         final TileEntity te = accessor.getTileEntity();
         if (te instanceof TileLevelMaintainer tileLevelMaintainer) {
             NBTTagCompound data = accessor.getNBTData();
+            final long due = data.getLong(NBT_NEXT);
+            // Without a deadline the tile has not been ticked yet, and "next in 0s" would be a lie.
+            if (due > 0) {
+                currentToolTip.add(
+                        Tooltip.tileLevelMaintainerRateFormat(
+                                ticksUntilNextCheck(due, accessor),
+                                data.getInteger(NBT_RATE)));
+            }
             if (data.hasKey(TileLevelMaintainer.NBT_REQUESTS)) {
                 NBTTagList tagList = data.getTagList(TileLevelMaintainer.NBT_REQUESTS, Constants.NBT.TAG_COMPOUND);
                 for (int i = 0; i < tagList.tagCount(); i++) {
@@ -48,11 +61,23 @@ public class LevelMaintainerWailaDataProvider extends BaseWailaDataProvider {
         return currentToolTip;
     }
 
+    /** Ticks left until the next check, counted down client side against the deadline the server sent. */
+    private static long ticksUntilNextCheck(final long due, final IWailaDataAccessor accessor) {
+        final World world = accessor.getWorld();
+        if (world == null) return 0L;
+        return Math.max(0L, due - world.getTotalWorldTime());
+    }
+
     @Override
     public NBTTagCompound getNBTData(final EntityPlayerMP player, final TileEntity te, final NBTTagCompound tag,
             final World world, final int x, final int y, final int z) {
-        if (te instanceof TileLevelMaintainer) {
-            te.writeToNBT(tag);
+        if (te instanceof TileLevelMaintainer tile) {
+            tile.writeToNBT(tag);
+            // The tile tag only carries the refresh rate when the block overrides the config, so always send the
+            // effective
+            // one along with the world time the next check is due at.
+            tag.setInteger(NBT_RATE, tile.getRefreshTicks());
+            tag.setLong(NBT_NEXT, tile.getNextCheckTick());
         }
         return tag;
     }

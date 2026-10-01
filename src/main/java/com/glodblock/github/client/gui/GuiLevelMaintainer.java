@@ -43,6 +43,9 @@ public class GuiLevelMaintainer extends GuiSub {
     private Widget focusedWidget;
     private final FontRenderer render;
     private GuiToggleButton liteMode;
+    private Widget refreshRate;
+    /** Last refresh interval the server reported, in ticks; shown unless the player is editing the field. */
+    private int refreshRateTicks;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
@@ -59,6 +62,9 @@ public class GuiLevelMaintainer extends GuiSub {
     @Override
     public void initGui() {
         super.initGui();
+        // All widgets below are rebuilt here, so drop the reference to the discarded ones; a resize re-runs this and a
+        // stale widget would make the index based checks below read the wrong one.
+        this.focusedWidget = null;
 
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             VirtualMEPhantomSlot slot = new VirtualMEPhantomSlot(
@@ -91,6 +97,17 @@ public class GuiLevelMaintainer extends GuiSub {
                     this.buttonList,
                     this.cont);
         }
+        // Refresh rate. The player types seconds, the tile stores ticks; it sits in the free strip between the request
+        // rows and the inventory. Unlike the rows it draws its background, so its white value stands out from them.
+        this.refreshRate = new Widget(
+                new FCGuiTextField(this.fontRendererObj, guiLeft + 60, guiTop + 115, 44, 14),
+                NameConst.TT_LEVEL_MAINTAINER_REFRESH_RATE,
+                -1,
+                Action.SetRefreshRate);
+        this.refreshRate.textField.setEnableBackgroundDrawing(true);
+        this.refreshRate.validTextColor = FCGuiColors.guiTextColorWhite.getColor();
+        // A resize re-runs this, and the widget is rebuilt as "0", so put the value the block is using back.
+        showRefreshRate();
         this.buttonList.add(
                 this.liteMode = new GuiToggleButton(
                         guiLeft - 18,
@@ -122,6 +139,7 @@ public class GuiLevelMaintainer extends GuiSub {
             com.getBatch().textField.handleTooltip(mouseX, mouseY, this);
             com.getLine().handleTooltip(mouseX, mouseY, this);
         }
+        this.refreshRate.textField.handleTooltip(mouseX, mouseY, this);
     }
 
     @Override
@@ -132,6 +150,7 @@ public class GuiLevelMaintainer extends GuiSub {
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             this.component[i].draw();
         }
+        this.refreshRate.draw();
     }
 
     @Override
@@ -141,12 +160,22 @@ public class GuiLevelMaintainer extends GuiSub {
                 8,
                 6,
                 FCGuiColors.guiTextColorGray.getColor());
+        fontRendererObj.drawString(
+                NameConst.i18n(NameConst.GUI_LEVEL_MAINTAINER_REFRESH_RATE, "\n", false),
+                8,
+                118,
+                FCGuiColors.guiTextColorGray.getColor());
         mouseRegions.render(mouseX, mouseY);
     }
 
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
         if (btn == 0) {
+            if (this.refreshRate.textField.isMouseIn(xCoord, yCoord)) {
+                this.focusWidget(this.refreshRate);
+                super.mouseClicked(xCoord, yCoord, btn);
+                return;
+            }
             for (Component com : this.component) {
                 Widget textField = com.isMouseIn(xCoord, yCoord);
                 if (textField != null) {
@@ -168,14 +197,20 @@ public class GuiLevelMaintainer extends GuiSub {
         }
         if (!this.checkHotbarKeys(key)) {
             if (!((character == ' ') && this.focusedWidget.textField.getText().isEmpty())) {
+                final String before = this.focusedWidget.textField.getText();
                 this.focusedWidget.textField.textboxKeyTyped(character, key);
+                // Control keys (Tab, arrows) must not count as an edit, or Enter would commit the displayed default
+                // as an override.
+                if (!before.equals(this.focusedWidget.textField.getText())) {
+                    this.focusedWidget.dirty = true;
+                }
             }
             super.keyTyped(character, key);
 
             this.focusedWidget.validate();
 
             if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
-                this.component[this.focusedWidget.componentIndex].submit();
+                this.submitFocused();
                 this.focusWidget(null);
             }
 
@@ -188,6 +223,11 @@ public class GuiLevelMaintainer extends GuiSub {
     private void focusWidget(@Nullable Widget widget) {
         if (this.focusedWidget != null) {
             this.focusedWidget.textField.setFocused(false);
+            if (this.focusedWidget != widget && this.focusedWidget == this.refreshRate && this.refreshRate.dirty) {
+                // Focus moved away, which discards the edit exactly like the request rows, so the field never keeps
+                // showing a value the block is not using. Clicking back into the box being typed in must not reset it.
+                showRefreshRate();
+            }
         }
         this.focusedWidget = widget;
         if (this.focusedWidget != null) {
@@ -201,21 +241,65 @@ public class GuiLevelMaintainer extends GuiSub {
     }
 
     private Widget getAdjacentWidget(boolean backwards) {
-        int index = this.focusedWidget.componentIndex;
-        boolean isBatch = this.focusedWidget.action == Action.Batch;
+        final Widget current = this.focusedWidget;
+        if (current.componentIndex < 0) {
+            // The refresh rate sits after the last request row, so Tab walks out through it and wraps around.
+            return backwards ? this.component[TileLevelMaintainer.REQ_COUNT - 1].getBatch()
+                    : this.component[0].getQty();
+        }
+        final int index = current.componentIndex;
+        final boolean isBatch = current.action == Action.Batch;
 
         if (backwards) {
             if (isBatch) {
                 return this.component[index].getQty();
             }
-            return this.component[(index + TileLevelMaintainer.REQ_COUNT - 1) % TileLevelMaintainer.REQ_COUNT]
-                    .getBatch();
+            return index == 0 ? this.refreshRate : this.component[index - 1].getBatch();
         }
 
         if (isBatch) {
-            return this.component[(index + 1) % TileLevelMaintainer.REQ_COUNT].getQty();
+            return index == TileLevelMaintainer.REQ_COUNT - 1 ? this.refreshRate : this.component[index + 1].getQty();
         }
         return this.component[index].getBatch();
+    }
+
+    /** Enter either applies one request row or the block's refresh rate. */
+    private void submitFocused() {
+        final Widget widget = this.focusedWidget;
+        if (widget.componentIndex < 0) {
+            // Submitting an untouched field would pin the effective rate in as an override and stop the block from
+            // following the server config, so only an actual edit is sent.
+            if (!widget.dirty) return;
+            widget.validate();
+            final Long typed = widget.getAmount();
+            if (typed != null) {
+                // The field takes seconds; keep the sent value in range so the packet cannot overflow, and echo the
+                // clamped number back straight away.
+                final long seconds = Math.max(
+                        0L,
+                        Math.min(TileLevelMaintainer.MAX_REFRESH_TICKS / TileLevelMaintainer.TICKS_PER_SECOND, typed));
+                FluidCraft.proxy.netHandler.sendToServer(
+                        new CPacketLevelMaintainer(widget.action, -1, seconds * TileLevelMaintainer.TICKS_PER_SECOND));
+                widget.textField.setText(String.valueOf(seconds));
+            }
+            widget.dirty = false;
+            return;
+        }
+        this.component[widget.componentIndex].submit();
+    }
+
+    /** Shows the interval the block re-checks at, unless the player is editing it right now. */
+    public void updateRefreshRate(int ticks) {
+        this.refreshRateTicks = ticks;
+        if (this.focusedWidget == this.refreshRate || this.refreshRate.dirty) return;
+        showRefreshRate();
+    }
+
+    private void showRefreshRate() {
+        this.refreshRate.textField
+                .setText(String.valueOf(this.refreshRateTicks / TileLevelMaintainer.TICKS_PER_SECOND));
+        this.refreshRate.dirty = false;
+        this.refreshRate.validate();
     }
 
     @Override
@@ -448,6 +532,12 @@ public class GuiLevelMaintainer extends GuiSub {
         public final int componentIndex;
         public final Action action;
         public final FCGuiTextField textField;
+        /**
+         * Set while the player has typed into this field without submitting, so the server cannot overwrite the edit.
+         */
+        public boolean dirty;
+        /** Colour of a valid value; invalid input is always drawn in the error colour. */
+        public int validTextColor = FCGuiColors.guiTextColorGray.getColor();
         private final String tooltip;
         private Long amount;
 
@@ -497,8 +587,11 @@ public class GuiLevelMaintainer extends GuiSub {
                 this.textField.setTextColor(FCGuiColors.guiLevelMaintainerError.getColor());
             } else {
                 this.amount = (long) ArithHelper.round(result, 0);
-                this.textField.setTextColor(FCGuiColors.guiTextColorGray.getColor());
+                this.textField.setTextColor(this.validTextColor);
             }
+
+            // A negative index is the block level field: there is no request slot to write the amount back to.
+            if (this.componentIndex < 0) return;
 
             IAEStack<?> stack = component[this.componentIndex].getStack();
             if (stack != null) {
