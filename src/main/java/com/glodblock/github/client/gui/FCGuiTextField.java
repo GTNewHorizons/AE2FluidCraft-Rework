@@ -18,6 +18,7 @@ public class FCGuiTextField extends GuiTextField {
     private final int _height;
     private int _border;
     private int _color;
+    private int _centerWidth;
 
     /**
      * Uses the values to instantiate a padded version of a text field. Pays attention to the '_' caret.
@@ -44,9 +45,19 @@ public class FCGuiTextField extends GuiTextField {
         this._fontRender = fontRenderer;
     }
 
+    public void setCenterWidth(final int centerWidth) {
+        this._centerWidth = centerWidth;
+    }
+
     @Override
     public void drawTextBox() {
+        final int x = this.xPosition;
+        if (this._centerWidth > 0 && this.getVisible()) {
+            this.xPosition = this._xPos
+                    + Math.max(0, (this._centerWidth - this._fontRender.getStringWidth(this.getText())) / 2);
+        }
         super.drawTextBox();
+        this.xPosition = x;
         if (this.getBorder() > 0 && this.getVisible()) {
             drawRect(
                     this._xPos - getBorder(),

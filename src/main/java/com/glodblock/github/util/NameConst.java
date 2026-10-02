@@ -88,6 +88,8 @@ public class NameConst {
     public static final String TT_LEVEL_MAINTAINER_CANT_CRAFT = TT_LEVEL_MAINTAINER + "cant_craft";
     public static final String TT_LEVEL_MAINTAINER_CANT_CRAFT_DESC = TT_LEVEL_MAINTAINER + "cant_craft_desc";
     public static final String TT_LEVEL_MAINTAINER_LITE_CRAFT_DESC = TT_LEVEL_MAINTAINER + "lite_craft_desc";
+    public static final String TT_LEVEL_MAINTAINER_TICK_MAX = TT_LEVEL_MAINTAINER + "tick_max";
+    public static final String TT_LEVEL_MAINTAINER_TICK_EDIT = TT_LEVEL_MAINTAINER + "tick_edit";
     public static final String TT_CELL_PORTABLE = TT_KEY + "cell_portable";
     public static final String TT_WIRELESS = TT_KEY + "wireless.";
     public static final String TT_WIRELESS_INSTALLED = TT_WIRELESS + "installed";

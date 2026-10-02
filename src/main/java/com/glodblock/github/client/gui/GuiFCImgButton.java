@@ -19,6 +19,9 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
 
     private static final Pattern COMPILE = Pattern.compile("%s");
     private static final Pattern PATTERN_NEW_LINE = Pattern.compile("\\n", Pattern.LITERAL);
+    private static final int CELL_FACE = 0xFF898989;
+    private static final int CELL_HIGHLIGHT = 0xFFFFFFFF;
+    private static final int CELL_SHADOW = 0xFF585858;
     private static Map<EnumPair, ButtonAppearance> appearances;
     private final String buttonSetting;
     private boolean halfSize = false;
@@ -234,10 +237,13 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
     @Override
     public void drawButton(final Minecraft par1Minecraft, final int par2, final int par3) {
         if (this.visible) {
-            final int iconIndex = this.getIconIndex();
-            final int iconPage = this.getIconPage();
             this.width = getWidth();
             this.height = getHeight();
+            this.field_146123_n = par2 >= this.xPosition && par3 >= this.yPosition
+                    && par2 < this.xPosition + this.width
+                    && par3 < this.yPosition + this.height;
+
+            final int iconPage = this.getIconPage();
             float scaleFactor = halfSize ? 3 : threeFourths ? 4.5f : 6;
 
             GL11.glPushMatrix();
@@ -251,12 +257,7 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             }
 
             par1Minecraft.renderEngine.bindTexture(FluidCraft.resource("textures/gui/states" + iconPage + ".png"));
-            this.field_146123_n = par2 >= this.xPosition && par3 >= this.yPosition
-                    && par2 < this.xPosition + this.width
-                    && par3 < this.yPosition + this.height;
 
-            final int uv_y = (int) Math.floor(iconIndex / 3.0);
-            final int uv_x = iconIndex - uv_y * 3;
             if (this.background) {
                 this.drawTexturedModalRect(
                         0,
@@ -266,6 +267,9 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
                         Math.round(16F * 16F / 3F),
                         Math.round(16F * 16F / 3F));
             }
+            final int iconIndex = this.getIconIndex();
+            final int uv_y = (int) Math.floor(iconIndex / 3.0);
+            final int uv_x = iconIndex - uv_y * 3;
             this.drawTexturedModalRect(
                     0,
                     0,
@@ -278,6 +282,14 @@ public class GuiFCImgButton extends GuiButton implements ITooltip {
             GL11.glPopMatrix();
         }
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    public static void drawCell(final int x, final int y, final int width, final int height) {
+        drawRect(x, y, x + width, y + height, CELL_FACE);
+        drawRect(x, y + 1, x + 1, y + height - 1, CELL_SHADOW);
+        drawRect(x + width - 1, y, x + width, y + height, CELL_HIGHLIGHT);
+        drawRect(x, y, x + width, y + 1, CELL_SHADOW);
+        drawRect(x, y + height - 1, x + width, y + height, CELL_HIGHLIGHT);
     }
 
     private static final class EnumPair {

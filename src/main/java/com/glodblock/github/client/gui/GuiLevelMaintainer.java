@@ -16,6 +16,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
+import com.glodblock.github.common.Config;
 import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
 import com.glodblock.github.network.CPacketLevelMaintainer;
@@ -37,17 +38,39 @@ import appeng.util.calculators.Calculator;
 public class GuiLevelMaintainer extends GuiSub {
 
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_maintainer.png");
+    private static final int MAX_TICK_VALUE = 9999;
+    private static final int PANEL_EDGE = 164;
+    private static final int PANEL_BODY = 165;
+    private static final int PANEL_BORDER = 166;
+    private static final int PANEL_INTERIOR = 152;
+    private static final int PANEL_TAIL = 168;
+    private static final int PANEL_TAIL_W = 8;
+    private static final int PANEL_FILL = 171;
+    private static final int PANEL_SPLIT = 129;
+    private static final int INV_X = 7;
+    private static final int INV_W = 162;
+    private static final int TICK_EXT = ContainerLevelMaintainer.PANEL_WIDENING;
+    private static final int INV_SHIFT = ContainerLevelMaintainer.PLAYER_INV_OFFSET_X;
+    private static final int TICK_FIELD_X = 154;
+    private static final int TICK_FIELD_Y = 19;
+    private static final int TICK_FIELD_W = 36;
+    private static final int TICK_FIELD_H = 14;
+    private static final int TICK_CELL_H = 12;
+    private static final int SUBMIT_X = 190;
+    private static final int SUBMIT_CELL_X = SUBMIT_X + 2;
+    private static final int SUBMIT_CELL_W = 12;
     private final ContainerLevelMaintainer cont;
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
     private final MouseRegionManager mouseRegions = new MouseRegionManager(this);
     private Widget focusedWidget;
+    private Component editing;
     private final FontRenderer render;
     private GuiToggleButton liteMode;
 
     public GuiLevelMaintainer(InventoryPlayer ipl, TileLevelMaintainer tile) {
         super(new ContainerLevelMaintainer(ipl, tile));
         this.cont = (ContainerLevelMaintainer) inventorySlots;
-        this.xSize = 195;
+        this.xSize = PANEL_TAIL + TICK_EXT + PANEL_TAIL_W;
         this.ySize = 214;
         this.render = new FontRenderer(
                 Minecraft.getMinecraft().gameSettings,
@@ -59,6 +82,8 @@ public class GuiLevelMaintainer extends GuiSub {
     @Override
     public void initGui() {
         super.initGui();
+        this.editing = null;
+        this.focusedWidget = null;
 
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             VirtualMEPhantomSlot slot = new VirtualMEPhantomSlot(
@@ -84,10 +109,20 @@ public class GuiLevelMaintainer extends GuiSub {
                             NameConst.TT_LEVEL_MAINTAINER_BATCH_SIZE,
                             i,
                             Action.Batch),
-                    new GuiFCImgButton(guiLeft + 105 + 47, guiTop + 17 + 19 * i, "SUBMIT", "SUBMIT", false),
+                    new GuiFCImgButton(guiLeft + SUBMIT_X, guiTop + 17 + 19 * i, "SUBMIT", "SUBMIT", false),
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "ENABLE", "ENABLE", false),
                     new GuiFCImgButton(guiLeft + 9, guiTop + 20 + 19 * i, "DISABLE", "DISABLE", false),
-                    new FCGuiLineField(fontRendererObj, guiLeft + 47, guiTop + 33 + 19 * i, 120),
+                    new FCGuiTextField(
+                            this.fontRendererObj,
+                            guiLeft + TICK_FIELD_X,
+                            guiTop + TICK_FIELD_Y + 19 * i,
+                            TICK_FIELD_W,
+                            TICK_FIELD_H),
+                    new FCGuiLineField(
+                            fontRendererObj,
+                            guiLeft + 47,
+                            guiTop + 33 + 19 * i,
+                            120 + ContainerLevelMaintainer.PANEL_WIDENING),
                     this.buttonList,
                     this.cont);
         }
@@ -105,7 +140,7 @@ public class GuiLevelMaintainer extends GuiSub {
     @Override
     public void initPrimaryGuiButton() {
         this.originalGuiBtn = new GuiTabButton(
-                this.guiLeft + 151,
+                this.guiLeft + this.xSize - 25,
                 this.guiTop - 4,
                 this.cont.getPrimaryGuiIcon(),
                 this.cont.getPrimaryGuiIcon().getDisplayName(),
@@ -120,6 +155,7 @@ public class GuiLevelMaintainer extends GuiSub {
         for (Component com : this.component) {
             com.getQty().textField.handleTooltip(mouseX, mouseY, this);
             com.getBatch().textField.handleTooltip(mouseX, mouseY, this);
+            com.getTickField().handleTooltip(mouseX, mouseY, this);
             com.getLine().handleTooltip(mouseX, mouseY, this);
         }
     }
@@ -127,7 +163,25 @@ public class GuiLevelMaintainer extends GuiSub {
     @Override
     public void drawBG(int offsetX, int offsetY, int mouseX, int mouseY) {
         mc.getTextureManager().bindTexture(TEX_BG);
-        drawTexturedModalRect(offsetX, offsetY, 0, 0, 176, ySize);
+        final int invH = ySize - PANEL_SPLIT;
+
+        drawTexturedModalRect(offsetX, offsetY, 0, 0, PANEL_EDGE + 1, PANEL_SPLIT);
+        drawTexturedModalRect(offsetX, offsetY + PANEL_SPLIT, 0, PANEL_SPLIT, INV_X, invH);
+
+        for (int i = 0; i < TICK_EXT + 2; i++) {
+            drawTexturedModalRect(offsetX + PANEL_BODY + i, offsetY, PANEL_INTERIOR, 0, 1, PANEL_SPLIT);
+            drawTexturedModalRect(offsetX + PANEL_BODY + i, offsetY + PANEL_SPLIT, PANEL_FILL, PANEL_SPLIT, 1, invH);
+        }
+        for (int i = 0; i < INV_SHIFT; i++) {
+            drawTexturedModalRect(offsetX + INV_X + i, offsetY + PANEL_SPLIT, PANEL_FILL, PANEL_SPLIT, 1, invH);
+        }
+
+        drawTexturedModalRect(offsetX + PANEL_TAIL + TICK_EXT - 2, offsetY, PANEL_BORDER, 0, 2, PANEL_SPLIT);
+
+        drawTexturedModalRect(offsetX + PANEL_TAIL + TICK_EXT, offsetY, PANEL_TAIL, 0, PANEL_TAIL_W, ySize);
+        drawTexturedModalRect(offsetX + PANEL_TAIL + TICK_EXT, offsetY + PANEL_SPLIT, PANEL_FILL, PANEL_SPLIT, 1, invH);
+
+        drawTexturedModalRect(offsetX + INV_X + INV_SHIFT, offsetY + PANEL_SPLIT, INV_X, PANEL_SPLIT, INV_W, invH);
 
         for (int i = 0; i < TileLevelMaintainer.REQ_COUNT; i++) {
             this.component[i].draw();
@@ -146,8 +200,22 @@ public class GuiLevelMaintainer extends GuiSub {
 
     @Override
     protected void mouseClicked(final int xCoord, final int yCoord, final int btn) {
+        if (this.editing != null) {
+            if (this.editing.isOverTickField(xCoord, yCoord)) {
+                if (btn == 0) {
+                    this.editing.getTickField().mouseClicked(xCoord, yCoord, btn);
+                }
+                return;
+            }
+            this.endTickEdit(true);
+        }
         if (btn == 0) {
             for (Component com : this.component) {
+                if (com.isOverTickField(xCoord, yCoord)) {
+                    this.beginTickEdit(com);
+                    com.getTickField().mouseClicked(xCoord, yCoord, btn);
+                    return;
+                }
                 Widget textField = com.isMouseIn(xCoord, yCoord);
                 if (textField != null) {
                     this.focusWidget(textField);
@@ -162,6 +230,19 @@ public class GuiLevelMaintainer extends GuiSub {
 
     @Override
     protected void keyTyped(final char character, final int key) {
+        if (this.editing != null) {
+            if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
+                this.endTickEdit(true);
+            } else if (key == Keyboard.KEY_ESCAPE) {
+                this.endTickEdit(false);
+            } else if (character < ' ' || Character.isDigit(character)) {
+                final FCGuiTextField field = this.editing.getTickField();
+                if (field != null) {
+                    field.textboxKeyTyped(character, key);
+                }
+            }
+            return;
+        }
         if (this.focusedWidget == null) {
             super.keyTyped(character, key);
             return;
@@ -236,10 +317,32 @@ public class GuiLevelMaintainer extends GuiSub {
         super.actionPerformed(btn);
     }
 
-    public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state) {
+    private void beginTickEdit(final Component com) {
+        this.endTickEdit(true);
+        this.focusWidget(null);
+        this.editing = com;
+        com.beginEdit();
+    }
+
+    private void endTickEdit(final boolean commit) {
+        if (this.editing == null) {
+            return;
+        }
+        final Component com = this.editing;
+        this.editing = null;
+        if (commit) {
+            com.commitEdit();
+        } else {
+            com.cancelEdit();
+        }
+    }
+
+    public void updateComponent(int index, long quantity, long batchSize, boolean isEnabled, LevelState state,
+            int minTick, int maxTick) {
         if (index < 0 || index >= TileLevelMaintainer.REQ_COUNT) return;
         component[index].setEnable(isEnabled);
         component[index].setState(state);
+        component[index].setTicks(minTick, maxTick);
         component[index].getQty().textField.setText(String.valueOf(quantity));
         component[index].getBatch().textField.setText(String.valueOf(batchSize));
         component[index].getQty().validate();
@@ -259,6 +362,28 @@ public class GuiLevelMaintainer extends GuiSub {
         return true;
     }
 
+    private static long parseTick(final String text) {
+        if (text == null) {
+            return -1;
+        }
+        try {
+            return Long.parseLong(text.trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    private static void setupTickField(final FCGuiTextField field) {
+        field.setMaxStringLength(4);
+        field.setEnableBackgroundDrawing(false);
+        field.setTextColor(FCGuiColors.guiTextColorInput.getColor());
+        field.setVisible(true);
+    }
+
+    private static void blurTickField(final FCGuiTextField field) {
+        field.setFocused(false);
+    }
+
     private class Component {
 
         public boolean isEnable = false;
@@ -267,24 +392,31 @@ public class GuiLevelMaintainer extends GuiSub {
         private final GuiFCImgButton disable;
         private final GuiFCImgButton enable;
         private final GuiFCImgButton submit;
+        private final FCGuiTextField tickField;
         private final FCGuiLineField line;
         private LevelState state;
+        private int minTick = Config.levelMaintainerMinTicks;
+        private int maxTick = Config.levelMaintainerMaxTicks;
+        private boolean editing;
         private final ContainerLevelMaintainer container;
 
         public Component(Widget qtyInput, Widget batchInput, GuiFCImgButton submitBtn, GuiFCImgButton enableBtn,
-                GuiFCImgButton disableBtn, FCGuiLineField line, List<GuiButton> buttonList,
+                GuiFCImgButton disableBtn, FCGuiTextField tickField, FCGuiLineField line, List<GuiButton> buttonList,
                 ContainerLevelMaintainer container) {
             this.qty = qtyInput;
             this.batch = batchInput;
             this.enable = enableBtn;
             this.disable = disableBtn;
             this.submit = submitBtn;
+            this.tickField = tickField;
             this.line = line;
             this.state = LevelState.None;
             this.container = container;
+            setupTickField(this.tickField);
             buttonList.add(this.submit);
             buttonList.add(this.enable);
             buttonList.add(this.disable);
+            this.applyTicks();
         }
 
         public int getIndex() {
@@ -293,6 +425,56 @@ public class GuiLevelMaintainer extends GuiSub {
 
         public void setEnable(boolean enable) {
             this.isEnable = enable;
+        }
+
+        public void setTicks(int minTick, int maxTick) {
+            this.minTick = Math.max(1, minTick);
+            this.maxTick = Math.max(1, Math.max(minTick, maxTick));
+            this.applyTicks();
+        }
+
+        private void applyTicks() {
+            if (!this.editing) {
+                this.tickField.setText(String.valueOf(this.maxTick));
+            }
+        }
+
+        public FCGuiTextField getTickField() {
+            return this.tickField;
+        }
+
+        public boolean isOverTickField(final int x, final int y) {
+            return this.tickField.isMouseIn(x, y);
+        }
+
+        public void beginEdit() {
+            this.editing = true;
+            this.tickField.setText(String.valueOf(this.maxTick));
+            this.tickField.setCursorPositionEnd();
+            this.tickField.setFocused(true);
+        }
+
+        public void cancelEdit() {
+            this.editing = false;
+            blurTickField(this.tickField);
+            this.applyTicks();
+        }
+
+        public void commitEdit() {
+            final long value = parseTick(this.tickField.getText());
+            this.editing = false;
+            blurTickField(this.tickField);
+            if (value > 0) {
+                this.applyTick(value);
+            }
+            this.applyTicks();
+        }
+
+        private void applyTick(final long value) {
+            if (this.getStack() == null) return;
+            final int v = (int) Math.max(1, Math.min(MAX_TICK_VALUE, value));
+            this.setTicks(Math.min(this.minTick, v), v);
+            FluidCraft.proxy.netHandler.sendToServer(new CPacketLevelMaintainer(Action.SetMaxTick, this.getIndex(), v));
         }
 
         public IAEStack<?> getStack() {
@@ -361,6 +543,29 @@ public class GuiLevelMaintainer extends GuiSub {
         }
 
         public void draw() {
+            final boolean hasStack = this.getStack() != null;
+            if (!hasStack && (this.minTick != Config.levelMaintainerMinTicks
+                    || this.maxTick != Config.levelMaintainerMaxTicks)) {
+                this.setTicks(Config.levelMaintainerMinTicks, Config.levelMaintainerMaxTicks);
+            }
+
+            final int cellY = guiTop + TICK_FIELD_Y + 19 * this.getIndex();
+            GuiFCImgButton.drawCell(guiLeft + TICK_FIELD_X, cellY, TICK_FIELD_W, TICK_CELL_H);
+            GuiFCImgButton.drawCell(guiLeft + SUBMIT_CELL_X, cellY, SUBMIT_CELL_W, TICK_CELL_H);
+            this.tickField.setVisible(true);
+            if (this.editing) {
+                this.tickField.setTextColor(
+                        parseTick(this.tickField.getText()) <= 0 ? FCGuiColors.guiLevelMaintainerError.getColor()
+                                : FCGuiColors.guiTextColorInput.getColor());
+            } else {
+                this.tickField.setTextColor(FCGuiColors.guiTextColorInput.getColor());
+            }
+            final String tickTitle = NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_TICK_MAX, "\n", false);
+            final String tickBody = this.editing ? NameConst.i18n(NameConst.TT_LEVEL_MAINTAINER_TICK_EDIT)
+                    : StatCollector.translateToLocal(NameConst.TT_LEVEL_MAINTAINER_TICK_MAX + ".hint");
+            this.tickField.setMessage(
+                    render.wrapFormattedStringToWidth(tickTitle + "\n" + tickBody, (int) Math.floor(xSize * 0.8)));
+            this.tickField.drawTextBox();
             this.qty.draw();
             this.batch.draw();
             ArrayList<String> message = new ArrayList<>();
@@ -455,6 +660,7 @@ public class GuiLevelMaintainer extends GuiSub {
             this.textField = textField;
             this.textField.setEnableBackgroundDrawing(false);
             this.textField.setText("0");
+            this.textField.setTextColor(FCGuiColors.guiTextColorInput.getColor());
             this.textField.setMaxStringLength(16); // this length is enough to be useful
             this.componentIndex = componentIndex;
             this.action = action;
@@ -497,7 +703,7 @@ public class GuiLevelMaintainer extends GuiSub {
                 this.textField.setTextColor(FCGuiColors.guiLevelMaintainerError.getColor());
             } else {
                 this.amount = (long) ArithHelper.round(result, 0);
-                this.textField.setTextColor(FCGuiColors.guiTextColorGray.getColor());
+                this.textField.setTextColor(FCGuiColors.guiTextColorInput.getColor());
             }
 
             IAEStack<?> stack = component[this.componentIndex].getStack();

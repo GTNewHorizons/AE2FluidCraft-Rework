@@ -26,6 +26,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class ContainerLevelMaintainer extends ContainerSubGui implements IVirtualSlotHolder {
 
+    public static final int PANEL_WIDENING = 38;
+
+    public static final int PLAYER_INV_OFFSET_X = PANEL_WIDENING / 2;
+
     private final TileLevelMaintainer tile;
 
     private static final int UPDATE_INTERVAL = 20;
@@ -36,7 +40,7 @@ public class ContainerLevelMaintainer extends ContainerSubGui implements IVirtua
         super(ipl, tile);
         this.tile = tile;
 
-        bindPlayerInventory(ipl, 0, 130);
+        bindPlayerInventory(ipl, PLAYER_INV_OFFSET_X, 130);
     }
 
     public TileLevelMaintainer getTile() {
@@ -99,6 +103,14 @@ public class ContainerLevelMaintainer extends ContainerSubGui implements IVirtua
     }
 
     public void updateGui() {
+        this.sendGuiUpdate(true);
+    }
+
+    public void updateGuiFull() {
+        this.sendGuiUpdate(false);
+    }
+
+    private void sendGuiUpdate(boolean stateOnly) {
         if (this.isFirstUpdate) {
             Int2ObjectMap<IAEStack<?>> list = new Int2ObjectOpenHashMap<>();
             for (int i = 0; i < this.tile.requests.length; i++) {
@@ -110,7 +122,10 @@ public class ContainerLevelMaintainer extends ContainerSubGui implements IVirtua
                     (EntityPlayerMP) this.getInventoryPlayer().player);
         }
         FluidCraft.proxy.netHandler.sendTo(
-                new SPacketLevelMaintainerGuiUpdate(this.tile.requests, !this.isFirstUpdate, this.tile.isLiteMode()),
+                new SPacketLevelMaintainerGuiUpdate(
+                        this.tile.requests,
+                        stateOnly && !this.isFirstUpdate,
+                        this.tile.isLiteMode()),
                 (EntityPlayerMP) this.getInventoryPlayer().player);
         this.isFirstUpdate = false;
         this.updateCount = 0;

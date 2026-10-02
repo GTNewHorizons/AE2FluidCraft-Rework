@@ -76,6 +76,8 @@ public class TileLevelMaintainer extends AENetworkTile
     public static final String NBT_STATE = "state";
     public static final String NBT_LINK = "link";
     public static final String NBT_LITE_MODE = "lite_mode";
+    public static final String NBT_MIN_TICK = "minTick";
+    public static final String NBT_MAX_TICK = "maxTick";
 
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
     private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests);
@@ -156,15 +158,48 @@ public class TileLevelMaintainer extends AENetworkTile
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(Config.levelMaintainerMinTicks, Config.levelMaintainerMaxTicks, false, true);
+        return new TickingRequest(1, 1, false, true);
     }
 
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
-        return canDoBusWork() ? doWork() : TickRateModulation.IDLE;
+        if (this.worldObj == null) {
+            return TickRateModulation.IDLE;
+        }
+        final long now = this.worldObj.getTotalWorldTime();
+        if (!this.hasDueRequest(now)) {
+            return TickRateModulation.IDLE;
+        }
+        if (!this.canDoBusWork()) {
+            this.postponeAll(now);
+            return TickRateModulation.IDLE;
+        }
+        return this.doWork(now);
     }
 
-    private TickRateModulation doWork() {
+    private boolean hasDueRequest(final long now) {
+        for (final RequestInfo request : this.requests) {
+            if (request != null && now >= request.nextAttemptAt) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void postponeAll(final long now) {
+        for (final RequestInfo request : this.requests) {
+            if (request != null && now >= request.nextAttemptAt) {
+                request.nextAttemptAt = now + Math.max(1, request.maxTick);
+            }
+        }
+    }
+
+    private void defer(final int idx, final long now, final long delay) {
+        if (this.requests[idx] == null) return;
+        this.requests[idx].nextAttemptAt = now + Math.max(1, delay);
+    }
+
+    private TickRateModulation doWork(final long now) {
         if (!getProxy().isActive() || !canDoBusWork()) {
             return TickRateModulation.IDLE;
         }
@@ -193,7 +228,7 @@ public class TileLevelMaintainer extends AENetworkTile
 
             for (int j = 0; j < REQ_COUNT; ++j) {
                 int i = (firstRequest + j) % REQ_COUNT;
-                if (requests[i] == null) continue;
+                if (requests[i] == null || now < requests[i].nextAttemptAt) continue;
 
                 final long quantity = requests[i].quantity;
                 final long batchSize = requests[i].batchSize;
@@ -201,13 +236,17 @@ public class TileLevelMaintainer extends AENetworkTile
 
                 if (!isEnable || quantity == 0 || batchSize == 0) {
                     this.updateState(i, LevelState.None);
+                    this.defer(i, now, requests[i].maxTick);
                     continue;
                 }
 
                 IAEStack<?> craftItem = requests[i].stack.copy();
                 craftItem.setStackSize(batchSize);
                 IMEMonitor monitor = getProxy().getStorage().getMEMonitor(craftItem.getStackType());
-                if (monitor == null) continue;
+                if (monitor == null) {
+                    this.defer(i, now, requests[i].maxTick);
+                    continue;
+                }
 
                 IAEStack<?> stackInStorage = monitor.getAvailableItem(craftItem, IterationCounter.fetchNewId());
 
@@ -230,14 +269,17 @@ public class TileLevelMaintainer extends AENetworkTile
                 }
 
                 if (allBusy || !isDone || !shouldCraft) {
+                    this.defer(i, now, requests[i].maxTick);
                     continue;
                 }
 
                 if (craftingGrid.canEmitFor(stackInStorage)) {
+                    this.defer(i, now, requests[i].maxTick);
                     continue;
                 }
 
                 if (craftingGrid.isRequesting(stackInStorage)) {
+                    this.defer(i, now, requests[i].maxTick);
                     continue;
                 }
 
@@ -248,6 +290,8 @@ public class TileLevelMaintainer extends AENetworkTile
                     if (itemToBegin == null) {
                         itemToBegin = craftItem;
                         itemToBeginIdx = i;
+                    } else {
+                        this.defer(i, now, 1);
                     }
                 } else if (jobTask.isDone()) {
                     this.updateState(i, LevelState.Craft);
@@ -257,13 +301,19 @@ public class TileLevelMaintainer extends AENetworkTile
                             if (jobToSubmit == null) {
                                 jobToSubmit = job;
                                 jobToSubmitIdx = i;
+                            } else {
+                                this.defer(i, now, 1);
                             }
                         } else {
                             this.updateState(i, LevelState.Error);
+                            this.defer(i, now, requests[i].maxTick);
                         }
                     } catch (Exception ignored) {
                         this.updateState(i, LevelState.Error);
+                        this.defer(i, now, requests[i].maxTick);
                     }
+                } else {
+                    this.defer(i, now, requests[i].minTick);
                 }
 
             }
@@ -278,6 +328,7 @@ public class TileLevelMaintainer extends AENetworkTile
                 } else {
                     this.updateState(jobToSubmitIdx, LevelState.CantCraft);
                 }
+                this.defer(jobToSubmitIdx, now, requests[jobToSubmitIdx].maxTick);
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
                 requests[itemToBeginIdx].job = craftingGridCache.beginCraftingJob(
@@ -289,6 +340,7 @@ public class TileLevelMaintainer extends AENetworkTile
                         isLiteMode(),
                         null);
                 this.updateState(itemToBeginIdx, LevelState.Craft);
+                this.defer(itemToBeginIdx, now, requests[itemToBeginIdx].minTick);
 
                 // Try the next item next time.
                 firstRequest = (firstRequest + 1) % REQ_COUNT;
@@ -312,6 +364,12 @@ public class TileLevelMaintainer extends AENetworkTile
     @Override
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack removedStack,
             ItemStack newStack) {
+        final long now = this.worldObj == null ? 0L : this.worldObj.getTotalWorldTime();
+        for (final RequestInfo request : this.requests) {
+            if (request != null) {
+                request.nextAttemptAt = now;
+            }
+        }
         try {
             getProxy().getTick().alertDevice(getProxy().getNode());
         } catch (GridAccessException e) {
@@ -348,6 +406,7 @@ public class TileLevelMaintainer extends AENetworkTile
     public void updateQuantity(int idx, long size) {
         if (requests[idx] == null) return;
         requests[idx].quantity = size > 0 ? size : 0;
+        this.markDue(idx);
         this.checkState(idx);
         this.saveChanges();
     }
@@ -355,6 +414,7 @@ public class TileLevelMaintainer extends AENetworkTile
     public void updateBatchSize(int idx, long size) {
         if (requests[idx] == null) return;
         requests[idx].batchSize = size > 0 ? size : 0;
+        this.markDue(idx);
         this.checkState(idx);
         this.saveChanges();
     }
@@ -362,12 +422,36 @@ public class TileLevelMaintainer extends AENetworkTile
     public void updateStatus(int idx, boolean enable) {
         if (requests[idx] == null) return;
         requests[idx].enable = enable;
+        this.markDue(idx);
         this.checkState(idx);
         this.saveChanges();
     }
 
+    public void updateMaxTick(int idx, long ticks) {
+        if (requests[idx] == null) return;
+        final int value = clampTick(ticks, Config.levelMaintainerMaxTicks);
+        if (requests[idx].maxTick == value) return;
+        requests[idx].maxTick = value;
+        if (requests[idx].minTick > value) {
+            requests[idx].minTick = value;
+        }
+        this.markDue(idx);
+        this.saveChanges();
+    }
+
+    private static int clampTick(long ticks, int fallback) {
+        final long value = ticks > 0 ? ticks : fallback;
+        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, value));
+    }
+
+    private void markDue(int idx) {
+        if (requests[idx] == null || this.worldObj == null) return;
+        requests[idx].nextAttemptAt = this.worldObj.getTotalWorldTime();
+    }
+
     private void updateState(int idx, @NotNull LevelState state) {
         if (requests[idx] == null) return;
+        if (requests[idx].state == state) return;
         requests[idx].state = state;
         this.saveChanges();
     }
@@ -378,6 +462,7 @@ public class TileLevelMaintainer extends AENetworkTile
         } else {
             requests[idx] = new RequestInfo(stack, this);
         }
+        this.markDue(idx);
         this.saveChanges();
     }
 
@@ -664,6 +749,9 @@ public class TileLevelMaintainer extends AENetworkTile
         private long quantity;
         private long batchSize;
         private boolean enable;
+        private int minTick;
+        private int maxTick;
+        private long nextAttemptAt;
         private LevelState state;
         @Nullable
         private Future<ICraftingJob> job;
@@ -676,6 +764,9 @@ public class TileLevelMaintainer extends AENetworkTile
             quantity = 0;
             batchSize = 0;
             enable = false;
+            minTick = Config.levelMaintainerMinTicks;
+            maxTick = Config.levelMaintainerMaxTicks;
+            nextAttemptAt = 0;
             state = LevelState.None;
             link = null;
             job = null;
@@ -694,6 +785,12 @@ public class TileLevelMaintainer extends AENetworkTile
             quantity = tag.getLong(NBT_QUANTITY);
             batchSize = tag.getLong(NBT_BATCH);
             enable = tag.getBoolean(NBT_ENABLE);
+            minTick = readTick(tag, NBT_MIN_TICK, Config.levelMaintainerMinTicks);
+            maxTick = readTick(tag, NBT_MAX_TICK, Config.levelMaintainerMaxTicks);
+            if (maxTick < minTick) {
+                maxTick = minTick;
+            }
+            nextAttemptAt = 0;
             state = LevelState.values()[tag.getInteger(NBT_STATE)];
             if (tag.hasKey(NBT_LINK)) {
                 try {
@@ -705,6 +802,11 @@ public class TileLevelMaintainer extends AENetworkTile
             job = null;
         }
 
+        private static int readTick(NBTTagCompound tag, String key, int fallback) {
+            if (!tag.hasKey(key)) return fallback;
+            return clampTick(tag.getInteger(key), fallback);
+        }
+
         public void loadFromNBT(NBTTagCompound tag) {
             stack = Platform.readStackNBT(tag.getCompoundTag(NBT_STACK), true);
 
@@ -714,6 +816,12 @@ public class TileLevelMaintainer extends AENetworkTile
             quantity = tag.getLong(NBT_QUANTITY);
             batchSize = tag.getLong(NBT_BATCH);
             enable = tag.getBoolean(NBT_ENABLE);
+            minTick = readTick(tag, NBT_MIN_TICK, Config.levelMaintainerMinTicks);
+            maxTick = readTick(tag, NBT_MAX_TICK, Config.levelMaintainerMaxTicks);
+            if (maxTick < minTick) {
+                maxTick = minTick;
+            }
+            nextAttemptAt = 0;
             state = LevelState.values()[tag.getInteger(NBT_STATE)];
             if (tag.hasKey(NBT_LINK)) {
                 try {
@@ -732,6 +840,8 @@ public class TileLevelMaintainer extends AENetworkTile
             tag.setLong(NBT_QUANTITY, quantity);
             tag.setLong(NBT_BATCH, batchSize);
             tag.setBoolean(NBT_ENABLE, enable);
+            tag.setInteger(NBT_MIN_TICK, minTick);
+            tag.setInteger(NBT_MAX_TICK, maxTick);
             tag.setInteger(NBT_STATE, state.ordinal());
             if (this.link != null && includeLink) {
                 NBTTagCompound linkTag = new NBTTagCompound();
@@ -756,6 +866,14 @@ public class TileLevelMaintainer extends AENetworkTile
 
         public boolean isEnable() {
             return enable;
+        }
+
+        public int getMinTick() {
+            return minTick;
+        }
+
+        public int getMaxTick() {
+            return maxTick;
         }
 
         public LevelState getState() {

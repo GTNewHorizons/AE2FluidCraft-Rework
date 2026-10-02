@@ -36,7 +36,9 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
                         requests[i].getQuantity(),
                         requests[i].getBatchSize(),
                         requests[i].isEnable(),
-                        requests[i].getState());
+                        requests[i].getState(),
+                        requests[i].getMinTick(),
+                        requests[i].getMaxTick());
             }
         }
     }
@@ -56,7 +58,9 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
                             buf.readLong(),
                             buf.readLong(),
                             buf.readBoolean(),
-                            LevelState.values()[buf.readInt()]);
+                            LevelState.values()[buf.readInt()],
+                            buf.readInt(),
+                            buf.readInt());
                 }
             } else {
                 this.infoList[i] = null;
@@ -77,6 +81,10 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
                 buf.writeBoolean(info.enable);
             }
             buf.writeInt(info.state.ordinal());
+            if (!this.onlyState) {
+                buf.writeInt(info.minTick);
+                buf.writeInt(info.maxTick);
+            }
         }
     }
 
@@ -86,12 +94,16 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
         long batchSize;
         boolean enable;
         LevelState state;
+        int minTick;
+        int maxTick;
 
-        Info(long quantity, long batchSize, boolean enable, LevelState state) {
+        Info(long quantity, long batchSize, boolean enable, LevelState state, int minTick, int maxTick) {
             this.quantity = quantity;
             this.batchSize = batchSize;
             this.enable = enable;
             this.state = state;
+            this.minTick = minTick;
+            this.maxTick = maxTick;
         }
 
         Info(LevelState state) {
@@ -99,6 +111,8 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
             this.batchSize = 0;
             this.enable = false;
             this.state = state;
+            this.minTick = 0;
+            this.maxTick = 0;
         }
     }
 
@@ -115,7 +129,14 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
                     if (message.onlyState) {
                         gui.updateComponent(i, info.state);
                     } else {
-                        gui.updateComponent(i, info.quantity, info.batchSize, info.enable, info.state);
+                        gui.updateComponent(
+                                i,
+                                info.quantity,
+                                info.batchSize,
+                                info.enable,
+                                info.state,
+                                info.minTick,
+                                info.maxTick);
                     }
                 }
 

@@ -10,6 +10,7 @@ public class FCGuiColors {
     // spotless:off
         guiTextColorGray                    = color.rgb("guiTextColorGray",                     "0x404040"),
         guiTextColorWhite                   = color.rgb("guiTextColorWhite",                    "0xFFFFFF"),
+        guiTextColorInput                   = color.rgb("guiTextColorInput",                    "0xE0E0E0"),
         guiLevelMaintainerError             = color.rgb("guiLevelMaintainerError",              "0xFF0000"),
 
 

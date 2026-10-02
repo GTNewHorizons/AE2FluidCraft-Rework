@@ -18,6 +18,7 @@ public class CPacketLevelMaintainer implements IMessage {
         Disable,
         ToggleLiteMode,
         ClearLiteMode,
+        SetMaxTick,
     }
 
     private Action action;
@@ -65,6 +66,7 @@ public class CPacketLevelMaintainer implements IMessage {
         @Override
         public IMessage onMessage(CPacketLevelMaintainer message, MessageContext ctx) {
             if (ctx.getServerHandler().playerEntity.openContainer instanceof final ContainerLevelMaintainer clm) {
+                boolean fullUpdate = false;
                 switch (message.action) {
                     case Quantity -> clm.getTile().updateQuantity(message.slotIndex, message.size);
                     case Batch -> clm.getTile().updateBatchSize(message.slotIndex, message.size);
@@ -72,8 +74,16 @@ public class CPacketLevelMaintainer implements IMessage {
                     case Disable -> clm.getTile().updateStatus(message.slotIndex, true);
                     case ToggleLiteMode -> clm.getTile().toggleLiteMode();
                     case ClearLiteMode -> clm.getTile().clearLiteMode();
+                    case SetMaxTick -> {
+                        clm.getTile().updateMaxTick(message.slotIndex, message.size);
+                        fullUpdate = true;
+                    }
                 }
-                clm.updateGui();
+                if (fullUpdate) {
+                    clm.updateGuiFull();
+                } else {
+                    clm.updateGui();
+                }
             }
             return null;
         }
