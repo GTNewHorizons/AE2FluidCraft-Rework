@@ -49,6 +49,7 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
 import appeng.me.cache.CraftingGridCache;
@@ -58,7 +59,6 @@ import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.tile.inventory.InvOperation;
-import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.SettingsFrom;
 import appeng.util.item.AEItemStack;
@@ -204,40 +204,49 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
+                if (!this.isDone(i)) {
+                    continue;
+                }
+
                 IAEStack<?> craftItem = requests[i].stack.copy();
                 craftItem.setStackSize(batchSize);
+
+                final boolean isCraftable = isCraftable(craftingGrid, craftItem);
+
+                if (this.requests[i].state != LevelState.Idle) {
+                    this.updateState(i, LevelState.Idle);
+                }
+                if (this.requests[i].link != null) {
+                    this.updateLink(i, null);
+                }
+                if (!isCraftable) {
+                    updateState(i, LevelState.NotFound);
+                }
+
+                // A free CPU is required before it is worth looking at the stock:
+                if (allBusy || !isCraftable) {
+                    continue;
+                }
+
+                // Single hash lookup on the emitable mediums, so it is cheaper
+                // than reading the stock and can run first.
+                if (craftingGrid.canEmitFor(craftItem)) {
+                    continue;
+                }
+
                 IMEMonitor monitor = getProxy().getStorage().getMEMonitor(craftItem.getStackType());
                 if (monitor == null) continue;
 
-                IAEStack<?> stackInStorage = monitor.getAvailableItem(craftItem, IterationCounter.fetchNewId());
-
+                IAEStack<?> stackInStorage = getAvailableStack(monitor, craftItem);
                 long stackSize = stackInStorage == null ? 0 : stackInStorage.getStackSize();
 
-                boolean isDone = this.isDone(i);
-                boolean isCraftable = stackInStorage != null && stackInStorage.isCraftable();
-                boolean shouldCraft = isCraftable && stackSize < quantity;
-
-                if (isDone) {
-                    if (this.requests[i].state != LevelState.Idle) {
-                        this.updateState(i, LevelState.Idle);
-                    }
-                    if (this.requests[i].link != null) {
-                        this.updateLink(i, null);
-                    }
-                    if (!isCraftable) {
-                        updateState(i, LevelState.NotFound);
-                    }
-                }
-
-                if (allBusy || !isDone || !shouldCraft) {
+                if (stackSize >= quantity) {
                     continue;
                 }
 
-                if (craftingGrid.canEmitFor(stackInStorage)) {
-                    continue;
-                }
-
-                if (craftingGrid.isRequesting(stackInStorage)) {
+                // Walking every CPU to see whether the item is already being
+                // made is comparatively expensive
+                if (craftingGrid.isRequesting(craftItem)) {
                     continue;
                 }
 
@@ -302,6 +311,26 @@ public class TileLevelMaintainer extends AENetworkTile
         }
 
         return TickRateModulation.SAME;
+    }
+
+    private static boolean isCraftable(final ICraftingGrid craftingGrid, final IAEStack<?> stack) {
+        if (stack == null) return false;
+        return craftingGrid.canEmitFor(stack) || craftingGrid.getCraftingMultiPatterns().containsKey(stack);
+    }
+
+    /**
+     * Reads the stock of a single stack out of the grid's cached storage list.
+     * <p>
+     * {@link IMEMonitor#getAvailableItem(appeng.api.storage.data.IAEStack, int)} has no fast path on the network
+     * monitor: it falls back to building a filtered copy of <em>every</em> item held by every cell on the grid, for
+     * each call. The cached list is rebuilt at most once per storage change (the same one grid terminals read) and
+     * {@code findPrecise} is a hash lookup
+     */
+    @SuppressWarnings("rawtypes")
+    private static IAEStack<?> getAvailableStack(final IMEMonitor monitor, final IAEStack<?> request) {
+        if (monitor == null || request == null) return null;
+        final IItemList list = monitor.getStorageList();
+        return list == null ? null : list.findPrecise((IAEStack) request);
     }
 
     @Override
