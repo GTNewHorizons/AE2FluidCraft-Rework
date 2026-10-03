@@ -336,6 +336,9 @@ public class TileLevelMaintainer extends AENetworkTile
     }
 
     private static boolean canAcceptMachineJob(final ICraftingCPU cpu) {
+        if (cpu.isBusy()) {
+            return false;
+        }
         if (!(cpu instanceof CraftingCPUCluster cluster)) {
             return true;
         }
