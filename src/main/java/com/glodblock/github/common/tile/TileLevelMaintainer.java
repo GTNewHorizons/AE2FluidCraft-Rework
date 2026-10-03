@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
+import appeng.api.config.CraftingAllow;
 import appeng.api.config.CraftingMode;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.features.ILevelViewable;
@@ -53,6 +54,7 @@ import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
 import appeng.me.cache.CraftingGridCache;
+import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
@@ -178,7 +180,7 @@ public class TileLevelMaintainer extends AENetworkTile
             // crafting tasks that cannot be successfully submitted.
             boolean allBusy = true;
             for (final ICraftingCPU cpu : craftingGrid.getCpus()) {
-                if (!cpu.isBusy()) {
+                if (canAcceptMachineJob(cpu)) {
                     allBusy = false;
                     break;
                 }
@@ -326,11 +328,18 @@ public class TileLevelMaintainer extends AENetworkTile
      * each call. The cached list is rebuilt at most once per storage change (the same one grid terminals read) and
      * {@code findPrecise} is a hash lookup
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private static IAEStack<?> getAvailableStack(final IMEMonitor monitor, final IAEStack<?> request) {
         if (monitor == null || request == null) return null;
         final IItemList list = monitor.getStorageList();
-        return list == null ? null : list.findPrecise((IAEStack) request);
+        return list == null ? null : list.findPrecise(request);
+    }
+
+    private static boolean canAcceptMachineJob(final ICraftingCPU cpu) {
+        if (!(cpu instanceof CraftingCPUCluster cluster)) {
+            return true;
+        }
+        return cluster.isActive() && cluster.getCraftingAllowMode() != CraftingAllow.ONLY_PLAYER;
     }
 
     @Override
