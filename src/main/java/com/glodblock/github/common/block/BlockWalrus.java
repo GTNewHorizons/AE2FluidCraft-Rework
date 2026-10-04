@@ -14,6 +14,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.BaseItemBlockContainer;
 import com.glodblock.github.common.tabs.FluidCraftingTabs;
 import com.glodblock.github.common.tile.TileWalrus;
@@ -30,6 +31,8 @@ public class BlockWalrus extends BaseBlockContainer {
         setHardness(2.0F);
         setResistance(10.0F);
         setBlockName(NameConst.BLOCK_WALRUS);
+        // only used for hit/break particles, the block itself is rendered by RenderBlockWalrus
+        setBlockTextureName(FluidCraft.MODID + ":" + NameConst.BLOCK_WALRUS + "_particle");
     }
 
     @Override
