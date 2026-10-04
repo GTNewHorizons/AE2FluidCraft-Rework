@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
+import appeng.api.config.CraftingAllow;
 import appeng.api.config.CraftingMode;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.features.ILevelViewable;
@@ -52,13 +53,13 @@ import appeng.api.storage.data.IAEStack;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
 import appeng.me.cache.CraftingGridCache;
+import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
 import appeng.tile.grid.AENetworkTile;
 import appeng.tile.inventory.IAEAppEngInventory;
 import appeng.tile.inventory.IAEStackInventory;
 import appeng.tile.inventory.InvOperation;
-import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.SettingsFrom;
 import appeng.util.item.AEItemStack;
@@ -178,7 +179,7 @@ public class TileLevelMaintainer extends AENetworkTile
             // crafting tasks that cannot be successfully submitted.
             boolean allBusy = true;
             for (final ICraftingCPU cpu : craftingGrid.getCpus()) {
-                if (!cpu.isBusy()) {
+                if (canAcceptMachineJob(cpu)) {
                     allBusy = false;
                     break;
                 }
@@ -204,40 +205,50 @@ public class TileLevelMaintainer extends AENetworkTile
                     continue;
                 }
 
+                if (!this.isDone(i)) {
+                    continue;
+                }
+
                 IAEStack<?> craftItem = requests[i].stack.copy();
                 craftItem.setStackSize(batchSize);
+
+                final boolean isCraftable = isCraftable(craftingGrid, craftItem);
+
+                if (this.requests[i].state != LevelState.Idle) {
+                    this.updateState(i, LevelState.Idle);
+                }
+                if (this.requests[i].link != null) {
+                    this.updateLink(i, null);
+                }
+                if (!isCraftable) {
+                    updateState(i, LevelState.NotFound);
+                }
+
+                // A free CPU is required before it is worth looking at the stock:
+                if (allBusy || !isCraftable) {
+                    continue;
+                }
+
+                // Single hash lookup on the emitable mediums, so it is cheaper
+                // than reading the stock and can run first.
+                if (craftingGrid.canEmitFor(craftItem)) {
+                    continue;
+                }
+
                 IMEMonitor monitor = getProxy().getStorage().getMEMonitor(craftItem.getStackType());
                 if (monitor == null) continue;
 
-                IAEStack<?> stackInStorage = monitor.getAvailableItem(craftItem, IterationCounter.fetchNewId());
-
+                @SuppressWarnings({ "rawtypes", "unchecked" })
+                IAEStack<?> stackInStorage = monitor.getStorageList().findPrecise(craftItem);
                 long stackSize = stackInStorage == null ? 0 : stackInStorage.getStackSize();
 
-                boolean isDone = this.isDone(i);
-                boolean isCraftable = stackInStorage != null && stackInStorage.isCraftable();
-                boolean shouldCraft = isCraftable && stackSize < quantity;
-
-                if (isDone) {
-                    if (this.requests[i].state != LevelState.Idle) {
-                        this.updateState(i, LevelState.Idle);
-                    }
-                    if (this.requests[i].link != null) {
-                        this.updateLink(i, null);
-                    }
-                    if (!isCraftable) {
-                        updateState(i, LevelState.NotFound);
-                    }
-                }
-
-                if (allBusy || !isDone || !shouldCraft) {
+                if (stackSize >= quantity) {
                     continue;
                 }
 
-                if (craftingGrid.canEmitFor(stackInStorage)) {
-                    continue;
-                }
-
-                if (craftingGrid.isRequesting(stackInStorage)) {
+                // Walking every CPU to see whether the item is already being
+                // made is comparatively expensive
+                if (craftingGrid.isRequesting(craftItem)) {
                     continue;
                 }
 
@@ -302,6 +313,21 @@ public class TileLevelMaintainer extends AENetworkTile
         }
 
         return TickRateModulation.SAME;
+    }
+
+    private static boolean isCraftable(final ICraftingGrid craftingGrid, final IAEStack<?> stack) {
+        if (stack == null) return false;
+        return craftingGrid.canEmitFor(stack) || craftingGrid.getCraftingMultiPatterns().containsKey(stack);
+    }
+
+    private static boolean canAcceptMachineJob(final ICraftingCPU cpu) {
+        if (cpu.isBusy()) {
+            return false;
+        }
+        if (!(cpu instanceof CraftingCPUCluster cluster)) {
+            return true;
+        }
+        return cluster.isActive() && cluster.getCraftingAllowMode() != CraftingAllow.ONLY_PLAYER;
     }
 
     @Override
