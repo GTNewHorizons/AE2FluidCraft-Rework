@@ -50,7 +50,6 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.StorageName;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
-import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
 import appeng.me.GridAccessException;
 import appeng.me.cache.CraftingGridCache;
@@ -239,7 +238,8 @@ public class TileLevelMaintainer extends AENetworkTile
                 IMEMonitor monitor = getProxy().getStorage().getMEMonitor(craftItem.getStackType());
                 if (monitor == null) continue;
 
-                IAEStack<?> stackInStorage = getAvailableStack(monitor, craftItem);
+                @SuppressWarnings({ "rawtypes", "unchecked" })
+                IAEStack<?> stackInStorage = monitor.getStorageList().findPrecise(craftItem);
                 long stackSize = stackInStorage == null ? 0 : stackInStorage.getStackSize();
 
                 if (stackSize >= quantity) {
@@ -318,21 +318,6 @@ public class TileLevelMaintainer extends AENetworkTile
     private static boolean isCraftable(final ICraftingGrid craftingGrid, final IAEStack<?> stack) {
         if (stack == null) return false;
         return craftingGrid.canEmitFor(stack) || craftingGrid.getCraftingMultiPatterns().containsKey(stack);
-    }
-
-    /**
-     * Reads the stock of a single stack out of the grid's cached storage list.
-     * <p>
-     * {@link IMEMonitor#getAvailableItem(appeng.api.storage.data.IAEStack, int)} has no fast path on the network
-     * monitor: it falls back to building a filtered copy of <em>every</em> item held by every cell on the grid, for
-     * each call. The cached list is rebuilt at most once per storage change (the same one grid terminals read) and
-     * {@code findPrecise} is a hash lookup
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static IAEStack<?> getAvailableStack(final IMEMonitor monitor, final IAEStack<?> request) {
-        if (monitor == null || request == null) return null;
-        final IItemList list = monitor.getStorageList();
-        return list == null ? null : list.findPrecise(request);
     }
 
     private static boolean canAcceptMachineJob(final ICraftingCPU cpu) {
