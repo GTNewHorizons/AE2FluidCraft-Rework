@@ -77,6 +77,14 @@ public class TileLevelMaintainer extends AENetworkTile
     public static final String NBT_STATE = "state";
     public static final String NBT_LINK = "link";
     public static final String NBT_LITE_MODE = "lite_mode";
+    public static final String NBT_REFRESH = "refresh_ticks";
+    public static final int TICKS_PER_SECOND = 20;
+    /**
+     * Hard bounds for the re-check interval. The lower bound is one second, the upper one a day; anything slower than
+     * that is better served by disabling the request.
+     */
+    public static final int MIN_REFRESH_TICKS = TICKS_PER_SECOND;
+    public static final int MAX_REFRESH_TICKS = 24 * 60 * 60 * TICKS_PER_SECOND;
 
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
     private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests);
@@ -85,6 +93,11 @@ public class TileLevelMaintainer extends AENetworkTile
     private boolean isPowered = false;
     private boolean isLiteModeOverridden = false;
     private boolean isLiteMode = false;
+    /**
+     * Maximum idle interval, in ticks. AE2 can use shorter intervals for active work. 0 follows
+     * {@link Config#levelMaintainerMaxTicks}.
+     */
+    private int refreshTicks = 0;
 
     public TileLevelMaintainer() {
         getProxy().setIdlePowerUsage(1D);
@@ -157,7 +170,7 @@ public class TileLevelMaintainer extends AENetworkTile
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(Config.levelMaintainerMinTicks, Config.levelMaintainerMaxTicks, false, true);
+        return new TickingRequest(minActiveTicks(), getRefreshTicks(), false, true);
     }
 
     @Override
@@ -191,6 +204,7 @@ public class TileLevelMaintainer extends AENetworkTile
             int jobToSubmitIdx = -1;
             IAEStack<?> itemToBegin = null;
             int itemToBeginIdx = -1;
+            boolean hasPendingCalculation = false;
 
             for (int j = 0; j < REQ_COUNT; ++j) {
                 int i = (firstRequest + j) % REQ_COUNT;
@@ -275,6 +289,8 @@ public class TileLevelMaintainer extends AENetworkTile
                     } catch (Exception ignored) {
                         this.updateState(i, LevelState.Error);
                     }
+                } else {
+                    hasPendingCalculation = true;
                 }
 
             }
@@ -288,6 +304,7 @@ public class TileLevelMaintainer extends AENetworkTile
                     this.updateLink(jobToSubmitIdx, link);
                 } else {
                     this.updateState(jobToSubmitIdx, LevelState.CantCraft);
+                    return hasPendingCalculation ? TickRateModulation.URGENT : TickRateModulation.IDLE;
                 }
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
@@ -305,14 +322,15 @@ public class TileLevelMaintainer extends AENetworkTile
                 firstRequest = (firstRequest + 1) % REQ_COUNT;
             } else {
                 // No work to be done:
-                // Every item is at desired quantity, being crafted, or has no patterns.
-                return TickRateModulation.IDLE;
+                // Keep checking unfinished calculations at the active minimum. Running crafts can wait until idle.
+                return hasPendingCalculation ? TickRateModulation.URGENT : TickRateModulation.IDLE;
             }
         } catch (final GridAccessException ignore) {
-
+            return TickRateModulation.IDLE;
         }
 
-        return TickRateModulation.SAME;
+        // Work discovered during an idle poll must not retain the long idle interval.
+        return TickRateModulation.URGENT;
     }
 
     private static boolean isCraftable(final ICraftingGrid craftingGrid, final IAEStack<?> stack) {
@@ -407,6 +425,63 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
+    /** Effective maximum idle interval. Player overrides do not change the server's active minimum. */
+    public int getRefreshTicks() {
+        // Preserve the existing maxTick default, including sub-second values. The player limits apply to overrides.
+        return this.refreshTicks <= 0 ? Math.max(minActiveTicks(), Config.levelMaintainerMaxTicks)
+                : clampRefreshTicks(this.refreshTicks);
+    }
+
+    private static int minActiveTicks() {
+        return Math.max(1, Config.levelMaintainerMinTicks);
+    }
+
+    /** Stores the interval a player typed in the GUI; 0 restores the server default. */
+    public void setRefreshTicks(int ticks) {
+        this.refreshTicks = readRefreshTicks(ticks);
+        this.saveChanges();
+        this.notifyTickRateChange();
+    }
+
+    private void notifyTickRateChange() {
+        // The tick manager only reads the request when the tile registers or is told to, so without this the new rate
+        // would not take effect until the chunk or the grid is rebuilt.
+        final IGridNode node = this.getProxy().getNode();
+        if (node == null) return;
+        try {
+            this.getProxy().getTick().updateTickRate(node);
+            // A new tracker starts between its limits. Check promptly, then let doWork select active or idle timing.
+            this.getProxy().getTick().alertDevice(node);
+        } catch (final GridAccessException ignored) {}
+    }
+
+    /** Smallest player override, rounded up so the effective interval never falls below the server minimum. */
+    private static int minRefreshTicks() {
+        final int ticks = Math.max(minActiveTicks(), Config.levelMaintainerMinIdleTicks);
+        final int bounded = Math.max(MIN_REFRESH_TICKS, Math.min(MAX_REFRESH_TICKS, ticks));
+        return ((bounded + TICKS_PER_SECOND - 1) / TICKS_PER_SECOND) * TICKS_PER_SECOND;
+    }
+
+    /** Largest player override, rounded down and never below the smallest. */
+    private static int maxRefreshTicks() {
+        final int bounded = Math
+                .max(MIN_REFRESH_TICKS, Math.min(MAX_REFRESH_TICKS, Config.levelMaintainerMaxRefreshTicks));
+        return Math.max(minRefreshTicks(), bounded / TICKS_PER_SECOND * TICKS_PER_SECOND);
+    }
+
+    /** Keeps player overrides inside the server limits and on whole seconds. */
+    private static int clampRefreshTicks(int ticks) {
+        final int bounded = Math.max(minRefreshTicks(), Math.min(maxRefreshTicks(), ticks));
+        final int seconds = (bounded + TICKS_PER_SECOND - 1) / TICKS_PER_SECOND;
+        // An invalid active minimum above the hard limit must still not produce an inverted AE2 ticking range.
+        return Math.max(minActiveTicks(), Math.min(maxRefreshTicks(), seconds * TICKS_PER_SECOND));
+    }
+
+    /** Reads a stored refresh interval; anything absent or non-positive means "follow the config". */
+    private static int readRefreshTicks(int stored) {
+        return stored > 0 ? clampRefreshTicks(stored) : 0;
+    }
+
     private boolean getLiteModeDefault() {
         try {
             final ICraftingGrid craftingGrid = getProxy().getCrafting();
@@ -486,10 +561,16 @@ public class TileLevelMaintainer extends AENetworkTile
         if (this.isLiteModeOverridden) {
             data.setBoolean(NBT_LITE_MODE, this.isLiteMode);
         }
+        if (this.refreshTicks != 0) {
+            data.setInteger(NBT_REFRESH, this.refreshTicks);
+        }
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public void readFromNBTEvent(NBTTagCompound data) {
+        // getInteger answers 0 for a missing key, which is exactly the "follow the config" value, so old tiles load
+        // unchanged.
+        this.refreshTicks = readRefreshTicks(data.getInteger(NBT_REFRESH));
         if (data.hasKey(NBT_REQUESTS)) {
             NBTTagList tagList = data.getTagList(NBT_REQUESTS, Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < tagList.tagCount(); i++) {
@@ -621,7 +702,11 @@ public class TileLevelMaintainer extends AENetworkTile
         } else {
             this.isLiteModeOverridden = false;
         }
+        // A card from a block that follows the config default arrives without the key, so this block falls back to the
+        // config default as well.
+        this.refreshTicks = readRefreshTicks(compound.getInteger(NBT_REFRESH));
         this.saveChanges();
+        this.notifyTickRateChange();
     }
 
     @Override
@@ -639,6 +724,9 @@ public class TileLevelMaintainer extends AENetworkTile
         compound.setTag(NBT_REQUESTS, tagList);
         if (isLiteModeOverridden) {
             compound.setBoolean(NBT_LITE_MODE, isLiteMode);
+        }
+        if (this.refreshTicks != 0) {
+            compound.setInteger(NBT_REFRESH, this.refreshTicks);
         }
         return compound;
     }
