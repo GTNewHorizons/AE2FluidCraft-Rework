@@ -89,15 +89,13 @@ public class TileLevelMaintainer extends AENetworkTile
     public final RequestInfo[] requests = new RequestInfo[REQ_COUNT];
     private final LevelMaintainerInventory inventory = new LevelMaintainerInventory(requests);
     private int firstRequest = 0;
-    /** World time the tick manager last ran this tile. Transient; only used for tooltips. */
-    private long lastCheckTick = 0;
     private final BaseActionSource source;
     private boolean isPowered = false;
     private boolean isLiteModeOverridden = false;
     private boolean isLiteMode = false;
     /**
-     * How long it waits between re-checks, in ticks. This is the block's only interval, used whether or not there is
-     * work to submit. 0 follows {@link Config#levelMaintainerMaxTicks}.
+     * Maximum idle interval, in ticks. AE2 can use shorter intervals for active work. 0 follows
+     * {@link Config#levelMaintainerMaxTicks}.
      */
     private int refreshTicks = 0;
 
@@ -172,17 +170,11 @@ public class TileLevelMaintainer extends AENetworkTile
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        // Both ends are the interval, so the tracker starts and stays on it instead of on the midpoint of a range, and
-        // the grid cannot drift off the value the GUI shows. The tile still answers SAME while it is working and IDLE
-        // once every request is satisfied, being crafted, or has no pattern.
-        final int refresh = getRefreshTicks();
-        return new TickingRequest(refresh, refresh, false, true);
+        return new TickingRequest(minActiveTicks(), getRefreshTicks(), false, true);
     }
 
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int TicksSinceLastCall) {
-        // Remember when the tick manager ran us, so tooltips can count down to the next check.
-        this.lastCheckTick = this.getWorldObj() == null ? 0 : this.getWorldObj().getTotalWorldTime();
         return canDoBusWork() ? doWork() : TickRateModulation.IDLE;
     }
 
@@ -212,6 +204,7 @@ public class TileLevelMaintainer extends AENetworkTile
             int jobToSubmitIdx = -1;
             IAEStack<?> itemToBegin = null;
             int itemToBeginIdx = -1;
+            boolean hasPendingCalculation = false;
 
             for (int j = 0; j < REQ_COUNT; ++j) {
                 int i = (firstRequest + j) % REQ_COUNT;
@@ -296,6 +289,8 @@ public class TileLevelMaintainer extends AENetworkTile
                     } catch (Exception ignored) {
                         this.updateState(i, LevelState.Error);
                     }
+                } else {
+                    hasPendingCalculation = true;
                 }
 
             }
@@ -309,6 +304,7 @@ public class TileLevelMaintainer extends AENetworkTile
                     this.updateLink(jobToSubmitIdx, link);
                 } else {
                     this.updateState(jobToSubmitIdx, LevelState.CantCraft);
+                    return hasPendingCalculation ? TickRateModulation.URGENT : TickRateModulation.IDLE;
                 }
             } else if (itemToBegin != null) {
                 // No jobs to submit, start calculating some item.
@@ -326,14 +322,15 @@ public class TileLevelMaintainer extends AENetworkTile
                 firstRequest = (firstRequest + 1) % REQ_COUNT;
             } else {
                 // No work to be done:
-                // Every item is at desired quantity, being crafted, or has no patterns.
-                return TickRateModulation.IDLE;
+                // Keep checking unfinished calculations at the active minimum. Running crafts can wait until idle.
+                return hasPendingCalculation ? TickRateModulation.URGENT : TickRateModulation.IDLE;
             }
         } catch (final GridAccessException ignore) {
-
+            return TickRateModulation.IDLE;
         }
 
-        return TickRateModulation.SAME;
+        // Work discovered during an idle poll must not retain the long idle interval.
+        return TickRateModulation.URGENT;
     }
 
     private static boolean isCraftable(final ICraftingGrid craftingGrid, final IAEStack<?> stack) {
@@ -428,12 +425,15 @@ public class TileLevelMaintainer extends AENetworkTile
         this.saveChanges();
     }
 
-    /** Interval between re-checks, in ticks, effective for this block. */
+    /** Effective maximum idle interval. Player overrides do not change the server's active minimum. */
     public int getRefreshTicks() {
-        // The config default goes through the same clamp, so every interval the block reports sits inside the bounds
-        // the GUI and the Waila line show.
-        return clampRefreshTicks(
-                this.refreshTicks <= 0 ? Math.max(1, Config.levelMaintainerMaxTicks) : this.refreshTicks);
+        // Preserve the existing maxTick default, including sub-second values. The player limits apply to overrides.
+        return this.refreshTicks <= 0 ? Math.max(minActiveTicks(), Config.levelMaintainerMaxTicks)
+                : clampRefreshTicks(this.refreshTicks);
+    }
+
+    private static int minActiveTicks() {
+        return Math.max(1, Config.levelMaintainerMinTicks);
     }
 
     /** Stores the interval a player typed in the GUI; 0 restores the server default. */
@@ -450,45 +450,31 @@ public class TileLevelMaintainer extends AENetworkTile
         if (node == null) return;
         try {
             this.getProxy().getTick().updateTickRate(node);
-            // The grid restarted its timer as part of that call, so the next check is a full interval away. Re-base the
-            // deadline the tooltips count down to, or they would point at a time that has already passed.
-            if (this.getWorldObj() != null) {
-                this.lastCheckTick = this.getWorldObj().getTotalWorldTime();
-            }
+            // A new tracker starts between its limits. Check promptly, then let doWork select active or idle timing.
+            this.getProxy().getTick().alertDevice(node);
         } catch (final GridAccessException ignored) {}
     }
 
-    /** World time the next check is due at, or 0 before the tile has been ticked at all. */
-    public long getNextCheckTick() {
-        if (this.lastCheckTick <= 0) return 0L;
-        return this.lastCheckTick + getRefreshTicks();
-    }
-
-    /** Smallest refresh interval a player may set, from the config, on a whole second and inside the hard bounds. */
+    /** Smallest player override, rounded up so the effective interval never falls below the server minimum. */
     private static int minRefreshTicks() {
-        return configBound(Config.levelMaintainerMinRefreshTicks);
+        final int ticks = Math.max(minActiveTicks(), Config.levelMaintainerMinIdleTicks);
+        final int bounded = Math.max(MIN_REFRESH_TICKS, Math.min(MAX_REFRESH_TICKS, ticks));
+        return ((bounded + TICKS_PER_SECOND - 1) / TICKS_PER_SECOND) * TICKS_PER_SECOND;
     }
 
-    /** Largest refresh interval a player may set, never below the smallest. */
+    /** Largest player override, rounded down and never below the smallest. */
     private static int maxRefreshTicks() {
-        return Math.max(minRefreshTicks(), configBound(Config.levelMaintainerMaxRefreshTicks));
+        final int bounded = Math
+                .max(MIN_REFRESH_TICKS, Math.min(MAX_REFRESH_TICKS, Config.levelMaintainerMaxRefreshTicks));
+        return Math.max(minRefreshTicks(), bounded / TICKS_PER_SECOND * TICKS_PER_SECOND);
     }
 
-    /** A configured bound, forced into the hard bounds and onto a whole second. */
-    private static int configBound(int ticks) {
-        return snapToSeconds(Math.max(MIN_REFRESH_TICKS, Math.min(MAX_REFRESH_TICKS, ticks)));
-    }
-
-    /**
-     * Keeps an interval inside the configured range and on a whole second, so the seconds shown in the GUI and in Waila
-     * are exactly the interval the block uses.
-     */
+    /** Keeps player overrides inside the server limits and on whole seconds. */
     private static int clampRefreshTicks(int ticks) {
-        return Math.max(minRefreshTicks(), Math.min(maxRefreshTicks(), snapToSeconds(ticks)));
-    }
-
-    private static int snapToSeconds(int ticks) {
-        return Math.max(1, Math.round(ticks / (float) TICKS_PER_SECOND)) * TICKS_PER_SECOND;
+        final int bounded = Math.max(minRefreshTicks(), Math.min(maxRefreshTicks(), ticks));
+        final int seconds = (bounded + TICKS_PER_SECOND - 1) / TICKS_PER_SECOND;
+        // An invalid active minimum above the hard limit must still not produce an inverted AE2 ticking range.
+        return Math.max(minActiveTicks(), Math.min(maxRefreshTicks(), seconds * TICKS_PER_SECOND));
     }
 
     /** Reads a stored refresh interval; anything absent or non-positive means "follow the config". */

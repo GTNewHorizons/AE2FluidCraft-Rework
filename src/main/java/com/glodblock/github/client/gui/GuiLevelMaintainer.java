@@ -13,6 +13,7 @@ import net.minecraft.util.StatCollector;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerLevelMaintainer;
@@ -36,6 +37,10 @@ import appeng.util.calculators.Calculator;
 
 public class GuiLevelMaintainer extends GuiSub {
 
+    private static final float REFRESH_LABEL_SCALE = 0.8F;
+    private static final int REFRESH_FIELD_X = 90;
+    private static final int REFRESH_FIELD_WIDTH = 44;
+    private static final int REFRESH_UNITS_X = REFRESH_FIELD_X + REFRESH_FIELD_WIDTH + 4;
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/level_maintainer.png");
     private final ContainerLevelMaintainer cont;
     private final Component[] component = new Component[TileLevelMaintainer.REQ_COUNT];
@@ -99,8 +104,14 @@ public class GuiLevelMaintainer extends GuiSub {
         }
         // Refresh rate. The player types seconds, the tile stores ticks; it sits in the free strip between the request
         // rows and the inventory. Unlike the rows it draws its background, so its white value stands out from them.
+        // Keep separate areas for the label, input and units. Font metrics during initGui can differ from rendering.
         this.refreshRate = new Widget(
-                new FCGuiTextField(this.fontRendererObj, guiLeft + 60, guiTop + 115, 44, 14),
+                new FCGuiTextField(
+                        this.fontRendererObj,
+                        guiLeft + REFRESH_FIELD_X,
+                        guiTop + 115,
+                        REFRESH_FIELD_WIDTH,
+                        14),
                 NameConst.TT_LEVEL_MAINTAINER_REFRESH_RATE,
                 -1,
                 Action.SetRefreshRate);
@@ -160,12 +171,25 @@ public class GuiLevelMaintainer extends GuiSub {
                 8,
                 6,
                 FCGuiColors.guiTextColorGray.getColor());
-        fontRendererObj.drawString(
+        drawRefreshLabel(
                 NameConst.i18n(NameConst.GUI_LEVEL_MAINTAINER_REFRESH_RATE, "\n", false),
                 8,
-                118,
-                FCGuiColors.guiTextColorGray.getColor());
+                REFRESH_FIELD_X - 8 - 6);
+        drawRefreshLabel(
+                NameConst.i18n(NameConst.GUI_LEVEL_MAINTAINER_REFRESH_RATE_SECONDS, "\n", false),
+                REFRESH_UNITS_X,
+                172 - REFRESH_UNITS_X);
         mouseRegions.render(mouseX, mouseY);
+    }
+
+    private void drawRefreshLabel(String text, int x, int availableWidth) {
+        final float scale = Math
+                .min(REFRESH_LABEL_SCALE, availableWidth / (float) Math.max(1, fontRendererObj.getStringWidth(text)));
+        GL11.glPushMatrix();
+        GL11.glTranslatef(x, 118, 0);
+        GL11.glScalef(scale, scale, 1F);
+        fontRendererObj.drawString(text, 0, 0, FCGuiColors.guiTextColorGray.getColor());
+        GL11.glPopMatrix();
     }
 
     @Override
@@ -288,7 +312,7 @@ public class GuiLevelMaintainer extends GuiSub {
         this.component[widget.componentIndex].submit();
     }
 
-    /** Shows the interval the block re-checks at, unless the player is editing it right now. */
+    /** Shows the maximum idle interval, unless the player is editing it right now. */
     public void updateRefreshRate(int ticks) {
         this.refreshRateTicks = ticks;
         if (this.focusedWidget == this.refreshRate || this.refreshRate.dirty) return;
@@ -296,8 +320,10 @@ public class GuiLevelMaintainer extends GuiSub {
     }
 
     private void showRefreshRate() {
-        this.refreshRate.textField
-                .setText(String.valueOf(this.refreshRateTicks / TileLevelMaintainer.TICKS_PER_SECOND));
+        this.refreshRate.textField.setText(
+                this.refreshRateTicks % TileLevelMaintainer.TICKS_PER_SECOND == 0
+                        ? String.valueOf(this.refreshRateTicks / TileLevelMaintainer.TICKS_PER_SECOND)
+                        : String.valueOf(this.refreshRateTicks / (double) TileLevelMaintainer.TICKS_PER_SECOND));
         this.refreshRate.dirty = false;
         this.refreshRate.validate();
     }
@@ -554,7 +580,10 @@ public class GuiLevelMaintainer extends GuiSub {
         public void draw() {
             String current = amount != null
                     ? StatCollector.translateToLocal(NameConst.TT_LEVEL_MAINTAINER_CURRENT) + " "
-                            + NumberFormat.getNumberInstance().format(amount)
+                            + (this.componentIndex < 0
+                                    ? NumberFormat.getNumberInstance()
+                                            .format(Calculator.conversion(this.textField.getText()))
+                                    : NumberFormat.getNumberInstance().format(amount))
                             + "\n"
                     : "";
             if (isShiftKeyDown()) {

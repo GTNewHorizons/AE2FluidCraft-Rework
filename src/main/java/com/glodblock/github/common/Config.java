@@ -20,8 +20,9 @@ public class Config {
     public static int packetSize;
     public static int packetRate;
     public static boolean replaceEC2;
+    public static int levelMaintainerMinTicks;
     public static int levelMaintainerMaxTicks;
-    public static int levelMaintainerMinRefreshTicks;
+    public static int levelMaintainerMinIdleTicks;
     public static int levelMaintainerMaxRefreshTicks;
     public static int reStockTime;
     public static int magnetRange;
@@ -72,23 +73,26 @@ public class Config {
                 true,
                 "Set true to handle missing item mappings from EC2. Note to work properly, you must have all relevant parts.");
 
+        levelMaintainerMinTicks = Config
+                .get("LevelMaintainer", "minTick", 5, "Minimum interval between active checks, in ticks").getInt();
         levelMaintainerMaxTicks = Config.get(
                 "LevelMaintainer",
                 "maxTick",
                 120,
-                "Default refresh interval, in ticks (120 = 6 seconds), used by requesters that have not set their own. Values are clamped into the minRefreshTicks/maxRefreshTicks range and to whole seconds.")
+                "Default maximum idle interval, in ticks (120 = 6 seconds), used when a requester has no override. This is not an upper limit on player overrides.")
                 .getInt();
-        levelMaintainerMinRefreshTicks = Config.get(
+        levelMaintainerMinIdleTicks = Config.get(
                 "LevelMaintainer",
-                "minRefreshTicks",
-                20,
-                "Smallest refresh interval a player may set on a requester, in ticks (20 = 1 second)").getInt();
+                "minIdleTicks",
+                120,
+                "Smallest idle interval a player may set, in ticks (120 = 6 seconds). Overrides are rounded up to whole seconds and cannot be below minTick. Does not change the active minimum or the maxTick default.")
+                .getInt();
         levelMaintainerMaxRefreshTicks = Config
                 .get(
                         "LevelMaintainer",
                         "maxRefreshTicks",
                         1728000,
-                        "Largest refresh interval a player may set on a requester, in ticks (1728000 = 24 hours)")
+                        "Largest idle interval a player may set on a requester, in ticks (1728000 = 24 hours)")
                 .getInt();
 
         reStockTime = Config.get("UltraWireless", "reStockTime", 1000, "Time between restocks").getInt();

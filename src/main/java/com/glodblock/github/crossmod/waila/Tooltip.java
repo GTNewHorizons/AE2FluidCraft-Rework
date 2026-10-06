@@ -45,10 +45,9 @@ public class Tooltip {
                 isEnable ? I18n.format(NameConst.WAILA_ENABLE) : I18n.format(NameConst.WAILA_DISABLE));
     }
 
-    /** @param ticksLeft ticks until the next check, rounded up to whole seconds */
-    public static String tileLevelMaintainerRateFormat(long ticksLeft, int rateTicks) {
+    public static String tileLevelMaintainerRateFormat(long ticksLeft) {
         final int second = TileLevelMaintainer.TICKS_PER_SECOND;
-        return I18n.format(NameConst.WAILA_NEXT_REQUEST, (ticksLeft + second - 1) / second, rateTicks / second);
+        return I18n.format(NameConst.WAILA_NEXT_STOCK_CHECK, (ticksLeft + second - 1) / second);
     }
 
     public static String partFluidTerminalFluidFormat(FluidStack fs) {

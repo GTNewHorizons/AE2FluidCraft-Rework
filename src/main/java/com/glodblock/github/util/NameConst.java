@@ -110,12 +110,14 @@ public class NameConst {
     public static final String WAILA_KEY = FluidCraft.MODID + ".waila.";
     public static final String WAILA_ENABLE = WAILA_KEY + "enable";
     public static final String WAILA_DISABLE = WAILA_KEY + "disable";
-    public static final String WAILA_NEXT_REQUEST = WAILA_KEY + "next_request";
+    public static final String WAILA_NEXT_STOCK_CHECK = WAILA_KEY + "next_stock_check";
     public static final String RES_KEY = FluidCraft.MODID + ":";
 
     public static final String GUI_KEY = FluidCraft.MODID + ".gui.";
     public static final String GUI_LEVEL_MAINTAINER = GUI_KEY + BLOCK_LEVEL_MAINTAINER;
     public static final String GUI_LEVEL_MAINTAINER_REFRESH_RATE = GUI_LEVEL_MAINTAINER + ".refresh_rate";
+    public static final String GUI_LEVEL_MAINTAINER_REFRESH_RATE_SECONDS = GUI_LEVEL_MAINTAINER_REFRESH_RATE
+            + ".seconds";
     public static final String GUI_LEVEL_TERMINAL = GUI_KEY + ITEM_PART_LEVEL_TERMINAL;
     public static final String GUI_FLUID_PATTERN_ENCODER = GUI_KEY + BLOCK_FLUID_PATTERN_ENCODER;
     public static final String GUI_FLUID_PACKET_DECODER = GUI_KEY + BLOCK_FLUID_PACKET_DECODER;
