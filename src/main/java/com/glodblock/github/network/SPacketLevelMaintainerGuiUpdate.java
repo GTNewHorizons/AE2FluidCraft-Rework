@@ -19,14 +19,17 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
     private Info[] infoList;
     private boolean onlyState;
     private boolean isLiteMode;
+    private int refreshTicks;
 
     @SuppressWarnings("unused")
     public SPacketLevelMaintainerGuiUpdate() {}
 
-    public SPacketLevelMaintainerGuiUpdate(RequestInfo[] requests, boolean onlyState, boolean isLiteMode) {
+    public SPacketLevelMaintainerGuiUpdate(RequestInfo[] requests, boolean onlyState, boolean isLiteMode,
+            int refreshTicks) {
         this.infoList = new Info[REQ_COUNT];
         this.onlyState = onlyState;
         this.isLiteMode = isLiteMode;
+        this.refreshTicks = refreshTicks;
 
         for (int i = 0; i < REQ_COUNT; i++) {
             if (requests[i] == null) {
@@ -46,6 +49,7 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
         this.infoList = new Info[REQ_COUNT];
         this.onlyState = buf.readBoolean();
         this.isLiteMode = buf.readBoolean();
+        this.refreshTicks = buf.readInt();
 
         for (int i = 0; i < REQ_COUNT; i++) {
             if (buf.readBoolean()) {
@@ -68,6 +72,7 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeBoolean(this.onlyState);
         buf.writeBoolean(this.isLiteMode);
+        buf.writeInt(this.refreshTicks);
         for (Info info : this.infoList) {
             buf.writeBoolean(info != null);
             if (info == null) continue;
@@ -120,6 +125,7 @@ public class SPacketLevelMaintainerGuiUpdate implements IMessage {
                 }
 
                 gui.updateComponent(message.isLiteMode);
+                gui.updateRefreshRate(message.refreshTicks);
             }
 
             return null;
