@@ -248,7 +248,7 @@ public class TileLevelMaintainer extends AENetworkTile
 
                 // Walking every CPU to see whether the item is already being
                 // made is comparatively expensive
-                for (ICraftingCPU cpu: craftingGrid.getCpus()) {
+                for (ICraftingCPU cpu : craftingGrid.getCpus()) {
                     IAEStack<?> output = cpu.getFinalMultiOutput();
                     if (output != null && output.isSameType(craftItem)) {
                         continue req;
