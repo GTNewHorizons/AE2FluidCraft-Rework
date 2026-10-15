@@ -15,9 +15,10 @@ public class AEFluidInterfaceHandler implements IExternalStorageHandler {
     @Override
     public boolean canHandle(TileEntity te, ForgeDirection d, StorageChannel channel, BaseActionSource mySrc) {
         if (channel == StorageChannel.FLUIDS) {
-            if (te instanceof ITileStorageMonitorable) {
+            if (te instanceof ITileStorageMonitorable tsm && tsm.getMonitorable(d, mySrc) != null) {
                 return true;
-            } else return Platform.getPartFromTE(te, d.getOpposite()) instanceof ITileStorageMonitorable;
+            } else return Platform.getPartFromTE(te, d.getOpposite()) instanceof ITileStorageMonitorable part
+                    && part.getMonitorable(d, mySrc) != null;
         }
         return false;
     }
