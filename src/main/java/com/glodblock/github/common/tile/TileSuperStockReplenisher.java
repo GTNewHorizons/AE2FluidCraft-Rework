@@ -5,10 +5,12 @@ import java.util.stream.IntStream;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -28,6 +30,7 @@ import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.implementations.IPowerChannelState;
 import appeng.api.implementations.items.IStorageCell;
+import appeng.api.implementations.tiles.IColorableTile;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.events.MENetworkBootingStatusChange;
@@ -45,6 +48,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.util.AECableType;
+import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
 import appeng.api.util.IConfigManager;
 import appeng.core.AELog;
@@ -63,7 +67,7 @@ import appeng.util.item.AEItemStack;
 import io.netty.buffer.ByteBuf;
 
 public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFluidInventory, IFluidHandler,
-        IPowerChannelState, IGridTickable, ITerminalHost, IIAEStackInventory {
+        IPowerChannelState, IGridTickable, ITerminalHost, IIAEStackInventory, IColorableTile {
 
     private final AppEngInternalInventory cell = new AppEngInternalInventory(this, 1);
     private final BiggerAppEngInventory invItems = new BiggerAppEngInventory(this, 63);
@@ -87,6 +91,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     };
     private final BaseActionSource source;
     private boolean isPowered;
+    private AEColor paintedColor = AEColor.Transparent;
     private long totalBytes;
     private long storedFluidCount;
     private long storedItemCount;
@@ -601,17 +606,26 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
     @TileEvent(TileEventType.NETWORK_READ)
     public boolean readFromStream_TileSuperStockReplenisher(final ByteBuf data) {
         final boolean oldPower = isPowered;
+        final AEColor oldPaintedColor = this.paintedColor;
         isPowered = data.readBoolean();
-        return isPowered != oldPower;
+        this.paintedColor = AEColor.fromOrdinal(data.readByte());
+        this.getProxy().setColor(this.paintedColor);
+        return isPowered != oldPower || this.paintedColor != oldPaintedColor;
     }
 
     @TileEvent(TileEventType.NETWORK_WRITE)
     public void writeToStream_TileSuperStockReplenisher(final ByteBuf data) {
         data.writeBoolean(isActive());
+        data.writeByte(this.paintedColor.ordinal());
     }
 
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public void readFromNBTEvent(NBTTagCompound data) {
+        final int color = data.hasKey("paintedColor", Constants.NBT.TAG_BYTE) ? data.getByte("paintedColor")
+                : AEColor.Transparent.ordinal();
+        this.paintedColor = color >= 0 && color < AEColor.VALUES.length ? AEColor.fromOrdinal(color)
+                : AEColor.Transparent;
+        this.getProxy().setColor(this.paintedColor);
         invItems.readFromNBT(data, "ItemInv");
         invFluids.readFromNBT(data, "FluidInv");
         configItems.readFromNBT(data, "configItems");
@@ -626,6 +640,7 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
 
     @TileEvent(TileEventType.WORLD_NBT_WRITE)
     public NBTTagCompound writeToNBTEvent(NBTTagCompound data) {
+        data.setByte("paintedColor", (byte) this.paintedColor.ordinal());
         invItems.writeToNBT(data, "ItemInv");
         invFluids.writeToNBT(data, "FluidInv");
         configItems.writeToNBT(data, "configItems");
@@ -636,6 +651,27 @@ public class TileSuperStockReplenisher extends AENetworkInvTile implements IAEFl
         data.setLong("totalBytes", totalBytes);
         data.setDouble("powerDraw", getProxy().getIdlePowerUsage());
         return data;
+    }
+
+    @Override
+    public AEColor getColor() {
+        return this.paintedColor;
+    }
+
+    @Override
+    public boolean recolourBlock(final ForgeDirection side, final AEColor newPaintedColor, final EntityPlayer who) {
+        if (this.paintedColor == newPaintedColor) {
+            return false;
+        }
+        this.paintedColor = newPaintedColor;
+        this.getProxy().setColor(this.paintedColor);
+        final IGridNode node = this.getGridNode(side);
+        if (node != null) {
+            node.updateState();
+        }
+        this.markDirty();
+        this.markForUpdate();
+        return true;
     }
 
     @MENetworkEventSubscribe
