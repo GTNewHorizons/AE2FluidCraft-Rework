@@ -91,6 +91,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     private GuiImgButton terminalStyleBox;
 
     private ItemStack tooltipStack;
+    private List<String> buttonTooltip;
     private boolean online;
     private int viewHeight;
 
@@ -105,7 +106,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
     private static final float ITEM_STACK_Z = 100.0f;
     private static final float ITEM_STACK_OVERLAY_Z = 200.0f;
     private static final float SLOT_HOVER_Z = 310.0f;
-    private static final float TOOLTIP_Z = 410.0f;
     private static final float STEP_Z = 10.0f;
     private static final float MAGIC_RENDER_ITEM_Z = 50.0f;
 
@@ -260,6 +260,11 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
 
         handleTooltip(mouseX, mouseY, searchFieldOutputs);
         handleTooltip(mouseX, mouseY, searchFieldNames);
+
+        // Drawn after the viewport so the items do not cover it
+        if (buttonTooltip != null) {
+            drawHoveringText(buttonTooltip, mouseX, mouseY, fontRendererObj);
+        }
     }
 
     @Override
@@ -344,6 +349,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             GL11.glPushMatrix();
             GL11.glTranslatef(offsetX + VIEW_LEFT, offsetY + HEADER_HEIGHT, 0);
             tooltipStack = null;
+            buttonTooltip = null;
             drawViewport(mouseX - offsetX - VIEW_LEFT, mouseY - offsetY - HEADER_HEIGHT - 1);
             GL11.glPopMatrix();
             GL11.glPopAttrib();
@@ -508,9 +514,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             toRender.drawButton(mc, relMouseX, relMouseY);
             if (toRender.getMouseIn()
                     && relMouseY >= Math.max(LevelTerminalSection.TITLE_HEIGHT, entry.highlightButton.yPosition)) {
-                // draw a tooltip
-                GL11.glTranslatef(0f, 0f, TOOLTIP_Z);
-                GL11.glDisable(GL11.GL_SCISSOR_TEST);
                 List<String> tooltip = new ArrayList<>();
                 tooltip.add(toRender.getMessage());
                 if (entry.isInPlayerDimension()) {
@@ -520,9 +523,7 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
                     tooltip.add(
                             StatCollector.translateToLocal(NameConst.TT_KEY + "level_terminal.hint_other_dimension"));
                 }
-                drawHoveringText(tooltip, relMouseX, relMouseY);
-                GL11.glTranslatef(0f, 0f, -TOOLTIP_Z);
-                GL11.glEnable(GL11.GL_SCISSOR_TEST);
+                buttonTooltip = tooltip;
             }
         } else {
             entry.highlightButton.yPosition = -1;
@@ -660,102 +661,6 @@ public class GuiLevelTerminal extends FCBaseMEGui implements IDropToFillTextFiel
             return ReadableNumberConverter.INSTANCE.toWideReadableForm(originalSize);
         } else {
             return ReadableNumberConverter.INSTANCE.toSlimReadableForm(originalSize);
-        }
-    }
-
-    @Override
-    public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-        if (!textLines.isEmpty()) {
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            RenderHelper.disableStandardItemLighting();
-            int maxStrWidth = 0;
-
-            // is this more efficient than doing 1 pass, then doing a translate before drawing the text?
-            for (String s : (List<String>) textLines) {
-                int width = font.getStringWidth(s);
-
-                if (width > maxStrWidth) {
-                    maxStrWidth = width;
-                }
-            }
-
-            // top left corner
-            int curX = x + 12;
-            int curY = y - 12;
-            int totalHeight = 8;
-
-            if (textLines.size() > 1) {
-                totalHeight += 2 + (textLines.size() - 1) * 10;
-            }
-
-            /* String is too long? Display on the left side */
-            if (curX + maxStrWidth > width) {
-                curX -= 28 + maxStrWidth;
-            }
-
-            /* String is too tall? move it up */
-            if (curY + totalHeight + 6 > height) {
-                curY = height - totalHeight - 6;
-            }
-
-            int borderColor = -267386864;
-            // drawing the border...
-            drawGradientRect(curX - 3, curY - 4, curX + maxStrWidth + 3, curY - 3, borderColor, borderColor);
-            drawGradientRect(
-                    curX - 3,
-                    curY + totalHeight + 3,
-                    curX + maxStrWidth + 3,
-                    curY + totalHeight + 4,
-                    borderColor,
-                    borderColor);
-            drawGradientRect(
-                    curX - 3,
-                    curY - 3,
-                    curX + maxStrWidth + 3,
-                    curY + totalHeight + 3,
-                    borderColor,
-                    borderColor);
-            drawGradientRect(curX - 4, curY - 3, curX - 3, curY + totalHeight + 3, borderColor, borderColor);
-            drawGradientRect(
-                    curX + maxStrWidth + 3,
-                    curY - 3,
-                    curX + maxStrWidth + 4,
-                    curY + totalHeight + 3,
-                    borderColor,
-                    borderColor);
-            int color1 = 1347420415;
-            int color2 = (color1 & 16711422) >> 1 | color1 & -16777216;
-            drawGradientRect(curX - 3, curY - 3 + 1, curX - 3 + 1, curY + totalHeight + 3 - 1, color1, color2);
-            drawGradientRect(
-                    curX + maxStrWidth + 2,
-                    curY - 3 + 1,
-                    curX + maxStrWidth + 3,
-                    curY + totalHeight + 3 - 1,
-                    color1,
-                    color2);
-            drawGradientRect(curX - 3, curY - 3, curX + maxStrWidth + 3, curY - 3 + 1, color1, color1);
-            drawGradientRect(
-                    curX - 3,
-                    curY + totalHeight + 2,
-                    curX + maxStrWidth + 3,
-                    curY + totalHeight + 3,
-                    color2,
-                    color2);
-
-            for (int i = 0; i < textLines.size(); ++i) {
-                String line = (String) textLines.get(i);
-                font.drawStringWithShadow(line, curX, curY, -1);
-
-                if (i == 0) {
-                    // gap between name and lore text
-                    curY += 2;
-                }
-
-                curY += 10;
-            }
-
-            RenderHelper.enableGUIStandardItemLighting();
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         }
     }
 
