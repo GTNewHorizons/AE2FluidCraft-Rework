@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.gui.container.ContainerFluidInterface;
-import com.glodblock.github.common.parts.PartFluidInterface;
 import com.glodblock.github.inventory.IAEFluidTank;
 import com.glodblock.github.inventory.IDualHost;
 import com.glodblock.github.inventory.gui.MouseRegionManager;
@@ -19,6 +18,7 @@ import com.glodblock.github.util.FCGuiColors;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.RenderUtil;
 
+import appeng.api.parts.IPart;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.client.gui.GuiSub;
 import appeng.core.localization.GuiText;
@@ -103,6 +103,6 @@ public class GuiFluidInterface extends GuiSub {
     }
 
     private boolean isPart() {
-        return this.cont.getTile() instanceof PartFluidInterface;
+        return this.cont.getTile() instanceof IPart;
     }
 }
