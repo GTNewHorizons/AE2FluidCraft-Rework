@@ -5,8 +5,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.networking.security.BaseActionSource;
+import appeng.api.parts.IPart;
+import appeng.api.parts.IPartHost;
 import appeng.api.storage.IExternalStorageHandler;
 import appeng.api.storage.IMEInventory;
+import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.StorageChannel;
 import appeng.util.Platform;
 
@@ -15,10 +18,9 @@ public class AEFluidInterfaceHandler implements IExternalStorageHandler {
     @Override
     public boolean canHandle(TileEntity te, ForgeDirection d, StorageChannel channel, BaseActionSource mySrc) {
         if (channel == StorageChannel.FLUIDS) {
-            if (te instanceof ITileStorageMonitorable tsm && tsm.getMonitorable(d, mySrc) != null) {
-                return true;
-            } else return Platform.getPartFromTE(te, d.getOpposite()) instanceof ITileStorageMonitorable part
-                    && part.getMonitorable(d, mySrc) != null;
+            if (te instanceof ITileStorageMonitorable) {
+                return !(te instanceof IPartHost);
+            } else return getMonitorablePart(te, d, mySrc) != null;
         }
         return false;
     }
@@ -27,14 +29,19 @@ public class AEFluidInterfaceHandler implements IExternalStorageHandler {
     @SuppressWarnings("rawtypes")
     public IMEInventory getInventory(TileEntity te, ForgeDirection d, StorageChannel channel, BaseActionSource src) {
         if (channel == StorageChannel.FLUIDS) {
-            if (te instanceof ITileStorageMonitorable
-                    && ((ITileStorageMonitorable) te).getMonitorable(d, src) != null) {
-                return ((ITileStorageMonitorable) te).getMonitorable(d, src).getFluidInventory();
-            } else if (Platform.getPartFromTE(te, d.getOpposite()) instanceof ITileStorageMonitorable part
-                    && part.getMonitorable(d, src) != null) {
-                        return part.getMonitorable(d, src).getFluidInventory();
-                    }
+            if (te instanceof ITileStorageMonitorable tsm) {
+                final IStorageMonitorable monitorable = tsm.getMonitorable(d, src);
+                return monitorable != null ? monitorable.getFluidInventory() : null;
+            } else {
+                final IStorageMonitorable monitorable = getMonitorablePart(te, d, src);
+                return monitorable != null ? monitorable.getFluidInventory() : null;
+            }
         }
         return null;
+    }
+
+    private static IStorageMonitorable getMonitorablePart(TileEntity te, ForgeDirection d, BaseActionSource src) {
+        final IPart part = Platform.getPartFromTE(te, d);
+        return part instanceof ITileStorageMonitorable monitorablePart ? monitorablePart.getMonitorable(d, src) : null;
     }
 }
