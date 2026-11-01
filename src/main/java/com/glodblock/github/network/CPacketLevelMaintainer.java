@@ -18,6 +18,8 @@ public class CPacketLevelMaintainer implements IMessage {
         Disable,
         ToggleLiteMode,
         ClearLiteMode,
+        // Appended last on purpose: the ordinal is what travels over the wire, so existing actions keep theirs.
+        SetRefreshRate,
     }
 
     private Action action;
@@ -72,6 +74,8 @@ public class CPacketLevelMaintainer implements IMessage {
                     case Disable -> clm.getTile().updateStatus(message.slotIndex, true);
                     case ToggleLiteMode -> clm.getTile().toggleLiteMode();
                     case ClearLiteMode -> clm.getTile().clearLiteMode();
+                    case SetRefreshRate -> clm.getTile()
+                            .setRefreshTicks((int) Math.max(0L, Math.min(Integer.MAX_VALUE, message.size)));
                 }
                 clm.updateGui();
             }
