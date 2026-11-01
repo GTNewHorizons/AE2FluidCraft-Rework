@@ -11,7 +11,7 @@ import appeng.tile.inventory.InvOperation;
 
 public class TileOCPatternEditor extends AEBaseInvTile {
 
-    private final AppEngInternalInventory invItems = new AppEngInternalInventory(this, 16);
+    private final AppEngInternalInventory invItems = new AppEngInternalInventory(this, 16, 1);
 
     @Override
     public IInventory getInternalInventory() {
