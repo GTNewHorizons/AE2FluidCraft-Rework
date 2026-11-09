@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.glodblock.github.common.tile.TileLevelMaintainer;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.Util;
 
@@ -42,6 +43,11 @@ public class Tooltip {
                 NumberFormat.getInstance().format(quantity),
                 NumberFormat.getInstance().format(batch),
                 isEnable ? I18n.format(NameConst.WAILA_ENABLE) : I18n.format(NameConst.WAILA_DISABLE));
+    }
+
+    public static String tileLevelMaintainerRateFormat(long ticksLeft) {
+        final int second = TileLevelMaintainer.TICKS_PER_SECOND;
+        return I18n.format(NameConst.WAILA_NEXT_STOCK_CHECK, (ticksLeft + second - 1) / second);
     }
 
     public static String partFluidTerminalFluidFormat(FluidStack fs) {
