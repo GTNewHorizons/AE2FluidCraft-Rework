@@ -93,7 +93,7 @@ public class ItemCertusQuartzTank extends BaseItemBlockContainer implements IFlu
                 || container.stackTagCompound.getCompoundTag("tileEntity").hasKey("Empty")) {
             int finalAmount = Math.min(resource.amount, this.capacity);
             NBTTagCompound fluidTag = new FluidStack(resource.getFluid(), finalAmount, resource.tag)
-                .writeToNBT(new NBTTagCompound());
+                    .writeToNBT(new NBTTagCompound());
             container.stackTagCompound.setTag("tileEntity", fluidTag);
             return finalAmount;
         }
