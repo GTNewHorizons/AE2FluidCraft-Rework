@@ -22,6 +22,8 @@ public class Config {
     public static boolean replaceEC2;
     public static int levelMaintainerMinTicks;
     public static int levelMaintainerMaxTicks;
+    public static int levelMaintainerMinIdleTicks;
+    public static int levelMaintainerMaxRefreshTicks;
     public static int reStockTime;
     public static int magnetRange;
 
@@ -71,9 +73,26 @@ public class Config {
                 true,
                 "Set true to handle missing item mappings from EC2. Note to work properly, you must have all relevant parts.");
 
-        levelMaintainerMinTicks = Config.get("LevelMaintainer", "minTick", 5, "Number on ticks for minimal request")
+        levelMaintainerMinTicks = Config
+                .get("LevelMaintainer", "minTick", 5, "Minimum interval between active checks, in ticks").getInt();
+        levelMaintainerMaxTicks = Config.get(
+                "LevelMaintainer",
+                "maxTick",
+                120,
+                "Default maximum idle interval, in ticks (120 = 6 seconds), used when a requester has no override. This is not an upper limit on player overrides.")
                 .getInt();
-        levelMaintainerMaxTicks = Config.get("LevelMaintainer", "maxTick", 120, "Number on ticks for maximal request")
+        levelMaintainerMinIdleTicks = Config.get(
+                "LevelMaintainer",
+                "minIdleTicks",
+                120,
+                "Smallest idle interval a player may set, in ticks (120 = 6 seconds). Overrides are rounded up to whole seconds and cannot be below minTick. Does not change the active minimum or the maxTick default.")
+                .getInt();
+        levelMaintainerMaxRefreshTicks = Config
+                .get(
+                        "LevelMaintainer",
+                        "maxRefreshTicks",
+                        1728000,
+                        "Largest idle interval a player may set on a requester, in ticks (1728000 = 24 hours)")
                 .getInt();
 
         reStockTime = Config.get("UltraWireless", "reStockTime", 1000, "Time between restocks").getInt();
