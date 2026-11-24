@@ -3,31 +3,24 @@ package com.glodblock.github.crossmod.opencomputers;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
 
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.tile.TileOCPatternEditor;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.NameConst;
-import com.glodblock.github.util.Util;
 
-import appeng.items.misc.ItemEncodedPattern;
-import appeng.util.item.AEItemStack;
+import appeng.api.AEApi;
 import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.driver.NamedBlock;
-import li.cil.oc.api.internal.Database;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.network.Component;
 import li.cil.oc.api.network.ManagedEnvironment;
-import li.cil.oc.api.network.Node;
 import li.cil.oc.api.prefab.DriverSidedTileEntity;
 import li.cil.oc.integration.ManagedTileEntityEnvironment;
+import li.cil.oc.integration.appeng.internal.PatternEnvironment;
+import li.cil.oc.integration.appeng.internal.PatternEnvironment$class;
 
 public class DriverOCPatternEditor extends DriverSidedTileEntity {
 
@@ -43,10 +36,31 @@ public class DriverOCPatternEditor extends DriverSidedTileEntity {
         return new DriverOCPatternEditor.Environment((TileOCPatternEditor) world.getTileEntity(x, y, z));
     }
 
-    public static class Environment extends ManagedTileEntityEnvironment<TileOCPatternEditor> implements NamedBlock {
+    public static class Environment extends ManagedTileEntityEnvironment<TileOCPatternEditor>
+            implements NamedBlock, PatternEnvironment {
 
         public Environment(TileOCPatternEditor tileEntity) {
             super(tileEntity, NameConst.BLOCK_OC_PATTERN_EDITOR);
+        }
+
+        @Override
+        public IInventory getPatternInventory(Context context, Arguments args) {
+            return tileEntity.getInternalInventory();
+        }
+
+        @Override
+        public int offset() {
+            return PatternEnvironment$class.offset(this);
+        }
+
+        @Override
+        public Object[] setPatternSlot(Context context, Arguments args, String tag) {
+            return PatternEnvironment$class.setPatternSlot(this, context, args, tag);
+        }
+
+        @Override
+        public Object[] storeInterfacePattern(Context context, Arguments args, String tag) {
+            return PatternEnvironment$class.storeInterfacePattern(this, context, args, tag);
         }
 
         private int optSlot(Arguments args, IInventory inv, int index, int def) {
@@ -62,130 +76,21 @@ public class DriverOCPatternEditor extends DriverSidedTileEntity {
         }
 
         private int checkSlot(Arguments args, IInventory inv, int index) {
-            if (index >= 0 && index < args.count()) {
-                int slot = args.checkInteger(index) - 1;
-                if (slot < 0 || slot >= inv.getSizeInventory()) {
-                    throw new IllegalArgumentException("invalid slot");
-                }
-                return slot;
-            } else {
+            int slot = args.checkInteger(index) - 1;
+            if (slot < 0 || slot >= inv.getSizeInventory()) {
                 throw new IllegalArgumentException("invalid slot");
             }
+            return slot;
         }
 
-        private boolean validPattern(ItemStack pattern) {
-            if (pattern == null) {
-                throw new IllegalArgumentException("No pattern here!");
-            }
-            if (pattern.getItem() instanceof ItemEncodedPattern iep
-                    && !(pattern.getItem() instanceof ItemFluidEncodedPattern)) {
-                return iep.getOutput(pattern) == null;
-            }
-            return true;
-        }
-
-        private ItemStack getStack(Arguments args) {
-            if (args.count() > 1) {
-                String address;
-                int entry;
-                int size;
-                if (args.isString(0)) {
-                    address = args.checkString(0);
-                    entry = args.checkInteger(1);
-                    size = args.optInteger(2, 1);
-                } else {
-                    address = args.checkString(1);
-                    entry = args.checkInteger(2);
-                    size = args.optInteger(3, 1);
-                }
-                Node node = node().network().node(address);
-                if (node instanceof Component) {
-                    if (node.host() instanceof Database) {
-                        ItemStack dbStack = ((Database) node.host()).getStackInSlot(entry - 1);
-                        if (dbStack == null || size < 1) {
-                            return null;
-                        } else {
-                            dbStack.stackSize = Math.min(size, dbStack.getMaxStackSize());
-                            return dbStack;
-                        }
-                    } else {
-                        throw new IllegalArgumentException("not a database");
-                    }
-                } else {
-                    throw new IllegalArgumentException("no such component");
-                }
-            } else {
-                return null;
-            }
-        }
-
-        private Object[] clearInterfacePattern(Context context, Arguments args, String tag) {
+        private void replaceBlankPattern(Arguments args) {
             IInventory inv = tileEntity.getInternalInventory();
-            ItemStack pattern = inv.getStackInSlot(checkSlot(args, inv, 0));
-            if (validPattern(pattern)) {
-                NBTTagCompound encodedValue = pattern.getTagCompound();
-                int slot = checkSlot(args, inv, 0);
-                if (encodedValue == null) throw new IllegalArgumentException("No pattern here!");
-                NBTTagList nbt = encodedValue.getTagList(tag, 10);
-                int index = args.checkInteger(1) - 1;
-                if (index < 0) throw new IllegalArgumentException("Invalid index!");
-                nbt.removeTag(index);
-                encodedValue.setTag(tag, nbt);
-                pattern.setTagCompound(encodedValue);
-                inv.setInventorySlotContents(slot, null);
+            int slot = checkSlot(args, inv, 0);
+            if (AEApi.instance().definitions().materials().blankPattern().isSameAs(inv.getStackInSlot(slot))) {
+                ItemStack pattern = AEApi.instance().definitions().items().encodedUltimatePattern().maybeStack(1).get();
+                pattern.setTagCompound(new NBTTagCompound());
                 inv.setInventorySlotContents(slot, pattern);
-                context.pause(0.1);
-                return new Object[] { true };
-            } else {
-                throw new IllegalArgumentException("Not Fluid Encoded pattern!");
             }
-        }
-
-        private Object[] setPatternSlot(Context context, Arguments args, String tag, boolean fluid) {
-            IInventory inv = tileEntity.getInternalInventory();
-            int slot = args.isString(0) ? 0 : optSlot(args, inv, 0, 0);
-            ItemStack stack = getStack(args);
-            if (fluid) {
-                FluidStack fluids = Util.getFluidFromItem(stack);
-                stack = ItemFluidDrop.newStack(fluids);
-            }
-            int index = args.checkInteger(4) - 1;
-            if (index < 0 || index > 511) throw new IllegalArgumentException("Invalid index!");
-            ItemStack pattern = inv.getStackInSlot(slot);
-            if (validPattern(pattern)) {
-                NBTTagCompound encodedValue = pattern.getTagCompound();
-                if (encodedValue == null) throw new IllegalArgumentException("No pattern here!");
-
-                NBTTagList inTag = encodedValue.getTagList(tag, 10);
-                while (inTag.tagCount() <= index) inTag.appendTag(new NBTTagCompound());
-                if (stack != null) {
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    AEItemStack aeStack = AEItemStack.create(stack);
-                    aeStack.writeToNBT(nbt);
-                    inTag.func_150304_a(index, nbt);
-                } else {
-                    inTag.removeTag(index);
-                }
-                encodedValue.setTag(tag, inTag);
-                pattern.setTagCompound(encodedValue);
-                inv.setInventorySlotContents(slot, null);
-                inv.setInventorySlotContents(slot, pattern);
-                context.pause(0.1);
-                return new Object[] { true };
-            } else {
-                throw new IllegalArgumentException("Not Fluid Encoded pattern!");
-            }
-        }
-
-        @Callback(doc = "function([slot:number]):table -- Get the configuration of the interface.")
-        public Object[] getInterfaceConfiguration(Context context, Arguments args) {
-            IInventory config = tileEntity.getInternalInventory();
-            int slot = optSlot(args, config, 0, 0);
-            ItemStack stack = config.getStackInSlot(slot);
-            if (!validPattern(stack)) {
-                throw new IllegalArgumentException("Not Fluid Encoded pattern!");
-            }
-            return new Object[] { stack };
         }
 
         @Callback(doc = "function([slot:number]):table -- Get the given pattern in the interface.")
@@ -197,37 +102,39 @@ public class DriverOCPatternEditor extends DriverSidedTileEntity {
         }
 
         @Callback(
-                doc = "function(slot:number, database:address, entry:number, size:number, index:number):boolean -- Set the pattern item input at the given index.")
-        public Object[] setInterfacePatternItemInput(Context context, Arguments args) {
-            return setPatternSlot(context, args, "in", false);
+                doc = "function(slot:number, index:number[, database:address, entry:number, size:number]):boolean OR function(slot:number, index:number[, detail:table, type:string]):boolean -- Set the pattern input at the given index. A blank pattern becomes an ultimate pattern.")
+        public Object[] setInterfacePatternInput(Context context, Arguments args) {
+            replaceBlankPattern(args);
+            return setPatternSlot(context, args, "in");
         }
 
         @Callback(
-                doc = "function(slot:number, database:address, entry:number, size:number, index:number):boolean -- Set the pattern item output at the given index.")
-        public Object[] setInterfacePatternItemOutput(Context context, Arguments args) {
-            return setPatternSlot(context, args, "out", false);
+                doc = "function(slot:number, index:number[, database:address, entry:number, size:number]):boolean OR function(slot:number, index:number[, detail:table, type:string]):boolean -- Set the pattern output at the given index. A blank pattern becomes an ultimate pattern.")
+        public Object[] setInterfacePatternOutput(Context context, Arguments args) {
+            replaceBlankPattern(args);
+            return setPatternSlot(context, args, "out");
         }
 
         @Callback(
-                doc = "function(slot:number, database:address, entry:number, size:number, index:number):boolean -- Set the pattern fluid input at the given index.")
-        public Object[] setInterfacePatternFluidInput(Context context, Arguments args) {
-            return setPatternSlot(context, args, "in", true);
+                doc = "function(slot:number, index:number, database:address, entry:number):boolean -- Store pattern input at the given index to the database entry.")
+        public Object[] storeInterfacePatternInput(Context context, Arguments args) {
+            return storeInterfacePattern(context, args, "in");
         }
 
         @Callback(
-                doc = "function(slot:number, database:address, entry:number, size:number, index:number):boolean -- Set the pattern fluid output at the given index.")
-        public Object[] setInterfacePatternFluidOutput(Context context, Arguments args) {
-            return setPatternSlot(context, args, "out", true);
+                doc = "function(slot:number, index:number, database:address, entry:number):boolean -- Store pattern output at the given index to the database entry.")
+        public Object[] storeInterfacePatternOutput(Context context, Arguments args) {
+            return storeInterfacePattern(context, args, "out");
         }
 
         @Callback(doc = "function(slot:number, index:number):boolean -- Clear pattern input at the given index.")
         public Object[] clearInterfacePatternInput(Context context, Arguments args) {
-            return clearInterfacePattern(context, args, "in");
+            return setPatternSlot(context, args, "in");
         }
 
         @Callback(doc = "function(slot:number, index:number):boolean -- Clear pattern output at the given index.")
         public Object[] clearInterfacePatternOutput(Context context, Arguments args) {
-            return clearInterfacePattern(context, args, "out");
+            return setPatternSlot(context, args, "out");
         }
 
         @Override
