@@ -59,8 +59,9 @@ public class WirelessMagnet {
     // This method uses the same algorithm as the magnet from draconic evolution
     // if changes are ever made, they should be made on both
     public static void doMagnet(ItemStack wirelessTerm, EntityPlayer player) {
-        if (player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm)) return;
-        World world = player.worldObj;
+        final World world = player.worldObj;
+        if (world.isRemote || player.ticksExisted % 5 != 0 || player.isSneaking() || !isConfigured(wirelessTerm))
+            return;
         final List<EntityItem> items = getEntitiesInRange(
                 EntityItem.class,
                 world,
@@ -70,9 +71,7 @@ public class WirelessMagnet {
                 magnetRange);
         final boolean skipPlayerCheck = world.playerEntities.size() < 2;
         boolean playSound = false;
-        // account for the server/client desync
-        double playerEyesPos = player.posY
-                + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
+        double playerEyesPos = player.posY + player.getEyeHeight();
 
         for (EntityItem itemToGet : items) {
             if (itemToGet.getEntityItem() == null || itemToGet instanceof EntityFloatingItem) {
@@ -95,6 +94,10 @@ public class WirelessMagnet {
                     player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
                     playerEyesPos - 0.62,
                     player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+            // EntityTracker only syncs item positions every 20 ticks and skips small velocity changes,
+            // so force both; otherwise the client keeps simulating the item with its old motion.
+            itemToGet.isAirBorne = true; // force position update
+            itemToGet.velocityChanged = true; // force velocity update
         }
 
         if (playSound) {
@@ -105,33 +108,31 @@ public class WirelessMagnet {
                     0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
         }
 
-        if (!world.isRemote) {
-            // xp
-            final List<EntityXPOrb> xpOrbs = getEntitiesInRange(
-                    EntityXPOrb.class,
-                    world,
-                    (int) player.posX,
-                    (int) player.posY,
-                    (int) player.posZ,
-                    magnetRange);
+        // xp
+        final List<EntityXPOrb> xpOrbs = getEntitiesInRange(
+                EntityXPOrb.class,
+                world,
+                (int) player.posX,
+                (int) player.posY,
+                (int) player.posZ,
+                magnetRange);
 
-            for (EntityXPOrb xpToGet : xpOrbs) {
-                if (xpToGet.field_70532_c == 0 && xpToGet.isEntityAlive()) {
-                    if (!skipPlayerCheck) {
-                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
-                        if (closestPlayer == null || closestPlayer != player) continue;
-                    }
-
-                    if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, xpToGet))) continue;
-                    world.playSoundAtEntity(
-                            player,
-                            "random.orb",
-                            0.1F,
-                            0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
-                    player.onItemPickup(xpToGet, 1);
-                    player.addExperience(xpToGet.xpValue);
-                    xpToGet.setDead();
+        for (EntityXPOrb xpToGet : xpOrbs) {
+            if (xpToGet.field_70532_c == 0 && xpToGet.isEntityAlive()) {
+                if (!skipPlayerCheck) {
+                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(xpToGet, magnetRange);
+                    if (closestPlayer == null || closestPlayer != player) continue;
                 }
+
+                if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, xpToGet))) continue;
+                world.playSoundAtEntity(
+                        player,
+                        "random.orb",
+                        0.1F,
+                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                player.onItemPickup(xpToGet, 1);
+                player.addExperience(xpToGet.xpValue);
+                xpToGet.setDead();
             }
         }
     }
